@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.data
 
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
-import scala.annotation.meta._
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
 import io.swagger.v3.oas.annotations.media.Schema
@@ -26,7 +25,8 @@ case class MatchDuplicateResultV2 private (
         implementation = classOf[DuplicateSummaryEntry]
       ),
       arraySchema = new Schema(
-        description = "The results of the match, a list of winnersets." + "  Each winnerset is a list of DuplicateSummaryEntry objects that show the results of teams that competed against each other.",
+        description =
+          "The results of the match, a list of winnersets." + "  Each winnerset is a list of DuplicateSummaryEntry objects that show the results of teams that competed against each other.",
         required = true
       )
     )
@@ -85,14 +85,14 @@ case class MatchDuplicateResultV2 private (
   def equalsIgnoreModifyTime(
       other: MatchDuplicateResultV2,
       throwit: Boolean = false
-  ) =
+  ): Boolean =
     id == other.id &&
       equalsInResults(other, throwit)
 
   def equalsInResults(
       other: MatchDuplicateResultV2,
       throwit: Boolean = false
-  ) = {
+  ): Boolean = {
     if (results.length == other.results.length) {
       results
         .zip(other.results)
@@ -122,7 +122,7 @@ case class MatchDuplicateResultV2 private (
       newId: MatchDuplicateResult.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
-  ) = {
+  ): MatchDuplicateResultV2 = {
     if (dontUpdateTime) {
       copy(id = newId)
     } else {
@@ -134,7 +134,7 @@ case class MatchDuplicateResultV2 private (
     }
   }
 
-  def copyForCreate(id: MatchDuplicateResult.Id) = {
+  def copyForCreate(id: MatchDuplicateResult.Id): MatchDuplicateResultV2 = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, created = time, updated = time)
 
@@ -163,7 +163,7 @@ case class MatchDuplicateResultV2 private (
       .toInt
   }
 
-  def fixPlaces = {
+  def fixPlaces: MatchDuplicateResultV2 = {
     val places = results.map { winnerset =>
       val m = winnerset.groupBy(e => e.result.getOrElse(0.0)).map { e =>
         val (points, teams) = e
@@ -181,7 +181,7 @@ case class MatchDuplicateResultV2 private (
     copy(results = places)
   }
 
-  def fixPlacesImp = {
+  def fixPlacesImp: MatchDuplicateResultV2 = {
     val places = results.map { winnerset =>
       val m = winnerset.groupBy(e => e.resultImp.getOrElse(0.0)).map { e =>
         val (points, teams) = e
@@ -200,7 +200,7 @@ case class MatchDuplicateResultV2 private (
   }
 
   @Schema(hidden = true)
-  def fixupSummary = {
+  def fixupSummary: MatchDuplicateResultV2 = {
     boardresults match {
       case Some(l) =>
         this
@@ -210,7 +210,7 @@ case class MatchDuplicateResultV2 private (
   }
 
   @Schema(hidden = true)
-  def fixup = {
+  def fixup: MatchDuplicateResultV2 = {
     fixupSummary.fixPlaces.fixPlacesImp
   }
 
@@ -223,7 +223,9 @@ case class MatchDuplicateResultV2 private (
   def placeByWinnerSet(
       winnerset: List[Team.Id]
   ): List[MatchDuplicateScore.Place] = {
-    results.find(ws => ws.find(e => !winnerset.contains(e.team.id)).isEmpty) match {
+    results.find(ws =>
+      ws.find(e => !winnerset.contains(e.team.id)).isEmpty
+    ) match {
       case Some(rws) =>
         rws
           .groupBy(e => e.place.getOrElse(1))
@@ -245,7 +247,9 @@ case class MatchDuplicateResultV2 private (
   def placeByWinnerSetIMP(
       winnerset: List[Team.Id]
   ): List[MatchDuplicateScore.Place] = {
-    results.find(ws => ws.find(e => !winnerset.contains(e.team.id)).isEmpty) match {
+    results.find(ws =>
+      ws.find(e => !winnerset.contains(e.team.id)).isEmpty
+    ) match {
       case Some(rws) =>
         rws
           .groupBy(e => e.placeImp.getOrElse(1))
@@ -268,18 +272,19 @@ case class MatchDuplicateResultV2 private (
     * The timestamp is not changed.
     * @return None if the names were not changed.  Some() with the modified object
     */
-  def modifyPlayers(nameMap: Map[String, String]) = {
+  def modifyPlayers(
+      nameMap: Map[String, String]
+  ): Option[MatchDuplicateResultV2] = {
     val (nresults, modified) = results
       .map { ws =>
         ws.map { t =>
-            t.team.modifyPlayers(nameMap) match {
-              case Some(nt) => (t.copy(team = nt), true)
-              case None     => (t, false)
-            }
+          t.team.modifyPlayers(nameMap) match {
+            case Some(nt) => (t.copy(team = nt), true)
+            case None     => (t, false)
           }
-          .foldLeft((List[DuplicateSummaryEntry](), false)) { (ac, v) =>
-            (ac._1 ::: List(v._1), ac._2 || v._2)
-          }
+        }.foldLeft((List[DuplicateSummaryEntry](), false)) { (ac, v) =>
+          (ac._1 ::: List(v._1), ac._2 || v._2)
+        }
       }
       .foldLeft((List[List[DuplicateSummaryEntry]](), false)) { (ac, v) =>
         (ac._1 ::: List(v._1), ac._2 || v._2)
@@ -293,13 +298,13 @@ case class MatchDuplicateResultV2 private (
 
   import MatchDuplicateV3._
   @Hidden
-  def isMP = scoringmethod == MatchPoints
+  def isMP: Boolean = scoringmethod == MatchPoints
   @Hidden
-  def isIMP = scoringmethod == InternationalMatchPoints
+  def isIMP: Boolean = scoringmethod == InternationalMatchPoints
 
-  def convertToCurrentVersion = (true, this)
+  def convertToCurrentVersion: (Boolean, MatchDuplicateResultV2) = (true, this)
 
-  def readyForWrite = this
+  def readyForWrite: MatchDuplicateResultV2 = this
 
 }
 
@@ -317,7 +322,7 @@ object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
       played: Timestamp,
       created: Timestamp,
       updated: Timestamp
-  ) = {
+  ): MatchDuplicateResultV2 = {
     new MatchDuplicateResultV2(
       id,
       results,
@@ -341,7 +346,7 @@ object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
       played: Timestamp,
       created: Timestamp,
       updated: Timestamp
-  ) = {
+  ): MatchDuplicateResultV2 = {
     new MatchDuplicateResultV2(
       id,
       results,
@@ -362,7 +367,7 @@ object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
       played: Timestamp,
       created: Timestamp,
       updated: Timestamp
-  ) = {
+  ): MatchDuplicateResultV2 = {
     new MatchDuplicateResultV2(
       id,
       results,
@@ -376,7 +381,10 @@ object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
     ).fixup
   }
 
-  def create(id: MatchDuplicateResult.Id = MatchDuplicateResult.idNul, scoringmethod: String = "MP") = {
+  def create(
+      id: MatchDuplicateResult.Id = MatchDuplicateResult.idNul,
+      scoringmethod: String = "MP"
+  ): MatchDuplicateResultV2 = {
     val time = SystemTime.currentTimeMillis()
     new MatchDuplicateResultV2(
       id,
@@ -394,7 +402,7 @@ object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
   def createFrom(
       md: MatchDuplicate,
       mdr: Option[MatchDuplicateResult] = None
-  ) = {
+  ): MatchDuplicateResultV2 = {
     val score = MatchDuplicateScore(md, PerspectiveComplete)
     val wss = score.getWinnerSets
     val places = score.places.flatMap { p =>
@@ -404,15 +412,14 @@ object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
     }.toMap
     val r = wss.map { ws =>
       ws.map { tid =>
-          score.getTeam(tid).get
-        }
-        .map { team =>
-          DuplicateSummaryEntry(
-            team,
-            score.teamScores.get(team.id),
-            places.get(team.id)
-          )
-        }
+        score.getTeam(tid).get
+      }.map { team =>
+        DuplicateSummaryEntry(
+          team,
+          score.teamScores.get(team.id),
+          places.get(team.id)
+        )
+      }
     }
 
     val (pl, cr, up) = mdr match {
@@ -422,8 +429,17 @@ object MatchDuplicateResultV2 extends HasId[IdMatchDuplicateResult]("E") {
         val played = if (md.created == 0) time else md.created
         (played, md.created, md.updated)
     }
-    new MatchDuplicateResultV2(MatchDuplicateResult.idNul, r, None, None, None, pl, cr, up, "MP")
-      .fixup
+    new MatchDuplicateResultV2(
+      MatchDuplicateResult.idNul,
+      r,
+      None,
+      None,
+      None,
+      pl,
+      cr,
+      up,
+      "MP"
+    ).fixup
 
   }
 

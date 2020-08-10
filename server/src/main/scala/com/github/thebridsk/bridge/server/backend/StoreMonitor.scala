@@ -8,7 +8,6 @@ import akka.http.scaladsl.model.RemoteAddress
 import akka.NotUsed
 import akka.event.Logging
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.websocket.Protocol.MonitorLeft
 import com.github.thebridsk.bridge.data.websocket.Protocol.MonitorJoined
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicate
@@ -19,11 +18,9 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorDuplicate
 import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorChicago
 import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorRubber
 import com.github.thebridsk.bridge.data.websocket.Protocol.NoData
-import java.util.Date
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Team
-import java.util.Formatter
 import com.github.thebridsk.bridge.server.rest.Service
 import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorSummary
 import com.github.thebridsk.bridge.data.websocket.Protocol.StopMonitorSummary
@@ -39,14 +36,6 @@ import akka.stream.Attributes.Name
 import akka.stream.Attributes
 import java.util.concurrent.atomic.AtomicLong
 import scala.concurrent.Future
-import akka.stream.stage.GraphStage
-import akka.stream.FlowShape
-import akka.stream.Inlet
-import akka.stream.Outlet
-import akka.stream.stage.GraphStageLogic
-import akka.stream.stage.InHandler
-import akka.stream.stage.OutHandler
-import akka.io.Tcp
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -99,8 +88,9 @@ object StoreMonitor {
 
   var testHook: Option[(akka.actor.Actor, Any) => Unit] = None
 
-  def setTestHook(hook: (akka.actor.Actor, Any) => Unit) = testHook = Some(hook)
-  def unsetTestHook() = testHook = None
+  def setTestHook(hook: (akka.actor.Actor, Any) => Unit): Unit =
+    testHook = Some(hook)
+  def unsetTestHook(): Unit = testHook = None
 
   case class KillOneConnection()
 
@@ -108,7 +98,9 @@ object StoreMonitor {
 
 }
 
-abstract class BaseStoreMonitor[VId <: Comparable[VId], VType <: VersionedInstance[
+abstract class BaseStoreMonitor[VId <: Comparable[
+  VId
+], VType <: VersionedInstance[
   VType,
   VType,
   VId
@@ -120,9 +112,9 @@ abstract class BaseStoreMonitor[VId <: Comparable[VId], VType <: VersionedInstan
     with Actor {
   import StoreMonitor._
 
-  val log = Logging(system, getClass)
+  val log: LoggingAdapter = Logging(system, getClass)
 
-  def process(sender: String, msg: DuplexProtocol.DuplexMessage) = {
+  def process(sender: String, msg: DuplexProtocol.DuplexMessage): Any = {
     msg match {
       case DuplexProtocol.Send(data) =>
         log.info("Processing " + msg)
@@ -131,8 +123,8 @@ abstract class BaseStoreMonitor[VId <: Comparable[VId], VType <: VersionedInstan
 //        dispatchTo(sender,resp)
       case DuplexProtocol.Request(data, seq, ack) =>
         log.info("Processing " + msg)
-        processProtocolMessage(sender, seq, data, ack).foreach(
-          r => dispatchTo(r, sender)
+        processProtocolMessage(sender, seq, data, ack).foreach(r =>
+          dispatchTo(r, sender)
         )
       case DuplexProtocol.LogEntryS(s) => {
         val le =
@@ -306,29 +298,34 @@ abstract class BaseStoreMonitor[VId <: Comparable[VId], VType <: VersionedInstan
 
   val listener = new Listener(log, self)
 
-  override def register() = store.addListener(listener)
-  override def unregister() = store.removeListener(listener)
+  override def register(): Unit = store.addListener(listener)
+  override def unregister(): Unit = store.removeListener(listener)
 
   protected def futureError(
       msg: String,
       seq: Int
-  ): Future[DuplexProtocol.DuplexMessage] = Future {
-    DuplexProtocol.ErrorResponse(msg, seq)
-  }
+  ): Future[DuplexProtocol.DuplexMessage] =
+    Future {
+      DuplexProtocol.ErrorResponse(msg, seq)
+    }
 }
 
-class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     system: ActorSystem,
     store: Store[VId, VType],
     storeMonitorClass: Class[_],
     newParticipant: (String, VId, ActorRef) => ChatEvent,
     service: Service
 ) {
-  val log = Logging(system, getClass)
+  val log: LoggingAdapter = Logging(system, getClass)
 
   import StoreMonitor._
 
-  val monitor = system.actorOf(
+  val monitor: ActorRef = system.actorOf(
     Props(storeMonitorClass, system, store, service),
     name = s"${storeMonitorClass.getSimpleName}Actor"
   )
@@ -345,10 +342,16 @@ class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[VTy
       }
     )
 
-  val completionMatcher: PartialFunction[Any, CompletionStrategy] = { case x: DuplexProtocol.Complete => CompletionStrategy.immediately }
-  val failureMatcher: PartialFunction[Any, Exception] = { case x: DuplexProtocol.Fail => x.ex }
+  val completionMatcher: PartialFunction[Any, CompletionStrategy] = {
+    case x: DuplexProtocol.Complete => CompletionStrategy.immediately
+  }
+  val failureMatcher: PartialFunction[Any, Exception] = {
+    case x: DuplexProtocol.Fail => x.ex
+  }
 
-  def monitorFlow(sender: RemoteAddress): Flow[String, DuplexProtocol.DuplexMessage, NotUsed] = {
+  def monitorFlow(
+      sender: RemoteAddress
+  ): Flow[String, DuplexProtocol.DuplexMessage, NotUsed] = {
     val count = StoreMonitor.counter.incrementAndGet()
     val name = sender.toString().replaceAll("\\.", "-")
     val in =
@@ -386,11 +389,14 @@ class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[VTy
         }
 
     // val f =
-      Flow.fromSinkAndSource(in, out) // .via(new TerminateFlowStage(log, false))
+    Flow.fromSinkAndSource(in, out) // .via(new TerminateFlowStage(log, false))
     // f
   }
 
-  def monitorMatch(sender: RemoteAddress, id: VId) = {
+  def monitorMatch(
+      sender: RemoteAddress,
+      id: VId
+  ): Source[ServerSentEvent, Any] = {
     sseSource(
       sender,
       Source
@@ -409,7 +415,7 @@ class StoreMonitorManager[VId <: Comparable[VId], VType <: VersionedInstance[VTy
   def sseSource(
       sender: RemoteAddress,
       source: Source[DuplexProtocol.DuplexMessage, _]
-  ) = {
+  ): Source[ServerSentEvent, Any] = {
     source
       .map(msg => ServerSentEvent(DuplexProtocol.toString(msg)))
       .keepAlive(10.second, () => ServerSentEvent.heartbeat)
@@ -543,17 +549,18 @@ class DuplicateStoreMonitor(
             case _ =>
               DuplexProtocol.Response(NoData(), seq)
           }
-          service.restDuplicate.nestedPictures.getAllPictures(dupid).foreach { ridp =>
-            ridp match {
-              case Right(idp) =>
-                val ldp = idp.toList
-                if (!ldp.isEmpty) {
-                  val data = UpdateDuplicatePictures( dupid, ldp )
-                  dispatchTo(DuplexProtocol.Unsolicited(data), sender)
-                }
-              case Left(err) =>
-                log.warning("Error getting all pictures in monitor: ${err}")
-            }
+          service.restDuplicate.nestedPictures.getAllPictures(dupid).foreach {
+            ridp =>
+              ridp match {
+                case Right(idp) =>
+                  val ldp = idp.toList
+                  if (!ldp.isEmpty) {
+                    val data = UpdateDuplicatePictures(dupid, ldp)
+                    dispatchTo(DuplexProtocol.Unsolicited(data), sender)
+                  }
+                case Left(err) =>
+                  log.warning("Error getting all pictures in monitor: ${err}")
+              }
           }
           resp
         }
@@ -761,10 +768,10 @@ class RubberStoreMonitor(
     store: Store[MatchRubber.Id, MatchRubber],
     service: Service
 ) extends BaseStoreMonitor[MatchRubber.Id, MatchRubber](
-    system,
-    store,
-    Protocol.UpdateRubber(_)
-) {
+      system,
+      store,
+      Protocol.UpdateRubber(_)
+    ) {
 
   def processProtocolMessage(
       sender: String,
@@ -881,7 +888,9 @@ class RubberStoreMonitor(
 
 class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
   import com.github.thebridsk.bridge.server.backend.resource.ChangeContextData
-  private def getDuplicateId( ccd: ChangeContextData ): Option[MatchDuplicate.Id] = {
+  private def getDuplicateId(
+      ccd: ChangeContextData
+  ): Option[MatchDuplicate.Id] = {
     (ccd match {
       case cc: CreateChangeContext => Some(cc.newValue)
       case uc: UpdateChangeContext => Some(uc.newValue)
@@ -889,16 +898,16 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
     }) match {
       case Some(fdata) =>
         fdata match {
-          case md: MatchDuplicate => Some(md.id)
-          case b: Board           => None
-          case h: DuplicateHand   => None
+          case md: MatchDuplicate           => Some(md.id)
+          case b: Board                     => None
+          case h: DuplicateHand             => None
           case pict: UpdateDuplicatePicture => Some(pict.dupid)
-          case _                  => None
+          case _                            => None
         }
       case None => None
     }
   }
-  private def getChicagoRound( ccd: ChangeContextData ): Option[String] = {
+  private def getChicagoRound(ccd: ChangeContextData): Option[String] = {
     (ccd match {
       case cc: CreateChangeContext => Some(cc.newValue)
       case uc: UpdateChangeContext => Some(uc.newValue)
@@ -906,13 +915,13 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
     }) match {
       case Some(fdata) =>
         fdata match {
-          case r: Round   => Some(r.id)
-          case _          => None
+          case r: Round => Some(r.id)
+          case _        => None
         }
       case None => None
     }
   }
-  private def getChicagoId( ccd: ChangeContextData ): Option[MatchChicago.Id] = {
+  private def getChicagoId(ccd: ChangeContextData): Option[MatchChicago.Id] = {
     (ccd match {
       case cc: CreateChangeContext => Some(cc.newValue)
       case uc: UpdateChangeContext => Some(uc.newValue)
@@ -920,13 +929,13 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
     }) match {
       case Some(fdata) =>
         fdata match {
-          case mc: MatchChicago   => Some(mc.id)
-          case _                  => None
+          case mc: MatchChicago => Some(mc.id)
+          case _                => None
         }
       case None => None
     }
   }
-  private def getRubberId( ccd: ChangeContextData ): Option[MatchRubber.Id] = {
+  private def getRubberId(ccd: ChangeContextData): Option[MatchRubber.Id] = {
     (ccd match {
       case cc: CreateChangeContext => Some(cc.newValue)
       case uc: UpdateChangeContext => Some(uc.newValue)
@@ -934,8 +943,8 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
     }) match {
       case Some(fdata) =>
         fdata match {
-          case mr: MatchRubber   => Some(mr.id)
-          case _                 => None
+          case mr: MatchRubber => Some(mr.id)
+          case _               => None
         }
       case None => None
     }
@@ -949,10 +958,14 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
       case Some(scd) =>
         scd match {
           case cc: CreateChangeContext =>
-            log.debug(s"StoreMonitor.Listener.update: got a CreateChangeContext")
+            log.debug(
+              s"StoreMonitor.Listener.update: got a CreateChangeContext"
+            )
             Some(cc.newValue)
           case uc: UpdateChangeContext =>
-            log.debug(s"StoreMonitor.Listener.update: got a UpdateChangeContext")
+            log.debug(
+              s"StoreMonitor.Listener.update: got a UpdateChangeContext"
+            )
             Some(uc.newValue)
           case dc: DeleteChangeContext =>
             None // can't happen here, only create and delete
@@ -964,24 +977,30 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
           case md: MatchDuplicate =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicate($md)")
             actor ! UpdateDuplicate(md)
-          case b: Board           =>
-            // log.debug(s"StoreMonitor.Listener.update: Ignoring $b")
+          case b: Board =>
+          // log.debug(s"StoreMonitor.Listener.update: Ignoring $b")
           case pict: UpdateDuplicatePicture =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with $pict")
             actor ! pict
-          case h: DuplicateHand   =>
+          case h: DuplicateHand =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicateHand($h)")
-            getDuplicateId(changes.head).foreach { mdid => actor ! UpdateDuplicateHand(mdid, h) }
-          case t: Team            =>
+            getDuplicateId(changes.head).foreach { mdid =>
+              actor ! UpdateDuplicateHand(mdid, h)
+            }
+          case t: Team =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicateTeam($t)")
-            getDuplicateId(changes.head).foreach { mdid => actor ! UpdateDuplicateTeam(mdid, t) }
-          case mc: MatchChicago   =>
+            getDuplicateId(changes.head).foreach { mdid =>
+              actor ! UpdateDuplicateTeam(mdid, t)
+            }
+          case mc: MatchChicago =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateChicago($mc)")
             actor ! UpdateChicago(mc)
-          case cr: Round          =>
+          case cr: Round =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateChicagoRound($cr)")
-            getChicagoId(changes.head).foreach { mdid => actor ! UpdateChicagoRound(mdid, cr) }
-          case ch: Hand           =>
+            getChicagoId(changes.head).foreach { mdid =>
+              actor ! UpdateChicagoRound(mdid, cr)
+            }
+          case ch: Hand =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateChicagoHand($ch)")
             getChicagoRound(changes.tail.head) match {
               case Some(rid) =>
@@ -996,7 +1015,7 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
           case mr: MatchRubber =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateRubber($mr)")
             actor ! UpdateRubber(mr)
-          case x               =>
+          case x =>
         }
       case None =>
     }

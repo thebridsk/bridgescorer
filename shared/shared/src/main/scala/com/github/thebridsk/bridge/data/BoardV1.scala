@@ -1,9 +1,7 @@
 package com.github.thebridsk.bridge.data
 
-import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
@@ -63,13 +61,13 @@ case class BoardV1(
     updated: Timestamp
 ) {
 
-  def equalsIgnoreModifyTime(other: BoardV1) =
+  def equalsIgnoreModifyTime(other: BoardV1): Boolean =
     id == other.id &&
       nsVul == other.nsVul &&
       ewVul == other.ewVul &&
       dealer == other.dealer && equalsInHands(other)
 
-  def equalsInHands(other: BoardV1) = {
+  def equalsInHands(other: BoardV1): Boolean = {
     if (hands.keySet == other.hands.keySet) {
       hands.keys.find { key =>
         {
@@ -95,7 +93,7 @@ case class BoardV1(
     }
   }
 
-  def setId(newId: Board.Id, forCreate: Boolean) = {
+  def setId(newId: Board.Id, forCreate: Boolean): BoardV1 = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -104,27 +102,30 @@ case class BoardV1(
     )
   }
 
-  def timesPlayed = hands.filter(dh => dh._2.wasPlayed).size
+  def timesPlayed: Int = hands.filter(dh => dh._2.wasPlayed).size
 
-  def handPlayedByTeam(team: Team.Id) = hands.values.collectFirst {
-    case hand: DuplicateHandV1 if hand.isTeam(team) => hand
-  }
+  def handPlayedByTeam(team: Team.Id): Option[DuplicateHandV1] =
+    hands.values.collectFirst {
+      case hand: DuplicateHandV1 if hand.isTeam(team) => hand
+    }
 
-  def wasPlayedByTeam(team: Team.Id) = !handPlayedByTeam(team).isEmpty
+  def wasPlayedByTeam(team: Team.Id): Boolean = !handPlayedByTeam(team).isEmpty
 
-  def handTeamPlayNS(team: Team.Id) = hands.values.collectFirst {
-    case hand: DuplicateHandV1 if hand.isNSTeam(team) => hand
-  }
+  def handTeamPlayNS(team: Team.Id): Option[DuplicateHandV1] =
+    hands.values.collectFirst {
+      case hand: DuplicateHandV1 if hand.isNSTeam(team) => hand
+    }
 
-  def didTeamPlayNS(team: Team.Id) = !handTeamPlayNS(team).isEmpty
+  def didTeamPlayNS(team: Team.Id): Boolean = !handTeamPlayNS(team).isEmpty
 
-  def handTeamPlayEW(team: Team.Id) = hands.values.collectFirst {
-    case hand: DuplicateHandV1 if hand.isEWTeam(team) => hand
-  }
+  def handTeamPlayEW(team: Team.Id): Option[DuplicateHandV1] =
+    hands.values.collectFirst {
+      case hand: DuplicateHandV1 if hand.isEWTeam(team) => hand
+    }
 
-  def didTeamPlayEW(team: Team.Id) = !handTeamPlayEW(team).isEmpty
+  def didTeamPlayEW(team: Team.Id): Boolean = !handTeamPlayEW(team).isEmpty
 
-  def teamScore(team: Team.Id) =
+  def teamScore(team: Team.Id): Float =
     handPlayedByTeam(team) match {
       case Some(teamHand) =>
         def getNSTeam(hand: DuplicateHandV1) = hand.nsTeam
@@ -159,7 +160,7 @@ case class BoardV1(
       .reduce(_ + _)
   }
 
-  def copyForCreate(id: Board.Id) = {
+  def copyForCreate(id: Board.Id): BoardV1 = {
     val time = SystemTime.currentTimeMillis()
     val xhands = hands.map(e => (e._1 -> e._2.copyForCreate(e._1))).toMap
     copy(id = id, created = time, updated = time, hands = xhands)
@@ -177,22 +178,22 @@ case class BoardV1(
         throw new IndexOutOfBoundsException("Hand " + handId + " not found")
     }
 
-  def setHands(hands: Map[Team.Id, DuplicateHandV1]) = {
+  def setHands(hands: Map[Team.Id, DuplicateHandV1]): BoardV1 = {
     copy(hands = hands, updated = SystemTime.currentTimeMillis())
   }
 
-  def deleteHand(handId: Team.Id) = {
+  def deleteHand(handId: Team.Id): BoardV1 = {
     val nb = hands - handId
     copy(hands = nb, updated = SystemTime.currentTimeMillis())
 
   }
 
   @Schema(hidden = true)
-  def getBoardInSet =
+  def getBoardInSet: BoardInSet =
     BoardInSet(id.toInt, nsVul, ewVul, dealer)
 
   @Schema(hidden = true)
-  def convertToCurrentVersion =
+  def convertToCurrentVersion: BoardV2 =
     BoardV2(
       id,
       nsVul,
@@ -212,7 +213,7 @@ object BoardV1 {
       ewVul: Boolean,
       dealer: String,
       hands: Map[Team.Id, DuplicateHandV1]
-  ) = {
+  ): BoardV1 = {
     val time = SystemTime.currentTimeMillis()
     new BoardV1(id, nsVul, ewVul, dealer, hands, time, time)
   }

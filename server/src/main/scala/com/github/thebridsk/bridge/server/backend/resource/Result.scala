@@ -8,7 +8,7 @@ import scala.concurrent.Promise
 
 object Result {
 
-  val log = Logger(Result.getClass.getName)
+  val log: Logger = Logger(Result.getClass.getName)
 
   def apply[T](t: T): Result[T] = Right(t)
 
@@ -20,7 +20,7 @@ object Result {
 
   def apply[T](error: (StatusCode, RestMessage)): Result[T] = Left(error)
 
-  val unit = Result(())
+  val unit: Result[Unit] = Result(())
 
   def future[T](t: Result[T]): Future[Result[T]] =
     Promise.successful(t).future

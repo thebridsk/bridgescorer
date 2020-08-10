@@ -25,5 +25,6 @@ trait Updator[V, T, R] {
     * Add a change context to the request.
     * @param change
     */
-  def prepend(change: ChangeContextData) = changeContext.prepend(change)
+  def prepend(change: ChangeContextData): ChangeContext =
+    changeContext.prepend(change)
 }

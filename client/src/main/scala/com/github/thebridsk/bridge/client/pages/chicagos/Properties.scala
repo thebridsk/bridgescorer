@@ -4,8 +4,8 @@ import com.github.thebridsk.bridge.client.pages.Pixels
 
 object Properties {
 
-  val defaultChicagoNameButtonPaddingAndBorder =
+  val defaultChicagoNameButtonPaddingAndBorder: Int =
     Pixels.getPaddingBorder("DefaultChicagoNameButton")
-  val defaultChicagoNameButtonBorderRadius =
+  val defaultChicagoNameButtonBorderRadius: Int =
     Pixels.getPaddingBorder("DefaultChicagoNameButton")
 }

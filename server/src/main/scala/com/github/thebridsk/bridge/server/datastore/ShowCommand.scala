@@ -4,7 +4,6 @@ import com.github.thebridsk.utilities.main.Subcommand
 import com.github.thebridsk.utilities.logging.Logger
 import org.rogach.scallop._
 import scala.concurrent.duration.Duration
-import scala.reflect.io.Path
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import scala.util.Success
 import scala.concurrent.Future
@@ -12,27 +11,23 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
-import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
-import java.util.Date
 import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.datastore.stats.DuplicateStatsCommand
 import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId
 import com.github.thebridsk.bridge.data.Team
+import scala.util.matching.Regex
 
 trait ShowCommand
 
 object ShowCommand extends Subcommand("show") {
 
-  val log = Logger[ShowCommand]()
+  val log: Logger = Logger[ShowCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
-
-  import com.github.thebridsk.utilities.main.Converters._
 
   descr("show information about a datastore")
 
@@ -68,8 +63,6 @@ object ShowNamesCommand extends Subcommand("names") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import com.github.thebridsk.utilities.main.Converters._
-
   descr("show all names in datastore")
 
   banner(s"""
@@ -81,7 +74,7 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -102,8 +95,6 @@ object ShowSuggestionCommand extends Subcommand("suggestion") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import com.github.thebridsk.utilities.main.Converters._
-
   descr("show all names in datastore")
 
   banner(s"""
@@ -113,7 +104,7 @@ Syntax:
   ${DataStoreCommands.cmdName} show suggestion args
 Options:""")
 
-  val optionNeverPair = opt[List[String]](
+  val optionNeverPair: ScallopOption[List[String]] = opt[List[String]](
     "neverpair",
     short = 'n',
     descr = "never pair players.  Value is player1,player2",
@@ -121,7 +112,7 @@ Options:""")
     default = None
   )
 
-  val players = (1 to 8).map { i =>
+  val players: List[ScallopOption[String]] = (1 to 8).map { i =>
     trailArg[String](
       s"player${i}",
       descr = s"player ${i}",
@@ -149,9 +140,9 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
-  val patternPair = """([^,]+),([^,]+)""".r
+  val patternPair: Regex = """([^,]+),([^,]+)""".r
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -159,19 +150,18 @@ Options:""")
     val datastore = new BridgeServiceFileStore(storedir)
     await(datastore.getDuplicateSummaries()) match {
       case Right(summary) =>
-        val neverPair = optionNeverPair.toOption.map(
-          lnp =>
-            lnp.flatMap { pair =>
-              pair match {
-                case patternPair(p1, p2) =>
-                  NeverPair(p1, p2) :: Nil
-                case _ =>
-                  log.severe(
-                    s"""Never pair option not valid, ignoring: ${pair}"""
-                  )
-                  Nil
-              }
+        val neverPair = optionNeverPair.toOption.map(lnp =>
+          lnp.flatMap { pair =>
+            pair match {
+              case patternPair(p1, p2) =>
+                NeverPair(p1, p2) :: Nil
+              case _ =>
+                log.severe(
+                  s"""Never pair option not valid, ignoring: ${pair}"""
+                )
+                Nil
             }
+          }
         )
         val input =
           DuplicateSuggestions(players.map(sc => sc()), neverPair = neverPair)
@@ -195,9 +185,8 @@ Options:""")
                 if (l.lastPlayed == r.lastPlayed) l.timesPlayed < r.timesPlayed
                 else l.lastPlayed < r.lastPlayed
               }
-              .map(
-                p =>
-                  f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)"
+              .map(p =>
+                f"${p.player1}%8s-${p.player2}%-8s (${p.lastPlayed}%2d,${p.timesPlayed}%2d)"
               )
               .mkString(", ")
             log.info(f"  ${i + 1}%3d: ${s}%s")
@@ -218,8 +207,6 @@ object ShowBoardsetsAndMovementsCommand extends Subcommand("boardsets") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import com.github.thebridsk.utilities.main.Converters._
-
   descr("show all boardsets and movements")
 
   banner(s"""
@@ -231,7 +218,7 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -273,8 +260,6 @@ object ShowPartnersOfCommand extends Subcommand("partnersof") {
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
 
-  import com.github.thebridsk.utilities.main.Converters._
-
   descr("show partners of a player")
 
   banner(s"""
@@ -284,7 +269,7 @@ Syntax:
   ${DataStoreCommands.cmdName} show partnersof
 Options:""")
 
-  val player = trailArg[String](
+  val player: ScallopOption[String] = trailArg[String](
     "player",
     descr = "player",
     required = true,
@@ -294,9 +279,10 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
-  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone( ZoneId.systemDefault() )
+  val sdf: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone(ZoneId.systemDefault())
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -312,7 +298,8 @@ Options:""")
         case Right(summaries) =>
           summaries.sortWith((l, r) => l.created > r.created).foreach {
             summary =>
-              val date = sdf.format(Instant.ofEpochMilli(summary.created.toLong))
+              val date =
+                sdf.format(Instant.ofEpochMilli(summary.created.toLong))
               if (summary.containsPlayer(p)) {
                 val partner = summary.teams
                   .find(dse => dse.team.player1 == p || dse.team.player2 == p)
@@ -341,8 +328,6 @@ object ShowTeamDeclarerCommand extends Subcommand("declarer") {
   import DataStoreCommands.optionStore
   import ShowCommand.log
 
-  import com.github.thebridsk.utilities.main.Converters._
-
   descr("show the number of times team was declarer in match")
 
   banner(s"""
@@ -354,9 +339,10 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
-  val sdf = DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone( ZoneId.systemDefault() )
+  val sdf: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("MM/dd/YYYY").withZone(ZoneId.systemDefault())
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -411,8 +397,6 @@ object ShowPlayerPlaceCommand extends Subcommand("place") {
   import DataStoreCommands.optionStore
   import ShowCommand.log
 
-  import com.github.thebridsk.utilities.main.Converters._
-
   descr("show the number of times team was declarer in match")
 
   banner(s"""
@@ -422,19 +406,19 @@ Syntax:
   ${DataStoreCommands.cmdName} show declarer
 Options:""")
 
-  val paramScoringMethod = trailArg[String](
+  val paramScoringMethod: ScallopOption[String] = trailArg[String](
     name = "scoringMethod",
-    descr = "The scoring method, if omitted the played scoring method is used.  Valid values: mp, imp.",
+    descr =
+      "The scoring method, if omitted the played scoring method is used.  Valid values: mp, imp.",
     required = false,
-    validate = a => a=="mp"||a=="imp"
+    validate = a => a == "mp" || a == "imp"
   )
-
 
 //  footer(s""" """)
 
   import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val storedir = optionStore().toDirectory
@@ -462,32 +446,35 @@ Options:""")
             val lp = pp.players
             var sep = false
 
-            log.info( """Name         | Played  | 1       | 1,2     | 1,2,3   | 1,2,3,4 |   2     |   2,3   |   2,3,4 |     3   |     3,4 |       4 |""")
-            val div = """----------------------------------------------------------------------------------------------------------------------------"""
+            log.info(
+              """Name         | Played  | 1       | 1,2     | 1,2,3   | 1,2,3,4 |   2     |   2,3   |   2,3,4 |     3   |     3,4 |       4 |"""
+            )
+            val div =
+              """----------------------------------------------------------------------------------------------------------------------------"""
             log.info(div)
 
             lp.foreach { p =>
               val b = new StringBuilder
-              b.append( f"""${p.name}%12s | ${p.total}%7d |""" )
+              b.append(f"""${p.name}%12s | ${p.total}%7d |""")
               val il = p.place.length
               for (i <- 0 until 4) {
-                val jl = if (i<il) p.place(i).length else 0
-                for (j <- 0 until (4-i)) {
-                  if (i<il && j<jl) {
-                    b.append( f""" ${p.place(i)(j)}%7d |""" )
+                val jl = if (i < il) p.place(i).length else 0
+                for (j <- 0 until (4 - i)) {
+                  if (i < il && j < jl) {
+                    b.append(f""" ${p.place(i)(j)}%7d |""")
                   } else {
-                    b.append( "         |")
+                    b.append("         |")
                   }
                 }
               }
-              log.info( b.toString )
+              log.info(b.toString)
               if (sep) log.info(div)
               sep = !sep
             }
             // Thread.sleep(2000L)
             0
           case Left(err) =>
-            log.severe( s"""Error get place results: ${err._2.msg}""")
+            log.severe(s"""Error get place results: ${err._2.msg}""")
             1
         }
       case _ =>

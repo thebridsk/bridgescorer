@@ -9,22 +9,24 @@ object ThankYouPage {
 
   case class Props()
 
-  def apply(  ) = component(Props())
+  def apply() =
+    component(Props()) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ThankYouPageInternal {
   import ThankYouPage._
 
-  val component = ScalaComponent.builder[Props]("ThankYouPage")
-                            .stateless
-                            .noBackend
-                            .render_P( props =>
-                              <.div(
-                                rootStyles.thankYouDiv,
-                                <.h1("Thank you for using the Bridge Scorer"),
-                                <.p("You can now close this window")
-                              )
-                            )
-                            .build
+  private[pages] val component = ScalaComponent
+    .builder[Props]("ThankYouPage")
+    .stateless
+    .noBackend
+    .render_P(props =>
+      <.div(
+        rootStyles.thankYouDiv,
+        <.h1("Thank you for using the Bridge Scorer"),
+        <.p("You can now close this window")
+      )
+    )
+    .build
 }

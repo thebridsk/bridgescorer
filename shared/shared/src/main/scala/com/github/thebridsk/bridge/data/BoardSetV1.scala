@@ -31,7 +31,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
   *   ]
   * }
   * </code></pre>
-  *
   */
 @Schema(
   name = "BoardSet",
@@ -64,7 +63,8 @@ case class BoardSetV1(
     )
     deletable: Option[Boolean] = None,
     @Schema(
-      description = "true if boardset definition can be reset to the default, default is false",
+      description =
+        "true if boardset definition can be reset to the default, default is false",
       required = false
     )
     resetToDefault: Option[Boolean] = None,
@@ -77,13 +77,13 @@ case class BoardSetV1(
       description = "the last time the boardset was updated, default: unknown",
       required = false
     )
-    updateTime: Option[SystemTime.Timestamp] = None,
+    updateTime: Option[SystemTime.Timestamp] = None
 ) extends VersionedInstance[BoardSetV1, BoardSetV1, BoardSet.Id] {
 
   def id = name
 
   @Schema(hidden = true)
-  private def optional( flag: Boolean, fun: BoardSet=>BoardSet) = {
+  private def optional(flag: Boolean, fun: BoardSet => BoardSet) = {
     if (flag) fun(this)
     else this
   }
@@ -92,16 +92,19 @@ case class BoardSetV1(
       newId: BoardSet.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
-  ) = {
+  ): BoardSet = {
     val time = SystemTime.currentTimeMillis()
-    copy(name = newId).
-      optional(forCreate, _.copy(creationTime=Some(time), updateTime=Some(time))).
-      optional(!dontUpdateTime, _.copy(updateTime=Some(time)))
+    copy(name = newId)
+      .optional(
+        forCreate,
+        _.copy(creationTime = Some(time), updateTime = Some(time))
+      )
+      .optional(!dontUpdateTime, _.copy(updateTime = Some(time)))
   }
 
-  def convertToCurrentVersion = (true, this)
+  def convertToCurrentVersion: (Boolean, BoardSetV1) = (true, this)
 
-  def readyForWrite = this
+  def readyForWrite: BoardSetV1 = this
 
   @Schema(hidden = true)
   def created: SystemTime.Timestamp = creationTime.getOrElse(0)
@@ -110,20 +113,20 @@ case class BoardSetV1(
   def updated: SystemTime.Timestamp = updateTime.getOrElse(0)
 
   @Schema(hidden = true)
-  def isDeletable = deletable.getOrElse(false)
+  def isDeletable: Boolean = deletable.getOrElse(false)
 
   @Schema(hidden = true)
-  def isResetToDefault = resetToDefault.getOrElse(false)
+  def isResetToDefault: Boolean = resetToDefault.getOrElse(false)
 
 }
 
 trait IdBoardSet
 
-object BoardSetV1 extends HasId[IdBoardSet]("",true) {
+object BoardSetV1 extends HasId[IdBoardSet]("", true) {
 
-  def default = BoardSet.id("ArmonkBoards")
+  def default: Id = BoardSet.id("ArmonkBoards")
 
-  def standard = BoardSet.id("StandardBoards")
+  def standard: Id = BoardSet.id("StandardBoards")
 }
 
 @Schema(

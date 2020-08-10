@@ -4,7 +4,7 @@ import com.github.thebridsk.bridge.data.SystemTime
 
 object SystemTimeJVM {
 
-  def apply() =
+  def apply(): Unit =
     SystemTime.setTimekeeper(new SystemTime {
       def currentTimeMillis() = System.currentTimeMillis().toDouble
     })

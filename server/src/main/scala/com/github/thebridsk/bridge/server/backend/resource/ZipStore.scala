@@ -4,16 +4,11 @@ import scala.concurrent.duration._
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.VersionedInstance
-import scala.reflect.io.Directory
 import com.github.thebridsk.utilities.logging.Logger
 import scala.annotation.tailrec
-import java.io.IOException
-import scala.jdk.CollectionConverters._
 import ZipStore.log
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import com.github.thebridsk.bridge.data.Id
-import java.util.zip.ZipFile
 import Implicits._
 import scala.reflect.io.File
 import java.io.InputStream
@@ -26,17 +21,20 @@ import java.io.OutputStream
 import scala.util.Using
 
 object ZipStore {
-  val log = Logger[ZipStore[_, _]]()
+  val log: Logger = Logger[ZipStore[_, _]]()
 
-  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       name: String,
       zipfile: ZipFileForStore,
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
       cacheTimeToLive: Duration = 10.minutes,
       cacheTimeToIdle: Duration = 9.minutes
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): ZipStore[VId, VType] = {
@@ -55,16 +53,19 @@ object ZipStoreInternal {
 
   val storedir = "store/"
 
-  def metadataDir[VId <: Comparable[VId]]( id: VId, resourceName: String ) = {
+  def metadataDir[VId <: Comparable[VId]](
+      id: VId,
+      resourceName: String
+  ): String = {
     s"${storedir}${resourceName}.${id}/"
   }
 
-  def toMetaDataFile( dir: String, filename: String ): MetaDataFile = {
+  def toMetaDataFile(dir: String, filename: String): MetaDataFile = {
     val l = dir.length()
-    filename.drop( l )
+    filename.drop(l)
   }
 
-  def toFilename( dir: String, mdf: MetaDataFile ): String = {
+  def toFilename(dir: String, mdf: MetaDataFile): String = {
     s"${dir}${mdf}"
   }
 
@@ -81,8 +82,8 @@ object ZipStoreInternal {
       zip: ZipOutputStream,
       store: Store[TId, T],
       filter: Option[List[String]]
-  )(
-    implicit ec: ExecutionContext
+  )(implicit
+      ec: ExecutionContext
   ): Future[Result[List[String]]] = {
     store.readAll().map { rmap =>
       rmap match {
@@ -93,15 +94,16 @@ object ZipStoreInternal {
                 val (id, v) = entry
                 filter
                   .map { f =>
-                    f.contains( store.support.idSupport.toString(id) )
+                    f.contains(store.support.idSupport.toString(id))
                   }
                   .getOrElse(true)
               }
               .map { entry =>
                 val (id, v) = entry
-                val dir = metadataDir(id,store.support.resourceName)
+                val dir = metadataDir(id, store.support.resourceName)
                 val name =
-                  s"${storedir}${store.support.resourceName}.${store.support.idSupport.toString(id)}${store.support.getWriteExtension}"
+                  s"${storedir}${store.support.resourceName}.${store.support.idSupport
+                    .toString(id)}${store.support.getWriteExtension}"
                 val content = store.support.toJSON(v)
                 zip.putNextEntry(new ZipEntry(name))
                 val out = new OutputStreamWriter(zip, "UTF8")
@@ -109,16 +111,16 @@ object ZipStoreInternal {
                 out.flush
                 store.persistent.listFiles(id) match {
                   case Left(err) =>
-                    // ignore errors
+                  // ignore errors
                   case Right(files) =>
                     files.foreach { mdf =>
-                      store.persistent.read(id,mdf) match {
+                      store.persistent.read(id, mdf) match {
                         case Left(value) =>
-                          // ignore errors
+                        // ignore errors
                         case Right(input) =>
                           Using.resource(input) { is =>
-                            zip.putNextEntry( new ZipEntry(s"${dir}${mdf}"))
-                            copy(is,zip)
+                            zip.putNextEntry(new ZipEntry(s"${dir}${mdf}"))
+                            copy(is, zip)
                           }
                       }
                     }
@@ -134,12 +136,12 @@ object ZipStoreInternal {
     }
   }
 
-  def copy( in: InputStream, out: OutputStream ): Unit = {
-    val buf = new Array[Byte](1024*1024)
+  def copy(in: InputStream, out: OutputStream): Unit = {
+    val buf = new Array[Byte](1024 * 1024)
     while (true) {
       val l = in.read(buf)
       if (l <= 0) return
-      out.write(buf,0,l)
+      out.write(buf, 0, l)
     }
   }
 
@@ -147,10 +149,13 @@ object ZipStoreInternal {
 
 import ZipStoreInternal._
 
-class ZipPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+class ZipPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     val zipfile: ZipFileForStore
-)(
-    implicit
+)(implicit
     support: StoreSupport[VId, VType],
     execute: ExecutionContext
 ) extends PersistentSupport[VId, VType] {
@@ -163,7 +168,7 @@ class ZipPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VT
     * Get all the IDs from persistent storage
     */
   def getAllIdsFromPersistent(): Set[VId] = {
-      val pattern = (s"""${storedir}${resourceName}\\.([^./]+)\\..*""").r
+    val pattern = (s"""${storedir}${resourceName}\\.([^./]+)\\..*""").r
 
     val keys = zipfile
       .entries()
@@ -212,36 +217,38 @@ class ZipPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VT
     * @param id
     * @return the result containing the resource or an error
     */
-  def read(id: VId): Result[VType] = self.synchronized {
+  def read(id: VId): Result[VType] =
+    self.synchronized {
 
-    @tailrec
-    def read(list: List[String]): Result[VType] = {
-      if (list.isEmpty) notFound(id)
-      else {
-        val f = list.head
+      @tailrec
+      def read(list: List[String]): Result[VType] = {
+        if (list.isEmpty) notFound(id)
+        else {
+          val f = list.head
 
-        val ovt = try {
-          zipfile.readFileSafe(f) match {
-            case Some(v) =>
-              val (goodOnDisk, vt) = support.fromJSON(v)
-              Option(vt)
-            case None =>
-              None
+          val ovt =
+            try {
+              zipfile.readFileSafe(f) match {
+                case Some(v) =>
+                  val (goodOnDisk, vt) = support.fromJSON(v)
+                  Option(vt)
+                case None =>
+                  None
+              }
+            } catch {
+              case x: Exception =>
+                log.info(s"Unable to read ${f}: ${x}")
+                None
+            }
+          ovt match {
+            case Some(vt) => Result(vt)
+            case None     => read(list.tail)
           }
-        } catch {
-          case x: Exception =>
-            log.info(s"Unable to read ${f}: ${x}")
-            None
-        }
-        ovt match {
-          case Some(vt) => Result(vt)
-          case None     => read(list.tail)
         }
       }
-    }
 
-    read(readFilenames(id))
-  }
+      read(readFilenames(id))
+    }
 
   /**
     * Write a resource to the persistent store
@@ -269,23 +276,22 @@ class ZipPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VT
     storeIsReadOnly.logit("ZipPersistentSupport.deleteFromPersistent")
   }
 
-  def readFilenames(id: VId) = {
+  def readFilenames(id: VId): List[String] = {
     support.getReadExtensions.map { e =>
       s"${storedir}${resourceName}.${support.idSupport.toString(id)}${e}"
     }
   }
 
   /**
-   * List all the files for the specified match, all returned filenames are relative to the store directory for specified match.
-   * To read the file, the read method must be used on this object.
-   */
-  override
-  def listFiles( id: VId ): Result[Iterator[MetaDataFile]] = {
+    * List all the files for the specified match, all returned filenames are relative to the store directory for specified match.
+    * To read the file, the read method must be used on this object.
+    */
+  override def listFiles(id: VId): Result[Iterator[MetaDataFile]] = {
     self.synchronized {
-      val dir = metadataDir(id,resourceName)
+      val dir = metadataDir(id, resourceName)
       val list: Iterator[MetaDataFile] = zipfile.entries().flatMap { ze =>
         if (ze.getName().startsWith(dir)) {
-          toMetaDataFile( dir, ze.getName())::Nil
+          toMetaDataFile(dir, ze.getName()) :: Nil
         } else {
           Nil
         }
@@ -295,64 +301,72 @@ class ZipPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[VT
   }
 
   /**
-   * List all the files for the specified match that match the filter, all returned filenames are relative to the store directory for specified match.
-   * To read the file, the read method must be used on this object.
-   */
-  override
-  def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Result[Iterator[MetaDataFile]] = {
+    * List all the files for the specified match that match the filter, all returned filenames are relative to the store directory for specified match.
+    * To read the file, the read method must be used on this object.
+    */
+  override def listFilesFilter(
+      id: VId
+  )(filter: MetaDataFile => Boolean): Result[Iterator[MetaDataFile]] = {
     listFiles(id) match {
       case Left(value) => Left(value)
       case Right(files) =>
-        val f = files.filter( filter(_))
+        val f = files.filter(filter(_))
         Right(f)
     }
   }
 
   /**
-   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
-   */
-  override
-  def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+    * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+    */
+  override def write(
+      id: VId,
+      sourceFile: File,
+      targetFile: MetaDataFile
+  ): Result[Unit] = StoreIdMeta.resultNotSupported
 
   /**
-   * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
-   */
-  override
-  def write( id: VId, source: InputStream, targetFile: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+    * Write the specified source file to the target file, the target file is relative to the store directory for specified match.
+    */
+  override def write(
+      id: VId,
+      source: InputStream,
+      targetFile: MetaDataFile
+  ): Result[Unit] = StoreIdMeta.resultNotSupported
 
   /**
-   * read the specified file, the file is relative to the store directory for specified match.
-   */
-  override
-  def read( id: VId, file: MetaDataFile ): Result[InputStream] = {
-    val filename = toFilename( metadataDir(id,resourceName), file)
+    * read the specified file, the file is relative to the store directory for specified match.
+    */
+  override def read(id: VId, file: MetaDataFile): Result[InputStream] = {
+    val filename = toFilename(metadataDir(id, resourceName), file)
     zipfile.getInputStream(filename) match {
       case None =>
-        Result((StatusCodes.NotFound,RestMessage("metadata file not found")))
+        Result((StatusCodes.NotFound, RestMessage("metadata file not found")))
       case Some(is) =>
         Result(is)
     }
   }
 
   /**
-   * delete the specified file, the file is relative to the store directory for specified match.
-   */
-  override
-  def delete( id: VId, file: MetaDataFile ): Result[Unit] = StoreIdMeta.resultNotSupported
+    * delete the specified file, the file is relative to the store directory for specified match.
+    */
+  override def delete(id: VId, file: MetaDataFile): Result[Unit] =
+    StoreIdMeta.resultNotSupported
 
   /**
-   * delete all the metadata files for the match
-   */
-  override
-  def deleteAll( id: VId ): Result[Unit] = StoreIdMeta.resultNotSupported
+    * delete all the metadata files for the match
+    */
+  override def deleteAll(id: VId): Result[Unit] = StoreIdMeta.resultNotSupported
 
 }
 
 object ZipPersistentSupport {
-  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       zipfile: ZipFileForStore
-  )(
-      implicit
+  )(implicit
       support: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): ZipPersistentSupport[VId, VType] = {
@@ -360,15 +374,18 @@ object ZipPersistentSupport {
   }
 }
 
-class ZipStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+class ZipStore[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     name: String,
     val zipfile: ZipFileForStore,
     cacheInitialCapacity: Int = 5,
     cacheMaxCapacity: Int = 100,
     cacheTimeToLive: Duration = 10.minutes,
     cacheTimeToIdle: Duration = 9.minutes
-)(
-    implicit
+)(implicit
     cachesupport: StoreSupport[VId, VType],
     execute: ExecutionContext
 ) extends Store[VId, VType](

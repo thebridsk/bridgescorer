@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.client.test.utils
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSImport
-
 object Loader {
 
-  def init = {}
+  def init: Unit = {}
 
 //  @JSImport("expose-loader?React.addons.TestUtils!react-dom/test-utils", JSImport.Namespace)
 //  @js.native

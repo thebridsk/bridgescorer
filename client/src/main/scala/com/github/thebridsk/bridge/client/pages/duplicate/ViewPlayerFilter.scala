@@ -1,114 +1,100 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
-import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.client.controller.Controller
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsData
-import com.github.thebridsk.bridge.data.duplicate.suggestion.PairData
-import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
-import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorBy
-import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPct
-import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorBy
-import com.github.thebridsk.bridge.data.duplicate.suggestion.PairsDataSummary
-import com.github.thebridsk.bridge.data.duplicate.suggestion.Stat
-import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWon
-import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPts
-import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByWonPtsPct
-import com.github.thebridsk.bridge.data.duplicate.suggestion.ColorByPointsPct
-import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.client.pages.HomePage
 
 /**
- * Shows a pairs summary page.
- * Each match has a button that that shows that match, by going to the ScoreboardView(id) page.
- * There is also a button to create a new match, by going to the NewScoreboardView page.
- *
- * The data is obtained from the DuplicateStore object.
- *
- * To use, just code the following:
- *
- * <pre><code>
- * ViewPlayerFilter( routerCtl: BridgeRouter[DuplicatePage] )
- * </code></pre>
- *
- * @author werewolf
- */
+  * Shows a pairs summary page.
+  * Each match has a button that that shows that match, by going to the ScoreboardView(id) page.
+  * There is also a button to create a new match, by going to the NewScoreboardView page.
+  *
+  * The data is obtained from the DuplicateStore object.
+  *
+  * To use, just code the following:
+  *
+  * <pre><code>
+  * ViewPlayerFilter( routerCtl: BridgeRouter[DuplicatePage] )
+  * </code></pre>
+  *
+  * @author werewolf
+  */
 object ViewPlayerFilter {
   import ViewPlayerFilterInternal._
 
   type OnChange = Filter => Callback
 
   case class Filter(
-                    pairsData: Option[PairsData] = None,
-                    selected: Option[List[String]] = None,
-                    showFilter: Boolean = false,
-                    filterDisplayOnly: Boolean = true
-                  ) {
+      pairsData: Option[PairsData] = None,
+      selected: Option[List[String]] = None,
+      showFilter: Boolean = false,
+      filterDisplayOnly: Boolean = true
+  ) {
 
-    def toggleSelected( p: String ) = {
+    def toggleSelected(p: String): Filter = {
       val ns = selected match {
         case Some(list) =>
-          val rlist = list.filter(r => r!=p)
-          if (rlist.length==0) None
-          else if (rlist.length == list.length) Some(p::list)
+          val rlist = list.filter(r => r != p)
+          if (rlist.length == 0) None
+          else if (rlist.length == list.length) Some(p :: list)
           else Some(rlist)
         case None =>
           Some(List(p))
       }
-      copy(selected=ns)
+      copy(selected = ns)
     }
 
-    def setFilterDisplayOnly( b: Boolean ) = {
-      copy(filterDisplayOnly=b)
+    def setFilterDisplayOnly(b: Boolean): Filter = {
+      copy(filterDisplayOnly = b)
     }
 
-    def isPlayerSelected( p: String ) = {
+    def isPlayerSelected(p: String): Boolean = {
       selected match {
-        case Some(list) => list.find(f => f==p).isDefined
-        case None => false
+        case Some(list) => list.find(f => f == p).isDefined
+        case None       => false
       }
     }
 
-    def isPlayerShown( p: String ) = {
+    def isPlayerShown(p: String): Boolean = {
       selected match {
-        case Some(list) => list.find(f => f==p).isDefined
-        case None => true
+        case Some(list) => list.find(f => f == p).isDefined
+        case None       => true
       }
     }
 
-    def selectedPlayers = selected.getOrElse( pairsData.map( psd => psd.players ).getOrElse( List()))
+    def selectedPlayers: List[String] =
+      selected.getOrElse(pairsData.map(psd => psd.players).getOrElse(List()))
 
-    def clearSelected = copy(selected = None)
+    def clearSelected: Filter = copy(selected = None)
 
-    def selectPlayers( players: List[String] ) = {
-      val ns = selected.map { sel =>
-        (sel:::players).distinct
-      }.getOrElse(players)
-      copy( selected = if (ns.isEmpty) None else Some(ns) )
+    def selectPlayers(players: List[String]): Filter = {
+      val ns = selected
+        .map { sel =>
+          (sel ::: players).distinct
+        }
+        .getOrElse(players)
+      copy(selected = if (ns.isEmpty) None else Some(ns))
     }
 
-    def showFilter( b: Boolean ) = copy( showFilter = b )
+    def showFilter(b: Boolean): Filter = copy(showFilter = b)
 
-    def getNames = pairsData.map( p => p.players ).getOrElse(List())
+    def getNames: List[String] = pairsData.map(p => p.players).getOrElse(List())
   }
 
-  case class Props( defaultFilter: Filter, onChange: OnChange) {
+  case class Props(defaultFilter: Filter, onChange: OnChange) {
     def filter = defaultFilter
   }
 
-  def apply( defaultFilter: Filter, onChange: OnChange ) =
-    component(Props( defaultFilter,onChange))
+  def apply(
+      defaultFilter: Filter,
+      onChange: OnChange
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(Props(defaultFilter, onChange))
 
 }
 
@@ -116,38 +102,41 @@ object ViewPlayerFilterInternal {
   import ViewPlayerFilter._
   import DuplicateStyles._
 
-  val logger = Logger("bridge.ViewPlayerFilter")
+  val logger: Logger = Logger("bridge.ViewPlayerFilter")
 
   /**
-   * Internal state for rendering the component.
-   *
-   * I'd like this class to be private, but the instantiation of component
-   * will cause Backend to leak.
-   *
-   */
+    * Internal state for rendering the component.
+    *
+    * I'd like this class to be private, but the instantiation of component
+    * will cause Backend to leak.
+    */
   class Backend(scope: BackendScope[Props, Unit]) {
 
-    def togglePlayer( p: String ) = scope.props >>= { props =>
-      props.onChange( props.filter.toggleSelected(p) )
+    def togglePlayer(p: String): Callback =
+      scope.props >>= { props =>
+        props.onChange(props.filter.toggleSelected(p))
+      }
+
+    def showFilter(b: Boolean): Callback =
+      scope.props >>= { props =>
+        props.onChange(props.filter.showFilter(b))
+      }
+
+    def setFilterDisplayOnly(b: Boolean): Callback =
+      scope.props >>= { props =>
+        props.onChange(props.filter.setFilterDisplayOnly(b))
+      }
+
+    val clearFilter: Callback = scope.props >>= { props =>
+      props.onChange(props.filter.clearSelected)
     }
 
-    def showFilter( b: Boolean ) = scope.props >>= { props =>
-      props.onChange( props.filter.showFilter(b) )
-    }
+    def selectAllFilter(players: List[String]): Callback =
+      scope.props >>= { props =>
+        props.onChange(props.filter.selectPlayers(players))
+      }
 
-    def setFilterDisplayOnly( b: Boolean ) = scope.props >>= { props =>
-      props.onChange( props.filter.setFilterDisplayOnly(b) )
-    }
-
-    val clearFilter = scope.props >>= { props =>
-      props.onChange( props.filter.clearSelected )
-    }
-
-    def selectAllFilter( players: List[String] ) = scope.props >>= { props =>
-      props.onChange( props.filter.selectPlayers(players) )
-    }
-
-    def render( props: Props ) = {
+    def render(props: Props) = { // scalafix:ok ExplicitResultTypes; React
 
       props.filter.pairsData match {
         case Some(pds) if !pds.players.isEmpty =>
@@ -158,22 +147,48 @@ object ViewPlayerFilterInternal {
             <.ul(
               !props.filter.showFilter ?= baseStyles.alwaysHide,
               allPlayers.zipWithIndex.map { entry =>
-                val (p,i) = entry
+                val (p, i) = entry
                 <.li(
-                  CheckBox( s"KP${i}", p, props.filter.isPlayerSelected(p), togglePlayer(p) )
+                  CheckBox(
+                    s"KP${i}",
+                    p,
+                    props.filter.isPlayerSelected(p),
+                    togglePlayer(p)
+                  )
                 )
               }.toTagMod
             ),
             <.div(
               if (props.filter.showFilter) {
                 TagMod(
-                  AppButton( "HideFilter", "Hide Filter", ^.onClick-->showFilter(false) ),
-                  AppButton( "ClearFilter", "Clear Filter", ^.onClick-->clearFilter ),
-                  AppButton( "SelectAllFilter", "Select All", ^.onClick-->selectAllFilter(allPlayers) ),
-                  CheckBox( "DisplayOnly", "Filter Display Only", props.filter.filterDisplayOnly, setFilterDisplayOnly(!props.filter.filterDisplayOnly) )
+                  AppButton(
+                    "HideFilter",
+                    "Hide Filter",
+                    ^.onClick --> showFilter(false)
+                  ),
+                  AppButton(
+                    "ClearFilter",
+                    "Clear Filter",
+                    ^.onClick --> clearFilter
+                  ),
+                  AppButton(
+                    "SelectAllFilter",
+                    "Select All",
+                    ^.onClick --> selectAllFilter(allPlayers)
+                  ),
+                  CheckBox(
+                    "DisplayOnly",
+                    "Filter Display Only",
+                    props.filter.filterDisplayOnly,
+                    setFilterDisplayOnly(!props.filter.filterDisplayOnly)
+                  )
                 )
               } else {
-                AppButton( "ShowFilter", "Show Filter", ^.onClick-->showFilter(true) )
+                AppButton(
+                  "ShowFilter",
+                  "Show Filter",
+                  ^.onClick --> showFilter(true)
+                )
               }
             )
           )
@@ -188,10 +203,10 @@ object ViewPlayerFilterInternal {
     }
   }
 
-  val component = ScalaComponent.builder[Props]("ViewPlayerFilter")
-                            .stateless
-                            .backend(new Backend(_))
-                            .renderBackend
-                            .build
+  private[duplicate] val component = ScalaComponent
+    .builder[Props]("ViewPlayerFilter")
+    .stateless
+    .backend(new Backend(_))
+    .renderBackend
+    .build
 }
-

@@ -5,47 +5,49 @@ import java.io.OutputStreamWriter
 import java.io.FileOutputStream
 import java.io.Writer
 import java.io.BufferedWriter
-import java.util.Date
 import com.github.thebridsk.utilities.logging.FileHandler
 import java.io.File
 import java.util.regex.Pattern
 import java.io.FilenameFilter
 import java.time.format.DateTimeFormatter
-import java.time.ZonedDateTime
 import java.time.Instant
 import java.time.ZoneId
 
 object MemoryMonitor {
-  val log = Logger[MemoryMonitor]()
+  val log: Logger = Logger[MemoryMonitor]()
 
   var activeMonitor: Option[MemoryMonitor] = None
 
-  def start(outfile: String = "MemoryMonitor.csv") = synchronized {
-    log.info(s"Starting Memory Monitor with $outfile")
-    activeMonitor match {
-      case Some(am) =>
-        log.warning("Memory monitor is already running")
-      case None =>
-        val m = new MemoryMonitor(outfile)
-        activeMonitor = Some(m)
-        m.start()
+  def start(outfile: String = "MemoryMonitor.csv"): Unit =
+    synchronized {
+      log.info(s"Starting Memory Monitor with $outfile")
+      activeMonitor match {
+        case Some(am) =>
+          log.warning("Memory monitor is already running")
+        case None =>
+          val m = new MemoryMonitor(outfile)
+          activeMonitor = Some(m)
+          m.start()
+      }
     }
-  }
 
-  def stop() = synchronized {
-    activeMonitor match {
-      case Some(am) =>
-        log.info("Stopping Memory Monitor")
-        am.stop()
-        activeMonitor = None
-      case None =>
+  def stop(): Unit =
+    synchronized {
+      activeMonitor match {
+        case Some(am) =>
+          log.info("Stopping Memory Monitor")
+          am.stop()
+          activeMonitor = None
+        case None =>
 //        log.warning( "Memory monitor is not running" )
+      }
     }
-  }
 
   private var fCount = 10
 
-  private val fSDF = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss.SSS").withZone( ZoneId.systemDefault() );
+  private val fSDF = DateTimeFormatter
+    .ofPattern("yyyy.MM.dd.HH.mm.ss.SSS")
+    .withZone(ZoneId.systemDefault());
   private val dateRegex = """\d\d\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\.\d\d\d"""
 
   private def getDate() = {
@@ -146,7 +148,6 @@ object MemoryMonitor {
       }
     })
 
-    import scala.jdk.CollectionConverters._
     val sortedfiles = files.toList.sorted
 //    println(s"Found ${sortedfiles.length} log files with pattern ${pat}")
     if (sortedfiles.length > fCount) {
@@ -166,7 +167,7 @@ import MemoryMonitor._
 
 class MemoryMonitor(pattern: String) {
 
-  val outfile = getFileName(pattern, getDate())
+  val outfile: String = getFileName(pattern, getDate())
 
   private class Monitor(name: String) extends Thread(name) {
 
@@ -179,7 +180,7 @@ class MemoryMonitor(pattern: String) {
 
     private var interval = 15000
 
-    override def run() = {
+    override def run(): Unit = {
       val out = new BufferedWriter(
         new OutputStreamWriter(new FileOutputStream(outfile))
       )
@@ -207,21 +208,21 @@ class MemoryMonitor(pattern: String) {
 
     val rt = Runtime.getRuntime
 
-    def writeRow(out: Writer) = {
+    def writeRow(out: Writer): Unit = {
       val free = rt.freeMemory()
       val total = rt.totalMemory()
       val max = rt.maxMemory()
       row(out, free, total, max)
     }
 
-    def header(out: Writer) = {
+    def header(out: Writer): Unit = {
       val head = "time,used,free,total,max"
       log.fine(head)
       out.write(head)
       out.write("\n")
     }
 
-    def row(out: Writer, free: Long, total: Long, max: Long) = {
+    def row(out: Writer, free: Long, total: Long, max: Long): Unit = {
       val dt = System.currentTimeMillis() - startTime
       val r = s"""$dt,${total - free},$free,$total,$max"""
       log.fine(r)
@@ -230,37 +231,40 @@ class MemoryMonitor(pattern: String) {
       out.flush()
     }
 
-    def stopMonitor() = sleepLock.synchronized {
-      active = false
-      sleepLock.notify()
-    }
+    def stopMonitor(): Unit =
+      sleepLock.synchronized {
+        active = false
+        sleepLock.notify()
+      }
   }
 
   private var activeMonitor: Option[Monitor] = None
 
-  def start() = synchronized {
-    activeMonitor match {
-      case Some(am) =>
-        log.warning("Memory monitor is already running")
-      case None =>
-        log.info(
-          s"MemoryMonitor out file pattern is: $pattern, outfile: $outfile"
-        )
-        cleanupExistingFiles(pattern)
-        val m = new Monitor(outfile)
-        activeMonitor = Some(m)
-        m.start()
+  def start(): Unit =
+    synchronized {
+      activeMonitor match {
+        case Some(am) =>
+          log.warning("Memory monitor is already running")
+        case None =>
+          log.info(
+            s"MemoryMonitor out file pattern is: $pattern, outfile: $outfile"
+          )
+          cleanupExistingFiles(pattern)
+          val m = new Monitor(outfile)
+          activeMonitor = Some(m)
+          m.start()
+      }
     }
-  }
 
-  def stop() = synchronized {
-    activeMonitor match {
-      case Some(am) =>
-        am.stopMonitor()
-        activeMonitor = None
-      case None =>
-        log.warning("Memory monitor is not running")
+  def stop(): Unit =
+    synchronized {
+      activeMonitor match {
+        case Some(am) =>
+          am.stopMonitor()
+          activeMonitor = None
+        case None =>
+          log.warning("Memory monitor is not running")
+      }
     }
-  }
 
 }

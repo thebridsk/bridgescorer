@@ -65,7 +65,8 @@ case class MovementV1(
     )
     deletable: Option[Boolean] = None,
     @Schema(
-      description = "true if movement definition can be reset to the default, default is false",
+      description =
+        "true if movement definition can be reset to the default, default is false",
       required = false
     )
     resetToDefault: Option[Boolean] = None,
@@ -83,13 +84,13 @@ case class MovementV1(
       description = "the last time the movement was updated, default: unknown",
       required = false
     )
-    updateTime: Option[SystemTime.Timestamp] = None,
+    updateTime: Option[SystemTime.Timestamp] = None
 ) extends VersionedInstance[MovementV1, MovementV1, MovementV1.Id] {
 
   def id = name
 
   @Schema(hidden = true)
-  private def optional( flag: Boolean, fun: Movement=>Movement) = {
+  private def optional(flag: Boolean, fun: Movement => Movement) = {
     if (flag) fun(this)
     else this
   }
@@ -98,16 +99,19 @@ case class MovementV1(
       newId: MovementV1.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
-  ) = {
+  ): Movement = {
     val time = SystemTime.currentTimeMillis()
-    copy(name = newId).
-      optional(forCreate, _.copy(creationTime=Some(time), updateTime=Some(time))).
-      optional(!dontUpdateTime, _.copy(updateTime=Some(time)))
+    copy(name = newId)
+      .optional(
+        forCreate,
+        _.copy(creationTime = Some(time), updateTime = Some(time))
+      )
+      .optional(!dontUpdateTime, _.copy(updateTime = Some(time)))
   }
 
-  def convertToCurrentVersion = (true, this)
+  def convertToCurrentVersion: (Boolean, MovementV1) = (true, this)
 
-  def readyForWrite = this
+  def readyForWrite: MovementV1 = this
 
   def wherePlayed(board: Int): List[BoardPlayed] = {
     hands.flatMap { h =>
@@ -118,23 +122,23 @@ case class MovementV1(
   }
 
   @Schema(hidden = true)
-  def getBoards = {
+  def getBoards: List[Int] = {
     hands.flatMap(h => h.boards).distinct.sorted
   }
   @Schema(hidden = true)
-  def getRoundForAllTables(round: Int) = {
+  def getRoundForAllTables(round: Int): List[HandInTable] = {
     hands.filter { r =>
       r.round == round
     }.toList
   }
 
   @Schema(hidden = true)
-  def allRounds = {
+  def allRounds: List[Int] = {
     hands.map(r => r.round).distinct
   }
 
   @Schema(hidden = true)
-  def matchHasRelay = {
+  def matchHasRelay: Boolean = {
     allRounds.find { ir =>
       val all = getRoundForAllTables(ir).flatMap(r => r.boards)
       val distinct = all.distinct
@@ -146,7 +150,7 @@ case class MovementV1(
     * @returns table IDs
     */
   @Schema(hidden = true)
-  def tableRoundRelay(itable: Int, iround: Int) = {
+  def tableRoundRelay(itable: Int, iround: Int): List[Int] = {
     val allRounds = getRoundForAllTables(iround)
     val otherRounds = allRounds.filter(r => r.table != itable)
     val otherBoards = otherRounds.flatMap(r => r.boards)
@@ -168,12 +172,15 @@ case class MovementV1(
 
   @Schema(hidden = true)
   /**
-   * Returns all the tables sorted by table number,
-   * within each table all the rounds sorted by round number
-   */
+    * Returns all the tables sorted by table number,
+    * within each table all the rounds sorted by round number
+    */
   def getTables: List[List[HandInTable]] = {
-    hands.groupBy(_.table).toList.sortWith( (l,r)=> l._1 < r._1).
-      map(_._2.sortWith((l,r)=>l.round<r.round))
+    hands
+      .groupBy(_.table)
+      .toList
+      .sortWith((l, r) => l._1 < r._1)
+      .map(_._2.sortWith((l, r) => l.round < r.round))
   }
 
   @Schema(hidden = true)
@@ -183,22 +190,22 @@ case class MovementV1(
   def updated: SystemTime.Timestamp = updateTime.getOrElse(0)
 
   @Schema(hidden = true)
-  def isDeletable = deletable.getOrElse(false)
+  def isDeletable: Boolean = deletable.getOrElse(false)
 
   @Schema(hidden = true)
-  def isDisabled = disabled.getOrElse(false)
+  def isDisabled: Boolean = disabled.getOrElse(false)
 
   @Schema(hidden = true)
-  def isResetToDefault = resetToDefault.getOrElse(false)
+  def isResetToDefault: Boolean = resetToDefault.getOrElse(false)
 
 }
 
 trait IdMovement
 
-object MovementV1 extends HasId[IdMovement]("",true) {
-  def default = Movement.id("2TablesArmonk")
+object MovementV1 extends HasId[IdMovement]("", true) {
+  def default: Id = Movement.id("2TablesArmonk")
 
-  def standard = Movement.id("Howell04T2B18")
+  def standard: Id = Movement.id("Howell04T2B18")
 }
 
 case class BoardPlayed(board: Int, table: Int, round: Int, ns: Int, ew: Int)
@@ -232,5 +239,5 @@ case class HandInTable(
     )
     boards: List[Int]
 ) {
-  def tableid = Table.id(table)
+  def tableid: Table.Id = Table.id(table)
 }

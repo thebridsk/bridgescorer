@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.server.rest
 
-import akka.http.scaladsl.server._
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
 import javax.ws.rs.Path
@@ -10,32 +9,18 @@ import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import akka.stream.scaladsl.StreamConverters
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import com.github.thebridsk.utilities.logging.Logger
 import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.server.Directive.addByNameNullaryApply
 import akka.http.scaladsl.server.Directive.addDirectiveApply
-import java.util.UUID
 import akka.http.scaladsl.server.directives.FileInfo
 import java.io.{File => JFile}
 import scala.reflect.io.Directory
 import scala.reflect.io.File
-import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.model.headers.`Content-Disposition`
-import java.io.BufferedOutputStream
-import java.util.zip.ZipOutputStream
-import java.nio.charset.StandardCharsets
-import java.util.zip.ZipEntry
-import java.io.FileInputStream
-import java.nio.file.Files
-import java.io.InputStream
-import java.io.OutputStream
 import scala.concurrent.Future
 import akka.http.scaladsl.model.headers.ContentDispositionTypes
-import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.data.version.VersionShared
-import com.github.thebridsk.utilities.version.VersionUtilities
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
@@ -47,22 +32,25 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
-import com.github.thebridsk.bridge.server.CollectLogs
-import com.github.thebridsk.bridge.server.backend.ImportStore.importStoreExtension
 import com.github.thebridsk.bridge.server.backend.ImportStore.importStoreDotExtension
 import com.github.thebridsk.bridge.data.ImportStoreConstants
 import com.github.thebridsk.bridge.data.ImportStoreData
 import play.api.libs.json.Writes
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import io.swagger.v3.oas.annotations.media.Encoding
-import scala.util.Using
+import akka.http.scaladsl.server.Route
 
 object ImportExport {
-  val log = Logger[ImportExport]()
+  val log: Logger = Logger[ImportExport]()
 
   case class MultipartFile(
-    @Schema(`type` = "string", format = "binary", description = "Bridge store file, must have an extension of '.bridgestore' or '.zip'")
-    zip: String
+      @Schema(
+        `type` = "string",
+        format = "binary",
+        description =
+          "Bridge store file, must have an extension of '.bridgestore' or '.zip'"
+      )
+      zip: String
   )
 
 }
@@ -77,7 +65,7 @@ trait ImportExport {
 
   val diagnosticDir: Option[Directory] = None
 
-  lazy val importExportRoute = {
+  lazy val importExportRoute: Route = {
     exportStore ~ importStore ~ diagnostics
   }
 
@@ -127,8 +115,8 @@ trait ImportExport {
       )
     )
   )
-  def xxxexportStore() = {}
-  val exportStore = get {
+  def xxxexportStore(): Unit = {}
+  val exportStore: Route = get {
     path("export") {
       parameter("filter".?) { (filter) =>
         val filt = filter.map { f =>
@@ -170,10 +158,13 @@ trait ImportExport {
           }
         complete(
           HttpResponse(
-            entity = HttpEntity(MediaTypes.`application/octet-stream`, byteSource),
+            entity =
+              HttpEntity(MediaTypes.`application/octet-stream`, byteSource),
             headers = `Content-Disposition`(
               ContentDispositionTypes.attachment,
-              Map("filename" -> s"BridgeScorerExport.${ImportStoreConstants.importStoreFileExtension}")
+              Map(
+                "filename" -> s"BridgeScorerExport.${ImportStoreConstants.importStoreFileExtension}"
+              )
             ) :: Nil
           )
         )
@@ -181,21 +172,27 @@ trait ImportExport {
     }
   }
 
-  lazy val tempDir = Directory.makeTemp("tempImportStore", ".dir", null)
+  lazy val tempDir: Directory =
+    Directory.makeTemp("tempImportStore", ".dir", null)
 
   def tempDestination(fileInfo: FileInfo): JFile = {
     val fn = fileInfo.fileName
-    if (fn.endsWith(".zip") || fn.endsWith(importStoreDotExtension)) new JFile(tempDir.toString(), fileInfo.fileName)
+    if (fn.endsWith(".zip") || fn.endsWith(importStoreDotExtension))
+      new JFile(tempDir.toString(), fileInfo.fileName)
     else throw new IllegalArgumentException(s"Filename not valid: $fn")
   }
 
   def result[T](
-    statuscode: StatusCode,
-    t: T
-  )(
-    implicit writer: Writes[T]
-  ) = {
-    HttpResponse( statuscode, entity = HttpEntity( ContentTypes.`application/json`, JsonSupport.writeJson(t)) )
+      statuscode: StatusCode,
+      t: T
+  )(implicit
+      writer: Writes[T]
+  ): HttpResponse = {
+    HttpResponse(
+      statuscode,
+      entity =
+        HttpEntity(ContentTypes.`application/json`, JsonSupport.writeJson(t))
+    )
   }
 
   import UtilsPlayJson._
@@ -227,7 +224,8 @@ trait ImportExport {
     responses = Array(
       new ApiResponse(
         responseCode = "201",
-        description = "The bridge store file was imported.  Summary information is returned.",
+        description =
+          "The bridge store file was imported.  Summary information is returned.",
         content = Array(
           new Content(
             mediaType = "application/json",
@@ -247,57 +245,71 @@ trait ImportExport {
       )
     )
   )
-  def xxximportStore() = {}
-  val importStore = post {
+  def xxximportStore(): Unit = {}
+  val importStore: Route = post {
     path("import") {
-      restService.importStore.map { is =>
-        storeUploadedFiles("zip", tempDestination) { files =>
-          if (files.length != 1) {
-            complete(
-              StatusCodes.BadRequest,
-              RestMessage("Only one store can be imported at a time")
-            )
-          } else {
-            // one bridgestore zip file
-            val (metadata, file) = files.head
-            val f = File(file.toString())
+      restService.importStore
+        .map { is =>
+          storeUploadedFiles("zip", tempDestination) { files =>
+            if (files.length != 1) {
+              complete(
+                StatusCodes.BadRequest,
+                RestMessage("Only one store can be imported at a time")
+              )
+            } else {
+              // one bridgestore zip file
+              val (metadata, file) = files.head
+              val f = File(file.toString())
 
-            complete(
-              if (metadata.fileName.endsWith(".zip") || metadata.fileName.endsWith(importStoreDotExtension)) {
-                val rr =
-                  is.create(metadata.fileName, f).flatMap { tr =>
-                    tr match {
-                      case Right(importedstore) =>
-                        file.delete()
-                        log.fine(
-                          s"imported zipfile ${metadata.fileName}."
-                        )
-                        importedstore.importStoreData.map( is => result(StatusCodes.OK, is) )
-                      case Left((statusCode, msg)) =>
-                        file.delete()
-                        log.warning(
-                          s"Error importing bridge store ${metadata.fileName}: ${statusCode} ${msg.msg}"
-                        )
-                        Future(
-                          result(statusCode, RestMessage(s"Error importing bridge store ${metadata.fileName}: ${msg.msg}"))
-                        )
+              complete(
+                if (
+                  metadata.fileName.endsWith(".zip") || metadata.fileName
+                    .endsWith(importStoreDotExtension)
+                ) {
+                  val rr =
+                    is.create(metadata.fileName, f).flatMap { tr =>
+                      tr match {
+                        case Right(importedstore) =>
+                          file.delete()
+                          log.fine(
+                            s"imported zipfile ${metadata.fileName}."
+                          )
+                          importedstore.importStoreData
+                            .map(is => result(StatusCodes.OK, is))
+                        case Left((statusCode, msg)) =>
+                          file.delete()
+                          log.warning(
+                            s"Error importing bridge store ${metadata.fileName}: ${statusCode} ${msg.msg}"
+                          )
+                          Future(
+                            result(
+                              statusCode,
+                              RestMessage(
+                                s"Error importing bridge store ${metadata.fileName}: ${msg.msg}"
+                              )
+                            )
+                          )
+                      }
                     }
-                  }
-                rr
-              } else {
-                Future(
-                  result(StatusCodes.BadRequest, RestMessage("Only bridge store files are accepted"))
-                )
-              }
-            )
+                  rr
+                } else {
+                  Future(
+                    result(
+                      StatusCodes.BadRequest,
+                      RestMessage("Only bridge store files are accepted")
+                    )
+                  )
+                }
+              )
+            }
           }
         }
-      }.getOrElse(
-        complete(
-          StatusCodes.BadRequest,
-          RestMessage("Import store is not defined")
+        .getOrElse(
+          complete(
+            StatusCodes.BadRequest,
+            RestMessage("Import store is not defined")
+          )
         )
-      )
     }
   }
 
@@ -331,8 +343,8 @@ trait ImportExport {
       )
     )
   )
-  def xxxdiagnostics() = {}
-  val diagnostics = get {
+  def xxxdiagnostics(): Unit = {}
+  val diagnostics: Route = get {
     path("diagnostics") {
       log.fine(s"starting to export of diagnostic information")
       val byteSource: Source[ByteString, Unit] = StreamConverters
@@ -370,10 +382,13 @@ trait ImportExport {
         }
       complete(
         HttpResponse(
-          entity = HttpEntity(MediaTypes.`application/octet-stream`, byteSource),
+          entity =
+            HttpEntity(MediaTypes.`application/octet-stream`, byteSource),
           headers = `Content-Disposition`(
             ContentDispositionTypes.attachment,
-            Map("filename" -> s"BridgeScorerDiagnostics.${ImportStoreConstants.importStoreFileExtension}")
+            Map(
+              "filename" -> s"BridgeScorerDiagnostics.${ImportStoreConstants.importStoreFileExtension}"
+            )
           ) :: Nil
         )
       )

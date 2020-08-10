@@ -27,53 +27,70 @@ trait HttpUtils {
   import HttpUtilsInternal._
 
   /**
-   * Returns the first 500 bytes as a string
-   */
-  private def readAndCloseInputStream( contentEncoding: Option[String], is: InputStream ) = {
+    * Returns the first 500 bytes as a string
+    */
+  private def readAndCloseInputStream(
+      contentEncoding: Option[String],
+      is: InputStream
+  ) = {
     try {
       var len = 0
 
       val in = contentEncoding match {
-        case Some(ce) if ce=="gzip" =>
+        case Some(ce) if ce == "gzip" =>
           new GZIPInputStream(is)
         case _ =>
           is
       }
       val firstbuf = new Array[Byte](1024)
-      val rlen=in.read(firstbuf)
+      val rlen = in.read(firstbuf)
       val buf = new Array[Byte](1024)
-      if (rlen > 0) while ( { len=is.read(buf) ; len > 0 } ) len = 0
-      val b = new InputStreamReader( new ByteArrayInputStream(firstbuf,0,rlen), "UTF8" )
-      val cbuf = new Array[Char]( 500 )
+      if (rlen > 0) while ({ len = is.read(buf); len > 0 }) len = 0
+      val b = new InputStreamReader(
+        new ByteArrayInputStream(firstbuf, 0, rlen),
+        "UTF8"
+      )
+      val cbuf = new Array[Char](500)
       val l = b.read(cbuf)
-      new String( cbuf, 0, l )
+      new String(cbuf, 0, l)
     } finally {
       is.close()
     }
   }
 
-  case class ResponseFromHttp[T]( val status: Int, location: Option[String], contentencoding: Option[String], data: T, contentdisposition: Option[String] = None )
+  case class ResponseFromHttp[T](
+      val status: Int,
+      location: Option[String],
+      contentencoding: Option[String],
+      data: T,
+      contentdisposition: Option[String] = None
+  )
 
   /**
-   * Get the first 500 bytes of the response data
-   * @return (status,locationheader,contentencodingheader,body)
-   */
-  def getHttp( url: URL ): ResponseFromHttp[String] = {
+    * Get the first 500 bytes of the response data
+    * @return (status,locationheader,contentencodingheader,body)
+    */
+  def getHttp(url: URL): ResponseFromHttp[String] = {
     var conn: HttpURLConnection = null
     try {
       conn = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setInstanceFollowRedirects(false)
-      conn.setRequestProperty("Accept-Encoding","gzip, deflate")
+      conn.setRequestProperty("Accept-Encoding", "gzip, deflate")
       val status = conn.getResponseCode
       if (status < 200 || status >= 300) {
-        logger.warning("Error getting "+url+", status code is "+status)
+        logger.warning("Error getting " + url + ", status code is " + status)
       }
       val loc = Option(conn.getHeaderField("Location"))
       val ce = Option(conn.getHeaderField("Content-Encoding"))
-      ResponseFromHttp(status,loc,ce,readAndCloseInputStream(ce,conn.getInputStream))
+      ResponseFromHttp(
+        status,
+        loc,
+        ce,
+        readAndCloseInputStream(ce, conn.getInputStream)
+      )
     } catch {
       case x: IOException =>
-        logger.info("Exception trying to get data from "+url, x)
+        logger.info("Exception trying to get data from " + url, x)
         throw x
     } finally {
       conn.disconnect()
@@ -81,7 +98,11 @@ trait HttpUtils {
 
   }
 
-  private def readAllBytesAndCloseInputStream( contentEncoding: Option[String], is: InputStream, outs: OutputStream ) = {
+  private def readAllBytesAndCloseInputStream(
+      contentEncoding: Option[String],
+      is: InputStream,
+      outs: OutputStream
+  ) = {
     try {
       var len = 0
       val buf = new Array[Byte](1024)
@@ -89,13 +110,13 @@ trait HttpUtils {
       var rlen = 0
 
       val in = contentEncoding match {
-        case Some(ce) if ce=="gzip" =>
+        case Some(ce) if ce == "gzip" =>
           new GZIPInputStream(is)
         case _ =>
           is
       }
 
-      while ( { rlen = in.read(buf); rlen > 0 }) {
+      while ({ rlen = in.read(buf); rlen > 0 }) {
         outs.write(buf, 0, rlen)
         len += rlen
       }
@@ -106,7 +127,10 @@ trait HttpUtils {
     }
   }
 
-  private def readAllAndCloseInputStream( contentEncoding: Option[String], is: InputStream ) = {
+  private def readAllAndCloseInputStream(
+      contentEncoding: Option[String],
+      is: InputStream
+  ) = {
     try {
       var len = 0
       val buf = new Array[Byte](1024)
@@ -115,16 +139,16 @@ trait HttpUtils {
       var rlen = 0
 
       val in = contentEncoding match {
-        case Some(ce) if ce=="gzip" =>
+        case Some(ce) if ce == "gzip" =>
           new GZIPInputStream(is)
         case _ =>
           is
       }
 
-      while ( { rlen = in.read(buf); rlen > 0 }) {
+      while ({ rlen = in.read(buf); rlen > 0 }) {
         bytesout.write(buf, 0, rlen)
       }
-      new String(bytesout.toByteArray(), "UTF8" )
+      new String(bytesout.toByteArray(), "UTF8")
 
     } finally {
       is.close()
@@ -132,24 +156,29 @@ trait HttpUtils {
   }
 
   /**
-   * @return
-   */
-  def getHttpAll( url: URL ): ResponseFromHttp[String] = {
+    * @return
+    */
+  def getHttpAll(url: URL): ResponseFromHttp[String] = {
     var conn: HttpURLConnection = null
     try {
       conn = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setInstanceFollowRedirects(false)
-      conn.setRequestProperty("Accept-Encoding","gzip, deflate")
+      conn.setRequestProperty("Accept-Encoding", "gzip, deflate")
       val status = conn.getResponseCode
       if (status < 200 || status >= 300) {
-        logger.warning("Error getting "+url+", status code is "+status)
+        logger.warning("Error getting " + url + ", status code is " + status)
       }
       val loc = Option(conn.getHeaderField("Location"))
       val ce = Option(conn.getHeaderField("Content-Encoding"))
-      ResponseFromHttp(status,loc,ce,readAllAndCloseInputStream(ce,conn.getInputStream))
+      ResponseFromHttp(
+        status,
+        loc,
+        ce,
+        readAllAndCloseInputStream(ce, conn.getInputStream)
+      )
     } catch {
       case x: IOException =>
-        logger.info("Exception trying to get data from "+url, x)
+        logger.info("Exception trying to get data from " + url, x)
         throw x
     } finally {
       conn.disconnect()
@@ -157,24 +186,24 @@ trait HttpUtils {
 
   }
 
-  def getHttpAllBytes( url: URL ): ResponseFromHttp[Array[Byte]] = {
+  def getHttpAllBytes(url: URL): ResponseFromHttp[Array[Byte]] = {
     var conn: HttpURLConnection = null
     try {
       conn = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setInstanceFollowRedirects(false)
-      conn.setRequestProperty("Accept-Encoding","gzip, deflate")
+      conn.setRequestProperty("Accept-Encoding", "gzip, deflate")
       val status = conn.getResponseCode
       if (status < 200 || status >= 300) {
-        logger.warning("Error getting "+url+", status code is "+status)
+        logger.warning("Error getting " + url + ", status code is " + status)
       }
       val loc = Option(conn.getHeaderField("Location"))
       val ce = Option(conn.getHeaderField("Content-Encoding"))
       val bytesout = new ByteArrayOutputStream()
-      readAllBytesAndCloseInputStream(ce,conn.getInputStream,bytesout)
-      ResponseFromHttp(status,loc,ce,bytesout.toByteArray())
+      readAllBytesAndCloseInputStream(ce, conn.getInputStream, bytesout)
+      ResponseFromHttp(status, loc, ce, bytesout.toByteArray())
     } catch {
       case x: IOException =>
-        logger.info("Exception trying to get data from "+url, x)
+        logger.info("Exception trying to get data from " + url, x)
         throw x
     } finally {
       conn.disconnect()
@@ -182,28 +211,28 @@ trait HttpUtils {
 
   }
 
-  def getHttpAllBytesToFile( url: URL ): ResponseFromHttp[File] = {
+  def getHttpAllBytesToFile(url: URL): ResponseFromHttp[File] = {
     var conn: HttpURLConnection = null
     try {
       conn = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setInstanceFollowRedirects(false)
-      conn.setRequestProperty("Accept-Encoding","gzip, deflate")
+      conn.setRequestProperty("Accept-Encoding", "gzip, deflate")
       val status = conn.getResponseCode
       if (status < 200 || status >= 300) {
-        logger.warning("Error getting "+url+", status code is "+status)
+        logger.warning("Error getting " + url + ", status code is " + status)
       }
       val loc = Option(conn.getHeaderField("Location"))
       val ce = Option(conn.getHeaderField("Content-Encoding"))
       val cd = Option(conn.getHeaderField("Content-Disposition"))
       val outf = File.makeTemp("export", ".zip")
 
-      Using.resource( new FileOutputStream( outf.jfile ) ) { bytesout =>
-        readAllBytesAndCloseInputStream(ce,conn.getInputStream,bytesout)
+      Using.resource(new FileOutputStream(outf.jfile)) { bytesout =>
+        readAllBytesAndCloseInputStream(ce, conn.getInputStream, bytesout)
       }
-      ResponseFromHttp(status,loc,ce,outf,cd)
+      ResponseFromHttp(status, loc, ce, outf, cd)
     } catch {
       case x: IOException =>
-        logger.info("Exception trying to get data from "+url, x)
+        logger.info("Exception trying to get data from " + url, x)
         throw x
     } finally {
       conn.disconnect()
@@ -211,53 +240,66 @@ trait HttpUtils {
 
   }
 
-  def getHttpObject[T :Reads]( url: URL ): ResponseFromHttp[Option[T]] = {
+  def getHttpObject[T: Reads](url: URL): ResponseFromHttp[Option[T]] = {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
-    val ResponseFromHttp(status,loc,ce,resp,cd) = getHttpAll(url)
-    if (status >=200 && status <300) {
-      ResponseFromHttp(status,loc,ce,Some( readJson[T](resp)))
+    val ResponseFromHttp(status, loc, ce, resp, cd) = getHttpAll(url)
+    if (status >= 200 && status < 300) {
+      ResponseFromHttp(status, loc, ce, Some(readJson[T](resp)))
     } else {
-      ResponseFromHttp(status,loc,ce,None)
+      ResponseFromHttp(status, loc, ce, None)
     }
   }
 
-  def postHttp( url: URL, data: String, contentEncoding: String ) = {
+  def postHttp(
+      url: URL,
+      data: String,
+      contentEncoding: String
+  ): ResponseFromHttp[String] = {
     var conn: HttpURLConnection = null
     try {
       conn = url.openConnection().asInstanceOf[HttpURLConnection]
-      conn.setDoOutput( true )
+      conn.setDoOutput(true)
       conn.setRequestMethod("POST")
       conn.setInstanceFollowRedirects(false)
-      conn.setRequestProperty("Accept-Encoding","gzip, deflate")
+      conn.setRequestProperty("Accept-Encoding", "gzip, deflate")
       conn.setRequestProperty("content-type", "application/json")
-      val w = new OutputStreamWriter( conn.getOutputStream, contentEncoding )
+      val w = new OutputStreamWriter(conn.getOutputStream, contentEncoding)
       w.write(data)
       w.flush()
       val status = conn.getResponseCode
       if (status < 200 || status >= 300) {
-        logger.warning("Error getting "+url+", status code is "+status)
+        logger.warning("Error getting " + url + ", status code is " + status)
       }
       val loc = Option(conn.getHeaderField("Location"))
       val ce = Option(conn.getHeaderField("Content-Encoding"))
-      ResponseFromHttp(status,loc,ce,readAllAndCloseInputStream(ce,conn.getInputStream))
+      ResponseFromHttp(
+        status,
+        loc,
+        ce,
+        readAllAndCloseInputStream(ce, conn.getInputStream)
+      )
     } catch {
       case x: IOException =>
-        logger.info("Exception trying to get data from "+url, x)
+        logger.info("Exception trying to get data from " + url, x)
         throw x
     } finally {
       conn.disconnect()
     }
   }
 
-  def postHttpObject[T :Format]( url: URL, data: T ): ResponseFromHttp[Option[T]] = {
+  def postHttpObject[T: Format](
+      url: URL,
+      data: T
+  ): ResponseFromHttp[Option[T]] = {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
-    val ResponseFromHttp(status,loc,ce,resp,cd) = postHttp(url, writeJson(data), "UTF8")
-    if (status >=200 && status <300) {
-      ResponseFromHttp(status,loc,ce,Some( readJson[T](resp)))
+    val ResponseFromHttp(status, loc, ce, resp, cd) =
+      postHttp(url, writeJson(data), "UTF8")
+    if (status >= 200 && status < 300) {
+      ResponseFromHttp(status, loc, ce, Some(readJson[T](resp)))
     } else {
-      ResponseFromHttp(status,loc,ce,None)
+      ResponseFromHttp(status, loc, ce, None)
     }
   }
 

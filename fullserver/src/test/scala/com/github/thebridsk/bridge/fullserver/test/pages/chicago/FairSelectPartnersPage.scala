@@ -9,31 +9,37 @@ import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.PageBrowser._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.browserpages.GenericPage
+import org.scalatest.Assertion
 
 object FairSelectPartnersPage {
 
-  val log = Logger[FairSelectPartnersPage]()
+  val log: Logger = Logger[FairSelectPartnersPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    val (chiid,roundid) = EnterNamesPage.findMatchRoundId
-    new FairSelectPartnersPage(chiid,roundid)
+  def current(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): FairSelectPartnersPage = {
+    val (chiid, roundid) = EnterNamesPage.findMatchRoundId
+    new FairSelectPartnersPage(chiid, roundid)
   }
 
-  def urlFor( chiid: String, roundid: Int ) = EnterNamesPage.urlFor(chiid,roundid)
-  def demoUrlFor( chiid: String, roundid: Int ) = EnterNamesPage.demoUrlFor(chiid,roundid)
+  def urlFor(chiid: String, roundid: Int): String =
+    EnterNamesPage.urlFor(chiid, roundid)
+  def demoUrlFor(chiid: String, roundid: Int): String =
+    EnterNamesPage.demoUrlFor(chiid, roundid)
 
   /**
-   * @param chiid the chicago id
-   * @param roundid the round ID, zero based.
-   */
-  def goto( chiid: String, roundid: Int )( implicit
-              webDriver: WebDriver,
-              patienceConfig: PatienceConfig,
-              pos: Position
-          ) = {
-    go to urlFor(chiid,roundid)
-    new FairSelectPartnersPage(chiid,roundid)
+    * @param chiid the chicago id
+    * @param roundid the round ID, zero based.
+    */
+  def goto(chiid: String, roundid: Int)(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): FairSelectPartnersPage = {
+    go to urlFor(chiid, roundid)
+    new FairSelectPartnersPage(chiid, roundid)
   }
 
   val buttonOK = "OK"
@@ -46,12 +52,10 @@ object FairSelectPartnersPage {
     * @param player the players name
     * @return the id
     */
-  private def toPlayerButtonId( player: String ) = s"Player_$player"
+  private def toPlayerButtonId(player: String) = s"Player_$player"
 }
 
 /**
-  *
-  *
   * @param chiid the chicago match id
   * @param roundid the round, 0 based
   * @param webDriver
@@ -60,46 +64,70 @@ object FairSelectPartnersPage {
 class FairSelectPartnersPage(
     val chiid: String,
     val roundid: Int
-)( implicit
-      webDriver: WebDriver,
-      pageCreated: SourcePosition
+)(implicit
+    webDriver: WebDriver,
+    pageCreated: SourcePosition
 ) extends Page[FairSelectPartnersPage] {
   import FairSelectPartnersPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): FairSelectPartnersPage =
+    logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+      eventually {
 
-    roundid.toString() must not be "0"      // only valid for the first round
+        roundid.toString() must not be "0" // only valid for the first round
 
-    Some(currentUrl) must (contain.oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
+        Some(currentUrl) must (contain
+          .oneOf(urlFor(chiid, roundid), demoUrlFor(chiid, roundid)))
 
-    find( xpath( """//div[@id='BridgeApp']/div[1]/div[1]/div[3]/div[1]/h1""") ).text mustBe "Fair Rotation"
+        find(
+          xpath("""//div[@id='BridgeApp']/div[1]/div[1]/div[3]/div[1]/h1""")
+        ).text mustBe "Fair Rotation"
 
-    val allButtons = buttonOK::buttonReset::buttonCancel::Nil
+        val allButtons = buttonOK :: buttonReset :: buttonCancel :: Nil
 
-    findButtons( allButtons: _* )
-    this
-  }}
+        findButtons(allButtons: _*)
+        this
+      }
+    }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): HandPage = {
     clickButton(buttonOK)
-    new HandPage(chiid,roundid,0,ChicagoMatchTypeFair)
+    new HandPage(chiid, roundid, 0, ChicagoMatchTypeFair)
   }
 
-  def clickReset(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickReset(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): FairSelectPartnersPage = {
     clickButton(buttonReset)
     this
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): SummaryPage = {
     clickButton(buttonCancel)
     SummaryPage.current(ChicagoMatchTypeFair)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): Boolean = {
     getButton(buttonOK).isEnabled
   }
 
-  def isResetEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isResetEnabled(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): Boolean = {
     getButton(buttonReset).isEnabled
   }
 
@@ -115,35 +143,49 @@ class FairSelectPartnersPage(
     * @param pos
     * @return
     */
-  def clickSittingOutPlayer( player: String )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    clickButton( toPlayerButtonId(player) )
+  def clickSittingOutPlayer(player: String)(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): FairSelectPartnersPage = {
+    clickButton(toPlayerButtonId(player))
     this
   }
 
-  def checkSittingOutPlayerNames( sittingOut: Option[String], notSittingOut: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    val result = sittingOut.map( _ => true ).toList:::notSittingOut.map( _ => false ).toList
-    val players = sittingOut.toList:::notSittingOut.toList
+  def checkSittingOutPlayerNames(
+      sittingOut: Option[String],
+      notSittingOut: String*
+  )(implicit patienceConfig: PatienceConfig, pos: Position): Unit = {
+    val result =
+      sittingOut.map(_ => true).toList ::: notSittingOut.map(_ => false).toList
+    val players = sittingOut.toList ::: notSittingOut.toList
 
-    withClue(s"""Checking for next sitting out player, sitting out $sittingOut, not sitting out $notSittingOut""") {
-      val idplayers = players.map( toPlayerButtonId(_))
+    withClue(
+      s"""Checking for next sitting out player, sitting out $sittingOut, not sitting out $notSittingOut"""
+    ) {
+      val idplayers = players.map(toPlayerButtonId(_))
       val map = findButtons(idplayers: _*)
 
-      idplayers.zip(result).foreach { case (player, res) =>
-        withClue(s"""Checking player $player is${if (res) "" else " not"} sitting out: """) {
-          map(player).containsClass("baseButtonSelected") mustBe res
-        }
+      idplayers.zip(result).foreach {
+        case (player, res) =>
+          withClue(s"""Checking player $player is${if (res) ""
+          else " not"} sitting out: """) {
+            map(player).containsClass("baseButtonSelected") mustBe res
+          }
       }
     }
 
   }
 
-  def checkNotFoundPlayersForSittingOut( notfound: String* )(implicit patienceConfig: PatienceConfig, pos: Position) = {
-    withClue(s"""Checking for next sitting out player, should not see $notfound""") {
+  def checkNotFoundPlayersForSittingOut(
+      notfound: String*
+  )(implicit patienceConfig: PatienceConfig, pos: Position): Assertion = {
+    withClue(
+      s"""Checking for next sitting out player, should not see $notfound"""
+    ) {
       val allbuttons = findAllButtons.keySet
-      allbuttons.intersect( notfound.map(toPlayerButtonId(_)).toSet) mustBe empty
+      allbuttons.intersect(notfound.map(toPlayerButtonId(_)).toSet) mustBe empty
     }
   }
-
 
   /**
     * Check the player positions
@@ -155,10 +197,16 @@ class FairSelectPartnersPage(
     * @param east
     * @param west
     * @param extra
-    *
     */
-  def checkPositions( table: String, dealer: PlayerPosition,
-                      north: String, south: String, east: String, west: String, extra: String ) = {
+  def checkPositions(
+      table: String,
+      dealer: PlayerPosition,
+      north: String,
+      south: String,
+      east: String,
+      west: String,
+      extra: String
+  ): Assertion = {
 
     //  <div>
     //    <h1>Prior hand</h1>    or Next hand
@@ -173,19 +221,24 @@ class FairSelectPartnersPage(
 
     //  //div/h1[text()="Last hand"]/following-sibling::table
 
-    val current = findAll(xpath(s"""//div/p[text()="${table}"]/following-sibling::table/tbody/tr/td""")).toList
+    val current = findAll(
+      xpath(
+        s"""//div/p[text()="${table}"]/following-sibling::table/tbody/tr/td"""
+      )
+    ).toList
 
 //    current.foreach(e => println(s"checkPosition $table ${e.text}") )
 
     current.size mustBe 9
 
-    def getText( pos: PlayerPosition, player: String ) = if (pos == dealer) s"Dealer\n$player" else player
+    def getText(pos: PlayerPosition, player: String) =
+      if (pos == dealer) s"Dealer\n$player" else player
 
     current(0).text mustBe s"Sitting out\n$extra"
-    current(2).text mustBe getText(South,south)
-    current(4).text mustBe getText(East,east)
-    current(5).text mustBe getText(West,west)
-    current(7).text mustBe getText(North,north)
+    current(2).text mustBe getText(South, south)
+    current(4).text mustBe getText(East, east)
+    current(5).text mustBe getText(West, west)
+    current(7).text mustBe getText(North, north)
 
   }
 

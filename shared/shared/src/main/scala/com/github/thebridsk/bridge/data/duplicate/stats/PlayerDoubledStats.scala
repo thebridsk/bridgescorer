@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.data.duplicate.stats
 
 import java.io.PrintStream
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import scala.annotation.tailrec
 import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.data.bridge.ContractDoubled
 import com.github.thebridsk.bridge.data.bridge.NotDoubled
 
 object PlayerDoubledStats {
@@ -23,14 +20,14 @@ object PlayerDoubledStats {
       result: Int
   )
 
-  def csvHeader(min: Int = -13, max: Int = 6) =
+  def csvHeader(min: Int = -13, max: Int = 6): String =
     PlayerStat("", true, "").csvHeader(min, max)
 
-  def statsToCsv(stats: PlayerStats, percent: Boolean = false)(
-      implicit out: PrintStream
-  ) = {
+  def statsToCsv(stats: PlayerStats, percent: Boolean = false)(implicit
+      out: PrintStream
+  ): Unit = {
     val tocsv: (PlayerStat, Int, Int) => String =
-      if (percent)(ds, min, max) => ds.toCsvPercent(min, max)
+      if (percent) (ds, min, max) => ds.toCsvPercent(min, max)
       else (ds, min, max) => ds.toCsv(min, max)
     (stats.declarer :: stats.defender :: Nil).foreach { sts =>
       out.println(PlayerStats.csvHeader(stats.min, stats.max))
@@ -42,7 +39,7 @@ object PlayerDoubledStats {
     out.flush()
   }
 
-  def statsToCsvPercent(stats: PlayerStats)(implicit out: PrintStream) = {
+  def statsToCsvPercent(stats: PlayerStats)(implicit out: PrintStream): Unit = {
     statsToCsv(stats, true)
   }
 
@@ -74,7 +71,7 @@ object PlayerDoubledStats {
     }
   }
 
-  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]) = {
+  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]): PlayerStats = {
     val results = dups.values.flatMap { dup =>
       dup.allPlayedHands.flatMap { dh =>
         val nsTeam = dup.getTeam(dh.nsTeam).get

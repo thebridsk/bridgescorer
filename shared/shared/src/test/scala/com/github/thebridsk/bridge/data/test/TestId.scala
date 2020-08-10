@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.data.test
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import play.api.libs.json.Json
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -25,7 +24,7 @@ class TestId extends AnyFlatSpec with Matchers {
 
     val idFromString = Json.parse(stringId)
     val idFromJson = Json.fromJson[MatchDuplicate.Id](idFromString) match {
-      case JsSuccess(x,_) =>
+      case JsSuccess(x, _) =>
         x mustBe id
         x
       case JsError(e) =>
@@ -37,7 +36,7 @@ class TestId extends AnyFlatSpec with Matchers {
 
     stringId2 mustBe stringId
 
-    println( s"Id = ${id} ==> json = ${stringId2}")
+    println(s"Id = ${id} ==> json = ${stringId2}")
 
   }
 

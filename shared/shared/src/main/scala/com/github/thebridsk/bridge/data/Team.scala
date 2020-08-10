@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.data
 
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(
@@ -30,10 +29,10 @@ case class Team(
     updated: Timestamp
 ) {
 
-  def equalsIgnoreModifyTime(other: Team) =
+  def equalsIgnoreModifyTime(other: Team): Boolean =
     this == other.copy(created = created, updated = updated)
 
-  def setId(newId: Team.Id, forCreate: Boolean) = {
+  def setId(newId: Team.Id, forCreate: Boolean): Team = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -42,16 +41,16 @@ case class Team(
     )
   }
 
-  def copyForCreate(id: Team.Id) = {
+  def copyForCreate(id: Team.Id): Team = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, created = time, updated = time)
   }
 
-  def areBothPlayersSet() =
+  def areBothPlayersSet(): Boolean =
     player1 != null && player1.length() > 0 && player2 != null && player2
       .length() > 0
 
-  def setPlayers(p1: String, p2: String) = {
+  def setPlayers(p1: String, p2: String): Team = {
     val time = SystemTime.currentTimeMillis()
     copy(
       player1 = Option(p1).getOrElse(""),
@@ -65,7 +64,7 @@ case class Team(
     * The timestamp is not changed.
     * @return None if the names were not changed.  Some() with the modified object
     */
-  def modifyPlayers(nameMap: Map[String, String]) = {
+  def modifyPlayers(nameMap: Map[String, String]): Option[Team] = {
 
     def getName(n: String) = nameMap.get(n).getOrElse(n)
 
@@ -83,11 +82,11 @@ case class Team(
 trait IdTeam
 
 object Team extends HasId[IdTeam]("T") {
-  def create(id: Team.Id, player1: String, player2: String) = {
+  def create(id: Team.Id, player1: String, player2: String): Team = {
     val time = SystemTime.currentTimeMillis()
     new Team(id, player1, player2, time, time)
   }
-  def create(id: Team.Id) = {
+  def create(id: Team.Id): Team = {
     val time = SystemTime.currentTimeMillis()
     new Team(id, "", "", time, time)
   }

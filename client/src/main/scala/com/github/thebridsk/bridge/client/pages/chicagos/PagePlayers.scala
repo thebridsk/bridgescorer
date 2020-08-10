@@ -21,7 +21,7 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 object PagePlayers {
   import PagePlayersInternal._
 
-  val logger = Logger("bridge.PagePlayers")
+  val logger: Logger = Logger("bridge.PagePlayers")
 
   case class PlayerState(
       north: String,
@@ -37,8 +37,10 @@ object PagePlayers {
       extra: Option[String] = None
   ) {
     def isDealerValid() = dealer.isDefined
-    def areAllPlayersValid() =
-      playerValid(north) && playerValid(south) && playerValid(east) && playerValid(
+    def areAllPlayersValid(): Boolean =
+      playerValid(north) && playerValid(south) && playerValid(
+        east
+      ) && playerValid(
         west
       ) &&
         (if (chicago5 || quintet) {
@@ -47,21 +49,21 @@ object PagePlayers {
            true
          })
 
-    def areAllPlayersUnique() = {
+    def areAllPlayersUnique(): Boolean = {
       val p =
         north.trim ::
-        south.trim ::
-        east.trim ::
-        west.trim ::
-        (if (chicago5 || quintet)
-           extra.map(_.trim).toList
-         else Nil)
+          south.trim ::
+          east.trim ::
+          west.trim ::
+          (if (chicago5 || quintet)
+             extra.map(_.trim).toList
+           else Nil)
       val before = p.length
       val after = p.distinct.length
       before == after
     }
 
-    def isValid() =
+    def isValid(): Boolean =
       areAllPlayersValid() && isDealerValid() && areAllPlayersUnique()
 
     def isDealer(p: PlayerPosition): Boolean =
@@ -76,18 +78,17 @@ object PagePlayers {
         case _       => false
       }
 
-    def getDealer = dealer.map(d => d.pos.toString).getOrElse("")
+    def getDealer: String = dealer.map(d => d.pos.toString).getOrElse("")
 
-    def getDealerName() =
+    def getDealerName(): String =
       dealer
-        .map(
-          d =>
-            d match {
-              case North => north
-              case South => south
-              case East  => east
-              case West  => west
-            }
+        .map(d =>
+          d match {
+            case North => north
+            case South => south
+            case East  => east
+            case West  => west
+          }
         )
         .getOrElse("")
   }
@@ -97,7 +98,10 @@ object PagePlayers {
   type CallbackOk = (PlayerState) => Callback
   type CallbackCancel = Callback
 
-  def apply(page: NamesView, router: BridgeRouter[ChicagoPage]) =
+  def apply(
+      page: NamesView,
+      router: BridgeRouter[ChicagoPage]
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(MyProps(page, router))
 
   case class Props(
@@ -107,14 +111,14 @@ object PagePlayers {
   )
 
   case class MyProps(page: NamesView, router: BridgeRouter[ChicagoPage]) {
-    def getProps(chicago: MatchChicago) = Props(page, chicago, router)
+    def getProps(chicago: MatchChicago): Props = Props(page, chicago, router)
   }
 }
 
 object PagePlayersInternal {
   import PagePlayers._
 
-  def playerValid(s: String) = s.length != 0
+  def playerValid(s: String): Boolean = s.length != 0
 
   class Backend(scope: BackendScope[MyProps, State]) {
     def render(props: MyProps, state: State): VdomElement = {
@@ -122,8 +126,9 @@ object PagePlayersInternal {
         case Some(chi) if (chi.id == props.page.chiid) =>
           val rounds = chi.rounds
 //          <.div(
-          if (rounds.length == 0
-              || rounds.length == 1 && rounds.head.hands.isEmpty
+          if (
+            rounds.length == 0
+            || rounds.length == 1 && rounds.head.hands.isEmpty
           ) {
             ViewPlayersVeryFirstRound(props.getProps(chi))
           } else {
@@ -168,26 +173,25 @@ object PagePlayersInternal {
 
     val storeCallback = scope.forceUpdate
 
-    val didMount = scope.props >>= { props =>
+    val didMount: Callback = scope.props >>= { props =>
       Callback {
         logger.info("PagePlayers.didMount")
         ChicagoStore.addChangeListener(storeCallback)
 
-        import scala.concurrent.ExecutionContext.Implicits.global
         ChicagoController
           .ensureMatch(props.page.chiid)
 //          .foreach(m => scope.withEffectsImpure.forceUpdate)
       }
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       logger.info("PagePlayers.willUnmount")
       ChicagoStore.removeChangeListener(storeCallback)
     }
 
   }
 
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[MyProps]("PagePlayers")
     .initialStateFromProps { props =>
       State()

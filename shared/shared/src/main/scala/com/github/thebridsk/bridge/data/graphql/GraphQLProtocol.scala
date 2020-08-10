@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data.graphql
 
-import scala.annotation.meta._
 import play.api.libs.json._
 import scala.reflect.ClassTag
 import org.scalactic.source.Position
@@ -133,7 +132,7 @@ object GraphQLProtocol {
       column: Option[Int]
   ) {
     @Schema(hidden = true)
-    override def toString() =
+    override def toString(): String =
       s"""${line.getOrElse("unknown")}:${column
         .map(i => i.toString())
         .getOrElse("unknown")}"""
@@ -157,7 +156,7 @@ object GraphQLProtocol {
       locations: Option[List[ErrorLocation]]
   ) {
     @Schema(hidden = true)
-    override def toString() =
+    override def toString(): String =
       s"""${message.getOrElse("")} from location ${locations
         .map(l => l.mkString(", "))
         .getOrElse("")}"""
@@ -198,7 +197,7 @@ object GraphQLProtocol {
   ) {
 
 //    @Schema(hidden = true)
-    def getError() = {
+    def getError(): String = {
       val er = error.toList ::: errors
         .map(l => l.map(e => e.toString()))
         .getOrElse(Nil)
@@ -206,8 +205,8 @@ object GraphQLProtocol {
     }
 
     @Schema(hidden = true)
-    def getResponse[T](url: String)(
-        implicit reads: Reads[T],
+    def getResponse[T](url: String)(implicit
+        reads: Reads[T],
         classtag: ClassTag[T],
         xpos: Position
     ): Option[T] = {
@@ -234,8 +233,11 @@ object GraphQLProtocol {
     def hasData = data.isDefined
   }
 
-  implicit val errorLocationFormat = Json.format[ErrorLocation]
-  implicit val ErrorMessageFormat = Json.format[ErrorMessage]
-  implicit val graphQLResponseFormat = Json.format[GraphQLResponse]
+  implicit val errorLocationFormat: OFormat[ErrorLocation] =
+    Json.format[ErrorLocation]
+  implicit val ErrorMessageFormat: OFormat[ErrorMessage] =
+    Json.format[ErrorMessage]
+  implicit val graphQLResponseFormat: OFormat[GraphQLResponse] =
+    Json.format[GraphQLResponse]
 
 }

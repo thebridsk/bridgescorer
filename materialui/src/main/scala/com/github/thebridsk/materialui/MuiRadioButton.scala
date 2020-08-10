@@ -1,13 +1,11 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
 import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import scala.language.implicitConversions
 import japgolly.scalajs.react.{raw => Raw}
+import scala.scalajs.js.UndefOr
 
 @js.native
 protected trait RadioPropsPrivate extends js.Any {
@@ -18,7 +16,10 @@ protected trait RadioPropsPrivate extends js.Any {
 }
 
 @js.native
-trait RadioProps extends AdditionalProps with StandardProps with RadioPropsPrivate {
+trait RadioProps
+    extends AdditionalProps
+    with StandardProps
+    with RadioPropsPrivate {
   val checked: js.UndefOr[Boolean] = js.native
   // val checkedIcon: js.UndefOr[Raw.React.Element] = js.native
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
@@ -29,7 +30,7 @@ trait RadioProps extends AdditionalProps with StandardProps with RadioPropsPriva
   val id: js.UndefOr[String] = js.native
   val inputProps: js.UndefOr[js.Dictionary[String]] = js.native
   val inputRef: js.UndefOr[js.Object] = js.native
-  val onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.native
+  val onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.native
   val required: js.UndefOr[Boolean] = js.native
   val size: js.UndefOr[ItemSize] = js.native
   val value: js.UndefOr[js.Any] = js.native
@@ -38,14 +39,15 @@ trait RadioProps extends AdditionalProps with StandardProps with RadioPropsPriva
 
 object RadioProps extends PropsFactory[RadioProps] {
 
-  implicit class WrapRadioProps(val p: RadioProps) extends AnyVal {
+  implicit class WrapRadioProps(private val p: RadioProps) extends AnyVal {
 
-    def checkedIcon = p.checkedIconInternal.map( n => VdomNode(n))
-    def icon = p.iconInternal.map( n => VdomNode(n))
+    def checkedIcon: UndefOr[VdomNode] =
+      p.checkedIconInternal.map(n => VdomNode(n))
+    def icon: UndefOr[VdomNode] = p.iconInternal.map(n => VdomNode(n))
 
   }
 
-  def toRaw( v: VdomNode ) = v.rawNode.asInstanceOf[js.Any]
+  def toRaw(v: VdomNode): js.Any = v.rawNode.asInstanceOf[js.Any]
 
   /**
     * @param p the object that will become the properties object
@@ -87,7 +89,7 @@ object RadioProps extends PropsFactory[RadioProps] {
       inputProps: js.UndefOr[js.Dictionary[String]] = js.undefined,
       inputRef: js.UndefOr[js.Object] = js.undefined,
       name: js.UndefOr[String] = js.undefined,
-      onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+      onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.undefined,
       required: js.UndefOr[Boolean] = js.undefined,
       size: js.UndefOr[ItemSize] = js.undefined,
       value: js.UndefOr[js.Any] = js.undefined,
@@ -98,12 +100,12 @@ object RadioProps extends PropsFactory[RadioProps] {
 
     props.foreach(p.updateDynamic("props")(_))
     checked.foreach(p.updateDynamic("checked")(_))
-    checkedIcon.foreach( v => p.updateDynamic("checkedIcon")(toRaw(v)))
+    checkedIcon.foreach(v => p.updateDynamic("checkedIcon")(toRaw(v)))
     classes.foreach(p.updateDynamic("classes")(_))
     color.foreach(p.updateDynamic("color")(_))
     disable.foreach(p.updateDynamic("disable")(_))
     disableRipple.foreach(p.updateDynamic("disableRipple")(_))
-    icon.foreach( v => p.updateDynamic("icon")(toRaw(v)))
+    icon.foreach(v => p.updateDynamic("icon")(toRaw(v)))
     id.foreach(p.updateDynamic("id")(_))
     inputProps.foreach(p.updateDynamic("inputProps")(_))
     inputRef.foreach(p.updateDynamic("inputRef")(_))
@@ -120,10 +122,15 @@ object RadioProps extends PropsFactory[RadioProps] {
 }
 
 object MuiRadio extends ComponentFactory[RadioProps] {
-  @js.native @JSImport("@material-ui/core/Radio", JSImport.Default) private object MList
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Radio",
+    JSImport.Default
+  ) private object MList extends js.Any
 
-  protected val f = JsComponent[RadioProps, Children.Varargs, Null](MList)
+  protected val f =
+    JsComponent[RadioProps, Children.Varargs, Null](
+      MList
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param checked If true, the component is checked.
@@ -167,7 +174,7 @@ object MuiRadio extends ComponentFactory[RadioProps] {
       inputProps: js.UndefOr[js.Dictionary[String]] = js.undefined,
       inputRef: js.UndefOr[js.Object] = js.undefined,
       name: js.UndefOr[String] = js.undefined,
-      onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+      onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.undefined,
       required: js.UndefOr[Boolean] = js.undefined,
       size: js.UndefOr[ItemSize] = js.undefined,
       value: js.UndefOr[js.Any] = js.undefined,
@@ -175,7 +182,7 @@ object MuiRadio extends ComponentFactory[RadioProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: RadioProps = RadioProps(
       checked = checked,
       checkedIcon = checkedIcon,

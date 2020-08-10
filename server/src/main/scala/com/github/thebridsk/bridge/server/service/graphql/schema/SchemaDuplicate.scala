@@ -1,35 +1,20 @@
 package com.github.thebridsk.bridge.server.service.graphql.schema
 
 import sangria.schema._
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.data.MatchRubber
-import com.github.thebridsk.bridge.server.service.graphql.Data.ImportBridgeService
 import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
-import com.github.thebridsk.bridge.data.Hand
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.BridgeService
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.github.thebridsk.bridge.data.Id
-import sangria.validation.ValueCoercionViolation
-import sangria.ast.ScalarValue
-import sangria.ast
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
-import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.DuplicateSummaryEntry
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.BestMatch
-import com.github.thebridsk.bridge.data.BestMatch
-import com.github.thebridsk.bridge.data.Difference
 import com.github.thebridsk.bridge.data.DifferenceWrappers
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.BoardResults
 import com.github.thebridsk.bridge.data.BoardTeamResults
-import sangria.ast.AstLocation
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStat
 import com.github.thebridsk.bridge.data.duplicate.stats.CounterStat
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStat
@@ -38,16 +23,7 @@ import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerDoubledStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStat
-import com.github.thebridsk.bridge.data.bridge.PlayerPosition
-import com.github.thebridsk.bridge.data.bridge.North
-import com.github.thebridsk.bridge.data.bridge.South
-import com.github.thebridsk.bridge.data.bridge.East
-import com.github.thebridsk.bridge.data.bridge.West
-import com.github.thebridsk.bridge.data.RubberHand
-import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.ChicagoBestMatch
-import com.github.thebridsk.bridge.data.RubberBestMatch
 
 import SchemaBase.{log => _, _}
 import SchemaHand.{log => _, _}
@@ -58,21 +34,37 @@ import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.{
+  Id,
+  IdBoard,
+  IdBoardSet,
+  IdDuplicateSummary,
+  IdMatchDuplicate,
+  IdMatchDuplicateResult,
+  IdMovement,
+  IdTable,
+  IdTeam
+}
 
 object SchemaDuplicate {
 
-  val log = Logger(SchemaDuplicate.getClass.getName)
+  val log: Logger = Logger(SchemaDuplicate.getClass.getName)
 
-  val BoardSetIdType = idScalarType("TeamId", BoardSet)
-  val MovementIdType = idScalarType("TeamId", Movement)
-  val TeamIdType = idScalarType("TeamId", Team)
-  val TableIdType = idScalarType("TableId", Table)
-  val BoardIdType = idScalarType("BoardId", Board)
-  val DuplicateSummaryIdType = idScalarType("DuplicateSummaryId", DuplicateSummary)
-  val DuplicateIdType = idScalarType("DuplicateId", MatchDuplicate)
-  val DuplicateResultIdType = idScalarType("DuplicateResultId", MatchDuplicateResult)
+  val BoardSetIdType: ScalarType[Id[IdBoardSet]] =
+    idScalarType("TeamId", BoardSet)
+  val MovementIdType: ScalarType[Id[IdMovement]] =
+    idScalarType("TeamId", Movement)
+  val TeamIdType: ScalarType[Id[IdTeam]] = idScalarType("TeamId", Team)
+  val TableIdType: ScalarType[Id[IdTable]] = idScalarType("TableId", Table)
+  val BoardIdType: ScalarType[Id[IdBoard]] = idScalarType("BoardId", Board)
+  val DuplicateSummaryIdType: ScalarType[Id[IdDuplicateSummary]] =
+    idScalarType("DuplicateSummaryId", DuplicateSummary)
+  val DuplicateIdType: ScalarType[Id[IdMatchDuplicate]] =
+    idScalarType("DuplicateId", MatchDuplicate)
+  val DuplicateResultIdType: ScalarType[Id[IdMatchDuplicateResult]] =
+    idScalarType("DuplicateResultId", MatchDuplicateResult)
 
-  val DuplicateTeamType = ObjectType(
+  val DuplicateTeamType: ObjectType[BridgeService, Team] = ObjectType(
     "DuplicateTeam",
     "A duplicate team",
     fields[BridgeService, Team](
@@ -104,7 +96,7 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicateHandType = ObjectType(
+  val DuplicateHandType: ObjectType[BridgeService, DuplicateHand] = ObjectType(
     "DuplicateHand",
     "A duplicate hand",
     fields[BridgeService, DuplicateHand](
@@ -177,13 +169,13 @@ object SchemaDuplicate {
     )
   )
 
-  val ArgHandId = Argument(
+  val ArgHandId: Argument[Id[IdTeam]] = Argument(
     "id",
     TeamIdType,
     description = "The Id of the hand.  This the team id of the NS team."
   )
 
-  val DuplicateBoardType = ObjectType(
+  val DuplicateBoardType: ObjectType[BridgeService, Board] = ObjectType(
     "DuplicateBoard",
     "A duplicate board",
     fields[BridgeService, Board](
@@ -237,13 +229,14 @@ object SchemaDuplicate {
     )
   )
 
-  val ArgTeamId =
+  val ArgTeamId: Argument[Id[IdTeam]] =
     Argument("id", TeamIdType, description = "The Id of the team.")
 
-  val ArgBoardId =
+  val ArgBoardId: Argument[Id[IdBoard]] =
     Argument("id", BoardIdType, description = "The Id of the board.")
 
-  val DuplicateSummaryTeamType = ObjectType(
+  val DuplicateSummaryTeamType
+      : ObjectType[BridgeService, DuplicateSummaryEntry] = ObjectType(
     "DuplicateSummaryTeam",
     "A team result in a DuplicateSummary",
     fields[BridgeService, DuplicateSummaryEntry](
@@ -286,157 +279,165 @@ object SchemaDuplicate {
     )
   )
 
-  val BestMatchType = ObjectType(
-    "BestMatch",
-    "Identifies the best match",
-    fields[BridgeService, (Option[String], BestMatch)](
-      Field(
-        "id",
-        OptionType(DuplicateSummaryIdType),
-        Some("The id of the best duplicate match from the main store"),
-        resolve = _.value._2.id
-      ),
-      Field(
-        "sameness",
-        FloatType,
-        Some("A percentage of similarity."),
-        resolve = _.value._2.sameness
-      ),
-      Field(
-        "differences",
-        OptionType(ListType(StringType)),
-        Some("The fields that are different"),
-        resolve = _.value._2.differences
+  val BestMatchType: ObjectType[BridgeService, (Option[String], BestMatch)] =
+    ObjectType(
+      "BestMatch",
+      "Identifies the best match",
+      fields[BridgeService, (Option[String], BestMatch)](
+        Field(
+          "id",
+          OptionType(DuplicateSummaryIdType),
+          Some("The id of the best duplicate match from the main store"),
+          resolve = _.value._2.id
+        ),
+        Field(
+          "sameness",
+          FloatType,
+          Some("A percentage of similarity."),
+          resolve = _.value._2.sameness
+        ),
+        Field(
+          "differences",
+          OptionType(ListType(StringType)),
+          Some("The fields that are different"),
+          resolve = _.value._2.differences
+        )
       )
     )
-  )
 
-  val DuplicateSummaryType = ObjectType(
-    "DuplicateSummary",
-    "A duplicate match",
-    fields[BridgeService, (Option[String], DuplicateSummary)](
-      Field(
-        "id",
-        DuplicateSummaryIdType,
-        Some("The id of the duplicate match"),
-        resolve = _.value._2.id
-      ),
-      Field(
-        "finished",
-        BooleanType,
-        Some("true if the match is finished"),
-        resolve = _.value._2.finished
-      ),
-      Field(
-        "teams",
-        ListType(DuplicateSummaryTeamType),
-        Some("The teams that played"),
-        resolve = _.value._2.teams
-      ),
-      Field(
-        "boards",
-        IntType,
-        Some("The number boards that were played"),
-        resolve = _.value._2.boards
-      ),
-      Field(
-        "tables",
-        IntType,
-        Some("The number of tables that was used"),
-        resolve = _.value._2.tables
-      ),
-      Field(
-        "onlyresult",
-        BooleanType,
-        Some("true if this only contains the results"),
-        resolve = _.value._2.onlyresult
-      ),
-      Field(
-        "created",
-        DateTimeType,
-        Some("The time the team was last updated"),
-        resolve = _.value._2.created
-      ),
-      Field(
-        "updated",
-        DateTimeType,
-        Some("The time the team was last updated"),
-        resolve = _.value._2.updated
-      ),
-      Field(
-        "bestMatch",
-        OptionType(BestMatchType),
-        Some("The best match in the main store for this match"),
-        resolve = ctx => DuplicateAction.getDuplicateBestMatch(ctx)
+  val DuplicateSummaryType
+      : ObjectType[BridgeService, (Option[String], DuplicateSummary)] =
+    ObjectType(
+      "DuplicateSummary",
+      "A duplicate match",
+      fields[BridgeService, (Option[String], DuplicateSummary)](
+        Field(
+          "id",
+          DuplicateSummaryIdType,
+          Some("The id of the duplicate match"),
+          resolve = _.value._2.id
+        ),
+        Field(
+          "finished",
+          BooleanType,
+          Some("true if the match is finished"),
+          resolve = _.value._2.finished
+        ),
+        Field(
+          "teams",
+          ListType(DuplicateSummaryTeamType),
+          Some("The teams that played"),
+          resolve = _.value._2.teams
+        ),
+        Field(
+          "boards",
+          IntType,
+          Some("The number boards that were played"),
+          resolve = _.value._2.boards
+        ),
+        Field(
+          "tables",
+          IntType,
+          Some("The number of tables that was used"),
+          resolve = _.value._2.tables
+        ),
+        Field(
+          "onlyresult",
+          BooleanType,
+          Some("true if this only contains the results"),
+          resolve = _.value._2.onlyresult
+        ),
+        Field(
+          "created",
+          DateTimeType,
+          Some("The time the team was last updated"),
+          resolve = _.value._2.created
+        ),
+        Field(
+          "updated",
+          DateTimeType,
+          Some("The time the team was last updated"),
+          resolve = _.value._2.updated
+        ),
+        Field(
+          "bestMatch",
+          OptionType(BestMatchType),
+          Some("The best match in the main store for this match"),
+          resolve = ctx => DuplicateAction.getDuplicateBestMatch(ctx)
+        )
       )
     )
-  )
 
-  val MatchDuplicateType = ObjectType(
-    "MatchDuplicate",
-    "A duplicate match",
-    fields[BridgeService, (Option[String], MatchDuplicate)](
-      Field(
-        "id",
-        DuplicateIdType,
-        Some("The id of the duplicate match"),
-        resolve = _.value._2.id
-      ),
-      Field(
-        "teams",
-        ListType(DuplicateTeamType),
-        Some("The teams that played"),
-        resolve = _.value._2.teams
-      ),
-      Field(
-        "boards",
-        ListType(DuplicateBoardType),
-        Some("The boards that were played"),
-        resolve = _.value._2.boards
-      ),
-      Field(
-        "boardset",
-        BoardSetIdType,
-        Some("The boardset that was used"),
-        resolve = _.value._2.boardset
-      ),
-      Field(
-        "movement",
-        MovementIdType,
-        Some("The movement that was used"),
-        resolve = _.value._2.movement
-      ),
-      Field(
-        "summary",
-        DuplicateSummaryType,
-        Some("The summary of the match"),
-        resolve = ctx => (ctx.value._1, DuplicateSummary.create(ctx.value._2))
-      ),
-      Field(
-        "created",
-        DateTimeType,
-        Some("The time the team was last updated"),
-        resolve = _.value._2.created
-      ),
-      Field(
-        "updated",
-        DateTimeType,
-        Some("The time the team was last updated"),
-        resolve = _.value._2.updated
+  val MatchDuplicateType
+      : ObjectType[BridgeService, (Option[String], MatchDuplicate)] =
+    ObjectType(
+      "MatchDuplicate",
+      "A duplicate match",
+      fields[BridgeService, (Option[String], MatchDuplicate)](
+        Field(
+          "id",
+          DuplicateIdType,
+          Some("The id of the duplicate match"),
+          resolve = _.value._2.id
+        ),
+        Field(
+          "teams",
+          ListType(DuplicateTeamType),
+          Some("The teams that played"),
+          resolve = _.value._2.teams
+        ),
+        Field(
+          "boards",
+          ListType(DuplicateBoardType),
+          Some("The boards that were played"),
+          resolve = _.value._2.boards
+        ),
+        Field(
+          "boardset",
+          BoardSetIdType,
+          Some("The boardset that was used"),
+          resolve = _.value._2.boardset
+        ),
+        Field(
+          "movement",
+          MovementIdType,
+          Some("The movement that was used"),
+          resolve = _.value._2.movement
+        ),
+        Field(
+          "summary",
+          DuplicateSummaryType,
+          Some("The summary of the match"),
+          resolve = ctx => (ctx.value._1, DuplicateSummary.create(ctx.value._2))
+        ),
+        Field(
+          "created",
+          DateTimeType,
+          Some("The time the team was last updated"),
+          resolve = _.value._2.created
+        ),
+        Field(
+          "updated",
+          DateTimeType,
+          Some("The time the team was last updated"),
+          resolve = _.value._2.updated
+        )
       )
     )
-  )
 
-  val BoardTeamResultsType = ObjectType(
-    "BoardTeamResults",
-    "The results on a board in a match",
-    fields[BridgeService, (Option[String], BoardTeamResults)](
-      Field("team", TeamIdType, Some(""), resolve = _.value._2.team),
-      Field("points", FloatType, Some(""), resolve = _.value._2.points)
+  val BoardTeamResultsType
+      : ObjectType[BridgeService, (Option[String], BoardTeamResults)] =
+    ObjectType(
+      "BoardTeamResults",
+      "The results on a board in a match",
+      fields[BridgeService, (Option[String], BoardTeamResults)](
+        Field("team", TeamIdType, Some(""), resolve = _.value._2.team),
+        Field("points", FloatType, Some(""), resolve = _.value._2.points)
+      )
     )
-  )
 
-  val BoardResultsType = ObjectType(
+  val BoardResultsType
+      : ObjectType[BridgeService, (Option[String], BoardResults)] = ObjectType(
     "BoardResults",
     "The results on a board in a match",
     fields[BridgeService, (Option[String], BoardResults)](
@@ -450,69 +451,71 @@ object SchemaDuplicate {
     )
   )
 
-  val MatchDuplicateResultType = ObjectType(
-    "MatchDuplicateResult",
-    "A duplicate match",
-    fields[BridgeService, (Option[String], MatchDuplicateResult)](
-      Field(
-        "id",
-        DuplicateResultIdType,
-        Some("The id of the duplicate match"),
-        resolve = _.value._2.id
-      ),
-      Field(
-        "results",
-        ListType(ListType(DuplicateSummaryTeamType)),
-        Some("The teams that played, and the results"),
-        resolve = _.value._2.results
-      ),
-      Field(
-        "boardresults",
-        OptionType(ListType(BoardResultsType)),
-        Some("The boards that were played"),
-        resolve = ctx =>
-          ctx.value._2.boardresults.map(r => r.map(rr => (ctx.value._1, rr)))
-      ),
-      Field(
-        "comment",
-        OptionType(StringType),
-        Some("The comment"),
-        resolve = _.value._2.comment
-      ),
-      Field(
-        "notfinished",
-        OptionType(BooleanType),
-        Some("whether the match was finished"),
-        resolve = _.value._2.notfinished
-      ),
-      Field(
-        "summary",
-        DuplicateSummaryType,
-        Some("The summary of the match"),
-        resolve = ctx => (ctx.value._1, DuplicateSummary.create(ctx.value._2))
-      ),
-      Field(
-        "played",
-        DateTimeType,
-        Some("The time match was played"),
-        resolve = _.value._2.played
-      ),
-      Field(
-        "created",
-        DateTimeType,
-        Some("The time the team was last updated"),
-        resolve = _.value._2.created
-      ),
-      Field(
-        "updated",
-        DateTimeType,
-        Some("The time the team was last updated"),
-        resolve = _.value._2.updated
+  val MatchDuplicateResultType
+      : ObjectType[BridgeService, (Option[String], MatchDuplicateResult)] =
+    ObjectType(
+      "MatchDuplicateResult",
+      "A duplicate match",
+      fields[BridgeService, (Option[String], MatchDuplicateResult)](
+        Field(
+          "id",
+          DuplicateResultIdType,
+          Some("The id of the duplicate match"),
+          resolve = _.value._2.id
+        ),
+        Field(
+          "results",
+          ListType(ListType(DuplicateSummaryTeamType)),
+          Some("The teams that played, and the results"),
+          resolve = _.value._2.results
+        ),
+        Field(
+          "boardresults",
+          OptionType(ListType(BoardResultsType)),
+          Some("The boards that were played"),
+          resolve = ctx =>
+            ctx.value._2.boardresults.map(r => r.map(rr => (ctx.value._1, rr)))
+        ),
+        Field(
+          "comment",
+          OptionType(StringType),
+          Some("The comment"),
+          resolve = _.value._2.comment
+        ),
+        Field(
+          "notfinished",
+          OptionType(BooleanType),
+          Some("whether the match was finished"),
+          resolve = _.value._2.notfinished
+        ),
+        Field(
+          "summary",
+          DuplicateSummaryType,
+          Some("The summary of the match"),
+          resolve = ctx => (ctx.value._1, DuplicateSummary.create(ctx.value._2))
+        ),
+        Field(
+          "played",
+          DateTimeType,
+          Some("The time match was played"),
+          resolve = _.value._2.played
+        ),
+        Field(
+          "created",
+          DateTimeType,
+          Some("The time the team was last updated"),
+          resolve = _.value._2.created
+        ),
+        Field(
+          "updated",
+          DateTimeType,
+          Some("The time the team was last updated"),
+          resolve = _.value._2.updated
+        )
       )
     )
-  )
 
-  val CounterStatType = ObjectType(
+  val CounterStatType: ObjectType[BridgeService, CounterStat] = ObjectType(
     "CounterStat",
     "a counter",
     fields[BridgeService, CounterStat](
@@ -532,124 +535,128 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicatePlayerStatType = ObjectType(
-    "DuplicatePlayerStat",
-    "A duplicate player stat",
-    fields[BridgeService, PlayerStat](
-      Field(
-        "id",
-        StringType,
-        Some("The id, player name, of the playerstat"),
-        resolve = _.value.player
-      ),
-      Field(
-        "player",
-        StringType,
-        Some("The player name"),
-        resolve = _.value.player
-      ),
-      Field(
-        "declarer",
-        BooleanType,
-        Some("true indicates these stats are for player on declaring team"),
-        resolve = _.value.declarer
-      ),
-      Field(
-        "contractType",
-        StringType,
-        Some("the contract type, partial, game, slam, grand slam"),
-        resolve = _.value.contractType
-      ),
-      Field(
-        "handsPlayed",
-        IntType,
-        Some("The number of hands played by player"),
-        resolve = ctx => ctx.value.handsPlayed
-      ),
-      Field(
-        "histogram",
-        ListType(CounterStatType),
-        Some("The comment"),
-        resolve = ctx => ctx.value.histogram
+  val DuplicatePlayerStatType: ObjectType[BridgeService, PlayerStat] =
+    ObjectType(
+      "DuplicatePlayerStat",
+      "A duplicate player stat",
+      fields[BridgeService, PlayerStat](
+        Field(
+          "id",
+          StringType,
+          Some("The id, player name, of the playerstat"),
+          resolve = _.value.player
+        ),
+        Field(
+          "player",
+          StringType,
+          Some("The player name"),
+          resolve = _.value.player
+        ),
+        Field(
+          "declarer",
+          BooleanType,
+          Some("true indicates these stats are for player on declaring team"),
+          resolve = _.value.declarer
+        ),
+        Field(
+          "contractType",
+          StringType,
+          Some("the contract type, partial, game, slam, grand slam"),
+          resolve = _.value.contractType
+        ),
+        Field(
+          "handsPlayed",
+          IntType,
+          Some("The number of hands played by player"),
+          resolve = ctx => ctx.value.handsPlayed
+        ),
+        Field(
+          "histogram",
+          ListType(CounterStatType),
+          Some("The comment"),
+          resolve = ctx => ctx.value.histogram
+        )
       )
     )
-  )
 
-  val DuplicateContractStatType = ObjectType(
-    "DuplicateContractStat",
-    "A duplicate contract stat",
-    fields[BridgeService, ContractStat](
-      Field(
-        "id",
-        StringType,
-        Some("The id, contract, of the playerstat"),
-        resolve = _.value.contract
-      ),
-      Field(
-        "contract",
-        StringType,
-        Some("The contract"),
-        resolve = _.value.contract
-      ),
-      Field(
-        "contractType",
-        StringType,
-        Some("the contract type, partial, game, slam, grand slam"),
-        resolve = _.value.contractType
-      ),
-      Field(
-        "handsPlayed",
-        IntType,
-        Some("The number of hands played by player"),
-        resolve = ctx => ctx.value.handsPlayed
-      ),
-      Field(
-        "histogram",
-        ListType(CounterStatType),
-        Some("The comment"),
-        resolve = ctx => ctx.value.histogram
+  val DuplicateContractStatType: ObjectType[BridgeService, ContractStat] =
+    ObjectType(
+      "DuplicateContractStat",
+      "A duplicate contract stat",
+      fields[BridgeService, ContractStat](
+        Field(
+          "id",
+          StringType,
+          Some("The id, contract, of the playerstat"),
+          resolve = _.value.contract
+        ),
+        Field(
+          "contract",
+          StringType,
+          Some("The contract"),
+          resolve = _.value.contract
+        ),
+        Field(
+          "contractType",
+          StringType,
+          Some("the contract type, partial, game, slam, grand slam"),
+          resolve = _.value.contractType
+        ),
+        Field(
+          "handsPlayed",
+          IntType,
+          Some("The number of hands played by player"),
+          resolve = ctx => ctx.value.handsPlayed
+        ),
+        Field(
+          "histogram",
+          ListType(CounterStatType),
+          Some("The comment"),
+          resolve = ctx => ctx.value.histogram
+        )
       )
     )
-  )
 
-  val DuplicatePlayerStatsType = ObjectType(
-    "DuplicatePlayerStats",
-    "A duplicate player stats",
-    fields[BridgeService, PlayerStats](
-      Field(
-        "id",
-        StringType,
-        Some("The id of the duplicate match"),
-        resolve = ctx => "playerStats"
-      ),
-      Field(
-        "declarer",
-        ListType(DuplicatePlayerStatType),
-        Some("The stats for declarer"),
-        resolve = _.value.declarer
-      ),
-      Field(
-        "defender",
-        ListType(DuplicatePlayerStatType),
-        Some("The stats for defender"),
-        resolve = _.value.defender
-      ),
-      Field(
-        "min",
-        IntType,
-        Some("The minimum number of tricks made"),
-        resolve = ctx => ctx.value.min
-      ),
-      Field(
-        "max",
-        IntType,
-        Some("The maximum number of tricks made"),
-        resolve = ctx => ctx.value.max
+  val DuplicatePlayerStatsType: ObjectType[BridgeService, PlayerStats] =
+    ObjectType(
+      "DuplicatePlayerStats",
+      "A duplicate player stats",
+      fields[BridgeService, PlayerStats](
+        Field(
+          "id",
+          StringType,
+          Some("The id of the duplicate match"),
+          resolve = ctx => "playerStats"
+        ),
+        Field(
+          "declarer",
+          ListType(DuplicatePlayerStatType),
+          Some("The stats for declarer"),
+          resolve = _.value.declarer
+        ),
+        Field(
+          "defender",
+          ListType(DuplicatePlayerStatType),
+          Some("The stats for defender"),
+          resolve = _.value.defender
+        ),
+        Field(
+          "min",
+          IntType,
+          Some("The minimum number of tricks made"),
+          resolve = ctx => ctx.value.min
+        ),
+        Field(
+          "max",
+          IntType,
+          Some("The maximum number of tricks made"),
+          resolve = ctx => ctx.value.max
+        )
       )
     )
-  )
 
-  val PlayerComparisonStatType = ObjectType(
+  val PlayerComparisonStatType
+      : ObjectType[BridgeService, PlayerComparisonStat] = ObjectType(
     "PlayerComparisonStat",
     "A duplicate player stats",
     fields[BridgeService, PlayerComparisonStat](
@@ -705,7 +712,8 @@ object SchemaDuplicate {
     )
   )
 
-  val PlayerComparisonStatsType = ObjectType(
+  val PlayerComparisonStatsType
+      : ObjectType[BridgeService, PlayerComparisonStats] = ObjectType(
     "PlayerComparisonStats",
     "A duplicate player stats",
     fields[BridgeService, PlayerComparisonStats](
@@ -724,107 +732,111 @@ object SchemaDuplicate {
     )
   )
 
-  val DuplicateContractStatsType = ObjectType(
-    "DuplicateContractStats",
-    "A duplicate contract stats",
-    fields[BridgeService, ContractStats](
-      Field(
-        "id",
-        StringType,
-        Some("The id of the duplicate match"),
-        resolve = ctx => "contractStats"
-      ),
-      Field(
-        "data",
-        ListType(DuplicateContractStatType),
-        Some("The stats"),
-        resolve = _.value.data
-      ),
-      Field(
-        "min",
-        IntType,
-        Some("The minimum number of tricks made"),
-        resolve = ctx => ctx.value.min
-      ),
-      Field(
-        "max",
-        IntType,
-        Some("The maximum number of tricks made"),
-        resolve = ctx => ctx.value.max
+  val DuplicateContractStatsType: ObjectType[BridgeService, ContractStats] =
+    ObjectType(
+      "DuplicateContractStats",
+      "A duplicate contract stats",
+      fields[BridgeService, ContractStats](
+        Field(
+          "id",
+          StringType,
+          Some("The id of the duplicate match"),
+          resolve = ctx => "contractStats"
+        ),
+        Field(
+          "data",
+          ListType(DuplicateContractStatType),
+          Some("The stats"),
+          resolve = _.value.data
+        ),
+        Field(
+          "min",
+          IntType,
+          Some("The minimum number of tricks made"),
+          resolve = ctx => ctx.value.min
+        ),
+        Field(
+          "max",
+          IntType,
+          Some("The maximum number of tricks made"),
+          resolve = ctx => ctx.value.max
+        )
       )
     )
-  )
 
-  val PlayerOpponentStatType = ObjectType(
-    "PlayerOpponentStatType",
-    "player stats against an opponent in duplicate matches",
-    fields[BridgeService, PlayerOpponentStat](
-      Field(
-        "id",
-        OptionType(StringType),
-        resolve = ctx => s"""${ctx.value.player}_${ctx.value.opponent}"""
-      ),
-      Field(
-        "player",
-        OptionType(StringType),
-        resolve = _.value.player
-      ),
-      Field(
-        "opponent",
-        OptionType(StringType),
-        resolve = _.value.opponent
-      ),
-      Field(
-        "matchesPlayed",
-        OptionType(IntType),
-        resolve = _.value.matchesPlayed
-      ),
-      Field(
-        "matchesBeat",
-        OptionType(IntType),
-        resolve = _.value.matchesBeat
-      ),
-      Field(
-        "matchesTied",
-        OptionType(IntType),
-        resolve = _.value.matchesTied
-      ),
-      Field(
-        "totalMP",
-        OptionType(IntType),
-        resolve = _.value.totalMP
-      ),
-      Field(
-        "wonMP",
-        OptionType(IntType),
-        resolve = _.value.wonMP
+  val PlayerOpponentStatType: ObjectType[BridgeService, PlayerOpponentStat] =
+    ObjectType(
+      "PlayerOpponentStatType",
+      "player stats against an opponent in duplicate matches",
+      fields[BridgeService, PlayerOpponentStat](
+        Field(
+          "id",
+          OptionType(StringType),
+          resolve = ctx => s"""${ctx.value.player}_${ctx.value.opponent}"""
+        ),
+        Field(
+          "player",
+          OptionType(StringType),
+          resolve = _.value.player
+        ),
+        Field(
+          "opponent",
+          OptionType(StringType),
+          resolve = _.value.opponent
+        ),
+        Field(
+          "matchesPlayed",
+          OptionType(IntType),
+          resolve = _.value.matchesPlayed
+        ),
+        Field(
+          "matchesBeat",
+          OptionType(IntType),
+          resolve = _.value.matchesBeat
+        ),
+        Field(
+          "matchesTied",
+          OptionType(IntType),
+          resolve = _.value.matchesTied
+        ),
+        Field(
+          "totalMP",
+          OptionType(IntType),
+          resolve = _.value.totalMP
+        ),
+        Field(
+          "wonMP",
+          OptionType(IntType),
+          resolve = _.value.wonMP
+        )
       )
     )
-  )
 
-  val PlayerOpponentsStatType = ObjectType(
-    "PlayerOpponentsStatType",
-    "player stats against all opponent in duplicate matches",
-    fields[BridgeService, PlayerOpponentsStat](
-      Field(
-        "id",
-        OptionType(StringType),
-        resolve = _.value.player
-      ),
-      Field(
-        "player",
-        OptionType(StringType),
-        resolve = _.value.player
-      ),
-      Field(
-        "opponents",
-        OptionType(ListType(PlayerOpponentStatType)),
-        resolve = _.value.opponents
+  val PlayerOpponentsStatType: ObjectType[BridgeService, PlayerOpponentsStat] =
+    ObjectType(
+      "PlayerOpponentsStatType",
+      "player stats against all opponent in duplicate matches",
+      fields[BridgeService, PlayerOpponentsStat](
+        Field(
+          "id",
+          OptionType(StringType),
+          resolve = _.value.player
+        ),
+        Field(
+          "player",
+          OptionType(StringType),
+          resolve = _.value.player
+        ),
+        Field(
+          "opponents",
+          OptionType(ListType(PlayerOpponentStatType)),
+          resolve = _.value.opponents
+        )
       )
     )
-  )
 
-  val PlayersOpponentsStatsType = ObjectType(
+  val PlayersOpponentsStatsType
+      : ObjectType[BridgeService, PlayersOpponentsStats] = ObjectType(
     "PlayersOpponentsStatsType",
     "all player stats against all opponent in duplicate matches",
     fields[BridgeService, PlayersOpponentsStats](
@@ -836,25 +848,25 @@ object SchemaDuplicate {
     )
   )
 
-  val ArgDuplicateSummaryId = Argument(
+  val ArgDuplicateSummaryId: Argument[Id[IdDuplicateSummary]] = Argument(
     "id",
     DuplicateSummaryIdType,
     description = "The Id of the duplicate match"
   )
 
-  val ArgDuplicateId = Argument(
+  val ArgDuplicateId: Argument[Id[IdMatchDuplicate]] = Argument(
     "id",
     DuplicateIdType,
     description = "The Id of the duplicate match"
   )
 
-  val ArgDuplicateResultId = Argument(
+  val ArgDuplicateResultId: Argument[Id[IdMatchDuplicateResult]] = Argument(
     "id",
     DuplicateResultIdType,
     description = "The Id of the duplicate match"
   )
 
-  val DuplicateStatsType = ObjectType(
+  val DuplicateStatsType: ObjectType[BridgeService, BridgeService] = ObjectType(
     "DuplicateStatsType",
     "stats about duplicate matches",
     fields[BridgeService, BridgeService](
@@ -1100,7 +1112,10 @@ object DuplicateAction {
     }
   }
 
-  def sort(list: List[MatchDuplicate], sort: Option[Sort]) = {
+  def sort(
+      list: List[MatchDuplicate],
+      sort: Option[Sort]
+  ): List[MatchDuplicate] = {
     val l = sort
       .map { s =>
         s match {
@@ -1119,7 +1134,10 @@ object DuplicateAction {
     l
   }
 
-  def sortSummary(list: List[DuplicateSummary], sort: Option[Sort]) = {
+  def sortSummary(
+      list: List[DuplicateSummary],
+      sort: Option[Sort]
+  ): List[DuplicateSummary] = {
     val l = sort
       .map { s =>
         s match {

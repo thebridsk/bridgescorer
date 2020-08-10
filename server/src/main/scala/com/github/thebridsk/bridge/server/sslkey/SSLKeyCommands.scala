@@ -1,9 +1,5 @@
 package com.github.thebridsk.bridge.sslkey
 
-import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.data.version.VersionShared
-import java.io.File
 import org.rogach.scallop._
 import scala.concurrent.duration.Duration
 import java.util.logging.Level
@@ -17,11 +13,11 @@ trait SSLKeyCommands
 
 object SSLKeyCommands extends Subcommand("sslkey") {
 
-  val log = Logger[SSLKeyCommands]()
+  val log: Logger = Logger[SSLKeyCommands]()
 
   private var savelevel: Level = null
 
-  override def init() = {
+  override def init(): Int = {
     savelevel = Config.getLevelOnConsoleHandler()
     if (savelevel == null || savelevel.intValue() > Level.INFO.intValue()) {
       Config.setLevelOnConsoleHandler(Level.INFO)
@@ -29,7 +25,7 @@ object SSLKeyCommands extends Subcommand("sslkey") {
     0
   }
 
-  override def cleanup() = {
+  override def cleanup(): Unit = {
     Config.setLevelOnConsoleHandler(savelevel)
   }
 
@@ -38,7 +34,7 @@ object SSLKeyCommands extends Subcommand("sslkey") {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cmdName = s"${Server.cmdName} sslkey"
+  val cmdName: String = s"${Server.cmdName} sslkey"
 
   descr("Various commands to generate ssl keys")
 
@@ -51,12 +47,12 @@ Options:""")
 
   shortSubcommandsHelp(true)
 
-  val optionKeyDir = opt[Path](
+  val optionKeyDir: ScallopOption[Path] = opt[Path](
     "dir",
     short = 'd',
     descr = "The directory that has/will get the keys, default=./key",
     argName = "dir",
-    default = Some("./key"),
+    default = Some("./key")
   )
 
   addSubcommand(GenerateSelfSigned)

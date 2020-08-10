@@ -1,25 +1,13 @@
 package com.github.thebridsk.bridge.server.service
 
-import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server._
-import akka.http.scaladsl.model.headers.RawHeader
 import com.github.thebridsk.bridge.server.webjar.FileFinder
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import akka.event.Logging
-import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.model.headers.CacheDirectives._
-import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.duration.Duration
-import com.github.thebridsk.bridge.server.version.VersionServer
-import scala.reflect.io.Directory
-import scala.reflect.io.File
-import scala.reflect.io.Path
-import akka.event.LoggingAdapter
 import scala.annotation.tailrec
 import java.io.{File => JFile}
 
@@ -32,11 +20,11 @@ import java.io.{File => JFile}
   */
 trait JsService /* extends HttpService */ {
 
-  val logger = Logger(getClass.getName, null)
+  val logger: Logger = Logger(getClass.getName, null)
 
-  lazy val cacheDuration = Duration("0s")
+  lazy val cacheDuration: Duration = Duration("0s")
 
-  lazy val cacheHeaders = {
+  lazy val cacheHeaders: Seq[HttpHeader] = {
     import akka.http.scaladsl.model.headers._
     import akka.http.scaladsl.model.headers.CacheDirectives._
     val sec = cacheDuration.toSeconds
@@ -69,13 +57,14 @@ trait JsService /* extends HttpService */ {
 
   val htmlResources = ResourceFinder.htmlResources
 
-  val helpResources = try {
-    Some(ResourceFinder.helpResources)
-  } catch {
-    case x: Exception =>
-      logger.warning("Unable to find help resources, ignoring help.")
-      None
-  }
+  val helpResources: Option[FileFinder] =
+    try {
+      Some(ResourceFinder.helpResources)
+    } catch {
+      case x: Exception =>
+        logger.warning("Unable to find help resources, ignoring help.")
+        None
+    }
 
   {
     val res = htmlResources.baseName + "/bridgescorer-client-opt.js.gz"
@@ -104,7 +93,9 @@ trait JsService /* extends HttpService */ {
         case Uri.Path.Empty       => result.toString
         case Uri.Path.Slash(tail) => rec(tail, result.append(separator))
         case Uri.Path.Segment(head, tail) =>
-          if (head.indexOf('/') >= 0 || head.indexOf('\\') >= 0 || head == "..") {
+          if (
+            head.indexOf('/') >= 0 || head.indexOf('\\') >= 0 || head == ".."
+          ) {
             logger.warning(
               s"File-system path for base [${base}] and Uri.Path [${path}] contains suspicious path segment [${head}], " +
                 "GET access was disallowed"
@@ -115,60 +106,65 @@ trait JsService /* extends HttpService */ {
     rec(if (path.startsWithSlash) path.tail else path)
   }
 
-  def reqRespLogging( name: String, level: Logging.LogLevel )( r: => Route) =
+  def reqRespLogging(name: String, level: Logging.LogLevel)(
+      r: => Route
+  ): Route =
     logRequest(name, level) {
       logResult(name, level) {
         r
       }
     }
 
-
   /**
     * The spray route for the html static files
     */
-  val html = {
+  val html: Route = {
     pathSingleSlash {
       redirect("/public/index.html", StatusCodes.PermanentRedirect)
     } ~
-    pathPrefix("public") {
-      respondWithHeaders(cacheHeaders) {
-        pathEndOrSingleSlash {
-          redirect("/public/index.html", StatusCodes.PermanentRedirect)
-        } ~
+      pathPrefix("public") {
+        respondWithHeaders(cacheHeaders) {
+          pathEndOrSingleSlash {
+            redirect("/public/index.html", StatusCodes.PermanentRedirect)
+          } ~
 //        reqRespLogging("public", Logging.DebugLevel) { getFromResourceDirectory(htmlResources.baseName) } ~
 //        reqRespLogging("publicgz", Logging.DebugLevel) {
-          extractUnmatchedPath { path =>
-            logger.info(s"Looking for file " + path)
-            val pa = if (path.toString.endsWith("/")) path + "index.html" else path
-            getResource(pa)
-          }
-//        }
-      }
-    } ~
-    pathPrefix("help") {
-      respondWithHeaders(cacheHeaders) {
-        helpResources
-          .map { helpres =>
-            extractUnmatchedPath { ap =>
-              val p = if (ap.startsWithSlash) ap.tail else ap
-              logger.info(s"Looking for help file " + p)
-              val pa = if (p.toString.endsWith("/")) p + "index.html" else p
-              getResource(pa, helpres)
+            extractUnmatchedPath { path =>
+              logger.info(s"Looking for file " + path)
+              val pa =
+                if (path.toString.endsWith("/")) path + "index.html" else path
+              getResource(pa)
             }
-          }
-          .getOrElse(reject)
-      }
-    } ~
-    path("favicon.ico") {
-      redirect("/public/favicon.ico", StatusCodes.PermanentRedirect)
-    } ~
-    path("manifest.json") {
-      getResource( Uri.Path( "manifest.json" ) )
+//        }
+        }
+      } ~
+      pathPrefix("help") {
+        respondWithHeaders(cacheHeaders) {
+          helpResources
+            .map { helpres =>
+              extractUnmatchedPath { ap =>
+                val p = if (ap.startsWithSlash) ap.tail else ap
+                logger.info(s"Looking for help file " + p)
+                val pa = if (p.toString.endsWith("/")) p + "index.html" else p
+                getResource(pa, helpres)
+              }
+            }
+            .getOrElse(reject)
+        }
+      } ~
+      path("favicon.ico") {
+        redirect("/public/favicon.ico", StatusCodes.PermanentRedirect)
+      } ~
+      path("manifest.json") {
+        getResource(Uri.Path("manifest.json"))
 
-    }
+      }
   }
 
-  def getResource( res: Uri.Path, fileFinder: FileFinder = htmlResources ) = {
+  def getResource(
+      res: Uri.Path,
+      fileFinder: FileFinder = htmlResources
+  ): Route = {
     safeJoinPaths(fileFinder.baseName + "/", res, separator = '/') match {
       case "" => reject
       case resourceName =>
@@ -180,7 +176,7 @@ trait JsService /* extends HttpService */ {
             s"Looking for gzipped file as a resource " + resname
           )
           getFromResource(resname) ~
-          getFromResource(resourceName)
+            getFromResource(resourceName)
         }
     }
   }

@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
@@ -138,10 +135,15 @@ object ModalProps extends PropsFactory[ModalProps] {
 }
 
 object MuiModal extends ComponentFactory[ModalProps] {
-  @js.native @JSImport("@material-ui/core/Modal", JSImport.Default) private object Modal
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Modal",
+    JSImport.Default
+  ) private object Modal extends js.Any
 
-  protected val f = JsComponent[ModalProps, Children.Varargs, Null](Modal)
+  protected val f =
+    JsComponent[ModalProps, Children.Varargs, Null](
+      Modal
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param BackdropComponent A backdrop component. This property enables custom
@@ -220,7 +222,7 @@ object MuiModal extends ComponentFactory[ModalProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ModalProps = ModalProps(
       backdropComponent = backdropComponent,
       backdropProps = backdropProps,

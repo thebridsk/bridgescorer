@@ -5,26 +5,26 @@ import play.api.libs.json._
 
 object TestPlayJson extends Main {
 
-  case class XX( y: Option[String] = Some("yy") )
+  case class XX(y: Option[String] = Some("yy"))
 
-  implicit val formatXX = Json.format[XX]
+  implicit val formatXX: OFormat[XX] = Json.format[XX]
 
-  def execute() = {
+  def execute(): Int = {
 
-    test( XX( Some("goodbye")) )
-    test( XX( None ) )
-    test( XX( ) )
+    test(XX(Some("goodbye")))
+    test(XX(None))
+    test(XX())
 
     0
   }
 
-  def test( x: XX ) = {
+  def test(x: XX): Unit = {
     val jsv = Json.toJson(x)
     val sv = Json.prettyPrint(jsv)
-    println(s"JSON of ${x} is:\n${sv}" )
+    println(s"JSON of ${x} is:\n${sv}")
 
     val rjs = Json.parse(sv)
     val y = Json.fromJson(rjs)
-    println(s"Read: ${y}" )
+    println(s"Read: ${y}")
   }
 }

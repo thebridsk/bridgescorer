@@ -1,12 +1,10 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.language.implicitConversions
+import scala.scalajs.js.UndefOr
 
 class ColorVariant(val value: String) extends AnyVal
 object ColorVariant {
@@ -14,7 +12,7 @@ object ColorVariant {
   val inherit = new ColorVariant("inherit")
   val primary = new ColorVariant("primary")
   val secondary = new ColorVariant("secondary")
-  val values = List(default, inherit, primary, secondary)
+  val values: List[ColorVariant] = List(default, inherit, primary, secondary)
 
   implicit def toJsAny(cv: ColorVariant): js.Any = cv.value
 }
@@ -25,7 +23,7 @@ object ItemSize {
   val small = new ItemSize("small")
   val medium = new ItemSize("medium")
   val large = new ItemSize("large")
-  val values = List(small, medium, large)
+  val values: List[ItemSize] = List(small, medium, large)
 
   implicit def toJsAny(cv: ItemSize): js.Any = cv.value
 }
@@ -40,7 +38,7 @@ object Variant {
   val outlined = new Variant("outlined")
   val contained = new Variant("contained")
 
-  val values = List(text, outlined, contained)
+  val values: List[Variant] = List(text, outlined, contained)
 
   implicit def toJsAny(cv: Variant): js.Any = cv.value
 }
@@ -65,19 +63,19 @@ trait ButtonProps extends ButtonBaseProps with ButtonPropsPrivate {
 }
 
 object ButtonProps extends PropsFactory[ButtonProps] {
-  import js._
 
-  implicit class WrapButtonProps(val p: ButtonProps) extends AnyVal {
+  implicit class WrapButtonProps(private val p: ButtonProps) extends AnyVal {
 
-    def color = p.colorInternal.map(s => new ColorVariant(s))
+    def color: UndefOr[ColorVariant] =
+      p.colorInternal.map(s => new ColorVariant(s))
 
 //    def color_= (v: js.UndefOr[ColorVariant]) = { p.colorInternal = v.map(pp => pp.value) }
 
-    def size = p.sizeInternal.map(s => new ItemSize(s))
+    def size: UndefOr[ItemSize] = p.sizeInternal.map(s => new ItemSize(s))
 
 //    def size_= (v: js.UndefOr[ItemSize]) = { p.sizeInternal = v.map(pp => pp.value) }
 
-    def variant = p.variantInternal.map(s => new Variant(s))
+    def variant: UndefOr[Variant] = p.variantInternal.map(s => new Variant(s))
 
 //    def variant_= (v: js.UndefOr[Variant]) = { p.variantInternal = v.map(pp => pp.value) }
 
@@ -146,7 +144,8 @@ object ButtonProps extends PropsFactory[ButtonProps] {
       variant: js.UndefOr[Variant] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+      buttonRef: js.UndefOr[js.Object] =
+        js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -200,10 +199,15 @@ object ButtonProps extends PropsFactory[ButtonProps] {
 }
 
 object MuiButton extends ComponentFactory[ButtonProps] {
-  @js.native @JSImport("@material-ui/core/Button", JSImport.Default) private object Button
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Button",
+    JSImport.Default
+  ) private object Button extends js.Any
 
-  protected val f = JsComponent[ButtonProps, Children.Varargs, Null](Button)
+  protected val f =
+    JsComponent[ButtonProps, Children.Varargs, Null](
+      Button
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.
@@ -273,7 +277,8 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       variant: js.UndefOr[Variant] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+      buttonRef: js.UndefOr[js.Object] =
+        js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
 //        classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
 //        component: js.UndefOr[String] = js.undefined,
@@ -293,7 +298,7 @@ object MuiButton extends ComponentFactory[ButtonProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ButtonProps = ButtonProps(
       js.undefined,
       color,

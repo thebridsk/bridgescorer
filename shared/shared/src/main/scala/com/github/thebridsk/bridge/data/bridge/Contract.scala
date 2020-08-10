@@ -19,10 +19,7 @@ case class Contract(
     honor: Option[Int],
     honorPlayer: Option[PlayerPosition],
     scoringSystem: ScoringSystem,
-    scorer: Option[Either[
-      com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand,
-      com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
-    ]],
+    scorer: Option[Either[RubberBridge.ScoreHand, DuplicateBridge.ScoreHand]],
     table: Int = 0,
     board: Int = 0,
     north: String = "nsPlayer1",
@@ -32,7 +29,7 @@ case class Contract(
     dealer: PlayerPosition
 ) {
 
-  def toBridgeHand =
+  def toBridgeHand: BridgeHand =
     BridgeHand(
       id,
       contractTricks,
@@ -44,8 +41,8 @@ case class Contract(
       madeOrDown,
       tricks
     )
-  def toHand: com.github.thebridsk.bridge.data.Hand = toBridgeHand
-  def toRubberHand =
+  def toHand: Hand = toBridgeHand
+  def toRubberHand: RubberHand =
     RubberHand(
       id,
       toHand,
@@ -54,8 +51,8 @@ case class Contract(
       0,
       0
     )
-  def toDuplicate =
-    com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand(
+  def toDuplicate: DuplicateBridge.ScoreHand =
+    DuplicateBridge.ScoreHand(
       id,
       contractTricks,
       contractSuit,
@@ -66,8 +63,9 @@ case class Contract(
       madeOrDown,
       tricks
     )
-  def toRubber = com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand(toRubberHand)
-  def withScoring = {
+  def toRubber: RubberBridge.ScoreHand =
+    RubberBridge.ScoreHand(toRubberHand)
+  def withScoring: Contract = {
     try {
       val s = Some(scoringSystem match {
         case _: Duplicate =>
@@ -85,9 +83,10 @@ case class Contract(
     }
   }
 
-  def getTrickRange = BridgeHand.getTricksRange(madeOrDown, contractTricks)
+  def getTrickRange: Range =
+    BridgeHand.getTricksRange(madeOrDown, contractTricks)
 
-  def clear =
+  def clear: Contract =
     Contract(
       id,
       ContractTricks(0),
@@ -116,10 +115,7 @@ object Contract {
   def create(
       hand: Hand,
       scoringSystem: ScoringSystem,
-      scorer: Option[Either[
-        com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand,
-        com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
-      ]],
+      scorer: Option[Either[RubberBridge.ScoreHand, DuplicateBridge.ScoreHand]],
       table: Int = 0,
       board: Int = 0,
       north: String = "nsPlayer1",
@@ -127,7 +123,7 @@ object Contract {
       east: String = "ewPlayer1",
       west: String = "ewPlayer2",
       dealer: PlayerPosition = North
-  ) = {
+  ): Contract = {
     new Contract(
       hand.id,
       ContractTricks(hand.contractTricks),
@@ -152,7 +148,7 @@ object Contract {
     )
   }
 
-  def getPlayerPosition(pos: String) =
+  def getPlayerPosition(pos: String): Option[PlayerPosition] =
     try {
       Some(PlayerPosition(pos))
     } catch {
@@ -162,7 +158,7 @@ object Contract {
   def createRubber(
       rubberhand: RubberHand,
       scoringSystem: ScoringSystem,
-      scorer: Option[com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand],
+      scorer: Option[RubberBridge.ScoreHand],
       table: Int = 0,
       board: Int = 0,
       north: String = "nsPlayer1",
@@ -170,7 +166,7 @@ object Contract {
       east: String = "ewPlayer1",
       west: String = "ewPlayer2",
       dealer: PlayerPosition = North
-  ) = {
+  ): Contract = {
     val hand = rubberhand.hand
     new Contract(
       hand.id,

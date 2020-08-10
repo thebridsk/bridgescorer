@@ -3,74 +3,20 @@ package com.github.thebridsk.bridge.fullserver.test.selenium
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
-import org.openqa.selenium._
-import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.server.Server
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import com.github.thebridsk.bridge.data.bridge._
-import scala.jdk.CollectionConverters._
-import scala.util.Failure
-import scala.concurrent._
-import ExecutionContext.Implicits.global
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
-import org.scalactic.source.Position
-import com.github.thebridsk.bridge.data.util.Strings
-import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import org.scalatest.concurrent.Eventually
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ListDuplicatePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.NewDuplicatePage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.MovementsPage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardSetsPage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableEnterScorekeeperPage
-import com.github.thebridsk.browserpages.GenericPage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandPage
 import com.github.thebridsk.bridge.server.test.TestStartLogging
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardPage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.SelectNames
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.Hands
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableSelectScorekeeperPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.Team
-import com.github.thebridsk.browserpages.Page.AnyPage
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.EnterHand
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.AllHandsInMatch
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandsOnBoard
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.OtherHandNotPlayed
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.OtherHandPlayed
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TeamScoreboard
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandDirectorView
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandCompletedView
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.HandTableView
-import java.net.URL
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import scala.io.Source
-import scala.io.Codec
-import com.github.thebridsk.utilities.file.FileIO
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.PeopleRow
 import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.MissingNames
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableEnterMissingNamesPage
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
-import com.github.thebridsk.bridge.server.test.util.HttpUtils
-import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
-import com.github.thebridsk.bridge.server.backend.StoreMonitor
-import com.github.thebridsk.bridge.data.websocket.Protocol
-import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipant
-import com.github.thebridsk.bridge.server.backend.StoreMonitor.ReceivedMessage
-import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
-import com.github.thebridsk.bridge.server.backend.StoreMonitor.KillOneConnection
-import akka.actor.Actor
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResultPage.PlaceEntry
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResultEditPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResultPage
@@ -80,41 +26,41 @@ import org.scalatest.CancelAfterFailure
 
 object DuplicateResultTest {
 
-  val testlog = Logger[DuplicateResultTest]()
+  val testlog: Logger = Logger[DuplicateResultTest]()
 
   val screenshotDir = "target/screenshots/DuplicateResultTest"
 
-  val team1 = Team( 1, " Nick", "Sam ")
-  val team2 = Team( 2, " Ethan ", "Wayne")
-  val team3 = Team( 3, "Ellen", "Wilma")
-  val team4 = Team( 4, "Nora", "Sally")
+  val team1: Team = Team(1, " Nick", "Sam ")
+  val team2: Team = Team(2, " Ethan ", "Wayne")
+  val team3: Team = Team(3, "Ellen", "Wilma")
+  val team4: Team = Team(4, "Nora", "Sally")
 
-  val teams = team1::team2::team3::team4::Nil
+  val teams: List[Team] = team1 :: team2 :: team3 :: team4 :: Nil
 
-  val places = PlaceEntry( 1, 23, team1::Nil ) ::
-               PlaceEntry( 2, 17, team2::team4::Nil ) ::
-               PlaceEntry( 4, 15, team3::Nil ) ::
-               Nil
+  val places: List[PlaceEntry] = PlaceEntry(1, 23, team1 :: Nil) ::
+    PlaceEntry(2, 17, team2 :: team4 :: Nil) ::
+    PlaceEntry(4, 15, team3 :: Nil) ::
+    Nil
 
-  val allnames = teams.flatMap(t => t.one::t.two::Nil).map( n => n.trim() )
+  val allnames: List[String] =
+    teams.flatMap(t => t.one :: t.two :: Nil).map(n => n.trim())
 
   val movement = "2TablesArmonk"
   val boardset = "ArmonkBoards"
 }
 
 /**
- * Test going from the table view, by hitting a board button,
- * to the names view, to the hand view.
- * @author werewolf
- */
+  * Test going from the table view, by hitting a board button,
+  * to the names view, to the hand view.
+  * @author werewolf
+  */
 class DuplicateResultTest
     extends AnyFlatSpec
     with Matchers
     with BeforeAndAfterAll
     with EventuallyUtils
-    with CancelAfterFailure
-{
-  import Eventually.{ patienceConfig => _, _ }
+    with CancelAfterFailure {
+  import Eventually.{patienceConfig => _, _}
   import ParallelUtils._
 
   TestStartLogging.startLogging()
@@ -136,22 +82,31 @@ class DuplicateResultTest
   type MyDuration = Duration
   val MyDuration = Duration
 
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration =
+    MyDuration(60, TimeUnit.SECONDS)
 
-  val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  val defaultPatienceConfig: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
-  override
-  def beforeAll() = {
+  override def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
     try {
       import Session._
       // The sessions for the tables and complete is defered to the test that gets the home page url.
-      waitForFutures( "Starting browser or server",
-                      CodeBlock { SessionDirector.sessionStart(getPropOrEnv("SessionDirector")).setPositionRelative(0,0).setSize(1024, 800) },
-                      CodeBlock { TestServer.start() }
-                      )
+      waitForFutures(
+        "Starting browser or server",
+        CodeBlock {
+          SessionDirector
+            .sessionStart(getPropOrEnv("SessionDirector"))
+            .setPositionRelative(0, 0)
+            .setSize(1024, 800)
+        },
+        CodeBlock { TestServer.start() }
+      )
     } catch {
       case e: Throwable =>
         afterAll()
@@ -159,12 +114,12 @@ class DuplicateResultTest
     }
   }
 
-  override
-  def afterAll() = {
-    waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                    CodeBlock { SessionDirector.sessionStop() },
-                    CodeBlock { TestServer.stop() }
-                    )
+  override def afterAll(): Unit = {
+    waitForFuturesIgnoreTimeouts(
+      "Stopping browsers and server",
+      CodeBlock { SessionDirector.sessionStop() },
+      CodeBlock { TestServer.stop() }
+    )
   }
 
   var dupid: Option[String] = None
@@ -195,7 +150,12 @@ class DuplicateResultTest
     import SessionDirector._
 
     val curPage = NewDuplicatePage.current.validate
-    curPage.withClueAndScreenShot(screenshotDir, "CreateDuplicateResult", "", savedom = true) {
+    curPage.withClueAndScreenShot(
+      screenshotDir,
+      "CreateDuplicateResult",
+      "",
+      savedom = true
+    ) {
 
       curPage.clickCreateResultsOnly
 
@@ -235,7 +195,7 @@ class DuplicateResultTest
       val x = page.findPlayed.value
       if (x == null || x == "") {
         testlog.severe(s"Played is blank")
-        fail( "Played is blank.  It should have the current date")
+        fail("Played is blank.  It should have the current date")
       }
 
       page.isOKEnabled mustBe false
@@ -260,7 +220,7 @@ class DuplicateResultTest
 
     page.findElemById("scoreboardplayers")
 
-    page.checkPlaceTable(places:_*)
+    page.checkPlaceTable(places: _*)
   }
 
   it should "go to edit page and cancel back" in {
@@ -271,7 +231,11 @@ class DuplicateResultTest
 
     val edit = page.clickEdit.validate
 
-    edit.withClueAndScreenShot(screenshotDir, "ValidatingEdit", "See screenshot") {
+    edit.withClueAndScreenShot(
+      screenshotDir,
+      "ValidatingEdit",
+      "See screenshot"
+    ) {
 
       val x = edit.findPlayed.value
       if (x == null || x == "") {
@@ -304,7 +268,7 @@ class DuplicateResultTest
 
     val pg = ld.clickResult(dupid.get).validate
 
-    pg.checkPlaceTable(places:_*)
+    pg.checkPlaceTable(places: _*)
 
     val ld2 = pg.clickSummary.validate
   }

@@ -5,18 +5,18 @@ import org.scalatest.Sequential
 import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
- * @author werewolf
- */
-class TravisIntegrationTests extends Sequential(
-  new DuplicateTestFromTestDirectory2
-) with BeforeAndAfterAll {
-  override
-  def beforeAll() = {
+  * @author werewolf
+  */
+class TravisIntegrationTests
+    extends Sequential(
+      new DuplicateTestFromTestDirectory2
+    )
+    with BeforeAndAfterAll {
+  override def beforeAll(): Unit = {
     TestServer.start()
   }
 
-  override
-  def afterAll() = {
+  override def afterAll(): Unit = {
     TestServer.stop()
   }
 

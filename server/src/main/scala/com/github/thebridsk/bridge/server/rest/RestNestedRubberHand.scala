@@ -1,22 +1,11 @@
 package com.github.thebridsk.bridge.server.rest
 
-import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.http.scaladsl.model.StatusCode
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.Id
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
-import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Resources
-import com.github.thebridsk.bridge.server.backend.BridgeNestedResources
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import io.swagger.v3.oas.annotations.Operation
@@ -35,9 +24,8 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
-import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.RubberHand
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the hand resource.
@@ -55,13 +43,14 @@ class RestNestedRubberHand {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = pathPrefix("hands") {
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    pathPrefix("hands") {
 //    logRequest("route", DebugLevel) {
-    getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
+      getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
 //      }
-  }
+    }
 
   @GET
   @Operation(
@@ -105,14 +94,15 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxgetHands = {}
-  def getHands(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  def xxxgetHands: Unit = {}
+  def getHands(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{handId}")
   @GET
@@ -171,16 +161,17 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxgetHand = {}
-  def getHand(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = logRequest("getHand", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(id).read())
+  def xxxgetHand: Unit = {}
+  def getHand(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    logRequest("getHand", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(id).read())
+        }
       }
     }
-  }
 
   @POST
   @Operation(
@@ -244,16 +235,17 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxpostHand = {}
-  def postHand(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = pathEnd {
-    post {
-      entity(as[RubberHand]) { hand =>
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+  def xxxpostHand: Unit = {}
+  def postHand(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[RubberHand]) { hand =>
+          resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+        }
       }
     }
-  }
 
   def addIdToFuture(
       f: Future[Result[RubberHand]]
@@ -322,10 +314,10 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxputHand = {}
-  def putHand(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) =
+  def xxxputHand: Unit = {}
+  def putHand(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
         entity(as[RubberHand]) { hand =>
@@ -358,7 +350,10 @@ class RestNestedRubberHand {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "RubberHand deleted."),
+      new ApiResponse(
+        responseCode = "204",
+        description = "RubberHand deleted."
+      ),
       new ApiResponse(
         responseCode = "400",
         description = "Bad request",
@@ -371,12 +366,13 @@ class RestNestedRubberHand {
       )
     )
   )
-  def xxxdeleteHand = {}
-  def deleteHand(
-      implicit @Parameter(hidden = true) res: Resources[String, RubberHand]
-  ) = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(id).delete())
+  def xxxdeleteHand: Unit = {}
+  def deleteHand(implicit
+      @Parameter(hidden = true) res: Resources[String, RubberHand]
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(id).delete())
+      }
     }
-  }
 }

@@ -1,16 +1,13 @@
 package com.github.thebridsk.materialui.icons
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Node
 import japgolly.scalajs.react.component.Js
 import com.github.thebridsk.materialui.PropsFactory
 import com.github.thebridsk.materialui.ComponentFactory
 import com.github.thebridsk.materialui.AdditionalProps
+import scala.scalajs.js.UndefOr
 
 class SvgColor(val value: String) extends AnyVal
 object SvgColor {
@@ -52,15 +49,17 @@ trait SvgIconProps extends AdditionalProps with SvgIconPropsPrivate {
 
 object SvgIconProps extends PropsFactory[SvgIconProps] {
 
-  implicit class WrapTypographyProps(val p: SvgIconProps) extends AnyVal {
+  implicit class WrapTypographyProps(private val p: SvgIconProps)
+      extends AnyVal {
 
-    def color = p.colorInternal.map(s => new SvgColor(s))
+    def color: UndefOr[SvgColor] = p.colorInternal.map(s => new SvgColor(s))
 
     def color_=(v: js.UndefOr[SvgColor]) = {
       p.colorInternal = v.map(pp => pp.value)
     }
 
-    def fontSize = p.fontSizeInternal.map(s => new SvgFontSize(s))
+    def fontSize: UndefOr[SvgFontSize] =
+      p.fontSizeInternal.map(s => new SvgFontSize(s))
 
     def fontSize_=(v: js.UndefOr[SvgFontSize]) = {
       p.fontSizeInternal = v.map(pp => pp.value)
@@ -168,7 +167,10 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       titleAccess: js.UndefOr[String] = js.undefined,
       viewBox: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
-  ) = {
+  ): Js.UnmountedWithRawType[SvgIconProps, Null, Js.RawMounted[
+    SvgIconProps,
+    Null
+  ]] = {
     val p: SvgIconProps = SvgIconProps(
       classes = classes,
       color = color,
@@ -195,7 +197,10 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
       titleAccess: js.UndefOr[String] = js.undefined,
       viewBox: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
-  ) = {
+  ): Js.UnmountedWithRawType[SvgIconProps, Null, Js.RawMounted[
+    SvgIconProps,
+    Null
+  ]] = {
 
     apply(
       classes = classes,
@@ -211,12 +216,16 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
   }
 }
 
-
 object MuiSvgIcon extends ComponentFactory[SvgIconProps] {
-  @js.native @JSImport("@material-ui/core/SvgIcon", JSImport.Default) private object SvgIcon
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/SvgIcon",
+    JSImport.Default
+  ) private object SvgIcon extends js.Any
 
-  protected val f = JsComponent[SvgIconProps, Children.Varargs, Null](SvgIcon)
+  protected val f =
+    JsComponent[SvgIconProps, Children.Varargs, Null](
+      SvgIcon
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Node passed into the SVG element.
@@ -249,7 +258,7 @@ object MuiSvgIcon extends ComponentFactory[SvgIconProps] {
     *
     * @param children Node passed into the SVG element.
     */
-    def apply(
+  def apply(
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       color: js.UndefOr[SvgColor] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -260,8 +269,8 @@ object MuiSvgIcon extends ComponentFactory[SvgIconProps] {
       viewBox: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
-    children: CtorType.ChildArg*
-  ) = {
+      children: CtorType.ChildArg*
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: SvgIconProps = SvgIconProps(
       classes = classes,
       color = color,

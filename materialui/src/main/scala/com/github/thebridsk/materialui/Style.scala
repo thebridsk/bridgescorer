@@ -1,18 +1,14 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
 import japgolly.scalajs.react.vdom._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import japgolly.scalajs.react.raw.React.Component
-import japgolly.scalajs.react.component.Generic.ComponentRaw
 // import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.component.Scala
 
 class Style(styles: (String, js.Dictionary[js.Any])*) {
 
-  def asJS = {
+  def asJS: js.Dictionary[js.Dictionary[js.Any]] = {
     val r = js.Dictionary[js.Dictionary[js.Any]](styles: _*)
     r
   }
@@ -22,14 +18,15 @@ object Style {
 
 //  private val log = Logger("bridge.mui.Style")
 
-  def apply(styles: (String, js.Dictionary[js.Any])*) = {
+  def apply(styles: (String, js.Dictionary[js.Any])*): Style = {
     new Style(styles: _*)
   }
 
 //  import { withStyles } from '@material-ui/styles'
 
   @js.native @JSImport("@material-ui/core/styles/withStyles", JSImport.Default)
-  private object WithStyle extends js.Any // with Function2[js.Object,js.Object,Function1[js.Any,VdomNode]]
+  private object WithStyle
+      extends js.Any // with Function2[js.Object,js.Object,Function1[js.Any,VdomNode]]
 
 //  log.fine("WithStyle: "+WithStyle)
 
@@ -47,7 +44,7 @@ object Style {
       options: js.Object = js.Object()
   )(
       child: js.Object => CtorType.ChildArg
-  ) = {
+  ): VdomNode = {
 //    val p = js.Dynamic.literal()
 //    p.updateDynamic("styles")(styles.asJS)
 //    p.updateDynamic("options")(options)

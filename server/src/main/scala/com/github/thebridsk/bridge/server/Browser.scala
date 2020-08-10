@@ -4,7 +4,6 @@ import com.github.thebridsk.utilities.logging.Logger
 import java.io.IOException
 import scala.sys.process.ProcessIO
 import java.util.logging.Level
-import java.io.OutputStream
 import java.io.InputStream
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -16,7 +15,7 @@ import scala.util.Using
 
 object Browser {
 
-  val log = Logger(Browser.getClass.getName)
+  val log: Logger = Logger(Browser.getClass.getName)
 
   def logStream(
       level: Level,
@@ -24,7 +23,7 @@ object Browser {
       prefix: String,
       i: Int,
       is: InputStream
-  ) = {
+  ): Unit = {
 
     Using.resource(new BufferedReader(new InputStreamReader(is))) { in =>
       var line: String = null
@@ -36,14 +35,15 @@ object Browser {
 
   }
 
-  def logOutput(name: String, i: Int) = new ProcessIO(
-    in => { in.close },
-    out => { logStream(Level.INFO, name, "out", i, out) },
-    err => { logStream(Level.WARNING, name, "err", i, err) },
-    false
-  )
+  def logOutput(name: String, i: Int) =
+    new ProcessIO(
+      in => { in.close },
+      out => { logStream(Level.INFO, name, "out", i, out) },
+      err => { logStream(Level.WARNING, name, "err", i, err) },
+      false
+    )
 
-  def logExitCode(name: String, i: Int, p: Process) = {
+  def logExitCode(name: String, i: Int, p: Process): Process = {
     import scala.concurrent.ExecutionContext.Implicits.global
     Future {
       val rc = p.exitValue()
@@ -54,19 +54,19 @@ object Browser {
 
   val counter = new AtomicInteger()
 
-  def exec(cmd: String) = {
+  def exec(cmd: String): Process = {
     val i = counter.incrementAndGet()
     log.info(s"Executing OS command($i): $cmd")
     logExitCode(cmd, i, Process(cmd).run(logOutput(cmd, i)))
   }
 
-  def exec(cmd: List[String]) = {
+  def exec(cmd: List[String]): Process = {
     val i = counter.incrementAndGet()
     log.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""")
     logExitCode(cmd(0), i, Process(cmd).run(logOutput(cmd(0), i)))
   }
 
-  val chromeBrowsers = List(
+  val chromeBrowsers: List[String] = List(
     """C:\Program Files\Google\Chrome\Application\chrome.exe""",
     """C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"""
   )
@@ -84,11 +84,11 @@ object Browser {
     Some(exec(cmd))
   }
 
-  def startOnMac(url: String, fullscreen: Boolean) = {
+  def startOnMac(url: String, fullscreen: Boolean): Process = {
     exec(List("open", url));
   }
 
-  def startOnLinux(url: String, fullscreen: Boolean) = {
+  def startOnLinux(url: String, fullscreen: Boolean): Process = {
     val browsers = "epiphany" :: "firefox" :: "mozilla" :: "konqueror" ::
       "netscape" :: "opera" :: "links" :: "lynx" :: Nil
     val cmd = browsers

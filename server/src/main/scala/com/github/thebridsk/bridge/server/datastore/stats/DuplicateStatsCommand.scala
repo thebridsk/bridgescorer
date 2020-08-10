@@ -12,8 +12,6 @@ import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.reflect.io.Path
 import java.io.PrintStream
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
 import scala.util.Using
@@ -36,14 +34,14 @@ Syntax:
   ${DataStoreCommands.cmdName} show stats options
 Options:""")
 
-  val optionOut = opt[Path](
+  val optionOut: ScallopOption[Path] = opt[Path](
     "out",
     short = 'o',
     descr = "The output csv file, default output to stdout",
     argName = "csv",
     default = None
   )
-  val optionPercent = toggle(
+  val optionPercent: ScallopOption[Boolean] = toggle(
     "percent",
     default = Some(false),
     short = 'p',
@@ -53,7 +51,7 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val store = optionStore()

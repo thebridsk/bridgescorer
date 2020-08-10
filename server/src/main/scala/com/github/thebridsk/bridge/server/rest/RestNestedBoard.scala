@@ -1,22 +1,10 @@
 package com.github.thebridsk.bridge.server.rest
 
 import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.DuplicateHand
-import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.http.scaladsl.model.StatusCode
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.Id
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
-import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Resources
 import com.github.thebridsk.bridge.server.backend.BridgeNestedResources
@@ -38,6 +26,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the board resource.
@@ -57,16 +46,17 @@ class RestNestedBoard {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(
-      implicit @Parameter(hidden = true) res: Resources[
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = pathPrefix("boards") {
+  ): Route =
+    pathPrefix("boards") {
 //    logRequest("route", DebugLevel) {
-    getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard ~ restNestedHands
+      getBoard ~ getBoards ~ postBoard ~ putBoard ~ deleteBoard ~ restNestedHands
 //      }
-  }
+    }
 
   @GET
   @Operation(
@@ -111,17 +101,18 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxgetBoards = {}
-  def getBoards(
-      implicit @Parameter(hidden = true) res: Resources[
+  def xxxgetBoards: Unit = {}
+  def getBoards(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{boardId}")
   @GET
@@ -180,31 +171,33 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxgetBoard = {}
-  def getBoard(
-      implicit @Parameter(hidden = true) res: Resources[
+  def xxxgetBoard: Unit = {}
+  def getBoard(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = logRequest("getBoard", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(Board.id(id)).read())
+  ): Route =
+    logRequest("getBoard", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(Board.id(id)).read())
+        }
       }
     }
-  }
 
-  def restNestedHands(
-      implicit @Parameter(hidden = true) res: Resources[
+  def restNestedHands(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
-    pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
-      import BridgeNestedResources._
-      nestedHands.route(res.select(Board.id(id)).resourceHands)
+  ): Route =
+    logRequestResult("RestNestedBoard.restNestedHand", DebugLevel) {
+      pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
+        import BridgeNestedResources._
+        nestedHands.route(res.select(Board.id(id)).resourceHands)
+      }
     }
-  }
 
   @POST
   @Operation(
@@ -260,19 +253,23 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxpostBoard = {}
-  def postBoard(
-      implicit @Parameter(hidden = true) res: Resources[
+  def xxxpostBoard: Unit = {}
+  def postBoard(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = pathEnd {
-    post {
-      entity(as[Board]) { board =>
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(board)))
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[Board]) { board =>
+          resourceCreated(
+            res.resourceURI,
+            addIdToFuture(res.createChild(board))
+          )
+        }
       }
     }
-  }
 
   def addIdToFuture(f: Future[Result[Board]]): Future[Result[(String, Board)]] =
     f.map { r =>
@@ -339,13 +336,13 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxputBoard = {}
-  def putBoard(
-      implicit @Parameter(hidden = true) res: Resources[
+  def xxxputBoard: Unit = {}
+  def putBoard(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) =
+  ): Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
         entity(as[Board]) { board =>
@@ -391,15 +388,16 @@ class RestNestedBoard {
       )
     )
   )
-  def xxxdeleteBoard = {}
-  def deleteBoard(
-      implicit @Parameter(hidden = true) res: Resources[
+  def xxxdeleteBoard: Unit = {}
+  def deleteBoard(implicit
+      @Parameter(hidden = true) res: Resources[
         Board.Id,
         Board
       ]
-  ) = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(Board.id(id)).delete())
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(Board.id(id)).delete())
+      }
     }
-  }
 }

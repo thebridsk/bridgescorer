@@ -7,7 +7,7 @@ import scala.scalajs.js
 
 object LocalStorage {
 
-  val log = Logger("bridge.LocalStorage")
+  val log: Logger = Logger("bridge.LocalStorage")
 
   val window = document.defaultView
   val storage = window.localStorage
@@ -16,7 +16,7 @@ object LocalStorage {
 
   def getItem(key: String): String = storage.getItem(key)
 
-  def setItem(key: String, data: String): Unit = storage.setItem(key,data)
+  def setItem(key: String, data: String): Unit = storage.setItem(key, data)
 
   def clear(): Unit = storage.clear()
 
@@ -24,7 +24,7 @@ object LocalStorage {
 
   def key(index: Int): String = storage.key(index)
 
-  def item( key: String ): Option[String] = {
+  def item(key: String): Option[String] = {
     // val nkeys = storage.length
     // val value = (0 until nkeys).find( i => storage.key(i) == key).map( i => storage.getItem(key) )
     val value = Option(storage.getItem(key))
@@ -32,14 +32,14 @@ object LocalStorage {
     value
   }
 
-  def onstorage( listener: js.Function1[StorageEvent, _] ): Unit = {
+  def onstorage(listener: js.Function1[StorageEvent, _]): Unit = {
     window.onstorage = listener
   }
 
-  def removeOnstorage( listener: js.Function1[StorageEvent, _] ): Unit = {
-    if (window.onstorage == listener) window.asInstanceOf[js.Dictionary[_]] -= "onstorage"
+  def removeOnstorage(listener: js.Function1[StorageEvent, _]): Unit = {
+    if (window.onstorage == listener)
+      window.asInstanceOf[js.Dictionary[_]] -= "onstorage"
 
   }
-
 
 }

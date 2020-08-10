@@ -9,31 +9,37 @@ import org.scalactic.source.Position
 import com.github.thebridsk.browserpages.PageBrowser._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.browserpages.GenericPage
+import org.scalatest.Assertion
 
 object SimpleSelectPartnersPage {
 
-  val log = Logger[SimpleSelectPartnersPage]()
+  val log: Logger = Logger[SimpleSelectPartnersPage]()
 
-  def current(implicit webDriver: WebDriver, patienceConfig: PatienceConfig, pos: Position) = {
-    val (chiid,roundid) = EnterNamesPage.findMatchRoundId
-    new SimpleSelectPartnersPage(chiid,roundid)
+  def current(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): SimpleSelectPartnersPage = {
+    val (chiid, roundid) = EnterNamesPage.findMatchRoundId
+    new SimpleSelectPartnersPage(chiid, roundid)
   }
 
-  def urlFor( chiid: String, roundid: Int ) = EnterNamesPage.urlFor(chiid,roundid)
-  def demoUrlFor( chiid: String, roundid: Int ) = EnterNamesPage.demoUrlFor(chiid,roundid)
+  def urlFor(chiid: String, roundid: Int): String =
+    EnterNamesPage.urlFor(chiid, roundid)
+  def demoUrlFor(chiid: String, roundid: Int): String =
+    EnterNamesPage.demoUrlFor(chiid, roundid)
 
   /**
-   * @param chiid the chicago id
-   * @param roundid the round ID, zero based.
-   */
-  def goto( chiid: String, roundid: Int )( implicit
-              webDriver: WebDriver,
-              patienceConfig: PatienceConfig,
-              pos: Position
-          ) = {
-    go to urlFor(chiid,roundid)
-    new SimpleSelectPartnersPage(chiid,roundid)
+    * @param chiid the chicago id
+    * @param roundid the round ID, zero based.
+    */
+  def goto(chiid: String, roundid: Int)(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): SimpleSelectPartnersPage = {
+    go to urlFor(chiid, roundid)
+    new SimpleSelectPartnersPage(chiid, roundid)
   }
 
   val buttonOK = "OK"
@@ -45,12 +51,10 @@ object SimpleSelectPartnersPage {
     * @param player the players name
     * @return the id
     */
-  private def toPlayerButtonId( player: String ) = s"Player_$player"
+  private def toPlayerButtonId(player: String) = s"Player_$player"
 }
 
 /**
-  *
-  *
   * @param chiid the chicago match id
   * @param roundid the round, 0 based
   * @param webDriver
@@ -59,40 +63,57 @@ object SimpleSelectPartnersPage {
 class SimpleSelectPartnersPage(
     val chiid: String,
     val roundid: Int
-)( implicit
-      webDriver: WebDriver,
-      pageCreated: SourcePosition
+)(implicit
+    webDriver: WebDriver,
+    pageCreated: SourcePosition
 ) extends Page[SimpleSelectPartnersPage] {
   import SimpleSelectPartnersPage._
 
-  def validate(implicit patienceConfig: PatienceConfig, pos: Position) = logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") { eventually {
+  def validate(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): SimpleSelectPartnersPage =
+    logMethod(s"${pos.line} ${getClass.getSimpleName}.validate") {
+      eventually {
 
-    roundid.toString() must not be "0"      // only valid for the first round
+        roundid.toString() must not be "0" // only valid for the first round
 
-    Some(currentUrl) must (contain.oneOf( urlFor(chiid,roundid), demoUrlFor(chiid,roundid) ) )
+        Some(currentUrl) must (contain
+          .oneOf(urlFor(chiid, roundid), demoUrlFor(chiid, roundid)))
 
-    find( xpath( """//div[@id='BridgeApp']/div[1]/div[1]/div[3]/div[1]/h1""") ).text mustBe "Simple Rotation"
+        find(
+          xpath("""//div[@id='BridgeApp']/div[1]/div[1]/div[3]/div[1]/h1""")
+        ).text mustBe "Simple Rotation"
 
-    val allButtons = buttonOK::buttonCancel::Nil
+        val allButtons = buttonOK :: buttonCancel :: Nil
 
-    findButtons( allButtons: _* )
-    this
-  }}
+        findButtons(allButtons: _*)
+        this
+      }
+    }
 
-  def clickOK(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickOK(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): HandPage = {
     clickButton(buttonOK)
-    new HandPage(chiid,roundid,0,ChicagoMatchTypeSimple)
+    new HandPage(chiid, roundid, 0, ChicagoMatchTypeSimple)
   }
 
-  def clickCancel(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def clickCancel(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): SummaryPage = {
     clickButton(buttonCancel)
     SummaryPage.current(ChicagoMatchTypeSimple)
   }
 
-  def isOKEnabled(implicit patienceConfig: PatienceConfig, pos: Position) = {
+  def isOKEnabled(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): Boolean = {
     getButton(buttonOK).isEnabled
   }
-
 
   /**
     * Check the player positions
@@ -104,10 +125,16 @@ class SimpleSelectPartnersPage(
     * @param east
     * @param west
     * @param extra
-    *
     */
-  def checkPositions( table: String, dealer: PlayerPosition,
-                      north: String, south: String, east: String, west: String, extra: String ) = {
+  def checkPositions(
+      table: String,
+      dealer: PlayerPosition,
+      north: String,
+      south: String,
+      east: String,
+      west: String,
+      extra: String
+  ): Assertion = {
 
     //  <div>
     //    <h1>Prior hand</h1>    or Next hand
@@ -122,19 +149,24 @@ class SimpleSelectPartnersPage(
 
     //  //div/h1[text()="Last hand"]/following-sibling::table
 
-    val current = findAll(xpath(s"""//div/p[text()="${table}"]/following-sibling::table/tbody/tr/td""")).toList
+    val current = findAll(
+      xpath(
+        s"""//div/p[text()="${table}"]/following-sibling::table/tbody/tr/td"""
+      )
+    ).toList
 
 //    current.foreach(e => println(s"checkPosition $table ${e.text}") )
 
     current.size mustBe 9
 
-    def getText( pos: PlayerPosition, player: String ) = if (pos == dealer) s"Dealer\n$player" else player
+    def getText(pos: PlayerPosition, player: String) =
+      if (pos == dealer) s"Dealer\n$player" else player
 
     current(0).text mustBe s"Sitting out\n$extra"
-    current(2).text mustBe getText(South,south)
-    current(4).text mustBe getText(East,east)
-    current(5).text mustBe getText(West,west)
-    current(7).text mustBe getText(North,north)
+    current(2).text mustBe getText(South, south)
+    current(4).text mustBe getText(East, east)
+    current(5).text mustBe getText(West, west)
+    current(7).text mustBe getText(North, north)
 
   }
 

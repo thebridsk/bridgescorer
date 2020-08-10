@@ -1,9 +1,5 @@
 package com.github.thebridsk.bridge.datastore
 
-import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.server.version.VersionServer
-import com.github.thebridsk.bridge.data.version.VersionShared
-import java.io.File
 import org.rogach.scallop._
 import scala.concurrent.duration.Duration
 import java.util.logging.Level
@@ -17,11 +13,11 @@ trait DataStoreCommands
 
 object DataStoreCommands extends Subcommand("datastore") {
 
-  val log = Logger[DataStoreCommands]()
+  val log: Logger = Logger[DataStoreCommands]()
 
   private var savelevel: Level = null
 
-  override def init() = {
+  override def init(): Int = {
     savelevel = Config.getLevelOnConsoleHandler()
     if (savelevel == null || savelevel.intValue() > Level.INFO.intValue()) {
       Config.setLevelOnConsoleHandler(Level.INFO)
@@ -29,7 +25,7 @@ object DataStoreCommands extends Subcommand("datastore") {
     0
   }
 
-  override def cleanup() = {
+  override def cleanup(): Unit = {
     Config.setLevelOnConsoleHandler(savelevel)
   }
 
@@ -38,7 +34,7 @@ object DataStoreCommands extends Subcommand("datastore") {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cmdName = s"${Server.cmdName} ${name}"
+  val cmdName: String = s"${Server.cmdName} ${name}"
 
   descr("Various commands act on the datastore")
 
@@ -51,7 +47,7 @@ Options:""")
 
   shortSubcommandsHelp(true)
 
-  val optionStore = opt[Path](
+  val optionStore: ScallopOption[Path] = opt[Path](
     "store",
     short = 's',
     descr = "The store directory, default=./store",

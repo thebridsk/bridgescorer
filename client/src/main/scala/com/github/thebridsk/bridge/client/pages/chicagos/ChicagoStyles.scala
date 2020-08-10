@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
-import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import japgolly.scalajs.react.vdom.TagMod
 
 object ChicagoStyles {
 
@@ -16,21 +16,21 @@ object ChicagoStyles {
 class ChicagoStyles {
   import BaseStyles._
 
-  val chicagoListPage = cls("chiChicagoListPage")
-  val chicagoSummaryPage = cls("chiChicagoSummaryPage")
-  val chicagoFastSummaryPage = cls("chiChicagoFastSummaryPage")
+  val chicagoListPage: TagMod = cls("chiChicagoListPage")
+  val chicagoSummaryPage: TagMod = cls("chiChicagoSummaryPage")
+  val chicagoFastSummaryPage: TagMod = cls("chiChicagoFastSummaryPage")
 
-  val divPageFive = cls("chiDivPageFive")
-  val divPageSelectSittingOut = cls("chiDivPageSelectSittingOut")
-  val divPageSelectPairs = cls("chiDivPageSelectPairs")
-  val divPageSelectPos = cls("chiDivPageSelectPos")
-  val viewPlayersVeryFirstRound = cls("chiViewPlayersVeryFirstRound")
-  val viewPlayersSecondRound = cls("chiViewPlayersSecondRound")
-  val viewPlayersThirdRound = cls("chiViewPlayersThirdRound")
-  val viewPlayersFourthRound = cls("chiViewPlayersFourthRound")
+  val divPageFive: TagMod = cls("chiDivPageFive")
+  val divPageSelectSittingOut: TagMod = cls("chiDivPageSelectSittingOut")
+  val divPageSelectPairs: TagMod = cls("chiDivPageSelectPairs")
+  val divPageSelectPos: TagMod = cls("chiDivPageSelectPos")
+  val viewPlayersVeryFirstRound: TagMod = cls("chiViewPlayersVeryFirstRound")
+  val viewPlayersSecondRound: TagMod = cls("chiViewPlayersSecondRound")
+  val viewPlayersThirdRound: TagMod = cls("chiViewPlayersThirdRound")
+  val viewPlayersFourthRound: TagMod = cls("chiViewPlayersFourthRound")
 
-  val divPageQuintet = cls("chiDivPageQuintet")
-  val viewShowNewPosition = cls("chiViewShowNewPosition")
+  val divPageQuintet: TagMod = cls("chiDivPageQuintet")
+  val viewShowNewPosition: TagMod = cls("chiViewShowNewPosition")
 
-  val divEditNamesPage = cls("chiDivEditNamesPage")
+  val divEditNamesPage: TagMod = cls("chiDivEditNamesPage")
 }

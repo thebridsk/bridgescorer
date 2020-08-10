@@ -9,6 +9,8 @@ import scala.collection.mutable.ListBuffer
 import com.github.thebridsk.bridge.clientcommon.dispatcher.ClearLogs
 import com.github.thebridsk.bridge.clientcommon.dispatcher.StopLogs
 import com.github.thebridsk.bridge.clientcommon.dispatcher.StartLogs
+import scala.scalajs.js.timers.SetTimeoutHandle
+import org.scalajs.dom
 
 object LoggerStore extends ChangeListenable {
 
@@ -17,9 +19,9 @@ object LoggerStore extends ChangeListenable {
   val MaxSize = 200
 
   /**
-   * Required to instantiate the store.
-   */
-  def init() = {
+    * Required to instantiate the store.
+    */
+  def init(): Option[Unit] = {
     dispatchToken.map { x =>
       toConsole("LoggerStore registered")
     }
@@ -31,46 +33,47 @@ object LoggerStore extends ChangeListenable {
     tok
   }
 
-  case class MessageEntry( i: Long, traceMsg: TraceMsg )
+  case class MessageEntry(i: Long, traceMsg: TraceMsg)
 
   private var messages: ListBuffer[MessageEntry] = ListBuffer()
   private var enabled: Boolean = false
   private var counter: Long = 0
 
   /**
-   * Get the trace messages in the store
-   * @return the messages in reverse chronological order, returned object must not be changed
-   */
+    * Get the trace messages in the store
+    * @return the messages in reverse chronological order, returned object must not be changed
+    */
   def getMessages() = messages
 
   def isEnabled() = enabled
 
-  def dispatch( msg: Any ) = msg match {
-    case PostLogEntry(tracemsg) =>
-      counter = counter + 1
-      if (enabled) {
-        logToConsole(tracemsg)
-        messages.insert(0, MessageEntry(counter,tracemsg))
-        if (messages.size > MaxSize) messages = messages.take(MaxSize)
+  def dispatch(msg: Any): Any =
+    msg match {
+      case PostLogEntry(tracemsg) =>
+        counter = counter + 1
+        if (enabled) {
+          logToConsole(tracemsg)
+          messages.insert(0, MessageEntry(counter, tracemsg))
+          if (messages.size > MaxSize) messages = messages.take(MaxSize)
+          notifyLogChange()
+        }
+      case _: ClearLogs =>
+        messages.clear()
         notifyLogChange()
-      }
-    case _: ClearLogs =>
-      messages.clear()
-      notifyLogChange()
-    case _: StopLogs =>
-      toConsole("Stopping logging")
-      enabled = false
-      notifyLogChange()
-    case _: StartLogs =>
-      toConsole("Starting logging")
-      enabled = true
-      notifyLogChange()
-    case x =>
+      case _: StopLogs =>
+        toConsole("Stopping logging")
+        enabled = false
+        notifyLogChange()
+      case _: StartLogs =>
+        toConsole("Starting logging")
+        enabled = true
+        notifyLogChange()
+      case x =>
       // There are multiple stores, all the actions get sent to all stores
 //      logger.warning("BoardSetStore: Unknown msg dispatched, "+x)
-  }
+    }
 
-  def notifyLogChange() = {
+  def notifyLogChange(): SetTimeoutHandle = {
     import scala.scalajs.js.timers._
 
     setTimeout(0) { // note the absence of () =>
@@ -80,17 +83,15 @@ object LoggerStore extends ChangeListenable {
 
   var debug = true
 
-  def logToConsole( msg: => TraceMsg ): Unit = {
+  def logToConsole(msg: => TraceMsg): Unit = {
     if (debug) {
-      import org.scalajs.dom
-      dom.window.console.log( msg.toString )
+      dom.window.console.log(msg.toString)
     }
   }
 
-  def toConsole( msg: => String ): Unit = {
+  def toConsole(msg: => String): Unit = {
     if (debug) {
-      import org.scalajs.dom
-      dom.window.console.log( msg )
+      dom.window.console.log(msg)
     }
   }
 }

@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.client.pages.duplicate
 
-import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import japgolly.scalajs.react.vdom.TagMod
 
 object DuplicateStyles {
 
@@ -16,84 +16,86 @@ object DuplicateStyles {
 class DuplicateStyles {
   import BaseStyles._
 
-  val divSummary = cls("dupDivSummary")
+  val divSummary: TagMod = cls("dupDivSummary")
 
-  val divPageStats = cls("dupDivPageStats" )
+  val divPageStats: TagMod = cls("dupDivPageStats")
 
-  val divPlayerFilter = cls("dupDivPlayerFilter")
+  val divPlayerFilter: TagMod = cls("dupDivPlayerFilter")
 
-  val divPairsGrid = cls("dupDivPairsGrid")
+  val divPairsGrid: TagMod = cls("dupDivPairsGrid")
 
-  val divPlayerOpponentGrid = cls("dupDivPlayerOpponentGrid")
+  val divPlayerOpponentGrid: TagMod = cls("dupDivPlayerOpponentGrid")
 
-  val viewPairsDetailsTable = cls("dupViewPairsDetailsTable")
+  val viewPairsDetailsTable: TagMod = cls("dupViewPairsDetailsTable")
 
-  val viewPeopleDetailsTable = cls("dupViewPeopleDetailsTable")
+  val viewPeopleDetailsTable: TagMod = cls("dupViewPeopleDetailsTable")
 
-  val viewPairsTable = cls("dupViewPairsTable")
+  val viewPairsTable: TagMod = cls("dupViewPairsTable")
 
-  val viewPeopleTable = cls("dupViewPeopleTable")
+  val viewPeopleTable: TagMod = cls("dupViewPeopleTable")
 
-  val divPairsDetailsGrid = cls("dupDivPairsDetailsGrid")
+  val divPairsDetailsGrid: TagMod = cls("dupDivPairsDetailsGrid")
 
-  val tablePairsDetailsGrid = cls("dupTablePairsDetailsGrid")
+  val tablePairsDetailsGrid: TagMod = cls("dupTablePairsDetailsGrid")
 
-  val viewPlayerAggressiveness = cls("dupViewPlayerAggressiveness")
+  val viewPlayerAggressiveness: TagMod = cls("dupViewPlayerAggressiveness")
 
-  val viewPlayerContractResults = cls("dupViewPlayerContractResults")
+  val viewPlayerContractResults: TagMod = cls("dupViewPlayerContractResults")
 
-  val viewContractResults = cls("dupViewContractResults")
+  val viewContractResults: TagMod = cls("dupViewContractResults")
 
-  val viewPlayerPlaces = cls("dupViewPlayerPlaces")
+  val viewPlayerPlaces: TagMod = cls("dupViewPlayerPlaces")
 
-  val divNewDuplicate = cls("dupDivNewDuplicate")
+  val divNewDuplicate: TagMod = cls("dupDivNewDuplicate")
 
-  val divSelectMatch = cls("dupDivSelectMatch")
+  val divSelectMatch: TagMod = cls("dupDivSelectMatch")
 
-  val tableNewDuplicate = cls("dupTableNewDuplicate")
+  val tableNewDuplicate: TagMod = cls("dupTableNewDuplicate")
 
-  val divScoreboardPage = cls("dupDivScoreboardPage")
-  val divViewScoreboard = cls("dupDivViewScoreboard")
-  val divViewScoreboardAllButtons = cls("dupDivViewScoreboardAllButtons")
+  val divScoreboardPage: TagMod = cls("dupDivScoreboardPage")
+  val divViewScoreboard: TagMod = cls("dupDivViewScoreboard")
+  val divViewScoreboardAllButtons: TagMod = cls(
+    "dupDivViewScoreboardAllButtons"
+  )
 
-  val tableViewScoreboard = cls("dupTableViewScoreboard")
-  val cellScoreboardBoardColumn = cls("dupCellScoreboardBoardColumn")
+  val tableViewScoreboard: TagMod = cls("dupTableViewScoreboard")
+  val cellScoreboardBoardColumn: TagMod = cls("dupCellScoreboardBoardColumn")
 
-  val divScoreboardHelp = cls("dupDivScoreboardHelp")
-  val divScoreboardDetails = cls("dupDivScoreboardDetails")
-  val divPlayerPosition = cls("dupDivPlayerPosition")
-  val tablePlayerPosition = cls("dupTablePlayerPosition")
+  val divScoreboardHelp: TagMod = cls("dupDivScoreboardHelp")
+  val divScoreboardDetails: TagMod = cls("dupDivScoreboardDetails")
+  val divPlayerPosition: TagMod = cls("dupDivPlayerPosition")
+  val tablePlayerPosition: TagMod = cls("dupTablePlayerPosition")
 
-  val divAllTablesPage = cls("dupDivAllTablesPage")
-  val divTablePage = cls("dupDivTablePage")
-  val divTableHelp = cls("dupDivTableHelp")
-  val divTableView = cls("dupDivTableView")
-  val boardButtonInTable = cls("dupBoardButtonInTable")
+  val divAllTablesPage: TagMod = cls("dupDivAllTablesPage")
+  val divTablePage: TagMod = cls("dupDivTablePage")
+  val divTableHelp: TagMod = cls("dupDivTableHelp")
+  val divTableView: TagMod = cls("dupDivTableView")
+  val boardButtonInTable: TagMod = cls("dupBoardButtonInTable")
 
-  val divBoardSetPage = cls("dupDivBoardSetPage")
-  val divBoardPage = cls("dupDivBoardPage")
-  val divBoardView = cls("dupDivBoardView")
-  val tableCellGray = cls("dupTableCellGray")
-  val divAllBoardsPage = cls("dupDivAllBoardsPage")
+  val divBoardSetPage: TagMod = cls("dupDivBoardSetPage")
+  val divBoardPage: TagMod = cls("dupDivBoardPage")
+  val divBoardView: TagMod = cls("dupDivBoardView")
+  val tableCellGray: TagMod = cls("dupTableCellGray")
+  val divAllBoardsPage: TagMod = cls("dupDivAllBoardsPage")
 
-  val divFinishedScoreboardsPage = cls("dupDivFinishedScoreboardsPage")
+  val divFinishedScoreboardsPage: TagMod = cls("dupDivFinishedScoreboardsPage")
 
-  val divBoardSetsPage = cls("dupDivBoardSetsPage")
-  val divBoardSetView = cls("dupDivBoardSetView")
+  val divBoardSetsPage: TagMod = cls("dupDivBoardSetsPage")
+  val divBoardSetView: TagMod = cls("dupDivBoardSetView")
 
-  val divMovementsPage = cls("dupDivMovementsPage")
-  val divMovementView = cls("dupDivMovementView")
+  val divMovementsPage: TagMod = cls("dupDivMovementsPage")
+  val divMovementView: TagMod = cls("dupDivMovementView")
 
-  val divNamesPage = cls("dupDivNamesPage")
+  val divNamesPage: TagMod = cls("dupDivNamesPage")
 
-  val divTableNamesPage = cls("dupDivTableNamesPage")
-  val inputTableNames = cls("dupInputTableNames")
+  val divTableNamesPage: TagMod = cls("dupDivTableNamesPage")
+  val inputTableNames: TagMod = cls("dupInputTableNames")
 
-  val divDuplicateResultPage = cls("dupDivDuplicateResultPage")
-  val divDuplicateResultEditPage = cls("dupDivDuplicateResultEditPage")
+  val divDuplicateResultPage: TagMod = cls("dupDivDuplicateResultPage")
+  val divDuplicateResultEditPage: TagMod = cls("dupDivDuplicateResultEditPage")
 
-  val divSuggestionPage = cls("dupDivSuggestionPage")
+  val divSuggestionPage: TagMod = cls("dupDivSuggestionPage")
 
-  val divEditBoardSet = cls("dupDivEditBoardSet")
-  val divEditMovement = cls("dupDivEditMovement")
+  val divEditBoardSet: TagMod = cls("dupDivEditBoardSet")
+  val divEditMovement: TagMod = cls("dupDivEditMovement")
 }

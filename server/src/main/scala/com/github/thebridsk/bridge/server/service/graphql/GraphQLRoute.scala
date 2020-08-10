@@ -3,29 +3,18 @@ package com.github.thebridsk.bridge.server.service.graphql
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import play.api.libs.json._
-import sangria.marshalling.playJson._
-import sangria.parser.QueryParser
-import sangria.execution.Executor
-import sangria.execution.deferred.DeferredResolver
-import sangria.execution.QueryAnalysisError
-import sangria.execution.ErrorWithResolver
 import scala.util.Failure
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import akka.http.scaladsl.server.Route
-import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
-import scala.annotation.meta._
 import javax.ws.rs.Path
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLResponse
 import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLRequest
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import javax.ws.rs.POST
@@ -33,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 
 object GraphQLRoute {
-  val log = Logger[GraphQLRoute]()
+  val log: Logger = Logger[GraphQLRoute]()
 }
 
 @Path("")
@@ -45,7 +34,7 @@ trait GraphQLRoute {
 
   val query = new Query()
 
-  implicit val jsObjectReads = Reads.JsObjectReads
+  implicit val jsObjectReads: Reads.JsObjectReads.type = Reads.JsObjectReads
   @Path("graphql")
   @POST
   @Operation(
@@ -94,7 +83,7 @@ trait GraphQLRoute {
       )
     )
   )
-  def xxxgraphQLRoute = {}
+  def xxxgraphQLRoute: Unit = {}
   val graphQLRoute: Route =
     pathPrefix("v1") {
       logRequestResult("GraphQLRoute") {

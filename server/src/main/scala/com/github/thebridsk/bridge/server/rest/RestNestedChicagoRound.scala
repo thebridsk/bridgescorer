@@ -1,19 +1,9 @@
 package com.github.thebridsk.bridge.server.rest
 
-import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import akka.http.scaladsl.model.StatusCode
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.Id
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
-import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Resources
 import com.github.thebridsk.bridge.server.backend.BridgeNestedResources
@@ -36,7 +26,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
 import com.github.thebridsk.bridge.data.Round
-import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the round resource.
@@ -56,7 +46,9 @@ class RestNestedChicagoRound {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(implicit @Parameter(hidden = true) res: Resources[String, Round]) =
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
     pathPrefix("rounds") {
       logRequest("route", DebugLevel) {
         getRound ~ getRounds ~ postRound ~ putRound ~ deleteRound ~ restNestedHands
@@ -105,14 +97,15 @@ class RestNestedChicagoRound {
       )
     )
   )
-  def xxxgetRounds = {}
-  def getRounds(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ) = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  def xxxgetRounds: Unit = {}
+  def getRounds(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{roundId}")
   @GET
@@ -171,25 +164,27 @@ class RestNestedChicagoRound {
       )
     )
   )
-  def xxxgetRound = {}
-  def getRound(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ) = logRequest("getRound", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(id).read())
+  def xxxgetRound: Unit = {}
+  def getRound(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    logRequest("getRound", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(id).read())
+        }
       }
     }
-  }
 
-  def restNestedHands(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ) = logRequestResult("RestNestedRound.restNestedHand", DebugLevel) {
-    pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
-      import BridgeNestedResources._
-      nestedHands.route(res.select(id).resourceHands)
+  def restNestedHands(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    logRequestResult("RestNestedRound.restNestedHand", DebugLevel) {
+      pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
+        import BridgeNestedResources._
+        nestedHands.route(res.select(id).resourceHands)
+      }
     }
-  }
 
   @POST
   @Operation(
@@ -245,16 +240,20 @@ class RestNestedChicagoRound {
       )
     )
   )
-  def xxxpostRound = {}
-  def postRound(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ) = pathEnd {
-    post {
-      entity(as[Round]) { round =>
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(round)))
+  def xxxpostRound: Unit = {}
+  def postRound(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[Round]) { round =>
+          resourceCreated(
+            res.resourceURI,
+            addIdToFuture(res.createChild(round))
+          )
+        }
       }
     }
-  }
 
   def addIdToFuture(f: Future[Result[Round]]): Future[Result[(String, Round)]] =
     f.map { r =>
@@ -321,10 +320,10 @@ class RestNestedChicagoRound {
       )
     )
   )
-  def xxxputRound = {}
-  def putRound(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ) =
+  def xxxputRound: Unit = {}
+  def putRound(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
     put {
       path("""[a-zA-Z0-9]+""".r) { id =>
         entity(as[Round]) { round =>
@@ -370,12 +369,13 @@ class RestNestedChicagoRound {
       )
     )
   )
-  def xxxdeleteRound = {}
-  def deleteRound(
-      implicit @Parameter(hidden = true) res: Resources[String, Round]
-  ) = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(id).delete())
+  def xxxdeleteRound: Unit = {}
+  def deleteRound(implicit
+      @Parameter(hidden = true) res: Resources[String, Round]
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(id).delete())
+      }
     }
-  }
 }

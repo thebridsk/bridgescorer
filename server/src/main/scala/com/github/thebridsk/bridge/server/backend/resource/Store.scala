@@ -1,9 +1,5 @@
 package com.github.thebridsk.bridge.server.backend.resource
 
-import akka.http.caching.scaladsl.Cache
-import akka.http.caching.scaladsl.CachingSettings
-import akka.http.caching.scaladsl.LfuCacheSettings
-import akka.http.caching.LfuCache
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
@@ -13,21 +9,17 @@ import scala.concurrent.Promise
 import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.utilities.logging.Logger
-import akka.http.scaladsl.model.StatusCode
 
 import Store._
 import com.github.thebridsk.bridge.data.VersionedInstance
-import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
 import Implicits._
 import scala.reflect.io.File
-import java.io.OutputStream
-import scala.reflect.io.Streamable.Bytes
 import java.io.InputStream
 import com.github.thebridsk.bridge.server.backend.resource.MetaData.MetaDataFile
 
 object Store {
-  val log = Logger[Store[_, _]]()
+  val log: Logger = Logger[Store[_, _]]()
 }
 
 /**
@@ -72,45 +64,56 @@ object Store {
   * @param cacheTimeToIdle this value must be less than cacheTimeToLive
   * @param execute an execution context.
   */
-abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     val name: String,
     val persistent: PersistentSupport[VId, VType],
     val cacheInitialCapacity: Int = 5,
     val cacheMaxCapacity: Int = 100,
     val cacheTimeToLive: Duration = Duration.Inf,
     val cacheTimeToIdle: Duration = Duration.Inf
-)(
-    implicit
+)(implicit
     execute: ExecutionContext
 ) extends Resources[VId, VType]
     with StoreListenerManager {
 
-  def idToString( id: VId ) = persistent.support.idSupport.toString(id)
+  def idToString(id: VId): String = persistent.support.idSupport.toString(id)
 
   /** The URI prefix that identifies the resources served by this store */
   val resourceURI = persistent.resourceURI
 
-  implicit private val self = this
+  implicit private val self: Store[VId, VType] = this
 
-  val metaData = new StoreMetaData[VId] {
+  val metaData: StoreMetaData[VId] = new StoreMetaData[VId] {
 
-    override
-    def listFiles( id: VId ): Future[Result[Iterator[MetaDataFile]]] = Future { persistent.listFiles(id) }
+    override def listFiles(id: VId): Future[Result[Iterator[MetaDataFile]]] =
+      Future { persistent.listFiles(id) }
 
-    override
-    def listFilesFilter( id: VId )( filter: MetaDataFile=>Boolean ): Future[Result[Iterator[MetaDataFile]]] = Future { persistent.listFilesFilter(id)(filter) }
+    override def listFilesFilter(
+        id: VId
+    )(filter: MetaDataFile => Boolean): Future[Result[Iterator[MetaDataFile]]] =
+      Future { persistent.listFilesFilter(id)(filter) }
 
-    override
-    def write( id: VId, sourceFile: File, targetFile: MetaDataFile ): Future[Result[Unit]] = Future { persistent.write(id,sourceFile,targetFile) }
+    override def write(
+        id: VId,
+        sourceFile: File,
+        targetFile: MetaDataFile
+    ): Future[Result[Unit]] =
+      Future { persistent.write(id, sourceFile, targetFile) }
 
-    override
-    def read( id: VId, file: MetaDataFile ): Future[Result[InputStream]] = Future { persistent.read(id,file) }
+    override def read(
+        id: VId,
+        file: MetaDataFile
+    ): Future[Result[InputStream]] = Future { persistent.read(id, file) }
 
-    override
-    def delete( id: VId, file: MetaDataFile ): Future[Result[Unit]] = Future { persistent.delete(id,file) }
+    override def delete(id: VId, file: MetaDataFile): Future[Result[Unit]] =
+      Future { persistent.delete(id, file) }
 
-    override
-    def deleteAll( id: VId ): Future[Result[Unit]] = Future { persistent.deleteAll(id) }
+    override def deleteAll(id: VId): Future[Result[Unit]] =
+      Future { persistent.deleteAll(id) }
 
   }
 
@@ -131,7 +134,9 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
       if (refresh) {
         cache
           .refresh(id, () => persistent.getFromPersistent(id))
-          .logit(s"Store ${name}: Refreshing resource ${resourceURI}/${idToString(id)}")
+          .logit(
+            s"Store ${name}: Refreshing resource ${resourceURI}/${idToString(id)}"
+          )
       } else if (deleted) {
         cache.remove(id)
         persistent.notFound(id).toFuture
@@ -170,8 +175,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
   def createChild(
       newvalue: VType,
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[VType]] = {
     createChildImpl(newvalue, false, changeContext)
@@ -189,8 +193,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
   def importChild(
       newvalue: VType,
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[VType]] = {
     createChildImpl(newvalue, true, changeContext)
@@ -210,8 +213,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
       newvalue: VType,
       dontUpdateTimes: Boolean = false,
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[VType]] = {
     log.fine(
@@ -228,7 +230,8 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
               t match {
                 case Right(r) =>
                   notify(
-                    changeContext.create(r, s"${support.resourceURI}/${idToString(v.id)}")
+                    changeContext
+                      .create(r, s"${support.resourceURI}/${idToString(v.id)}")
                   )
                   Result(r)
                 case Left(error) =>
@@ -242,8 +245,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
       .logit(s"Store ${name}: CreateChild ${resourceURI}")
   }
 
-  def size()(
-      implicit
+  def size()(implicit
       pos: SourcePosition
   ): Future[Int] = {
 
@@ -254,11 +256,10 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
   }
 
   /**
-   * Read all the Ids in the collection
-   */
-  def getAllIds()(
-    implicit
-    pos: SourcePosition
+    * Read all the Ids in the collection
+    */
+  def getAllIds()(implicit
+      pos: SourcePosition
   ): Future[Result[Set[VId]]] = {
     Future {
       val ids = persistent.getAllIdsFromPersistent()
@@ -271,8 +272,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
     * @param pos a [[SourcePosition]] object to identify the caller.
     * @return a future to the resources
     */
-  def readAll()(
-      implicit
+  def readAll()(implicit
       pos: SourcePosition
   ): Future[Result[Map[VId, VType]]] = {
     val futures = persistent.getAllIdsFromPersistent().map { id =>
@@ -307,8 +307,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
   def updateAll(
       newvalue: Map[VId, VType],
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[Map[VId, VType]]] = {
     // not implemented
@@ -332,8 +331,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
     */
   def deleteAll(
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[Map[VId, VType]]] = {
     // not implemented
@@ -363,15 +361,15 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
     * @param pos a [[SourcePosition]] object to identify the caller.
     * @return a future to the resource
     */
-  def read(id: VId)(
-      implicit
+  def read(id: VId)(implicit
       pos: SourcePosition
   ): Future[Result[VType]] = {
     log.fine(
       s"Store ${name}: Reading resource ${resourceURI}/${idToString(id)} called from ${pos.line}"
     )
     val rf = cache.read(
-      id, { oldv =>
+      id,
+      { oldv =>
         oldv match {
           case Some(f) =>
             val completed = f.isCompleted
@@ -402,16 +400,15 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
       }
     )
     rf.transform { tryR =>
-        tryR match {
-          case Success(Right(v)) =>
-          case Success(Left(error)) =>
-            cache.remove(id)
-          case Failure(ex) =>
-            cache.remove(id)
-        }
-        tryR
+      tryR match {
+        case Success(Right(v)) =>
+        case Success(Left(error)) =>
+          cache.remove(id)
+        case Failure(ex) =>
+          cache.remove(id)
       }
-      .logit(s"Store ${name}: Read ${resourceURI}/${idToString(id)}")
+      tryR
+    }.logit(s"Store ${name}: Read ${resourceURI}/${idToString(id)}")
 
   }
 
@@ -427,8 +424,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
       id: VId,
       newvalue: VType,
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[VType]] = {
     select(id)
@@ -445,8 +441,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
     * @param pos a [[SourcePosition]] object to identify the caller.
     * @return a future to the new value
     */
-  def update[T, R](id: VId, updator: Updator[VType, T, R])(
-      implicit
+  def update[T, R](id: VId, updator: Updator[VType, T, R])(implicit
       pos: SourcePosition
   ): Future[Result[R]] = {
     log.fine(
@@ -454,37 +449,41 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
     )
     var tt: Option[T] = None
     val rfut = cache.update(
-      id, { ooldf =>
-        val oldf = ooldf.get // this can't be None, the third argument gets this value
+      id,
+      { ooldf =>
+        val oldf =
+          ooldf.get // this can't be None, the third argument gets this value
         log.fine(
           s"Store ${name}: Updating resource ${resourceURI} waiting for old value from ${Implicits
             .toObjectId(oldf)}, complete=${oldf.isCompleted}"
         )
-        oldf.flatMap {
-          rold =>
-            rold match {
-              case Right(oldv) =>
-                val upr = updator.updater(oldv)
-                upr match {
-                  case Right((newv, t)) =>
-                    tt = Some(t)
-                    persistent.putToPersistent(id, newv).map { rnv =>
-                      rnv match {
-                        case Right(nv) =>
-                          updator.prepend(
-                            ChangeContext.update(nv, s"$resourceURI/${Resources.vidToString(id)}")
+        oldf.flatMap { rold =>
+          rold match {
+            case Right(oldv) =>
+              val upr = updator.updater(oldv)
+              upr match {
+                case Right((newv, t)) =>
+                  tt = Some(t)
+                  persistent.putToPersistent(id, newv).map { rnv =>
+                    rnv match {
+                      case Right(nv) =>
+                        updator.prepend(
+                          ChangeContext.update(
+                            nv,
+                            s"$resourceURI/${Resources.vidToString(id)}"
                           )
-                          Right(nv)
-                        case Left(e) =>
-                          Result(e)
-                      }
+                        )
+                        Right(nv)
+                      case Left(e) =>
+                        Result(e)
                     }
-                  case Left(e) =>
-                    Result.future(e)
-                }
-              case Left(e) =>
-                Result.future(e)
-            }
+                  }
+                case Left(e) =>
+                  Result.future(e)
+              }
+            case Left(e) =>
+              Result.future(e)
+          }
         }
       },
       Some({ () =>
@@ -517,8 +516,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
     * @param pos a [[SourcePosition]] object to identify the caller.
     * @return a future to the old values
     */
-  def delete(id: VId, changeContext: ChangeContext = ChangeContext())(
-      implicit
+  def delete(id: VId, changeContext: ChangeContext = ChangeContext())(implicit
       pos: SourcePosition
   ): Future[Result[VType]] = {
 
@@ -539,53 +537,95 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
               log.fine(
                 s"Store ${name}: Delete in persistent store for resource $resourceURI/${idToString(id)}, waiting for old value"
               )
-              old.flatMap {
-                rold =>
-                  log.fine(
-                    s"Store ${name}: Delete in persistent store for resource $resourceURI/${idToString(id)}, old value is ${rold}"
-                  )
-                  rold match {
-                    case Right(oldv) =>
-                      Future.foldLeft(
-                        List(
-                          persistent.deleteFromPersistent(id, Some(oldv)).map { ro =>
-                              ro match {
-                                case Right(o) =>
-                                  notify(
-                                    changeContext.delete(o, s"$resourceURI/${idToString(id)}")
+              old.flatMap { rold =>
+                log.fine(
+                  s"Store ${name}: Delete in persistent store for resource $resourceURI/${idToString(id)}, old value is ${rold}"
+                )
+                rold match {
+                  case Right(oldv) =>
+                    Future.foldLeft(
+                      List(
+                        persistent.deleteFromPersistent(id, Some(oldv)).map {
+                          ro =>
+                            ro match {
+                              case Right(o) =>
+                                notify(
+                                  changeContext.delete(
+                                    o,
+                                    s"$resourceURI/${idToString(id)}"
                                   )
-                                  Right(Some(o))
-                                case Left(x) => Left(x)
-                              }
-                          },
-                          Future {
-                            persistent.deleteAll(id) match {
-                              case Right(o) => Right(None)
-                              case Left((statuscode,msg)) if statuscode == StatusCodes.BadRequest => Right(None)
+                                )
+                                Right(Some(o))
                               case Left(x) => Left(x)
                             }
+                        },
+                        Future {
+                          persistent.deleteAll(id) match {
+                            case Right(o) => Right(None)
+                            case Left((statuscode, msg))
+                                if statuscode == StatusCodes.BadRequest =>
+                              Right(None)
+                            case Left(x) => Left(x)
                           }
-                        )
-                      )( Result[VType]( (StatusCodes.InternalServerError,RestMessage("")) )) { (ac,v) =>
-                        v match {
-                          case Right(Some(vv)) => Result(vv)
-                          case Right(None) =>
-                            ac match {
-                              case Left((istatus,_)) if istatus==StatusCodes.InternalServerError => Left((istatus,RestMessage("Partial success, metadata deleted")))
-                              case Right(av) => Result(av)
-                              case Left((astatus,amsg)) => Left((astatus,RestMessage(s"Partial success, metadata deleted, ${amsg.msg}")))
-                            }
-                          case Left((status,msg)) =>
-                            ac match {
-                              case Left((istatus,_)) if istatus==StatusCodes.InternalServerError => Left((status,msg))
-                              case Right(av) => Result((status, RestMessage(s"Partial success, match deleted, failure: ${msg.msg}")))
-                              case Left((astatus,amsg)) => Result((status, RestMessage(s"${amsg.msg} and ${msg.msg}")))
-                            }
                         }
+                      )
+                    )(
+                      Result[VType](
+                        (StatusCodes.InternalServerError, RestMessage(""))
+                      )
+                    ) { (ac, v) =>
+                      v match {
+                        case Right(Some(vv)) => Result(vv)
+                        case Right(None) =>
+                          ac match {
+                            case Left((istatus, _))
+                                if istatus == StatusCodes.InternalServerError =>
+                              Left(
+                                (
+                                  istatus,
+                                  RestMessage(
+                                    "Partial success, metadata deleted"
+                                  )
+                                )
+                              )
+                            case Right(av) => Result(av)
+                            case Left((astatus, amsg)) =>
+                              Left(
+                                (
+                                  astatus,
+                                  RestMessage(
+                                    s"Partial success, metadata deleted, ${amsg.msg}"
+                                  )
+                                )
+                              )
+                          }
+                        case Left((status, msg)) =>
+                          ac match {
+                            case Left((istatus, _))
+                                if istatus == StatusCodes.InternalServerError =>
+                              Left((status, msg))
+                            case Right(av) =>
+                              Result(
+                                (
+                                  status,
+                                  RestMessage(
+                                    s"Partial success, match deleted, failure: ${msg.msg}"
+                                  )
+                                )
+                              )
+                            case Left((astatus, amsg)) =>
+                              Result(
+                                (
+                                  status,
+                                  RestMessage(s"${amsg.msg} and ${msg.msg}")
+                                )
+                              )
+                          }
                       }
-                    case Left(e) =>
-                      Result.future(e)
-                  }
+                    }
+                  case Left(e) =>
+                    Result.future(e)
+                }
               }
             case None =>
               log.fine(
@@ -594,7 +634,10 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
               persistent.deleteFromPersistent(id, None).map { roldv =>
                 roldv match {
                   case Right(oldv) =>
-                    notify(changeContext.delete(oldv, s"$resourceURI/${idToString(id)}"))
+                    notify(
+                      changeContext
+                        .delete(oldv, s"$resourceURI/${idToString(id)}")
+                    )
                     Result(oldv)
                   case Left(error) =>
                     Result(error)
@@ -603,7 +646,8 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
           }).logit(
             s"Store ${name}: deleted resource in persistent store $resourceURI/${idToString(id)}"
           )
-        }, { oldf => // return the future that should be added to the cache
+        },
+        { oldf => // return the future that should be added to the cache
           oldf.map { old =>
             persistent.resultAfterDelete(id)
           }
@@ -624,7 +668,8 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[VType, V
     */
   def clearError(id: VId): Boolean = {
     cache.conditionalRemove(
-      id, { ofroldv =>
+      id,
+      { ofroldv =>
         ofroldv match {
           case Some(froldv) =>
             froldv.value match {

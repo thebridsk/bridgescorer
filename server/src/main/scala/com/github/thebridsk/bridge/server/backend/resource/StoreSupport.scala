@@ -6,30 +6,36 @@ import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.Future
 
 object StoreSupport {
-  val readOnlyStoreError =
+  val readOnlyStoreError: Result[Nothing] =
     Result(StatusCodes.BadRequest, RestMessage("Store is read only"))
 }
 
 trait IdSupport[VId <: Comparable[VId]] {
 
-  def compare( idthis: VId, idthat: VId ): Int = idthis.compareTo(idthat)
+  def compare(idthis: VId, idthat: VId): Int = idthis.compareTo(idthat)
 
-  def toId( i: Int ): VId = throw new IllegalStateException("Id is not number based")
+  def toId(i: Int): VId =
+    throw new IllegalStateException("Id is not number based")
 
-  def toNumber( id: VId ): Int = throw new IllegalStateException("Id is not number based")
+  def toNumber(id: VId): Int =
+    throw new IllegalStateException("Id is not number based")
 
-  def toString( id: VId ): String = throw new IllegalStateException("Id is not number based")
+  def toString(id: VId): String =
+    throw new IllegalStateException("Id is not number based")
 }
 
-abstract class StoreSupport[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+abstract class StoreSupport[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     val idSupport: IdSupport[VId],
     val resourceName: String,
     val resourceURI: String,
     val readOnly: Boolean,
     val useIdFromValue: Boolean = false,
     val dontUpdateTime: Boolean = false
-)(
-    implicit
+)(implicit
     val instanceJson: VersionedInstanceJson[VId, VType]
 ) {
 

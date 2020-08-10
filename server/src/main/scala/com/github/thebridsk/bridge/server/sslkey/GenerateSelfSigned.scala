@@ -4,44 +4,19 @@ import com.github.thebridsk.utilities.main.Subcommand
 import com.github.thebridsk.utilities.logging.Logger
 import org.rogach.scallop._
 import scala.concurrent.duration.Duration
-import scala.reflect.io.Path
-import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
-import java.io.File
-import java.io.Reader
-import java.io.BufferedReader
-import scala.io.Source
-import scala.io.BufferedSource
-import scala.util.Left
-import java.io.InputStream
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.data.MatchRubber
-import akka.http.scaladsl.model.StatusCodes
-import scala.concurrent.Await
-import scala.concurrent.duration._
-import com.github.thebridsk.bridge.server.backend.resource.Store
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import com.github.thebridsk.bridge.data.VersionedInstance
-import com.github.thebridsk.bridge.data.MatchDuplicateResult
-import com.github.thebridsk.bridge.server.backend.BridgeServiceZipStore
-import com.github.thebridsk.bridge.server.util.GenerateSSLKeys
 import com.github.thebridsk.bridge.server.util.RootCAInfo
 import com.github.thebridsk.bridge.server.util.ServerInfo
+import scala.util.matching.Regex
 
 trait GenerateSelfSigned
 
 object GenerateSelfSigned extends Subcommand("generateselfsigned") {
   import SSLKeyCommands.optionKeyDir
 
-  val log = Logger[GenerateSelfSigned]()
+  val log: Logger = Logger[GenerateSelfSigned]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
-
-  import com.github.thebridsk.utilities.main.Converters._
 
   descr("Generate a CA certificate and a Server certificate")
 
@@ -52,7 +27,7 @@ Syntax:
   ${SSLKeyCommands.cmdName} ${name} [options]
 Options:""")
 
-  val optionClean = toggle(
+  val optionClean: ScallopOption[Boolean] = toggle(
     name = "clean",
     noshort = true,
     descrNo = "fail if keys already exist",
@@ -60,7 +35,7 @@ Options:""")
     default = Some(false)
   )
 
-  val optionVerbose = toggle(
+  val optionVerbose: ScallopOption[Boolean] = toggle(
     name = "verbose",
     short = 'v',
     descrNo = "Don't add verbose option to commands",
@@ -68,7 +43,7 @@ Options:""")
     default = Some(false)
   )
 
-  val optionNginx = toggle(
+  val optionNginx: ScallopOption[Boolean] = toggle(
     name = "nginx",
     noshort = true,
     descrNo = "Don't generate certificate for nginx",
@@ -76,14 +51,14 @@ Options:""")
     default = Some(false)
   )
 
-  val optionCA = opt[String](
+  val optionCA: ScallopOption[String] = opt[String](
     "ca",
     noshort = true,
     descr = "base filename for CA certificate files",
-    required = true,
+    required = true
   )
 
-  val optionRootCAAlias = opt[String](
+  val optionRootCAAlias: ScallopOption[String] = opt[String](
     "caalias",
     noshort = true,
     descr = "alias for CA private certificate in CA keystore",
@@ -91,77 +66,79 @@ Options:""")
     default = Some("rootCA")
   )
 
-  val optionRootCADname = opt[String](
+  val optionRootCADname: ScallopOption[String] = opt[String](
     "cadname",
     noshort = true,
     descr = "DName for CA",
     required = true,
-    default = Some("CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US")
+    default = Some(
+      "CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US"
+    )
   )
 
-  val optionRootCAStorePW = opt[String](
+  val optionRootCAStorePW: ScallopOption[String] = opt[String](
     "castorepw",
     noshort = true,
     descr = "Store PW for CA keystore",
-    required = true,
+    required = true
   )
 
-  val optionRootCAKeyPW = opt[String](
+  val optionRootCAKeyPW: ScallopOption[String] = opt[String](
     "cakeypw",
     noshort = true,
     descr = "Private key PW",
-    required = true,
+    required = true
   )
 
-  val optionTruststore = opt[String](
+  val optionTruststore: ScallopOption[String] = opt[String](
     "truststore",
     noshort = true,
     descr = "base filename for truststore",
-    required = true,
+    required = true
   )
-  val optionTrustPW = opt[String](
+  val optionTrustPW: ScallopOption[String] = opt[String](
     "trustpw",
     noshort = true,
     descr = "password for truststore",
-    required = true,
+    required = true
   )
 
-  val optionServer = opt[String](
+  val optionServer: ScallopOption[String] = opt[String](
     "server",
     short = 's',
     descr = "base filename for server certificate files",
-    required = true,
+    required = true
   )
 
-  val optionAlias = opt[String](
+  val optionAlias: ScallopOption[String] = opt[String](
     "alias",
     short = 'a',
     descr = "server certificate alias in keystore",
-    required = true,
+    required = true
   )
 
-  val optionDname = opt[String](
+  val optionDname: ScallopOption[String] = opt[String](
     "dname",
     short = 'd',
     descr = "server dname",
-    required = true,
+    required = true
   )
 
-  val optionKeypass = opt[String](
+  val optionKeypass: ScallopOption[String] = opt[String](
     "keypass",
     noshort = true,
     descr = "password for server private certificate",
-    required = true,
+    required = true
   )
 
-  val optionStorepass = opt[String](
+  val optionStorepass: ScallopOption[String] = opt[String](
     "storepass",
     noshort = true,
     descr = "password for server keystore",
-    required = true,
+    required = true
   )
 
-  val optionValidityCA = opt[Int](
+  val optionValidityCA: ScallopOption[Int] = opt[Int](
     "validityCA",
     noshort = true,
     descr = "the validity of the CA certificate in days, default 1 year",
@@ -169,7 +146,7 @@ Options:""")
     validate = { days => days > 0 }
   )
 
-  val optionValidityServer = opt[Int](
+  val optionValidityServer: ScallopOption[Int] = opt[Int](
     "validityServer",
     noshort = true,
     descr = "the validity of the server certificate in days, default 1 year",
@@ -177,21 +154,25 @@ Options:""")
     validate = { days => days > 0 }
   )
 
-  val patternIP = """(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})""".r
+  val patternIP: Regex = """(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})""".r
 
-  val optionIP = opt[List[String]](
+  val optionIP: ScallopOption[List[String]] = opt[List[String]](
     name = "ip",
     noshort = true,
-    descr = "list of IP addresses to add to server certificate, comma separated.  127.0.0.1 is always added",
+    descr =
+      "list of IP addresses to add to server certificate, comma separated.  127.0.0.1 is always added",
     default = Some(List()),
     validate = { l =>
       log.warning(s"Validating ip option: ${l.mkString(" ")}")
-      l.find { s => s match {
-        case patternIP(ip) => false    // this is good, but we are looking for a bad entry
-        case _ => true
-      } }.isEmpty
-    }        // empty means no bad entries were found
-  )( listArgConverter( s => s ))
+      l.find { s =>
+        s match {
+          case patternIP(ip) =>
+            false // this is good, but we are looking for a bad entry
+          case _ => true
+        }
+      }.isEmpty
+    } // empty means no bad entries were found
+  )(listArgConverter(s => s))
 
   def executeSubcommand(): Int = {
 
@@ -221,7 +202,7 @@ Options:""")
         storepass = optionStorepass(),
         good = false,
         verbose = optionVerbose(),
-        validityServer = optionValidityServer().toString,
+        validityServer = optionValidityServer().toString
       )
 
       if (optionClean()) {
@@ -234,21 +215,22 @@ Options:""")
 
       val trust = ca.trustRootCA(optionTruststore(), optionTrustPW())
 
-      val serv = server.
-                    generateServerCSR().
-                    generateServerCert(
-                      rootcaAlias = ca.alias,
-                      rootcaKeypass = ca.keypass,
-                      rootcaKeyStore = ca.keystore,
-                      rootcaKeystorePass = ca.storepass,
-                      ip = optionIP()
-                    ).
-                    importServerCert(ca.alias, ca.cert.toString).
-                    exportServerCert().
-                    generateServerPKCS()
+      val serv = server
+        .generateServerCSR()
+        .generateServerCert(
+          rootcaAlias = ca.alias,
+          rootcaKeypass = ca.keypass,
+          rootcaKeyStore = ca.keystore,
+          rootcaKeystorePass = ca.storepass,
+          ip = optionIP()
+        )
+        .importServerCert(ca.alias, ca.cert.toString)
+        .exportServerCert()
+        .generateServerPKCS()
 
-      val serv2 = if (optionNginx()) serv.generateServerKey()
-                  else serv
+      val serv2 =
+        if (optionNginx()) serv.generateServerKey()
+        else serv
 
       serv2.generateMarkerFile()
 

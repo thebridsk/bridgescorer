@@ -1,13 +1,9 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import js._
-import org.scalajs.dom.raw.Element
+import scala.scalajs.js.UndefOr
 
 class PopperPlacement(val value: String) extends AnyVal
 object PopperPlacement {
@@ -52,18 +48,20 @@ trait PopperProps extends AdditionalProps with PopperPropsPrivate {
 }
 object PopperProps extends PropsFactory[PopperProps] {
 
-  implicit class WrapPopperProps(val p: PopperProps) extends AnyVal {
+  implicit class WrapPopperProps(private val p: PopperProps) extends AnyVal {
 
-    def placement = p.placementInternal.map(s => new PopperPlacement(s))
+    def placement: UndefOr[PopperPlacement] =
+      p.placementInternal.map(s => new PopperPlacement(s))
 
 //    def placement_= (v: js.UndefOr[PopperPlacement]): Unit = {
 //      v.map{ vv=>p.placementInternal=vv.value; None }.
 //        orElse{ p.placementInternal=js.undefined; None }
 //    }
 
-    def anchorEl = p.anchorElInternal.map { v =>
-      v.asInstanceOf[AnchorElement]
-    }
+    def anchorEl: UndefOr[AnchorElement] =
+      p.anchorElInternal.map { v =>
+        v.asInstanceOf[AnchorElement]
+      }
 
 //    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
 //      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
@@ -130,12 +128,17 @@ object PopperProps extends PropsFactory[PopperProps] {
 }
 
 object MuiPopper extends ComponentFactory[PopperProps] {
-  @js.native @JSImport("@material-ui/core/Popper", JSImport.Default) private object Popper
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Popper",
+    JSImport.Default
+  ) private object Popper extends js.Any
 
-      protected val f = JsComponent[PopperProps, Children.Varargs, Null](Popper)
+  protected val f =
+    JsComponent[PopperProps, Children.Varargs, Null](
+      Popper
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-      // protected val f = JsFnComponent[PopperProps, Children.Varargs](Popper)
+  // protected val f = JsFnComponent[PopperProps, Children.Varargs](Popper)
 
   /**
     * @param anchorEl This is the DOM element, or a function that returns the DOM element,
@@ -178,7 +181,7 @@ object MuiPopper extends ComponentFactory[PopperProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: PopperProps = PopperProps(
       anchorEl = anchorEl,
       container = container,

@@ -1,38 +1,23 @@
 package com.github.thebridsk.bridge.server
 
-import akka.actor.{Actor, ActorSystem, Props}
-import akka.io.IO
-import akka.pattern.ask
+import akka.actor.ActorSystem
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import com.github.thebridsk.utilities.main.Main
-import java.util.logging.Level
 import scala.concurrent.Future
 import scala.concurrent.Await
-import akka.actor.ActorRef
-import akka.io.Tcp
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
-import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.{Sink, Source}
 import com.github.thebridsk.bridge.server.service.MyService
-import com.github.thebridsk.bridge.server.util.SystemTimeJVM
-import akka.event.Logging
 import akka.http.scaladsl.ConnectionContext
 import javax.net.ssl.SSLContext
-import akka.http.scaladsl.HttpExt
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import scala.reflect.io.Directory
 import scala.reflect.io.Path
@@ -55,7 +40,6 @@ import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.Uri.Query
 import com.github.thebridsk.utilities.main.Subcommand
 import com.github.thebridsk.utilities.logging.Logger
-import javax.net.ssl.TrustManagerFactory
 import com.github.thebridsk.bridge.server.service.ShutdownHook
 import java.net.NetworkInterface
 import java.net.Inet4Address
@@ -66,13 +50,16 @@ import akka.http.scaladsl.settings.ServerSettings
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.ContentType
 import akka.http.scaladsl.model.MediaTypes
+import akka.http.scaladsl.HttpsConnectionContext
+import akka.http.scaladsl.server.{RequestContext, RouteResult}
+import scala.concurrent.ExecutionContextExecutor
 
 /**
   * This is the main program for the REST server for our application.
   */
 object StartServer extends Subcommand("start") with ShutdownHook {
 
-  val logger = Logger(StartServer.getClass.getName)
+  val logger: Logger = Logger(StartServer.getClass.getName)
 
   val defaultRunFor = "12h"
 
@@ -91,14 +78,14 @@ Start HTTP server for scoring duplicate and chicago bridge
 Syntax:
   ${Server.cmdName} start options
 Options:""")
-  val optionInterface = opt[String](
+  val optionInterface: ScallopOption[String] = opt[String](
     "interface",
     short = 'i',
     descr = "the port the server listens on, default=0.0.0.0",
     argName = "ip",
     default = Some("0.0.0.0")
   )
-  val optionPort = opt[Int](
+  val optionPort: ScallopOption[Int] = opt[Int](
     "port",
     short = 'p',
     descr = "the port the server listens on, use 0 for no http, default=8080",
@@ -108,20 +95,20 @@ Options:""")
       p >= 0 && p <= 65535
     }
   )
-  val optionCertificate = opt[String](
+  val optionCertificate: ScallopOption[String] = opt[String](
     "certificate",
     short = 'c',
     descr = "the private certificate for the server, default=None",
     argName = "p12",
     default = None
   )
-  val optionCertPassword = opt[String](
+  val optionCertPassword: ScallopOption[String] = opt[String](
     "certpassword",
     descr = "the password for the private certificate, default=None",
     argName = "pw",
     default = None
   )
-  val optionHttps = opt[Int](
+  val optionHttps: ScallopOption[Int] = opt[Int](
     "https",
     short = 'h',
     descr = "https port to use",
@@ -131,14 +118,14 @@ Options:""")
       p > 0 && p <= 65535
     }
   );
-  val optionStore = opt[Path](
+  val optionStore: ScallopOption[Path] = opt[Path](
     "store",
     short = 's',
     descr = "The store directory, default=./store",
     argName = "dir",
     default = Some("./store")
   )
-  val optionCACertificate = opt[Path](
+  val optionCACertificate: ScallopOption[Path] = opt[Path](
     "cacert",
     noshort = true,
     descr = "The public CA certificate, in DER format",
@@ -146,7 +133,7 @@ Options:""")
     default = None,
     validate = { f => f.isFile }
   )
-  val optionRunFor = opt[Duration](
+  val optionRunFor: ScallopOption[Duration] = opt[Duration](
     "runfor",
     short = 'r',
     descr = s"Run for specified as a duration, default ${defaultRunFor}",
@@ -159,14 +146,14 @@ Options:""")
 //  val optionShutdown = toggle("shutdown", default = Some(false), noshort = true,
 //                              descrYes = "Shutdown a server running on the same machine, other options should be the same as when starting server",
 //                              descrNo = "Start the server." )
-  val optionBrowser = toggle(
+  val optionBrowser: ScallopOption[Boolean] = toggle(
     "browser",
     default = Some(false),
     noshort = true,
     descrYes = "Start a browser on the home page of the server",
     descrNo = "Do not start the browser"
   )
-  val optionChrome = toggle(
+  val optionChrome: ScallopOption[Boolean] = toggle(
     "chrome",
     default = Some(false),
     noshort = true,
@@ -174,21 +161,21 @@ Options:""")
       "Start the browser on the home page of the server in fullscreen mode",
     descrNo = "Do not start the chrome browser"
   )
-  val optionLoopback = toggle(
+  val optionLoopback: ScallopOption[Boolean] = toggle(
     "loopback",
     default = Some(false),
     noshort = true,
     descrYes = "Use loopback as host name when starting browser",
     descrNo = "Use localhost as host name when starting browser"
   )
-  val optionHttp2 = toggle(
+  val optionHttp2: ScallopOption[Boolean] = toggle(
     "http2",
     default = Some(false),
     noshort = true,
     descrYes = "Enable http2 support",
     descrNo = "Disable http2 support"
   )
-  val optionCache = opt[Duration](
+  val optionCache: ScallopOption[Duration] = opt[Duration](
     "cache",
     descr =
       s"time to set in cache-control header of responses.  0s for no-cache. default ${defaultCacheFor}",
@@ -199,7 +186,7 @@ Options:""")
     }
   )
 
-  val optionRemoteLogger =
+  val optionRemoteLogger: ScallopOption[Path] =
     opt[Path](
       "remotelogging",
       short = 'l',
@@ -209,7 +196,7 @@ Options:""")
       default = None
     )
 
-  val optionIPadRemoteLogging = opt[String](
+  val optionIPadRemoteLogging: ScallopOption[String] = opt[String](
     "ipad",
     noshort = true,
     descr = "The remote logging profile to use for the iPad, default: off",
@@ -217,7 +204,7 @@ Options:""")
     default = Some("default")
   )
 
-  val optionBrowserRemoteLogging = opt[String](
+  val optionBrowserRemoteLogging: ScallopOption[String] = opt[String](
     "browserlogging",
     noshort = true,
     descr = "The remote logging profile to use for browsers, default: default",
@@ -225,7 +212,7 @@ Options:""")
     default = Some("default")
   )
 
-  val optionDiagnosticDir = opt[Path](
+  val optionDiagnosticDir: ScallopOption[Path] = opt[Path](
     "diagnostics",
     noshort = true,
     descr =
@@ -276,11 +263,13 @@ If both https and http is started, then http will be redirected to https
     getServer(true, true).execute()
   }
 
-  def terminateServer() = {
+  def terminateServer(): Promise[String] = {
     getServer(true, false).terminateServer()
   }
 
-  def terminateServerIn(duration: Duration = 10 seconds) = {
+  def terminateServerIn(
+      duration: Duration = 10 seconds
+  ): Future[Promise[String]] = {
     getServer(true, false).terminateServerIn(duration)
   }
 
@@ -290,9 +279,12 @@ If both https and http is started, then http will be redirected to https
   def serverSSLContext(
       certPassword: Option[String] = optionCertPassword.toOption,
       certificate: Option[String] = optionCertificate.toOption
-  ) = {
-    logger.info(s"Creating serverSSLContext, certificate=$certificate, workingDirectory=${new File(".").getAbsoluteFile().getCanonicalFile()}")
-    val password = certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
+  ): HttpsConnectionContext = {
+    logger.info(
+      s"Creating serverSSLContext, certificate=$certificate, workingDirectory=${new File(".").getAbsoluteFile().getCanonicalFile()}"
+    )
+    val password =
+      certPassword.getOrElse("abcdef").toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
     val ks = certificate match {
       case Some(cert) =>
@@ -349,7 +341,7 @@ If both https and http is started, then http will be redirected to https
       optBrowserRemoteLogging: Option[String] = None,
       optIPadRemoteLogging: Option[String] = None,
       diagnosticDir: Option[Directory] = None,
-      optCACert: Option[Path] = None,
+      optCACert: Option[Path] = None
   ): Future[MyService] = {
     getServer(true, true).start(
       interface,
@@ -377,18 +369,18 @@ If both https and http is started, then http will be redirected to https
 private class StartServer {
   import StartServer._
   // we need an ActorSystem to host our application in
-  implicit val system = ActorSystem("bridgescorer")
+  implicit val system: ActorSystem = ActorSystem("bridgescorer")
   val log = StartServer.logger // Logging(system, Server.getClass)
-  implicit val executor = system.dispatcher
+  implicit val executor: ExecutionContextExecutor = system.dispatcher
 
-  implicit val timeout = Timeout(20.seconds)
+  implicit val timeout: Timeout = Timeout(20.seconds)
 
   val defaultRunFor = "12h"
 
   val defaultHttpsPort = 8443
   val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
-  def getHttpPortOption() = {
+  def getHttpPortOption(): Option[Int] = {
     optionPort.toOption match {
       case Some(0) => None
       case x       => x
@@ -396,8 +388,6 @@ private class StartServer {
   }
 
   def execute(): Int = {
-    import scala.language.postfixOps
-    import scala.concurrent.duration._
 
 //    if (optionShutdown.isSupplied) {
 //      var rc = 0
@@ -416,7 +406,7 @@ private class StartServer {
 //    }
   }
 
-  def getURL(interface: String) = {
+  def getURL(interface: String): String = {
     val httpsURL = optionHttps.toOption match {
       case Some(port) =>
         if (port == 443) Some("https://" + interface + "/")
@@ -434,7 +424,7 @@ private class StartServer {
     httpsURL.getOrElse(httpURL.get)
   }
 
-  def getHostPort(interface: String) = {
+  def getHostPort(interface: String): String = {
     val httpsURL = optionHttps.toOption match {
       case Some(port) => Some("https://" + interface + ":" + port + "/")
       case None       => None
@@ -456,7 +446,8 @@ private class StartServer {
         if (p.isFile && p.extension == "zip") {
           Some(
             new BridgeServiceZipStore("root", p.toFile) {
-              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+              override val diagnosticDir: Option[Directory] =
+                optionDiagnosticDir.toOption.map(_.toDirectory)
             }
           )
         } else if (!d.isDirectory) {
@@ -466,13 +457,15 @@ private class StartServer {
           }
           Some(
             new BridgeServiceFileStore(d, oid = Some("root")) {
-              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+              override val diagnosticDir: Option[Directory] =
+                optionDiagnosticDir.toOption.map(_.toDirectory)
             }
           )
         } else {
           Some(
             new BridgeServiceFileStore(d, oid = Some("root")) {
-              override val diagnosticDir: Option[Directory] = optionDiagnosticDir.toOption.map( _.toDirectory )
+              override val diagnosticDir: Option[Directory] =
+                optionDiagnosticDir.toOption.map(_.toDirectory)
             }
           )
         }
@@ -556,9 +549,11 @@ private class StartServer {
   }
 
   // This will complete if the server fails to start
-  val terminatePromise = Promise[String]()
+  val terminatePromise: Promise[String] = Promise[String]()
 
-  def terminateServerIn(duration: Duration = 10 seconds) = {
+  def terminateServerIn(
+      duration: Duration = 10 seconds
+  ): Future[Promise[String]] = {
     Future {
       log.info("Shutting down server in " + duration)
       Thread.sleep(duration.toMillis)
@@ -566,12 +561,15 @@ private class StartServer {
     }
   }
 
-  def terminateServer() = {
+  def terminateServer(): Promise[String] = {
     log.info("Shutting down server now")
     terminatePromise.success("Terminate")
   }
 
-  def redirectRoute(scheme: String, port: Int) =
+  def redirectRoute(
+      scheme: String,
+      port: Int
+  ): RequestContext => Future[RouteResult] =
     extractUri { uri =>
       redirect(
         uri.withScheme(scheme).withPort(port),
@@ -645,7 +643,10 @@ private class StartServer {
       override val certhttppath = optCACert.map { certfile =>
         log.info(s"Using CA cert ${certfile}")
         path("servercert") {
-          getFromFile(certfile.jfile, ContentType( MediaTypes.`application/x-x509-ca-cert`))
+          getFromFile(
+            certfile.jfile,
+            ContentType(MediaTypes.`application/x-x509-ca-cert`)
+          )
         }
       }
 
@@ -701,7 +702,8 @@ private class StartServer {
 
         val redirectHttpToHttps = redirectRoute("https", httpsPort.get)
         val httpToHttps = respondWithHeaders(myService.cacheHeaders) {
-          (myService.certhttppath.toList:::List(redirectHttpToHttps)).reduceLeft( (ac,v) => ac ~ v )
+          (myService.certhttppath.toList ::: List(redirectHttpToHttps))
+            .reduceLeft((ac, v) => ac ~ v)
         }
         Some(
           Http().bindAndHandleAsync(
@@ -770,7 +772,9 @@ private class StartServer {
     val f = waitfor(60 seconds, bindingHttp, bindingHttps)
     f.onComplete(_ match {
       case Success(_) =>
-        log.info(s"ClassPath:\n${ClassPath.show("  ", getClass.getClassLoader)}")
+        log.info(
+          s"ClassPath:\n${ClassPath.show("  ", getClass.getClassLoader)}"
+        )
         log.info(s"System Properties:\n${ClassPath.showProperties("  ")}")
       case Failure(e) =>
         log.severe(

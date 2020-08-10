@@ -17,32 +17,33 @@ import play.api.libs.json.KeyReads
   * @param id the ID, Should follow the pattern "[a-zA-Z]*\d+", case sensitive if useName is false.
   * @param useName use a name instead of the Id pattern.
   * @param classTag a ClassTag for the class which instances of are identified by this ID
-
-  * @param A the ID type
   *
+  * @param A the ID type
   */
 @Schema(description = "The ID", `type` = "string", format = "id")
-case class Id[A] private[data] ( val id: String, useName: Boolean = false )( implicit private [Id] val classTag: ClassTag[A] ) extends Ordered[Id[A]] {
-  override
-  def equals( other: Any ) = {
+case class Id[A] private[data] (val id: String, useName: Boolean = false)(
+    implicit private[Id] val classTag: ClassTag[A]
+) extends Ordered[Id[A]] {
+  override def equals(other: Any): Boolean = {
     // println(s"comparing $this and $other")
     other match {
-      case o: Id[A] => o.id == id && (o.classTag.runtimeClass eq classTag.runtimeClass)
+      case o: Id[A] =>
+        o.id == id && (o.classTag.runtimeClass eq classTag.runtimeClass)
       case _ => false
     }
   }
-  override
-  def hashCode() = id.hashCode() + classTag.runtimeClass.hashCode()
+  override def hashCode(): Int =
+    id.hashCode() + classTag.runtimeClass.hashCode()
 
-  override
-  def toString() = s"Id[${classTag.runtimeClass.getSimpleName}]($id)"
+  override def toString(): String =
+    s"Id[${classTag.runtimeClass.getSimpleName}]($id)"
 
   def compare(that: Id[A]): Int = {
     if (useName) {
       id.compareTo(that.id)
     } else {
-      val Id.idpattern(p1,s1) = id
-      val Id.idpattern(p2,s2) = that.id
+      val Id.idpattern(p1, s1) = id
+      val Id.idpattern(p2, s2) = that.id
 
       val r = p1.compareTo(p2)
       if (r == 0) {
@@ -60,28 +61,30 @@ case class Id[A] private[data] ( val id: String, useName: Boolean = false )( imp
     * If the id does not match idpattern, then id is returned.
     * @throws IllegalStateException is useName is true
     */
-  def toNumber = {
+  def toNumber: String = {
     if (useName) throw new IllegalStateException
     id match {
-      case Id.idpattern(_,bn) => bn
-      case _                => id
+      case Id.idpattern(_, bn) => bn
+      case _                   => id
     }
   }
 
   def toInt = toNumber.toInt
 
-  def isNul = id == ""
+  def isNul: Boolean = id == ""
 
-  import scala.language.implicitConversions
-  def toBase[B >: A] = this.asInstanceOf[Id[B]]
-  def toSubclass[S <: A]( implicit sTag: ClassTag[S] ) = {
+  def toBase[B >: A]: Id[B] = this.asInstanceOf[Id[B]]
+  def toSubclass[S <: A](implicit sTag: ClassTag[S]): Option[Id[S]] = {
     val cls = classTag.runtimeClass
     if (sTag.runtimeClass.isAssignableFrom(cls)) Some(this.asInstanceOf[Id[S]])
     else None
   }
 }
 
-class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false ) {
+class HasId[IdType: ClassTag](
+    val prefix: String,
+    val useName: Boolean = false
+) {
 
   import com.github.thebridsk.bridge.data
   type ItemType = IdType
@@ -97,47 +100,48 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
     * @return the Id object
     * @throws IllegalArgumentException if s is not a valid Id for this type of item.
     */
-  def id( s: String ): Id = {
+  def id(s: String): Id = {
     if (!useName && !s.isEmpty()) {
       val p = Id.parseId(s)
       if (p.isEmpty || p.get._1 != prefix)
-        throw new IllegalArgumentException(s"String not valid for Ids for class ${getClass.getSimpleName}: $s")
+        throw new IllegalArgumentException(
+          s"String not valid for Ids for class ${getClass.getSimpleName}: $s"
+        )
     }
     Id(s, useName)
   }
 
   /**
-    *
-    *
     * @param i the Id number
     * @return the Id object with and id of s"$prefix$i"
     */
-  def id( i: Int ): Id = id( s"$prefix$i" )
+  def id(i: Int): Id = id(s"$prefix$i")
 
-  def idNul = Id("", useName)
+  def idNul: data.Id[IdType] = Id("", useName)
 
-  val idKeyReads = new KeyReads[data.Id[IdType]] {
-    def readKey(key: String ): JsResult[data.Id[IdType]] = JsSuccess( id(key) )
+  val idKeyReads: KeyReads[data.Id[IdType]] = new KeyReads[data.Id[IdType]] {
+    def readKey(key: String): JsResult[data.Id[IdType]] = JsSuccess(id(key))
   }
 
-  val idKeyWrites = new KeyWrites[data.Id[IdType]] {
+  val idKeyWrites: KeyWrites[data.Id[IdType]] = new KeyWrites[data.Id[IdType]] {
     def writeKey(key: data.Id[IdType]): String = key.id
   }
 
-  val jsonFormat = new Format[data.Id[IdType]] {
-    val classTag = implicitly[ClassTag[IdType]]
+  val jsonFormat: jsonFormat = new jsonFormat
+  class jsonFormat extends Format[data.Id[IdType]] {
+    val classTag: ClassTag[IdType] = implicitly[ClassTag[IdType]]
 
     def reads(json: JsValue): JsResult[data.Id[IdType]] = {
       json match {
         case s: JsString =>
-          JsSuccess( id(s.value) )
+          JsSuccess(id(s.value))
         case e =>
-          JsError( Seq() )
+          JsError(Seq())
       }
     }
 
     def writes(o: data.Id[IdType]): JsValue = {
-      JsString( o.id )
+      JsString(o.id)
     }
 
   }
@@ -146,26 +150,25 @@ class HasId[IdType: ClassTag]( val prefix: String, val useName: Boolean = false 
 
 object Id {
 
-  def apply[A]( id: String )(implicit classTag: ClassTag[A]) = new Id[A](id)
-
-  import com.github.thebridsk.bridge.data
+  def apply[A](id: String)(implicit classTag: ClassTag[A]) = new Id[A](id)
 
   private val idpattern = "([a-zA-Z]*)(\\d+)".r
 
-  def parseId( s: String ) = {
+  def parseId(s: String): Option[(String, String)] = {
     s match {
-      case idpattern(p,i) => Some( (p,i) )
-      case _ => None
+      case idpattern(p, i) => Some((p, i))
+      case _               => None
     }
   }
 
-  def isValidIdPattern(s: String): Boolean = s match {
-    case idpattern(p,n) => true
-    case _            => false
-  }
+  def isValidIdPattern(s: String): Boolean =
+    s match {
+      case idpattern(p, n) => true
+      case _               => false
+    }
 
   import scala.language.implicitConversions
-  implicit def toBase[A, B >: A]( id: Id[A] ): Id[B] = id.toBase
+  implicit def toBase[A, B >: A](id: Id[A]): Id[B] = id.toBase
 
 }
 

@@ -1,9 +1,6 @@
 package com.github.thebridsk.bridge.data
 
-import scala.annotation.meta._
-
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
-import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 
@@ -63,7 +60,7 @@ case class MatchChicagoV2(
       newId: MatchChicago.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
-  ) = {
+  ): MatchChicagoV2 = {
     if (dontUpdateTime) {
       copy(id = newId)
     } else {
@@ -75,7 +72,7 @@ case class MatchChicagoV2(
     }
   }
 
-  def copyForCreate(id: MatchChicago.Id) = {
+  def copyForCreate(id: MatchChicago.Id): MatchChicagoV2 = {
     val time = SystemTime.currentTimeMillis()
     val xrounds = rounds.map { e =>
       e.copyForCreate(e.id)
@@ -84,7 +81,7 @@ case class MatchChicagoV2(
 
   }
 
-  def addRound(r: Round) = {
+  def addRound(r: Round): MatchChicagoV2 = {
     val n = copy(
       rounds = (r.copyForCreate(r.id) :: (rounds.reverse)).reverse,
       updated = SystemTime.currentTimeMillis()
@@ -92,7 +89,7 @@ case class MatchChicagoV2(
     n
   }
 
-  def modifyRound(r: Round) = {
+  def modifyRound(r: Round): MatchChicagoV2 = {
     if (rounds.isEmpty) addRound(r)
     else {
       var mod = false
@@ -141,22 +138,23 @@ case class MatchChicagoV2(
     )
   }
 
-  def isConvertableToChicago5 = players.length == 4 && rounds.length < 2
+  def isConvertableToChicago5: Boolean =
+    players.length == 4 && rounds.length < 2
 
-  def playChicago5(extraPlayer: String) = {
+  def playChicago5(extraPlayer: String): MatchChicagoV2 = {
     if (!isConvertableToChicago5)
       throw new IllegalArgumentException("Number of players must be 4")
     val np = players ::: List(extraPlayer)
     copy(players = np)
   }
 
-  def setGamesPerRound(ngamesPerRound: Int) =
+  def setGamesPerRound(ngamesPerRound: Int): MatchChicagoV2 =
     copy(
       gamesPerRound = ngamesPerRound,
       updated = SystemTime.currentTimeMillis()
     )
 
-  def addHandToLastRound(h: Hand) = {
+  def addHandToLastRound(h: Hand): MatchChicagoV2 = {
     val revrounds = rounds.reverse
     val last = revrounds.head
     val revbefore = revrounds.tail
@@ -172,7 +170,7 @@ case class MatchChicagoV2(
     * @param ih - the hand, if the hand doesn't exist, then it will addHandToLastRound. values are 0, 1, ...
     * @param h - the new hand
     */
-  def modifyHand(ir: Int, ih: Int, h: Hand) = {
+  def modifyHand(ir: Int, ih: Int, h: Hand): MatchChicagoV2 = {
     val rs = rounds.toArray
     val round = rs(ir)
     val hs = round.hands.toArray
@@ -190,14 +188,14 @@ case class MatchChicagoV2(
     * Set the Id of this match
     * @param id the new ID of the match
     */
-  def setId(id: MatchChicago.Id) = {
+  def setId(id: MatchChicago.Id): MatchChicagoV2 = {
     copy(id = id, updated = SystemTime.currentTimeMillis())
   }
 
   /**
     * Is this a quintet match
     */
-  def isQuintet() = {
+  def isQuintet(): Boolean = {
     gamesPerRound == 1
   }
 
@@ -205,21 +203,27 @@ case class MatchChicagoV2(
     * Start a match of quintet.
     * This can only be done if gamesPerRound is still 0 AND no rounds have been started.
     */
-  def setQuintet() = {
+  def setQuintet(): MatchChicagoV2 = {
     if (gamesPerRound != 0 || !rounds.isEmpty) this
     setGamesPerRound(1)
   }
 
-  def convertToCurrentVersion = {
+  def convertToCurrentVersion: (Boolean, MatchChicago) = {
     (
       false,
-      MatchChicago(id, players, rounds, gamesPerRound, false, created, updated)
-        .convertToCurrentVersion
-        ._2
+      MatchChicago(
+        id,
+        players,
+        rounds,
+        gamesPerRound,
+        false,
+        created,
+        updated
+      ).convertToCurrentVersion._2
     )
   }
 
-  def readyForWrite = this
+  def readyForWrite: MatchChicagoV2 = this
 
 }
 
@@ -229,7 +233,7 @@ object MatchChicagoV2 {
       players: List[String],
       rounds: List[Round],
       gamesPerRound: Int
-  ) = {
+  ): MatchChicagoV2 = {
     val time = SystemTime.currentTimeMillis()
     new MatchChicagoV2(id, players, rounds, gamesPerRound, time, time)
   }

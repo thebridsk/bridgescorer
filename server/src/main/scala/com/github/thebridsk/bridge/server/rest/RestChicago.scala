@@ -2,32 +2,25 @@ package com.github.thebridsk.bridge.server.rest
 
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import com.github.thebridsk.bridge.data.MatchChicago
-import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCode
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
-import com.github.thebridsk.bridge.data.Id
-import scala.util.Sorting
-import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Result
+import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
 
 object RestChicago {
   implicit class OrdFoo(val x: MatchChicago)
       extends AnyVal
       with Ordered[MatchChicago] {
-    def compare(that: MatchChicago) = that.id.compare(x.id)
+    def compare(that: MatchChicago): Int = that.id.compare(x.id)
   }
 
 }
 
-import RestChicago._
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content
@@ -70,7 +63,7 @@ trait RestChicago extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
     getChicago ~ getChicagos ~ postChicago ~ putChicago ~ deleteChicago ~ nested
 //      }
@@ -98,8 +91,8 @@ trait RestChicago extends HasActorSystem {
       )
     )
   )
-  def xxxgetChicagos() = {}
-  val getChicagos = pathEnd {
+  def xxxgetChicagos(): Unit = {}
+  val getChicagos: Route = pathEnd {
     get {
       resourceMap(store.readAll())
     }
@@ -154,8 +147,8 @@ trait RestChicago extends HasActorSystem {
       )
     )
   )
-  def xxxgetChicago() = {}
-  val getChicago = logRequest("RestChicago.getChicago", DebugLevel) {
+  def xxxgetChicago(): Unit = {}
+  val getChicago: Route = logRequest("RestChicago.getChicago", DebugLevel) {
     logResult("RestChicago.getChicago") {
       get {
         path("""[a-zA-Z0-9]+""".r) { sid =>
@@ -166,7 +159,7 @@ trait RestChicago extends HasActorSystem {
     }
   }
 
-  val nested = logRequest("RestChicago.nested", DebugLevel) {
+  val nested: Route = logRequest("RestChicago.nested", DebugLevel) {
     logResult("RestChicago.nested") {
       pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
         val id = MatchChicago.id(sid)
@@ -178,8 +171,9 @@ trait RestChicago extends HasActorSystem {
   }
 
   import scala.language.implicitConversions
-  implicit
-  def addIdToFuture(f: Future[Result[MatchChicago]]): Future[Result[(String, MatchChicago)]] =
+  implicit def addIdToFuture(
+      f: Future[Result[MatchChicago]]
+  ): Future[Result[(String, MatchChicago)]] =
     f.map { r =>
       r match {
         case Right(md) => Right((md.id.id, md))
@@ -230,8 +224,8 @@ trait RestChicago extends HasActorSystem {
       )
     )
   )
-  def xxxpostChicago() = {}
-  val postChicago =
+  def xxxpostChicago(): Unit = {}
+  val postChicago: Route =
     logRequest("RestChicago.postChicago") {
       logResult("RestChicago.postChicago") {
         pathEnd {
@@ -296,8 +290,8 @@ trait RestChicago extends HasActorSystem {
       )
     )
   )
-  def xxxputChicago() = {}
-  val putChicago =
+  def xxxputChicago(): Unit = {}
+  val putChicago: Route =
     logRequest("RestChicago.putChicago") {
       logResult("RestChicago.putChicago") {
         path("""[a-zA-Z0-9]+""".r) { sid =>
@@ -342,11 +336,12 @@ trait RestChicago extends HasActorSystem {
       )
     )
   )
-  def xxxdeleteChicago() = {}
-  val deleteChicago = path("""[a-zA-Z0-9]+""".r) { sid =>
-    val id = MatchChicago.id(sid)
-    delete {
-      resourceDelete(store.select(id).delete())
+  def xxxdeleteChicago(): Unit = {}
+  val deleteChicago: RequestContext => Future[RouteResult] =
+    path("""[a-zA-Z0-9]+""".r) { sid =>
+      val id = MatchChicago.id(sid)
+      delete {
+        resourceDelete(store.select(id).delete())
+      }
     }
-  }
 }

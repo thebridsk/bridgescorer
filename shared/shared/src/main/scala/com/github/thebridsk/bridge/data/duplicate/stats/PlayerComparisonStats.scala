@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data.duplicate.stats
 
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Hand
@@ -52,19 +51,22 @@ object PlayerComparisonStat {
   val Competitive: StatType = 2
   val PassedOut: StatType = 3
 
-  def zero(player: String, stattype: StatType) =
+  def zero(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype)
-  def aggressivegood(player: String, stattype: StatType) =
+  def aggressivegood(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, aggressivegood = 1)
-  def aggressivebad(player: String, stattype: StatType) =
+  def aggressivebad(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, aggressivebad = 1)
-  def aggressiveneutral(player: String, stattype: StatType) =
+  def aggressiveneutral(
+      player: String,
+      stattype: StatType
+  ): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, aggressiveneutral = 1)
-  def passivegood(player: String, stattype: StatType) =
+  def passivegood(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, passivegood = 1)
-  def passivebad(player: String, stattype: StatType) =
+  def passivebad(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, passivebad = 1)
-  def passiveneutral(player: String, stattype: StatType) =
+  def passiveneutral(player: String, stattype: StatType): PlayerComparisonStat =
     PlayerComparisonStat(player, stattype, passiveneutral = 1)
 
 }
@@ -82,7 +84,7 @@ case class PlayerComparisonStat(
     passiveneutral: Int = 0
 ) {
 
-  def add(stat: PlayerComparisonStat) = {
+  def add(stat: PlayerComparisonStat): PlayerComparisonStat = {
     if (player != stat.player || stattype != stat.stattype)
       throw new IllegalArgumentException("Player and/or sameside not the same")
     copy(
@@ -95,14 +97,14 @@ case class PlayerComparisonStat(
     )
   }
 
-  def forTotals = copy(player = "Totals")
+  def forTotals: PlayerComparisonStat = copy(player = "Totals")
 }
 
 case class PlayerComparisonStats(data: List[PlayerComparisonStat])
 
 object PlayerComparisonStats {
 
-  val log = Logger("bridge.PlayerComparisonStats")
+  val log: Logger = Logger("bridge.PlayerComparisonStats")
 
   implicit class WrapperCompareContractHand(val hand: Hand)
       extends AnyVal
@@ -115,7 +117,6 @@ object PlayerComparisonStats {
       *   - `x < 0` when `hand < other`
       *   - `x == 0` when `hand == other`
       *   - `x > 0` when  `hand > other`
-      *
       */
     def compare(other: Hand): Int = {
       val t = hand.contractTricks.compare(other.contractTricks)
@@ -153,8 +154,14 @@ object PlayerComparisonStats {
       // neutral
       PlayerComparisonStat.passiveneutral(passiveTeam.player1, SameSide) ::
         PlayerComparisonStat.passiveneutral(passiveTeam.player2, SameSide) ::
-        PlayerComparisonStat.aggressiveneutral(aggressiveTeam.player1, SameSide) ::
-        PlayerComparisonStat.aggressiveneutral(aggressiveTeam.player2, SameSide) ::
+        PlayerComparisonStat.aggressiveneutral(
+          aggressiveTeam.player1,
+          SameSide
+        ) ::
+        PlayerComparisonStat.aggressiveneutral(
+          aggressiveTeam.player2,
+          SameSide
+        ) ::
         Nil
     }
   }
@@ -165,7 +172,7 @@ object PlayerComparisonStats {
       passiveDealer: String, // "NS" or "EW"
       passiveHand: Hand,
       passiveDefender: Team
-  ) = {
+  ): List[PlayerComparisonStat] = {
     // 1 is lower contract, 2 is higher
     if (aggressiveHand.madeContract) {
       // 2 good, 1 bad
@@ -183,7 +190,10 @@ object PlayerComparisonStats {
     } else if (!passiveHand.madeContract) {
       // 1 good, 2 bad
       PlayerComparisonStat.passivegood(passiveDefender.player1, Competitive) ::
-        PlayerComparisonStat.passivegood(passiveDefender.player2, Competitive) ::
+        PlayerComparisonStat.passivegood(
+          passiveDefender.player2,
+          Competitive
+        ) ::
         PlayerComparisonStat.aggressivebad(
           aggressiveDeclarer.player1,
           Competitive
@@ -203,7 +213,10 @@ object PlayerComparisonStats {
       if (scoreAggressive > scorePassive) {
         // 2 good, 1 bad
         PlayerComparisonStat.passivebad(passiveDefender.player1, Competitive) ::
-          PlayerComparisonStat.passivebad(passiveDefender.player2, Competitive) ::
+          PlayerComparisonStat.passivebad(
+            passiveDefender.player2,
+            Competitive
+          ) ::
           PlayerComparisonStat.aggressivegood(
             aggressiveDeclarer.player1,
             Competitive
@@ -215,8 +228,14 @@ object PlayerComparisonStats {
           Nil
       } else if (scoreAggressive < scorePassive) {
         // 1 good, 2 bad
-        PlayerComparisonStat.passivegood(passiveDefender.player1, Competitive) ::
-          PlayerComparisonStat.passivegood(passiveDefender.player2, Competitive) ::
+        PlayerComparisonStat.passivegood(
+          passiveDefender.player1,
+          Competitive
+        ) ::
+          PlayerComparisonStat.passivegood(
+            passiveDefender.player2,
+            Competitive
+          ) ::
           PlayerComparisonStat.aggressivebad(
             aggressiveDeclarer.player1,
             Competitive
@@ -266,7 +285,7 @@ object PlayerComparisonStats {
       passiveSameAsDefender: Team,
       dup: MatchDuplicate,
       board: Board
-  ) = {
+  ): List[PlayerComparisonStat] = {
     val scoreAggressive = if (aggressiveDec == "NS") {
       ScoreHand(aggressiveHand).score.ns
     } else {
@@ -285,30 +304,80 @@ object PlayerComparisonStats {
     // End debug
 
     if (scoreAggressive < 0) {
-      PlayerComparisonStat.aggressivegood(aggressiveDefenderTeam.player1, PassedOut) ::
-        PlayerComparisonStat.aggressivegood(aggressiveDefenderTeam.player2, PassedOut) ::
-        PlayerComparisonStat.aggressivebad(aggressiveDeclarerTeam.player1, PassedOut) ::
-        PlayerComparisonStat.aggressivebad(aggressiveDeclarerTeam.player2, PassedOut) ::
-        PlayerComparisonStat.passivegood(passiveSameAsDeclarer.player1, PassedOut) ::
-        PlayerComparisonStat.passivegood(passiveSameAsDeclarer.player2, PassedOut) ::
-        PlayerComparisonStat.passivebad(passiveSameAsDefender.player1, PassedOut) ::
-        PlayerComparisonStat.passivebad(passiveSameAsDefender.player2, PassedOut) ::
+      PlayerComparisonStat.aggressivegood(
+        aggressiveDefenderTeam.player1,
+        PassedOut
+      ) ::
+        PlayerComparisonStat.aggressivegood(
+          aggressiveDefenderTeam.player2,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.aggressivebad(
+          aggressiveDeclarerTeam.player1,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.aggressivebad(
+          aggressiveDeclarerTeam.player2,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.passivegood(
+          passiveSameAsDeclarer.player1,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.passivegood(
+          passiveSameAsDeclarer.player2,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.passivebad(
+          passiveSameAsDefender.player1,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.passivebad(
+          passiveSameAsDefender.player2,
+          PassedOut
+        ) ::
         Nil
     } else {
-      PlayerComparisonStat.aggressivebad(aggressiveDefenderTeam.player1, PassedOut) ::
-        PlayerComparisonStat.aggressivebad(aggressiveDefenderTeam.player2, PassedOut) ::
-        PlayerComparisonStat.aggressivegood(aggressiveDeclarerTeam.player1, PassedOut) ::
-        PlayerComparisonStat.aggressivegood(aggressiveDeclarerTeam.player2, PassedOut) ::
-        PlayerComparisonStat.passivebad(passiveSameAsDeclarer.player1, PassedOut) ::
-        PlayerComparisonStat.passivebad(passiveSameAsDeclarer.player2, PassedOut) ::
-        PlayerComparisonStat.passivegood(passiveSameAsDefender.player1, PassedOut) ::
-        PlayerComparisonStat.passivegood(passiveSameAsDefender.player2, PassedOut) ::
+      PlayerComparisonStat.aggressivebad(
+        aggressiveDefenderTeam.player1,
+        PassedOut
+      ) ::
+        PlayerComparisonStat.aggressivebad(
+          aggressiveDefenderTeam.player2,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.aggressivegood(
+          aggressiveDeclarerTeam.player1,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.aggressivegood(
+          aggressiveDeclarerTeam.player2,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.passivebad(
+          passiveSameAsDeclarer.player1,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.passivebad(
+          passiveSameAsDeclarer.player2,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.passivegood(
+          passiveSameAsDefender.player1,
+          PassedOut
+        ) ::
+        PlayerComparisonStat.passivegood(
+          passiveSameAsDefender.player2,
+          PassedOut
+        ) ::
         Nil
     }
 
   }
 
-  def stats(dups: Map[MatchDuplicate.Id, MatchDuplicate]) = {
+  def stats(
+      dups: Map[MatchDuplicate.Id, MatchDuplicate]
+  ): PlayerComparisonStats = {
 
     val result = dups.values.flatMap { dup =>
       dup.boards.flatMap { board =>
@@ -333,19 +402,57 @@ object PlayerComparisonStats {
             val c = ct1.compare(ct2)
             if (h1.contractTricks == 0 || h2.contractTricks == 0) {
               if (h1.contractTricks == 0) {
-                val (aggdec, aggdef,passdec,passdef) = if (d2 == "NS") {
-                  (dup.getTeam(dh2.nsTeam).get, dup.getTeam(dh2.ewTeam).get,dup.getTeam(dh1.nsTeam).get, dup.getTeam(dh1.ewTeam).get)
+                val (aggdec, aggdef, passdec, passdef) = if (d2 == "NS") {
+                  (
+                    dup.getTeam(dh2.nsTeam).get,
+                    dup.getTeam(dh2.ewTeam).get,
+                    dup.getTeam(dh1.nsTeam).get,
+                    dup.getTeam(dh1.ewTeam).get
+                  )
                 } else {
-                  (dup.getTeam(dh2.ewTeam).get, dup.getTeam(dh2.nsTeam).get,dup.getTeam(dh1.ewTeam).get, dup.getTeam(dh1.nsTeam).get)
+                  (
+                    dup.getTeam(dh2.ewTeam).get,
+                    dup.getTeam(dh2.nsTeam).get,
+                    dup.getTeam(dh1.ewTeam).get,
+                    dup.getTeam(dh1.nsTeam).get
+                  )
                 }
-                auctionWithPassedOut(d2, h2, aggdec, aggdef, passdec, passdef, dup, board)
+                auctionWithPassedOut(
+                  d2,
+                  h2,
+                  aggdec,
+                  aggdef,
+                  passdec,
+                  passdef,
+                  dup,
+                  board
+                )
               } else {
-                val (aggdec, aggdef,passdec,passdef) = if (d1 == "NS") {
-                  (dup.getTeam(dh1.nsTeam).get, dup.getTeam(dh1.ewTeam).get,dup.getTeam(dh2.nsTeam).get, dup.getTeam(dh2.ewTeam).get)
+                val (aggdec, aggdef, passdec, passdef) = if (d1 == "NS") {
+                  (
+                    dup.getTeam(dh1.nsTeam).get,
+                    dup.getTeam(dh1.ewTeam).get,
+                    dup.getTeam(dh2.nsTeam).get,
+                    dup.getTeam(dh2.ewTeam).get
+                  )
                 } else {
-                  (dup.getTeam(dh1.ewTeam).get, dup.getTeam(dh1.nsTeam).get,dup.getTeam(dh2.ewTeam).get, dup.getTeam(dh2.nsTeam).get)
+                  (
+                    dup.getTeam(dh1.ewTeam).get,
+                    dup.getTeam(dh1.nsTeam).get,
+                    dup.getTeam(dh2.ewTeam).get,
+                    dup.getTeam(dh2.nsTeam).get
+                  )
                 }
-                auctionWithPassedOut(d1, h1, aggdec, aggdef, passdec, passdef, dup, board)
+                auctionWithPassedOut(
+                  d1,
+                  h1,
+                  aggdec,
+                  aggdef,
+                  passdec,
+                  passdef,
+                  dup,
+                  board
+                )
               }
             } else if (d1 == d2) {
               // contract was played by same side
@@ -400,10 +507,11 @@ object PlayerComparisonStats {
         }
       }
     }
-    val r = result.foldLeft( Map[(String,Int),PlayerComparisonStat]() ) { (ac,v) =>
-      val key = (v.player,v.stattype)
-      val newpcs = ac.get(key).map( old => old.add(v)).getOrElse(v)
-      ac + (key -> newpcs)
+    val r = result.foldLeft(Map[(String, Int), PlayerComparisonStat]()) {
+      (ac, v) =>
+        val key = (v.player, v.stattype)
+        val newpcs = ac.get(key).map(old => old.add(v)).getOrElse(v)
+        ac + (key -> newpcs)
     }
     val pcss = PlayerComparisonStats(r.values.toList)
     log.fine(pcss.toString())

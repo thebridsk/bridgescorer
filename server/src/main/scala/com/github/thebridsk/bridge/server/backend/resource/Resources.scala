@@ -4,25 +4,23 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.utilities.logging.Logger
 import Resources._
-import org.scalactic.source.Position
 import com.github.thebridsk.source.SourcePosition
 import com.github.thebridsk.bridge.data.Id
 
 object Resources {
 
-  val log = Logger[Resources[_, _]]()
+  val log: Logger = Logger[Resources[_, _]]()
 
-  def vidToString[VId]( id: VId ): String = {
+  def vidToString[VId](id: VId): String = {
     id match {
-      case Id(s,_) => s
-      case _ => id.toString
+      case Id(s, _) => s
+      case _        => id.toString
     }
   }
 
 }
 
-abstract class Resources[VId, VType](
-    implicit
+abstract class Resources[VId, VType](implicit
     execute: ExecutionContext
 ) {
   val resourceURI: String
@@ -36,8 +34,7 @@ abstract class Resources[VId, VType](
   def createChild(
       newvalue: VType,
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[VType]]
 
@@ -46,8 +43,7 @@ abstract class Resources[VId, VType](
     * @param context the change context for this operation
     * @return a future to the resources
     */
-  def readAll()(
-      implicit
+  def readAll()(implicit
       pos: SourcePosition
   ): Future[Result[Map[VId, VType]]]
 
@@ -60,8 +56,7 @@ abstract class Resources[VId, VType](
   def updateAll(
       newvalue: Map[VId, VType],
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[Map[VId, VType]]]
 
@@ -72,8 +67,7 @@ abstract class Resources[VId, VType](
     */
   def deleteAll(
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[Map[VId, VType]]]
 
@@ -92,8 +86,7 @@ abstract class Resources[VId, VType](
     * @param context the change context for this operation
     * @return a future to the resource
     */
-  def read(id: VId)(
-      implicit
+  def read(id: VId)(implicit
       pos: SourcePosition
   ): Future[Result[VType]]
 
@@ -106,8 +99,7 @@ abstract class Resources[VId, VType](
     * @param context the change context for this operation
     * @return a future to the new value
     */
-  def update[T, R](id: VId, updator: Updator[VType, T, R])(
-      implicit
+  def update[T, R](id: VId, updator: Updator[VType, T, R])(implicit
       pos: SourcePosition
   ): Future[Result[R]]
 
@@ -120,8 +112,7 @@ abstract class Resources[VId, VType](
   def delete(
       id: VId,
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit
+  )(implicit
       pos: SourcePosition
   ): Future[Result[VType]]
 

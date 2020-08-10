@@ -3,33 +3,15 @@ package com.github.thebridsk.bridge.fullserver.test.selenium
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.BeforeAndAfterAll
-import org.openqa.selenium._
 import org.scalatest.concurrent.Eventually
 import java.util.concurrent.TimeUnit
-import com.github.thebridsk.bridge.server.Server
-import com.github.thebridsk.bridge.data.bridge._
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import com.github.thebridsk.bridge.server.backend.BridgeService
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
-import scala.jdk.CollectionConverters._
-import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
-import org.scalactic.source.Position
-import com.github.thebridsk.bridge.server.test.util.NoResultYet
 import com.github.thebridsk.bridge.server.test.util.EventuallyUtils
 import com.github.thebridsk.bridge.server.test.util.HttpUtils
-import java.net.URL
-import java.io.InputStream
-import java.io.ByteArrayInputStream
-import java.io.InputStreamReader
-import java.io.IOException
-import java.net.HttpURLConnection
 import com.github.thebridsk.bridge.server.test.TestStartLogging
 import com.github.thebridsk.bridge.data.BoardSet
-import akka.http.scaladsl.coding.GzipDecompressor
-import com.github.thebridsk.browserpages.Element
 import com.github.thebridsk.bridge.server.test.util.MonitorTCP
 import com.github.thebridsk.bridge.server.test.util.ParallelUtils
 import com.github.thebridsk.browserpages.PageBrowser
@@ -37,20 +19,19 @@ import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   import com.github.thebridsk.browserpages.PageBrowser._
   import ParallelUtils._
 
-  val logger = Logger[SwaggerTest]()
+  val logger: Logger = Logger[SwaggerTest]()
 
-
-  import Eventually.{ patienceConfig => _, _ }
+  import Eventually.{patienceConfig => _, _}
   import EventuallyUtils._
   import HttpUtils._
 
-  val testlog = Logger[SwaggerTest]()
+  val testlog: Logger = Logger[SwaggerTest]()
 
   import scala.concurrent.duration._
 
@@ -63,38 +44,40 @@ class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
   type MyDuration = Duration
   val MyDuration = Duration
-  implicit val timeoutduration = MyDuration( 60, TimeUnit.SECONDS )
+  implicit val timeoutduration: FiniteDuration =
+    MyDuration(60, TimeUnit.SECONDS)
 
-  override
-  def beforeAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
+  override def beforeAll(): Unit = {
 
     MonitorTCP.nextTest()
 
     TestStartLogging.startLogging()
 
-    waitForFutures( "Stopping browsers and server",
-                    CodeBlock { TestSession.sessionStart().setPositionRelative(0,0).setSize(1100, 900)},
-                    CodeBlock { TestServer.start() }
-                  )
+    waitForFutures(
+      "Stopping browsers and server",
+      CodeBlock {
+        TestSession.sessionStart().setPositionRelative(0, 0).setSize(1100, 900)
+      },
+      CodeBlock { TestServer.start() }
+    )
   }
 
-  override
-  def afterAll() = {
-    import scala.concurrent._
-    import ExecutionContext.Implicits.global
+  override def afterAll(): Unit = {
 
-    waitForFuturesIgnoreTimeouts( "Stopping browsers and server",
-                CodeBlock { TestSession.sessionStop() },
-                CodeBlock { TestServer.stop() }
-               )
+    waitForFuturesIgnoreTimeouts(
+      "Stopping browsers and server",
+      CodeBlock { TestSession.sessionStop() },
+      CodeBlock { TestServer.stop() }
+    )
   }
 
   var dupid: Option[String] = None
 
-  lazy val defaultPatienceConfig = PatienceConfig(timeout=scaled(Span(timeoutMillis, Millis)), interval=scaled(Span(intervalMillis,Millis)))
-  implicit def patienceConfig = defaultPatienceConfig
+  lazy val defaultPatienceConfig: PatienceConfig = PatienceConfig(
+    timeout = scaled(Span(timeoutMillis, Millis)),
+    interval = scaled(Span(intervalMillis, Millis))
+  )
+  implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   behavior of "Swagger test of Bridge Server"
 
@@ -102,7 +85,8 @@ class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     tcpSleep(15)
     implicit val webDriver = TestSession.webDriver
 
-    val ResponseFromHttp(status,headerloc,contentEncoding,resp,cd) = getHttp( TestServer.getUrl("/v1/api-docs/swagger.yaml") )
+    val ResponseFromHttp(status, headerloc, contentEncoding, resp, cd) =
+      getHttp(TestServer.getUrl("/v1/api-docs/swagger.yaml"))
     val r = resp
     r must include regex """Scorekeeper for a Duplicate bridge, Chicago bridge, and Rubber bridge\."""
     r must not include ("""Function1RequestContextFutureRouteResult""")
@@ -113,16 +97,26 @@ class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
     go to TestServer.getUrl("/public/apidocs.html.gz")
     eventually {
-      val we = find(xpath("//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"))
+      val we = find(
+        xpath(
+          "//h2[contains(concat(' ', normalize-space(@class), ' '), ' title ')]"
+        )
+      )
       val text = we.text
-      text must startWith ( "Duplicate Bridge Scorekeeper" )
+      text must startWith("Duplicate Bridge Scorekeeper")
     }
   }
 
   it should "show the bridge REST API in the page from apidocs.html" in {
     implicit val webDriver = TestSession.webDriver
 
-    eventually{ find(xpath("//h4[contains(concat(' ', normalize-space(@class), ' '), ' opblock-tag ')]/a/span[contains(text(), 'Duplicate')]")) }
+    eventually {
+      find(
+        xpath(
+          "//h4[contains(concat(' ', normalize-space(@class), ' '), ' opblock-tag ')]/a/span[contains(text(), 'Duplicate')]"
+        )
+      )
+    }
   }
 
 // <div class="opblock-tag-section">
@@ -141,14 +135,18 @@ class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   it should "allow \"duplicate\" to be selected" in {
     implicit val webDriver = TestSession.webDriver
 
-    eventually{
-      val l = find( xpath("""//h4[contains(concat(' ', @class, ' '), 'opblock-tag')]/a/span[.='Duplicate']""") )
+    eventually {
+      val l = find(
+        xpath(
+          """//h4[contains(concat(' ', @class, ' '), 'opblock-tag')]/a/span[.='Duplicate']"""
+        )
+      )
       l.isEnabled mustBe true
       l.isDisplayed mustBe true
       PageBrowser.scrollToElement(l)
       l.click
     }
-    val li = eventually{ find( id( "operations-Duplicate-getBoardsets" )) }
+    val li = eventually { find(id("operations-Duplicate-getBoardsets")) }
   }
 
   it should "allow \"get /v1/rest/boardsets\" to be tried from apidocs.html" in {
@@ -167,14 +165,14 @@ class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     PageBrowser.scrollToElement(anchor)
     anchor.click
 
-    val method = eventually{
-      val l = x.find(xpath( "div[2]" ))
+    val method = eventually {
+      val l = x.find(xpath("div[2]"))
       l.isDisplayed mustBe true
       l
     }
 
-    val button = eventually{
-      val l = method.find(xpath( "//button[text()='Try it out ']" ))
+    val button = eventually {
+      val l = method.find(xpath("//button[text()='Try it out ']"))
       l.isEnabled mustBe true
       l.isDisplayed mustBe true
       l
@@ -182,8 +180,8 @@ class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     PageBrowser.scrollToElement(button)
     button.click
 
-    val execute = eventually{
-      val l = method.find(xpath( "//button[text()='Execute']" ))
+    val execute = eventually {
+      val l = method.find(xpath("//button[text()='Execute']"))
       l.isEnabled mustBe true
       l.isDisplayed mustBe true
       l
@@ -192,7 +190,7 @@ class SwaggerTest2 extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     execute.click
 
     eventually {
-      val l = method.find(xpath("//div[ h5[text() = 'Response body']]/div/pre" ))
+      val l = method.find(xpath("//div[ h5[text() = 'Response body']]/div/pre"))
       val text = l.text
       text must startWith("[")
 

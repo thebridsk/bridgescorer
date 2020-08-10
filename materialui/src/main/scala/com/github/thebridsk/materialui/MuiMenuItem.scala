@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
@@ -89,10 +86,15 @@ object MenuItemProps extends PropsFactory[MenuItemProps] {
 }
 
 object MuiMenuItem extends ComponentFactory[MenuItemProps] {
-  @js.native @JSImport("@material-ui/core/MenuItem", JSImport.Default) private object MenuItem
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/MenuItem",
+    JSImport.Default
+  ) private object MenuItem extends js.Any
 
-  protected val f = JsComponent[MenuItemProps, Children.Varargs, Null](MenuItem)
+  protected val f =
+    JsComponent[MenuItemProps, Children.Varargs, Null](
+      MenuItem
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param props the object that will become the properties object
@@ -144,7 +146,7 @@ object MuiMenuItem extends ComponentFactory[MenuItemProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: MenuItemProps = MenuItemProps(
       alignItems = alignItems,
       autoFocus = autoFocus,

@@ -4,9 +4,9 @@ import japgolly.scalajs.react.vdom.html_<^._
 
 object BaseStylesImplicits {
 
-  implicit class BooleanWrapper( val b: Boolean ) extends AnyVal {
-    def toOption[T]( t: =>T ) = if (b) Some(t) else None
-    def toList[T]( t: =>T ) = toOption(t).toList
+  implicit class BooleanWrapper(private val b: Boolean) extends AnyVal {
+    def toOption[T](t: => T): Option[T] = if (b) Some(t) else None
+    def toList[T](t: => T): List[T] = toOption(t).toList
   }
 
 }
@@ -18,16 +18,16 @@ object BaseStyles {
   val rootStyles = new RootStyles
   val tableStyles = new TableStyles
 
-  def cls( clsname: String ) = ^.className:=clsname
+  def cls(clsname: String): TagMod = ^.className := clsname
 
   /**
-   * Returns a TagMod with the selected classnames in the classname attribute.  If none are selected, then
-   * normal classname is returned.
-   * @param selected
-   * @param requiredName
-   * @param required
-   * @param requiredNotNext
-   */
+    * Returns a TagMod with the selected classnames in the classname attribute.  If none are selected, then
+    * normal classname is returned.
+    * @param selected
+    * @param requiredName
+    * @param required
+    * @param requiredNotNext
+    */
   def highlight(
       selected: Boolean = false,
       requiredName: Boolean = false,
@@ -35,15 +35,15 @@ object BaseStyles {
       requiredNotNext: Boolean = false,
       color2: Boolean = false,
       color3: Boolean = false
-  ) = {
+  ): TagMod = {
     val styles =
-      color2.toList(baseStyles.baseColor2):::
-      color3.toList(baseStyles.baseColor3):::
-      selected.toList(baseStyles.buttonSelected):::
-      requiredName.toList(baseStyles.requiredName):::
-      required.toList(baseStyles.required):::
-      requiredNotNext.toList(baseStyles.requiredNotNext):::
-      Nil
+      color2.toList(baseStyles.baseColor2) :::
+        color3.toList(baseStyles.baseColor3) :::
+        selected.toList(baseStyles.buttonSelected) :::
+        requiredName.toList(baseStyles.requiredName) :::
+        required.toList(baseStyles.required) :::
+        requiredNotNext.toList(baseStyles.requiredNotNext) :::
+        Nil
 
     if (styles.isEmpty) baseStyles.normal
     else styles.toTagMod
@@ -53,103 +53,111 @@ object BaseStyles {
 class BaseStyles {
   import BaseStyles._
 
-  val fontTextLarge = cls("baseFontTextLarge")
-  val fontTextNormal = cls("baseFontTextNormal")
+  val fontTextLarge: TagMod = cls("baseFontTextLarge")
+  val fontTextNormal: TagMod = cls("baseFontTextNormal")
 
-  val baseColor2 = cls("baseColor2")
-  val baseColor3 = cls("baseColor3")
+  val baseColor2: TagMod = cls("baseColor2")
+  val baseColor3: TagMod = cls("baseColor3")
 
-  val defaultButton = cls("baseDefaultButton baseFontTextLarge")
-  val appButton = cls("baseAppButton baseDefaultButton baseFontTextLarge")
-  val nameButton = cls("baseNameButton")
+  val defaultButton: TagMod = cls("baseDefaultButton baseFontTextLarge")
+  val appButton: TagMod = cls(
+    "baseAppButton baseDefaultButton baseFontTextLarge"
+  )
+  val nameButton: TagMod = cls("baseNameButton")
 
-  val footerButton = cls("baseFooterButton baseDefaultButton baseFontTextLarge")
+  val footerButton: TagMod = cls(
+    "baseFooterButton baseDefaultButton baseFontTextLarge"
+  )
 
-  val appButton100 = cls("baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge")
+  val appButton100: TagMod = cls(
+    "baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge"
+  )
 
   val baseButtonSelected = "baseButtonSelected"
-  val buttonSelected = cls(baseButtonSelected)
+  val buttonSelected: TagMod = cls(baseButtonSelected)
 
   val baseCheckbox = "baseCheckbox"
-  val checkbox = cls(baseCheckbox)
+  val checkbox: TagMod = cls(baseCheckbox)
   val baseRadioButton = "baseRadioButton"
-  val radioButton = cls(baseRadioButton)
+  val radioButton: TagMod = cls(baseRadioButton)
 
   val baseNormal = "baseNormal"
-  val normal = cls(baseNormal)
+  val normal: TagMod = cls(baseNormal)
 
   val baseRequired = "baseRequired"
-  val required = cls(baseRequired)
+  val required: TagMod = cls(baseRequired)
 
   val baseRequiredName = "baseRequiredName"
-  val requiredName = cls(baseRequiredName)
+  val requiredName: TagMod = cls(baseRequiredName)
 
   val baseRequiredNotNext = "baseRequiredNotNext"
-  val requiredNotNext = cls(baseRequiredNotNext)
+  val requiredNotNext: TagMod = cls(baseRequiredNotNext)
 
   /**
-   * to gray out the entire browser page for displaying a popup
-   */
-  val divPopupOverlay = cls("baseDivPopupOverlay")
+    * to gray out the entire browser page for displaying a popup
+    */
+  val divPopupOverlay: TagMod = cls("baseDivPopupOverlay")
 
   /**
-   * The div of the popup
-   */
-  val divPopup = cls("baseDivPopup baseFontTextLarge")
+    * The div of the popup
+    */
+  val divPopup: TagMod = cls("baseDivPopup baseFontTextLarge")
 
-  val divPopupOKCancelDiv = cls("baseDivPopupOKCancelDiv baseFontTextLarge")
+  val divPopupOKCancelDiv: TagMod = cls(
+    "baseDivPopupOKCancelDiv baseFontTextLarge"
+  )
 
-  val divPopupOKCancelBody = cls("baseDivPopupOKCancelBody")
+  val divPopupOKCancelBody: TagMod = cls("baseDivPopupOKCancelBody")
 
-  val divFlexBreak = cls("baseDivFlexBreak")
+  val divFlexBreak: TagMod = cls("baseDivFlexBreak")
 
-  val divFooter = cls("baseDivFooter")
+  val divFooter: TagMod = cls("baseDivFooter")
 
-  val divFooterLeft = cls("baseDivFooterLeft")
+  val divFooterLeft: TagMod = cls("baseDivFooterLeft")
 
-  val divFooterCenter = cls("baseDivFooterCenter")
+  val divFooterCenter: TagMod = cls("baseDivFooterCenter")
 
-  val divFooterRight = cls("baseDivFooterRight")
+  val divFooterRight: TagMod = cls("baseDivFooterRight")
 
-  val divTextFooter = cls("baseDivFooterText baseFontTextSmall")
+  val divTextFooter: TagMod = cls("baseDivFooterText baseFontTextSmall")
 
-  val divText100 = cls("baseDivText100")
+  val divText100: TagMod = cls("baseDivText100")
 
-  val hideInPrint = cls("baseHideInPrint")
-  val onlyInPrint = cls("baseOnlyInPrint")
-  val hideInPortrait = cls("baseHideInPortrait")
-  val alwaysHide = cls("baseAlwaysHide")
-  val notVisible = cls("baseNotVisible")
-  val collapse = cls("baseCollapse")
+  val hideInPrint: TagMod = cls("baseHideInPrint")
+  val onlyInPrint: TagMod = cls("baseOnlyInPrint")
+  val hideInPortrait: TagMod = cls("baseHideInPortrait")
+  val alwaysHide: TagMod = cls("baseAlwaysHide")
+  val notVisible: TagMod = cls("baseNotVisible")
+  val collapse: TagMod = cls("baseCollapse")
 
-  val testPage = cls("baseTestPage")
+  val testPage: TagMod = cls("baseTestPage")
 
-  val piechart = cls("piechart")
-  val piechartzero = cls("piechartzero")
+  val piechart: TagMod = cls("piechart")
+  val piechartzero: TagMod = cls("piechartzero")
 
-  val svgrect = cls("svgrect")
+  val svgrect: TagMod = cls("svgrect")
 
-  val colorbar = cls("colorbar")
+  val colorbar: TagMod = cls("colorbar")
 
-  val tableComponent = cls("tableComponent")
+  val tableComponent: TagMod = cls("tableComponent")
 
-  val withTooltipBox = cls("withTooltipBox")
-  val tooltipContent = cls("tooltipContent")
-  val tooltipTitle = cls("tooltipTitle")
-  val tooltipBody = cls("tooltipBody")
+  val withTooltipBox: TagMod = cls("withTooltipBox")
+  val tooltipContent: TagMod = cls("tooltipContent")
+  val tooltipTitle: TagMod = cls("tooltipTitle")
+  val tooltipBody: TagMod = cls("tooltipBody")
 
-  val divColorPage = cls("divColorPage")
+  val divColorPage: TagMod = cls("divColorPage")
 
-  val divGraphiql = cls("divGraphiql")
+  val divGraphiql: TagMod = cls("divGraphiql")
 
-  val divAppBar = cls("divAppBar")
+  val divAppBar: TagMod = cls("divAppBar")
 
-  val appBarTitle = cls("appBarTitle")
-  val appBarTitleWhenFullscreen = cls("appBarTitleWhenFullscreen")
+  val appBarTitle: TagMod = cls("appBarTitle")
+  val appBarTitleWhenFullscreen: TagMod = cls("appBarTitleWhenFullscreen")
 
-  val lightDarkIcon1 = cls("lightDarkIcon1")
-  val lightDarkIcon2 = cls("lightDarkIcon2")
-  val lightDarkIcon3 = cls("lightDarkIcon3")
+  val lightDarkIcon1: TagMod = cls("lightDarkIcon1")
+  val lightDarkIcon2: TagMod = cls("lightDarkIcon2")
+  val lightDarkIcon3: TagMod = cls("lightDarkIcon3")
 
   val comboboxLightDarkClass = "comboboxLightDark"
   val calendarLightDarkClass = "calendarLightDark"
@@ -158,45 +166,47 @@ class BaseStyles {
 class RootStyles {
   import BaseStyles._
 
-  val logDiv = cls("rootLogDiv baseFontTextLarge")
+  val logDiv: TagMod = cls("rootLogDiv baseFontTextLarge")
 
-  val homeDiv = cls("rootHomeDiv baseFontTextLarge")
+  val homeDiv: TagMod = cls("rootHomeDiv baseFontTextLarge")
 
-  val serverDiv = cls("rootServerDiv")
+  val serverDiv: TagMod = cls("rootServerDiv")
 
-  val gameDiv = cls("rootGameDiv")
+  val gameDiv: TagMod = cls("rootGameDiv")
 
-  val playButton = cls("rootPlayButton baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge")
+  val playButton: TagMod = cls(
+    "rootPlayButton baseAppButton100 baseAppButton baseDefaultButton baseFontTextLarge"
+  )
 
-  val testHandsDiv = cls("rootTestHandsDiv")
+  val testHandsDiv: TagMod = cls("rootTestHandsDiv")
 
-  val miscDiv = cls("rootMiscDiv")
+  val miscDiv: TagMod = cls("rootMiscDiv")
 
-  val graphqlPageDiv = cls("rootGraphQLPageDiv baseFontTextLarge")
+  val graphqlPageDiv: TagMod = cls("rootGraphQLPageDiv baseFontTextLarge")
 
-  val aboutPageDiv = cls("rootAboutPageDiv baseFontTextLarge")
+  val aboutPageDiv: TagMod = cls("rootAboutPageDiv baseFontTextLarge")
 
-  val importsListPageDiv = cls("rootImportsListPageDiv")
+  val importsListPageDiv: TagMod = cls("rootImportsListPageDiv")
 
-  val exportPageDiv = cls("rootExportPageDiv")
+  val exportPageDiv: TagMod = cls("rootExportPageDiv")
 
-  val thankYouDiv = cls("rootThankYouDiv baseFontTextLarge")
+  val thankYouDiv: TagMod = cls("rootThankYouDiv baseFontTextLarge")
 
-  val infoPageDiv = cls("rootInfoPageDiv baseFontTextLarge")
+  val infoPageDiv: TagMod = cls("rootInfoPageDiv baseFontTextLarge")
 
-  val headerSuitSize = cls("headerSuitSize")
+  val headerSuitSize: TagMod = cls("headerSuitSize")
 }
 
 class TableStyles {
   import BaseStyles._
 
-  val tableCellWidth1Of7 = cls("tableCellWidth1Of7")
-  val tableCellWidth2Of7 = cls("tableCellWidth2Of7")
-  val tableCellWidth3Of7 = cls("tableCellWidth3Of7")
+  val tableCellWidth1Of7: TagMod = cls("tableCellWidth1Of7")
+  val tableCellWidth2Of7: TagMod = cls("tableCellWidth2Of7")
+  val tableCellWidth3Of7: TagMod = cls("tableCellWidth3Of7")
 
-  val tableFloatLeft = cls("tableFloatLeft")
-  val tableFloatRight = cls("tableFloatRight")
+  val tableFloatLeft: TagMod = cls("tableFloatLeft")
+  val tableFloatRight: TagMod = cls("tableFloatRight")
 
-  val tableWidthPage = cls("tableWidthPage")
+  val tableWidthPage: TagMod = cls("tableWidthPage")
 
 }

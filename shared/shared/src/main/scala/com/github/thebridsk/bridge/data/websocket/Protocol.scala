@@ -1,12 +1,9 @@
 package com.github.thebridsk.bridge.data.websocket
 
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Team
-import play.api.libs.json._
-import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.Round
@@ -111,22 +108,28 @@ object Protocol {
     * Update a board in a duplicate match.
     */
   case class UpdateDuplicateTeam(dupid: MatchDuplicate.Id, team: Team)
-    extends ToServerMessage
-    with ToBrowserMessage
+      extends ToServerMessage
+      with ToBrowserMessage
 
   /**
     * Update a picture in a duplicate match, if None, then the picture was deleted.
     */
-    case class UpdateDuplicatePicture(dupid: MatchDuplicate.Id, boardid: Board.Id, handId: Team.Id, picture: Option[DuplicatePicture])
-    extends ToServerMessage
-    with ToBrowserMessage
+  case class UpdateDuplicatePicture(
+      dupid: MatchDuplicate.Id,
+      boardid: Board.Id,
+      handId: Team.Id,
+      picture: Option[DuplicatePicture]
+  ) extends ToServerMessage
+      with ToBrowserMessage
 
   /**
     * Update a picture in a duplicate match, if None, then the picture was deleted.
     */
-  case class UpdateDuplicatePictures(dupid: MatchDuplicate.Id, picture: List[DuplicatePicture])
-    extends ToServerMessage
-    with ToBrowserMessage
+  case class UpdateDuplicatePictures(
+      dupid: MatchDuplicate.Id,
+      picture: List[DuplicatePicture]
+  ) extends ToServerMessage
+      with ToBrowserMessage
 
   /**
     * Update the MatchChicago.
@@ -172,22 +175,22 @@ object Protocol {
 
   import com.github.thebridsk.bridge.data.rest.JsonSupport._
 
-  def toStringToBrowserMessage(msg: ToBrowserMessage) = {
+  def toStringToBrowserMessage(msg: ToBrowserMessage): String = {
     import com.github.thebridsk.bridge.data.rest.ToBrowserProtocolJsonSupport._
     msg.toJson
   }
 
-  def fromStringToBrowserMessage(str: String) = {
+  def fromStringToBrowserMessage(str: String): ToBrowserMessage = {
     import com.github.thebridsk.bridge.data.rest.ToBrowserProtocolJsonSupport._
     str.parseJson[ToBrowserMessage]
   }
 
-  def toStringToServerMessage(msg: ToServerMessage) = {
+  def toStringToServerMessage(msg: ToServerMessage): String = {
     import com.github.thebridsk.bridge.data.rest.ToServerProtocolJsonSupport._
     msg.toJson
   }
 
-  def fromStringToServerMessage(str: String) = {
+  def fromStringToServerMessage(str: String): ToServerMessage = {
     import com.github.thebridsk.bridge.data.rest.ToServerProtocolJsonSupport._
     str.parseJson[ToServerMessage]
   }

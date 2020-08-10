@@ -1,33 +1,16 @@
 package com.github.thebridsk.bridge.clientcommon.rest2
 
-import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.LoggerConfig
-import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.data.LoggerConfig
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.DuplicateSummary
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.DuplicateHand
-import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.data.ServerVersion
-import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.data.Movement
-import com.github.thebridsk.bridge.data.MatchRubber
-import com.github.thebridsk.bridge.data.RubberHand
-import scala.concurrent.duration.Duration
-import com.github.thebridsk.bridge.data.RestMessage
 
 import com.github.thebridsk.bridge.data.rest.JsonSupport._
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
-import com.github.thebridsk.bridge.data.BoardSetsAndMovementsV1
-import com.github.thebridsk.bridge.data.BoardSetsAndMovements
-import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import play.api.libs.json.KeyWrites
 
 /**
- * @author werewolf
- */
+  * @author werewolf
+  */
 
 //private object BridgeRestClientImplicitsPrickle {
 //  import prickle._
@@ -52,11 +35,11 @@ import play.api.libs.json.KeyWrites
 
 object Implicits {
 
-  implicit class BooleanStream( val b: Boolean ) extends AnyVal {
-    def option[T]( f: =>T ): Option[T] = if (b) Some(f) else None
+  implicit class BooleanStream(private val b: Boolean) extends AnyVal {
+    def option[T](f: => T): Option[T] = if (b) Some(f) else None
   }
 
-  implicit val stringKeyWrites = new KeyWrites[String] {
+  implicit val stringKeyWrites: KeyWrites[String] = new KeyWrites[String] {
     def writeKey(key: String): String = key
   }
 
@@ -65,7 +48,10 @@ object Implicits {
 import Implicits._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object RestClientLogEntryV2 extends RestClient[LogEntryV2,String]("/v1/logger")
-object RestClientLoggerConfig extends RestClient[LoggerConfig,String]("/v1/rest/loggerConfig")
-object RestClientServerURL extends RestClient[ServerURL,String]("/v1/rest/serverurls")
-object RestClientServerVersion extends RestClient[ServerVersion,String]("/v1/rest/serverversion")
+object RestClientLogEntryV2 extends RestClient[LogEntryV2, String]("/v1/logger")
+object RestClientLoggerConfig
+    extends RestClient[LoggerConfig, String]("/v1/rest/loggerConfig")
+object RestClientServerURL
+    extends RestClient[ServerURL, String]("/v1/rest/serverurls")
+object RestClientServerVersion
+    extends RestClient[ServerVersion, String]("/v1/rest/serverversion")

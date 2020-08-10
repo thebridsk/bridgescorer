@@ -2,11 +2,8 @@ package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import org.scalajs.dom.raw.Element
 //import com.github.thebridsk.materialui.util.{ JsNumber => _, _ }
 import scala.language.implicitConversions
 
@@ -18,7 +15,7 @@ object AnchorOriginHorizontalValue {
 
   val default = left
 
-  implicit def wrapHorizontal(v: AnchorOriginHorizontalValue) = v.value
+  implicit def wrapHorizontal(v: AnchorOriginHorizontalValue): String = v.value
 }
 
 class AnchorOriginVerticalValue(val value: String) extends AnyVal
@@ -29,7 +26,7 @@ object AnchorOriginVerticalValue {
 
   val default = top
 
-  implicit def wrapVertical(v: AnchorOriginVerticalValue) = v.value
+  implicit def wrapVertical(v: AnchorOriginVerticalValue): String = v.value
 }
 
 import js._
@@ -50,18 +47,19 @@ trait AnchorOrigin
 
 object AnchorOrigin {
 
-  implicit class WrapAnchorOrigin(val p: AnchorOrigin) extends AnyVal {
+  implicit class WrapAnchorOrigin(private val p: AnchorOrigin) extends AnyVal {
 
-    def horizontal = p.horizontalInternal.map { v =>
-      val r: JsNumber | AnchorOriginHorizontalValue =
-        if (js.typeOf(v.asInstanceOf[js.Any]) == "string") {
-          val s: String = v.asInstanceOf[String]
-          new AnchorOriginHorizontalValue(s)
-        } else {
-          v.asInstanceOf[JsNumber | AnchorOriginHorizontalValue]
-        }
-      r
-    }
+    def horizontal: UndefOr[JsNumber | AnchorOriginHorizontalValue] =
+      p.horizontalInternal.map { v =>
+        val r: JsNumber | AnchorOriginHorizontalValue =
+          if (js.typeOf(v.asInstanceOf[js.Any]) == "string") {
+            val s: String = v.asInstanceOf[String]
+            new AnchorOriginHorizontalValue(s)
+          } else {
+            v.asInstanceOf[JsNumber | AnchorOriginHorizontalValue]
+          }
+        r
+      }
 
 //    def horizontal_= (v: JsNumber) = {
 //      p.horizontalInternal = v
@@ -71,16 +69,17 @@ object AnchorOrigin {
 //      p.horizontalInternal = v.value
 //    }
 
-    def vertical = p.verticalInternal.map { v =>
-      val r: JsNumber | AnchorOriginVerticalValue =
-        if (js.typeOf(v.asInstanceOf[js.Any]) == "string") {
-          val s: String = v.asInstanceOf[String]
-          new AnchorOriginVerticalValue(s)
-        } else {
-          v.asInstanceOf[JsNumber | AnchorOriginVerticalValue]
-        }
-      r
-    }
+    def vertical: UndefOr[JsNumber | AnchorOriginVerticalValue] =
+      p.verticalInternal.map { v =>
+        val r: JsNumber | AnchorOriginVerticalValue =
+          if (js.typeOf(v.asInstanceOf[js.Any]) == "string") {
+            val s: String = v.asInstanceOf[String]
+            new AnchorOriginVerticalValue(s)
+          } else {
+            v.asInstanceOf[JsNumber | AnchorOriginVerticalValue]
+          }
+        r
+      }
 
 //    def vertical_= (v: JsNumber) = {
 //      p.verticalInternal = v
@@ -95,11 +94,11 @@ object AnchorOrigin {
   def apply(
       horizontal: js.UndefOr[JsNumber | AnchorOriginHorizontalValue],
       vertical: js.UndefOr[JsNumber | AnchorOriginVerticalValue]
-  ) = {
+  ): AnchorOrigin = {
     val p = new js.Object().asInstanceOf[AnchorOrigin]
 
-    horizontal.foreach(
-      v => p.updateDynamic("horizontal")(v.asInstanceOf[js.Any])
+    horizontal.foreach(v =>
+      p.updateDynamic("horizontal")(v.asInstanceOf[js.Any])
     )
     vertical.foreach(v => p.updateDynamic("vertical")(v.asInstanceOf[js.Any]))
 
@@ -116,7 +115,7 @@ object AnchorPosition {
   def apply(
       left: js.UndefOr[Double],
       right: js.UndefOr[Double]
-  ) = {
+  ): AnchorPosition = {
     val p = js.Dynamic.literal()
 
     left.foreach(p.dynamicUpdate("left")(_))
@@ -143,7 +142,6 @@ protected trait PopoverPropsPrivate extends js.Any {
 
 @js.native
 trait PopoverProps extends ModalProps with PopoverPropsPrivate {
-  import js._
   val action: js.UndefOr[js.Object => Unit] = js.native
   // val anchorEl: js.UndefOr[AnchorElement] = js.native
   val anchorOrigin: js.UndefOr[AnchorOrigin] = js.native
@@ -168,9 +166,9 @@ trait PopoverProps extends ModalProps with PopoverPropsPrivate {
 object PopoverProps extends PropsFactory[PopoverProps] {
   import js._
 
-  implicit class WrapPopoverProps(val p: PopoverProps) extends AnyVal {
+  implicit class WrapPopoverProps(private val p: PopoverProps) extends AnyVal {
 
-    def anchorReference =
+    def anchorReference: UndefOr[AnchorReference] =
       p.anchorReferenceInternal.map(s => new AnchorReference(s))
 
 //    def anchorReference_= (v: js.UndefOr[AnchorReference]): Unit = {
@@ -178,18 +176,20 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 //        orElse{ p.anchorReferenceInternal=js.undefined; None }
 //    }
 
-    def anchorEl = p.anchorElInternal.map { v =>
-      v.asInstanceOf[AnchorElement]
-    }
+    def anchorEl: UndefOr[AnchorElement] =
+      p.anchorElInternal.map { v =>
+        v.asInstanceOf[AnchorElement]
+      }
 
 //    def anchorEl_= (v: js.UndefOr[AnchorElement]): Unit = {
 //      v.map{ vv=>p.anchorElInternal=vv.asInstanceOf[js.Any]; None }.
 //        orElse{ p.anchorElInternal=js.undefined; None }
 //    }
 
-    def transitionDuration = p.transitionDurationInternal.map { v =>
-      v.asInstanceOf[JsNumber | TransitionDuration]
-    }
+    def transitionDuration: UndefOr[JsNumber | TransitionDuration] =
+      p.transitionDurationInternal.map { v =>
+        v.asInstanceOf[JsNumber | TransitionDuration]
+      }
 
 //    def transitionDuration_= (v: js.UndefOr[JsNumber|TransitionDuration]): Unit = {
 //      v.map{ vv=>p.transitionDurationInternal=vv.asInstanceOf[js.Any]; None }.
@@ -347,7 +347,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
       open: js.UndefOr[Boolean] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
-  ) = {
+  ): P = {
     val p: P = ModalProps(
       props,
       backdropComponent,
@@ -391,8 +391,8 @@ object PopoverProps extends PropsFactory[PopoverProps] {
     transitionComponent.foreach(p.updateDynamic("transitionComponent")(_))
     transitionProps.foreach(p.updateDynamic("transitionProps")(_))
 
-    transitionDuration.foreach(
-      v => p.updateDynamic("transitionDuration")(v.asInstanceOf[js.Any])
+    transitionDuration.foreach(v =>
+      p.updateDynamic("transitionDuration")(v.asInstanceOf[js.Any])
     )
 
     p
@@ -400,12 +400,17 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 }
 
 object MuiPopover extends ComponentFactory[PopoverProps] {
-  @js.native @JSImport("@material-ui/core/Popover", JSImport.Default) private object Popover
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Popover",
+    JSImport.Default
+  ) private object Popover extends js.Any
 
-      protected val f = JsComponent[PopoverProps, Children.Varargs, Null](Popover)
+  protected val f =
+    JsComponent[PopoverProps, Children.Varargs, Null](
+      Popover
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-      // protected val f = JsFnComponent[PopoverProps, Children.Varargs](Popover)
+  // protected val f = JsFnComponent[PopoverProps, Children.Varargs](Popover)
 
   /**
     * @param BackdropComponent A backdrop component. This property enables custom
@@ -505,7 +510,7 @@ object MuiPopover extends ComponentFactory[PopoverProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: PopoverProps = PopoverProps(
       action = action,
       anchorEl = anchorEl,

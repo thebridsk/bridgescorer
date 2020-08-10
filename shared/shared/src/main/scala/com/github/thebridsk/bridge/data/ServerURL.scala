@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data
 
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 

@@ -36,6 +36,6 @@ case class BoardSetsAndMovementsV1(
     movements: List[Movement]
 ) {
 
-  def convertToCurrentVersion = this
+  def convertToCurrentVersion: BoardSetsAndMovementsV1 = this
 
 }

@@ -1,12 +1,8 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import scala.scalajs.js.UndefOr
 
 @js.native
 trait PaperProps extends AdditionalProps with StandardProps {
@@ -56,10 +52,15 @@ object PaperProps extends PropsFactory[PaperProps] {
 }
 
 object MuiPaper extends ComponentFactory[PaperProps] {
-  @js.native @JSImport("@material-ui/core/Paper", JSImport.Default) private object Paper
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Paper",
+    JSImport.Default
+  ) private object Paper extends js.Any
 
-  protected val f = JsComponent[PaperProps, Children.Varargs, Null](Paper)
+  protected val f =
+    JsComponent[PaperProps, Children.Varargs, Null](
+      Paper
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.
@@ -85,7 +86,7 @@ object MuiPaper extends ComponentFactory[PaperProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: PaperProps = PaperProps(
       classes = classes,
       component = component,

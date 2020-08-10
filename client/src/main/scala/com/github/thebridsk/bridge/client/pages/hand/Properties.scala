@@ -4,11 +4,14 @@ import com.github.thebridsk.bridge.client.pages.Pixels
 
 object Properties {
 
-  lazy val defaultHandButtonFont = Pixels.getFont("DefaultHandButton")
+  lazy val defaultHandButtonFont: String = Pixels.getFont("DefaultHandButton")
 
-  lazy val defaultHandButtonBorderRadius = Pixels.getBorderRadius("DefaultHandButton")
-  lazy val defaultHandButtonPaddingBorder = Pixels.getPaddingBorder("DefaultHandButton")
+  lazy val defaultHandButtonBorderRadius: Int =
+    Pixels.getBorderRadius("DefaultHandButton")
+  lazy val defaultHandButtonPaddingBorder: Int =
+    Pixels.getPaddingBorder("DefaultHandButton")
 
-  lazy val defaultHandVulPaddingBorder = Pixels.getPaddingBorder("DefaultHandVul")
+  lazy val defaultHandVulPaddingBorder: Int =
+    Pixels.getPaddingBorder("DefaultHandVul")
 
 }

@@ -5,9 +5,22 @@ import scala.scalajs.js
 
 object DateUtils {
 
-  val months = Array( "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" )
+  val months: Array[String] = Array(
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  )
 
-  def formatDate( time: SystemTime.Timestamp ): String = {
+  def formatDate(time: SystemTime.Timestamp): String = {
     val d = new js.Date(time)
 
     if (true) {
@@ -16,36 +29,36 @@ object DateUtils {
       val day = d.getDate().toInt
       val year = d.getFullYear().toInt
       val hour = d.getHours().toInt
-      val h = if (hour >= 12) hour-12 else hour
+      val h = if (hour >= 12) hour - 12 else hour
       val ampm = if (hour == h) "AM" else "PM"
-      val hh = if (h==0) 12 else h
+      val hh = if (h == 0) 12 else h
       val min = d.getMinutes().toInt
       val sec = d.getSeconds().toInt
       f"$mon%s $day%d, $year%d $hh%d:$min%02d:$sec%02d $ampm%s"
     } else {
 
-      d.toLocaleDateString()+" "+d.toLocaleTimeString()
+      d.toLocaleDateString() + " " + d.toLocaleTimeString()
     }
   }
 
-  def formatTime( time: SystemTime.Timestamp ): String = {
+  def formatTime(time: SystemTime.Timestamp): String = {
     val d = new js.Date(time)
 
     if (true) {
       val hour = d.getHours().toInt
-      val h = if (hour >= 12) hour-12 else hour
+      val h = if (hour >= 12) hour - 12 else hour
       val ampm = if (hour == h) "AM" else "PM"
-      val hh = if (h==0) 12 else h
+      val hh = if (h == 0) 12 else h
       val min = d.getMinutes().toInt
       val sec = d.getSeconds().toInt
       f"$hh%d:$min%02d:$sec%02d $ampm%s"
     } else {
 
-      d.toLocaleDateString()+" "+d.toLocaleTimeString()
+      d.toLocaleDateString() + " " + d.toLocaleTimeString()
     }
   }
 
-  def formatLogTime( time: SystemTime.Timestamp ): String = {
+  def formatLogTime(time: SystemTime.Timestamp): String = {
     val d = new js.Date(time)
 
     if (true) {
@@ -56,11 +69,11 @@ object DateUtils {
       f"$hour%d:$min%02d:$sec%02d.$milli%03d"
     } else {
 
-      d.toLocaleDateString()+" "+d.toLocaleTimeString()
+      d.toLocaleDateString() + " " + d.toLocaleTimeString()
     }
   }
 
-  def formatDay( time: SystemTime.Timestamp ): String = {
+  def formatDay(time: SystemTime.Timestamp): String = {
     val d = new js.Date(time)
 
     if (true) {
@@ -71,16 +84,16 @@ object DateUtils {
       f"$mon%s $day%d, $year%d"
     } else {
 
-      d.toLocaleDateString()+" "+d.toLocaleTimeString()
+      d.toLocaleDateString() + " " + d.toLocaleTimeString()
     }
   }
 
-  def showDate( time: SystemTime.Timestamp ): String = {
+  def showDate(time: SystemTime.Timestamp): String = {
     if (time == 0) ""
     else formatDate(time)
   }
 
-  def showDay( time: SystemTime.Timestamp ): String = {
+  def showDay(time: SystemTime.Timestamp): String = {
     if (time == 0) ""
     else formatDay(time)
   }

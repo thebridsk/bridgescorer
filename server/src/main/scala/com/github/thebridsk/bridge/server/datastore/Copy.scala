@@ -6,19 +6,11 @@ import org.rogach.scallop._
 import scala.concurrent.duration.Duration
 import scala.reflect.io.Path
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
-import java.io.File
-import java.io.Reader
-import java.io.BufferedReader
-import scala.io.Source
-import scala.io.BufferedSource
 import scala.util.Left
-import java.io.InputStream
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchRubber
-import akka.http.scaladsl.model.StatusCodes
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.github.thebridsk.bridge.server.backend.resource.Store
@@ -33,7 +25,7 @@ trait Copy
 object Copy extends Subcommand("copy") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[Copy]()
+  val log: Logger = Logger[Copy]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -49,7 +41,7 @@ Syntax:
   ${DataStoreCommands.cmdName} copy [options]
 Options:""")
 
-  val optionIds = opt[List[String]](
+  val optionIds: ScallopOption[List[String]] = opt[List[String]](
     "ids",
     short = 'i',
     descr = "the ids to map",
@@ -57,7 +49,7 @@ Options:""")
     default = None
   )
 
-  val optionSort = opt[String](
+  val optionSort: ScallopOption[String] = opt[String](
     "sort",
     short = 's',
     descr =
@@ -67,7 +59,7 @@ Options:""")
     default = Some("created")
   )
 
-  val paramTarget = trailArg[Path](
+  val paramTarget: ScallopOption[Path] = trailArg[Path](
     name = "target",
     descr = "directory for new datastore",
     required = true
@@ -181,7 +173,7 @@ Options:""")
 
   }
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def setValue[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
@@ -213,7 +205,7 @@ Options:""")
       keyComparer: (T, T) => Boolean,
       dateComparer: (T, T) => Boolean,
       idfilter: K => Boolean
-  ) = {
+  ): Unit = {
     val comparer = optionSort() match {
       case "id" =>
         log.info("Sorting by ID")
@@ -260,26 +252,28 @@ Options:""")
       in: Store[K, T],
       out: Store[K, T],
       idfilter: K => Boolean
-  ) = {
+  ): Unit = {
     await(in.readAll()) match {
       case Right(dups) =>
         val keys = dups.keys.toList
         log.info(s"${name} found ${keys.mkString(", ")}")
         keys.filter(id => idfilter(id)).foreach { id =>
           val md = dups(id)
-          if (await(out.read(id)) match {
-                case Left(err) =>
+          if (
+            await(out.read(id)) match {
+              case Left(err) =>
+                true
+              case Right(v) =>
+                if (md == v) {
+                  log.info(
+                    s"Not copying ${name} ${id}, already in the target store"
+                  )
+                  false
+                } else {
                   true
-                case Right(v) =>
-                  if (md == v) {
-                    log.info(
-                      s"Not copying ${name} ${id}, already in the target store"
-                    )
-                    false
-                  } else {
-                    true
-                  }
-              }) {
+                }
+            }
+          ) {
             log.fine(s"Working on ${name} ${id}")
             setValue(name, out, id, md) match {
               case Some(newid) =>

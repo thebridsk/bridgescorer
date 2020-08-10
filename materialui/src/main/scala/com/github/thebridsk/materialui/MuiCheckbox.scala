@@ -1,13 +1,11 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
 import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import scala.language.implicitConversions
 import japgolly.scalajs.react.{raw => Raw}
+import scala.scalajs.js.UndefOr
 
 @js.native
 protected trait CheckboxPropsPrivate extends js.Any {
@@ -20,7 +18,10 @@ protected trait CheckboxPropsPrivate extends js.Any {
 }
 
 @js.native
-trait CheckboxProps extends AdditionalProps with StandardProps with CheckboxPropsPrivate {
+trait CheckboxProps
+    extends AdditionalProps
+    with StandardProps
+    with CheckboxPropsPrivate {
   val checked: js.UndefOr[Boolean] = js.native
   // val checkedIcon: js.UndefOr[Raw.React.Element] = js.native
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
@@ -33,7 +34,7 @@ trait CheckboxProps extends AdditionalProps with StandardProps with CheckboxProp
   // val indeterminateIcon: js.UndefOr[Raw.React.Element] = js.native
   val inputProps: js.UndefOr[js.Dictionary[String]] = js.native
   val inputRef: js.UndefOr[js.Object] = js.native
-  val onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.native
+  val onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.native
   val required: js.UndefOr[Boolean] = js.native
   val size: js.UndefOr[ItemSize] = js.native
   val value: js.UndefOr[js.Any] = js.native
@@ -42,15 +43,18 @@ trait CheckboxProps extends AdditionalProps with StandardProps with CheckboxProp
 
 object CheckboxProps extends PropsFactory[CheckboxProps] {
 
-  implicit class WrapCheckboxProps(val p: CheckboxProps) extends AnyVal {
+  implicit class WrapCheckboxProps(private val p: CheckboxProps)
+      extends AnyVal {
 
-    def checkedIcon = p.checkedIconInternal.map( n => VdomNode(n))
-    def icon = p.iconInternal.map( n => VdomNode(n))
-    def indeterminateIcon = p.indeterminateIconInternal.map( n => VdomNode(n))
+    def checkedIcon: UndefOr[VdomNode] =
+      p.checkedIconInternal.map(n => VdomNode(n))
+    def icon: UndefOr[VdomNode] = p.iconInternal.map(n => VdomNode(n))
+    def indeterminateIcon: UndefOr[VdomNode] =
+      p.indeterminateIconInternal.map(n => VdomNode(n))
 
   }
 
-  def toRaw( v: VdomNode ) = v.rawNode.asInstanceOf[js.Any]
+  def toRaw(v: VdomNode): js.Any = v.rawNode.asInstanceOf[js.Any]
 
   /**
     * @param p the object that will become the properties object
@@ -100,7 +104,7 @@ object CheckboxProps extends PropsFactory[CheckboxProps] {
       inputProps: js.UndefOr[js.Dictionary[String]] = js.undefined,
       inputRef: js.UndefOr[js.Object] = js.undefined,
       name: js.UndefOr[String] = js.undefined,
-      onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+      onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.undefined,
       required: js.UndefOr[Boolean] = js.undefined,
       size: js.UndefOr[ItemSize] = js.undefined,
       value: js.UndefOr[js.Any] = js.undefined,
@@ -111,15 +115,17 @@ object CheckboxProps extends PropsFactory[CheckboxProps] {
 
     props.foreach(p.updateDynamic("props")(_))
     checked.foreach(p.updateDynamic("checked")(_))
-    checkedIcon.foreach( v => p.updateDynamic("checkedIcon")(toRaw(v)))
+    checkedIcon.foreach(v => p.updateDynamic("checkedIcon")(toRaw(v)))
     classes.foreach(p.updateDynamic("classes")(_))
     color.foreach(p.updateDynamic("color")(_))
     disable.foreach(p.updateDynamic("disable")(_))
     disableRipple.foreach(p.updateDynamic("disableRipple")(_))
-    icon.foreach( v => p.updateDynamic("icon")(toRaw(v)))
+    icon.foreach(v => p.updateDynamic("icon")(toRaw(v)))
     id.foreach(p.updateDynamic("id")(_))
     indeterminate.foreach(p.updateDynamic("indeterminate")(_))
-    indeterminateIcon.foreach( v => p.updateDynamic("indeterminateIcon")(toRaw(v)))
+    indeterminateIcon.foreach(v =>
+      p.updateDynamic("indeterminateIcon")(toRaw(v))
+    )
     inputProps.foreach(p.updateDynamic("inputProps")(_))
     inputRef.foreach(p.updateDynamic("inputRef")(_))
     name.foreach(p.updateDynamic("name")(_))
@@ -135,10 +141,15 @@ object CheckboxProps extends PropsFactory[CheckboxProps] {
 }
 
 object MuiCheckbox extends ComponentFactory[CheckboxProps] {
-  @js.native @JSImport("@material-ui/core/Checkbox", JSImport.Default) private object MList
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Checkbox",
+    JSImport.Default
+  ) private object MList extends js.Any
 
-  protected val f = JsComponent[CheckboxProps, Children.Varargs, Null](MList)
+  protected val f =
+    JsComponent[CheckboxProps, Children.Varargs, Null](
+      MList
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param checked If true, the component is checked.
@@ -184,7 +195,7 @@ object MuiCheckbox extends ComponentFactory[CheckboxProps] {
       inputProps: js.UndefOr[js.Dictionary[String]] = js.undefined,
       inputRef: js.UndefOr[js.Object] = js.undefined,
       name: js.UndefOr[String] = js.undefined,
-      onChange: js.UndefOr[js.Function1[js.Object,Unit]] = js.undefined,
+      onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.undefined,
       required: js.UndefOr[Boolean] = js.undefined,
       size: js.UndefOr[ItemSize] = js.undefined,
       value: js.UndefOr[js.Any] = js.undefined,
@@ -192,7 +203,7 @@ object MuiCheckbox extends ComponentFactory[CheckboxProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: CheckboxProps = CheckboxProps(
       checked = checked,
       checkedIcon = checkedIcon,

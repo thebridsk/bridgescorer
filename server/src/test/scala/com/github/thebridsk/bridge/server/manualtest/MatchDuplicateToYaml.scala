@@ -8,12 +8,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object MatchDuplicateToYaml extends Main {
 
-  def execute() = {
+  def execute(): Int = {
     val dir = Directory("./store")
-    val store = new BridgeServiceFileStore( dir )
+    val store = new BridgeServiceFileStore(dir)
 
     store.duplicates.syncStore.readAll() match {
-      case Right( r ) =>
+      case Right(r) =>
         r.values.headOption match {
           case Some(md) =>
             import YamlSupport._
@@ -22,7 +22,7 @@ object MatchDuplicateToYaml extends Main {
           case None =>
             logger.warning("Did not find any duplicate matches in store ${dir}")
         }
-      case Left( (statuscode,msg) ) =>
+      case Left((statuscode, msg)) =>
         logger.warning("Did not find any duplicate matches in store ${dir}")
     }
 

@@ -27,27 +27,30 @@ class ChangeContext {
     mchanges.lastOption
   }
 
-  def prepend(ch: ChangeContextData) = {
+  def prepend(ch: ChangeContextData): ChangeContext = {
     mchanges = ch :: mchanges
     this
   }
 
-  def create(newValue: Any) = prepend(ChangeContext.create(newValue))
+  def create(newValue: Any): ChangeContext =
+    prepend(ChangeContext.create(newValue))
 
-  def update(newValue: Any) = prepend(ChangeContext.update(newValue))
+  def update(newValue: Any): ChangeContext =
+    prepend(ChangeContext.update(newValue))
 
-  def delete(oldValue: Any) = prepend(ChangeContext.delete(oldValue))
+  def delete(oldValue: Any): ChangeContext =
+    prepend(ChangeContext.delete(oldValue))
 
-  def create(newValue: Any, parentField: String) =
+  def create(newValue: Any, parentField: String): ChangeContext =
     prepend(ChangeContext.create(newValue, parentField))
 
-  def update(newValue: Any, parentField: String) =
+  def update(newValue: Any, parentField: String): ChangeContext =
     prepend(ChangeContext.update(newValue, parentField))
 
-  def delete(oldValue: Any, parentField: String) =
+  def delete(oldValue: Any, parentField: String): ChangeContext =
     prepend(ChangeContext.delete(oldValue, parentField))
 
-  override def toString() = {
+  override def toString(): String = {
     "{ChangeContext " + changes + "}"
   }
 }
@@ -56,18 +59,21 @@ object ChangeContext {
 
   def apply() = new ChangeContext
 
-  def create(newValue: Any) = CreateChangeContext(newValue, None)
+  def create(newValue: Any): CreateChangeContext =
+    CreateChangeContext(newValue, None)
 
-  def update(newValue: Any) = UpdateChangeContext(newValue, None)
+  def update(newValue: Any): UpdateChangeContext =
+    UpdateChangeContext(newValue, None)
 
-  def delete(oldValue: Any) = DeleteChangeContext(oldValue, None)
+  def delete(oldValue: Any): DeleteChangeContext =
+    DeleteChangeContext(oldValue, None)
 
-  def create(newValue: Any, parentField: String) =
+  def create(newValue: Any, parentField: String): CreateChangeContext =
     CreateChangeContext(newValue, Option(parentField))
 
-  def update(newValue: Any, parentField: String) =
+  def update(newValue: Any, parentField: String): UpdateChangeContext =
     UpdateChangeContext(newValue, Option(parentField))
 
-  def delete(oldValue: Any, parentField: String) =
+  def delete(oldValue: Any, parentField: String): DeleteChangeContext =
     DeleteChangeContext(oldValue, Option(parentField))
 }

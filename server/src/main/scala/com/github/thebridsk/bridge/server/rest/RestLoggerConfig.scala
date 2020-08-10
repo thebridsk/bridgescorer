@@ -1,20 +1,13 @@
 package com.github.thebridsk.bridge.server.rest
 
 import com.github.thebridsk.bridge.data.LoggerConfig
-import com.github.thebridsk.bridge.data.Ack
-import akka.event.Logging
-import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import java.util.Date
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.ServerURL
-import com.github.thebridsk.bridge.server.Server
-import org.rogach.scallop.exceptions.IncompleteBuildException
 import com.github.thebridsk.bridge.data.ServerVersion
 import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.data.version.VersionShared
@@ -32,18 +25,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
-import io.swagger.v3.oas.annotations.tags.Tags
-import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
+import akka.http.scaladsl.server.Route
 
 case class ServerPort(httpPort: Option[Int], httpsPort: Option[Int])
 
 object RestLoggerConfig {
-  val log = Logger(getClass.getName)
+  val log: Logger = Logger(getClass.getName)
 
   private val pclientid = new AtomicInteger()
 
-  def nextClientId = Some(pclientid.incrementAndGet().toString())
+  def nextClientId: Some[String] = Some(pclientid.incrementAndGet().toString())
 }
 
 /**
@@ -67,7 +59,7 @@ trait RestLoggerConfig extends HasActorSystem {
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix("loggerConfig") {
+  val route: Route = pathPrefix("loggerConfig") {
     getLoggerConfig
   } ~
     pathPrefix("serverurls") {
@@ -109,8 +101,8 @@ trait RestLoggerConfig extends HasActorSystem {
       )
     )
   )
-  def xxxgetLoggerConfig() = {}
-  val getLoggerConfig = pathEndOrSingleSlash {
+  def xxxgetLoggerConfig(): Unit = {}
+  val getLoggerConfig: Route = pathEndOrSingleSlash {
     get {
       extractClientIP { ip =>
         {
@@ -178,8 +170,8 @@ trait RestLoggerConfig extends HasActorSystem {
       )
     )
   )
-  def xxxgetServerVersion() = {}
-  val getServerVersion = pathEndOrSingleSlash {
+  def xxxgetServerVersion(): Unit = {}
+  val getServerVersion: Route = pathEndOrSingleSlash {
     get {
       val serverversion = List(
         ServerVersion(
@@ -235,8 +227,8 @@ trait RestLoggerConfig extends HasActorSystem {
       )
     )
   )
-  def xxxgetServerURL() = {}
-  val getServerURL = pathEndOrSingleSlash {
+  def xxxgetServerURL(): Unit = {}
+  val getServerURL: Route = pathEndOrSingleSlash {
     get {
       val serverurl = List(serverURL())
       complete(StatusCodes.OK, serverurl)
@@ -277,8 +269,8 @@ trait RestLoggerConfig extends HasActorSystem {
       )
     )
   )
-  def xxxgetBoardSetsAndMovements() = {}
-  val getBoardSetsAndMovements = pathEndOrSingleSlash {
+  def xxxgetBoardSetsAndMovements(): Unit = {}
+  val getBoardSetsAndMovements: Route = pathEndOrSingleSlash {
     get {
       val fbs = restService.boardSets.readAll().map { r =>
         r match {
@@ -301,7 +293,12 @@ trait RestLoggerConfig extends HasActorSystem {
             case Success(rmv) =>
               if (rbs.isOk && rmv.isOk) {
                 val bm =
-                  List(BoardSetsAndMovements(rbs.getOrElse(List()), rmv.getOrElse(List())))
+                  List(
+                    BoardSetsAndMovements(
+                      rbs.getOrElse(List()),
+                      rmv.getOrElse(List())
+                    )
+                  )
                 complete(StatusCodes.OK, bm)
               } else {
                 val (code, msg) = rbs.left.getOrElse(
@@ -358,7 +355,7 @@ trait RestLoggerConfig extends HasActorSystem {
     * @param interface the interface IP address for the URLs
     * @return A list of URLs
     */
-  def getURLs(interface: String) = {
+  def getURLs(interface: String): Iterable[String] = {
     val httpsURL = ports.httpsPort match {
       case Some(port) =>
         if (port == 443) Some("https://" + interface + "/")

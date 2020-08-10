@@ -1,8 +1,6 @@
 package com.github.thebridsk.bridge.server.backend.resource
 
 import scala.concurrent.duration._
-import akka.http.scaladsl.model.StatusCodes
-import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.VersionedInstance
 import java.io.InputStream
 import scala.io.BufferedSource
@@ -16,9 +14,13 @@ import scala.concurrent.ExecutionContext
 import scala.util.Using
 
 object JavaResourceStore {
-  val log = Logger[JavaResourceStore[_, _]]()
+  val log: Logger = Logger[JavaResourceStore[_, _]]()
 
-  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       name: String,
       resourcedirectory: String,
       masterfile: String,
@@ -27,8 +29,7 @@ object JavaResourceStore {
       cacheMaxCapacity: Int = 100,
       cacheTimeToLive: Duration = 10.minutes,
       cacheTimeToIdle: Duration = 9.minutes
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): JavaResourceStore[VId, VType] = {
@@ -49,7 +50,9 @@ object JavaResourceStore {
   * @param resourcedirectory must start and end with a '/'
   * @param masterfile the master file that contains the names of all the resource files.  This file must be in resourcedirectory.
   */
-class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[
+class JavaResourcePersistentSupport[VId <: Comparable[
+  VId
+], VType <: VersionedInstance[
   VType,
   VType,
   VId
@@ -57,8 +60,7 @@ class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedIn
     val resourcedirectory: String,
     val masterfile: String,
     val loader: ClassLoader
-)(
-    implicit
+)(implicit
     support: StoreSupport[VId, VType],
     execute: ExecutionContext
 ) extends PersistentSupport[VId, VType] {
@@ -69,7 +71,9 @@ class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedIn
 
   private var knownIds: Option[Set[VId]] = None
 
-  private def getSource[T](resource: String)( f: BufferedSource => Option[T]): Option[T] = {
+  private def getSource[T](
+      resource: String
+  )(f: BufferedSource => Option[T]): Option[T] = {
     val res = resource.substring(1) // remove leading slash
     log.fine(
       s"JavaResourcePersistentSupport ${resourceURI} looking for ${res} resourceDirectory=${resourcedirectory}, masterfile=${masterfile}"
@@ -123,11 +127,14 @@ class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedIn
           else (resourcedirectory + "/")
         val map = getSource(resdir + masterfile) { mfile =>
           Some(
-            mfile.getLines().flatMap { line =>
-              getFilenameLine(line).flatMap { f =>
-                getFromFile(resdir + f).map(vt => vt.id)
+            mfile
+              .getLines()
+              .flatMap { line =>
+                getFilenameLine(line).flatMap { f =>
+                  getFromFile(resdir + f).map(vt => vt.id)
+                }
               }
-            }.toSet
+              .toSet
           )
         }
         knownIds = map
@@ -154,11 +161,14 @@ class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedIn
 //      Result(StatusCodes.NotFound,RestMessage(s"Did not find resource $resourceURI/$id"))
 //    ).logit("JavaResourcePersistentSupport.getFromPersistent")
 
-  def readFilenames(id: VId) = {
+  def readFilenames(id: VId): List[String] = {
     val r = support.getReadExtensions.map { e =>
-      s"""${resourcedirectory}${support.resourceName}.${support.idSupport.toString(id)}${e}"""
+      s"""${resourcedirectory}${support.resourceName}.${support.idSupport
+        .toString(id)}${e}"""
     }
-    log.fine(s"For ${resourceURI}/${support.idSupport.toString(id)}, Java resources are ${r}")
+    log.fine(
+      s"For ${resourceURI}/${support.idSupport.toString(id)}, Java resources are ${r}"
+    )
     r
   }
 
@@ -191,38 +201,43 @@ class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedIn
     * @param id
     * @return the result containing the resource or an error
     */
-  def read(id: VId): Result[VType] = synchronized {
+  def read(id: VId): Result[VType] =
+    synchronized {
 
-    val potential = readFilenames(id)
+      val potential = readFilenames(id)
 
-    @tailrec
-    def read(list: List[String]): Result[VType] = {
-      if (list.isEmpty) {
-        log.warning(
-          s"Did not find resource $resourceURI/${support.idSupport.toString(id)}, tried Java resources ${potential}"
-        )
-        notFound(id)
-      } else {
-        val f = list.head
+      @tailrec
+      def read(list: List[String]): Result[VType] = {
+        if (list.isEmpty) {
+          log.warning(
+            s"Did not find resource $resourceURI/${support.idSupport
+              .toString(id)}, tried Java resources ${potential}"
+          )
+          notFound(id)
+        } else {
+          val f = list.head
 
-        val ovt = try {
-          val v = getFromFile(f)
-          log.finest(s"For $resourceURI/${support.idSupport.toString(id)}, found ${f}: ${v}")
-          v
-        } catch {
-          case x: Exception =>
-            log.severe(s"Unable to read ${f}: ${x}")
-            None
-        }
-        ovt match {
-          case Some(vt) => Result(vt)
-          case None     => read(list.tail)
+          val ovt =
+            try {
+              val v = getFromFile(f)
+              log.finest(
+                s"For $resourceURI/${support.idSupport.toString(id)}, found ${f}: ${v}"
+              )
+              v
+            } catch {
+              case x: Exception =>
+                log.severe(s"Unable to read ${f}: ${x}")
+                None
+            }
+          ovt match {
+            case Some(vt) => Result(vt)
+            case None     => read(list.tail)
+          }
         }
       }
-    }
 
-    read(potential)
-  }
+      read(potential)
+    }
 
   /**
     * Write a resource to the persistent store
@@ -252,12 +267,15 @@ class JavaResourcePersistentSupport[VId <: Comparable[VId], VType <: VersionedIn
 }
 
 object JavaResourcePersistentSupport {
-  def apply[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       resourcedirectory: String,
       masterfile: String,
       loader: ClassLoader
-  )(
-      implicit
+  )(implicit
       support: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): JavaResourcePersistentSupport[VId, VType] = {
@@ -274,7 +292,11 @@ object JavaResourcePersistentSupport {
   * @param cacheTimeToLive
   * @param cacheTimeToIdle this value must be less than cacheTimeToLive
   */
-class JavaResourceStore[VId <: Comparable[VId], VType <: VersionedInstance[VType, VType, VId]](
+class JavaResourceStore[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     name: String,
     val resourcedirectory: String,
     val masterfile: String,
@@ -283,8 +305,7 @@ class JavaResourceStore[VId <: Comparable[VId], VType <: VersionedInstance[VType
     cacheMaxCapacity: Int = 100,
     cacheTimeToLive: Duration = 10.minutes,
     cacheTimeToIdle: Duration = 9.minutes
-)(
-    implicit
+)(implicit
     cachesupport: StoreSupport[VId, VType],
     execute: ExecutionContext
 ) extends Store[VId, VType](

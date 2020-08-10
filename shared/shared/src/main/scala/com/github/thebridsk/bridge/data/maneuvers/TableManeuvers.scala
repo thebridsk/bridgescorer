@@ -8,36 +8,35 @@ case class TableManeuvers(
     east: String,
     west: String
 ) {
-  import TableManeuvers._
 
-  override def toString() = {
+  override def toString(): String = {
     s"TableManeuvers( $north-$south, $east-$west )"
   }
 
-  def players = north :: south :: east :: west :: Nil
+  def players: List[String] = north :: south :: east :: west :: Nil
 
   def sortedPlayers = players.sorted
 
-  def isPlayerSpecified(p: String) = p != null && p.length() > 0
+  def isPlayerSpecified(p: String): Boolean = p != null && p.length() > 0
 
-  def areAllPlayersValid = {
+  def areAllPlayersValid: Boolean = {
     isPlayerSpecified(north) && isPlayerSpecified(south) && isPlayerSpecified(
       east
     ) && isPlayerSpecified(west)
   }
 
-  def areNSPlayersValid = {
+  def areNSPlayersValid: Boolean = {
     isPlayerSpecified(north) && isPlayerSpecified(south)
   }
 
-  def areEWPlayersValid = {
+  def areEWPlayersValid: Boolean = {
     isPlayerSpecified(east) && isPlayerSpecified(west)
   }
 
   /**
     * Returns the location of the specified player
     */
-  def find(p: String) = {
+  def find(p: String): Option[PlayerPosition] = {
     p match {
       case `north` => Some(North)
       case `south` => Some(South)
@@ -47,7 +46,7 @@ case class TableManeuvers(
     }
   }
 
-  def find(l: PlayerPosition) = {
+  def find(l: PlayerPosition): String = {
     l match {
       case North => north
       case South => south
@@ -56,7 +55,7 @@ case class TableManeuvers(
     }
   }
 
-  def isPlayerValid(l: PlayerPosition) = {
+  def isPlayerValid(l: PlayerPosition): Boolean = {
     l match {
       case North => isPlayerSpecified(north)
       case South => isPlayerSpecified(south)
@@ -65,19 +64,21 @@ case class TableManeuvers(
     }
   }
 
-  def partnerOfPosition(l: PlayerPosition): PlayerPosition = l match {
-    case North => South
-    case South => North
-    case East  => West
-    case West  => East
-  }
+  def partnerOfPosition(l: PlayerPosition): PlayerPosition =
+    l match {
+      case North => South
+      case South => North
+      case East  => West
+      case West  => East
+    }
 
-  def leftOfPosition(l: PlayerPosition): PlayerPosition = l match {
-    case North => East
-    case South => West
-    case East  => South
-    case West  => North
-  }
+  def leftOfPosition(l: PlayerPosition): PlayerPosition =
+    l match {
+      case North => East
+      case South => West
+      case East  => South
+      case West  => North
+    }
 
   def partnerOf(p: String): Option[String] = {
     find(p) match {
@@ -112,14 +113,15 @@ case class TableManeuvers(
     find(rightOfPosition(l))
   }
 
-  def rightOfPosition(l: PlayerPosition): PlayerPosition = l match {
-    case North => West
-    case South => East
-    case East  => North
-    case West  => South
-  }
+  def rightOfPosition(l: PlayerPosition): PlayerPosition =
+    l match {
+      case North => West
+      case South => East
+      case East  => North
+      case West  => South
+    }
 
-  def setPlayer(l: PlayerPosition, p: String) = {
+  def setPlayer(l: PlayerPosition, p: String): TableManeuvers = {
     l match {
       case North => copy(north = p)
       case South => copy(south = p)
@@ -128,30 +130,30 @@ case class TableManeuvers(
     }
   }
 
-  def swap(l1: PlayerPosition, l2: PlayerPosition) = {
+  def swap(l1: PlayerPosition, l2: PlayerPosition): TableManeuvers = {
     val p1 = find(l1)
     val p2 = find(l2)
     setPlayer(l1, p2).setPlayer(l2, p1)
   }
 
-  def swapWithPartner(pos: PlayerPosition) = {
+  def swapWithPartner(pos: PlayerPosition): TableManeuvers = {
     val partner = partnerOfPosition(pos)
     swap(pos, partner)
   }
 
-  def swapRightAndPartnerOf(l: PlayerPosition) = {
+  def swapRightAndPartnerOf(l: PlayerPosition): TableManeuvers = {
     swap(rightOfPosition(l), partnerOfPosition(l))
   }
 
-  def swapLeftAndPartnerOf(l: PlayerPosition) = {
+  def swapLeftAndPartnerOf(l: PlayerPosition): TableManeuvers = {
     swap(leftOfPosition(l), partnerOfPosition(l))
   }
 
-  def swapRightAndLeftOf(l: PlayerPosition) = {
+  def swapRightAndLeftOf(l: PlayerPosition): TableManeuvers = {
     swap(rightOfPosition(l), leftOfPosition(l))
   }
 
-  def rotateClockwise = {
+  def rotateClockwise: TableManeuvers = {
     TableManeuvers(
       north = west,
       south = east,
@@ -160,7 +162,7 @@ case class TableManeuvers(
     )
   }
 
-  def rotateCounterClockwise = {
+  def rotateCounterClockwise: TableManeuvers = {
     TableManeuvers(
       north = east,
       south = west,
@@ -169,7 +171,7 @@ case class TableManeuvers(
     )
   }
 
-  def rotate180 = {
+  def rotate180: TableManeuvers = {
     TableManeuvers(
       north = south,
       south = north,

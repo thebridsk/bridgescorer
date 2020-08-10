@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data.sample
 
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
@@ -9,6 +8,7 @@ import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.DuplicateHandV2
 
 object TestMatchDuplicate {
 
@@ -22,7 +22,7 @@ object TestMatchDuplicate {
       declarer: String,
       madeContract: Boolean,
       tricks: Int
-  ) = {
+  ): DuplicateHandV2 = {
     val b = dm.getBoard(boardid).get
     val dh = b.getHand(handid).get
     dh.updateHand(
@@ -40,18 +40,18 @@ object TestMatchDuplicate {
     )
   }
 
-  val team1 = Team.id(1)
-  val team2 = Team.id(2)
-  val team3 = Team.id(3)
-  val team4 = Team.id(4)
+  val team1: Team.Id = Team.id(1)
+  val team2: Team.Id = Team.id(2)
+  val team3: Team.Id = Team.id(3)
+  val team4: Team.Id = Team.id(4)
 
-  def teams() =
+  def teams(): Map[Team.Id, Team] =
     List(
       Team.create(team1, "Nancy", "Norman"),
       Team.create(team2, "Ellen", "Edward"),
       Team.create(team3, "Susan", "Sam"),
       Team.create(team4, "Wilma", "Wayne")
-    ).map( t => t.id -> t ).toMap
+    ).map(t => t.id -> t).toMap
 
   def create(id: MatchDuplicate.Id): MatchDuplicate = {
     val ts: Map[Team.Id, Team] = teams()
@@ -80,10 +80,18 @@ object TestMatchDuplicate {
     addHand(DuplicateHand.create(Table.id(2), 4, Board.id(7), team2, team4))
     addHand(DuplicateHand.create(Table.id(2), 4, Board.id(8), team2, team4))
 
-    MatchDuplicate(id, ts.values.toList, boards.values.toList, BoardSet.idNul, Movement.idNul, 0, 0)
+    MatchDuplicate(
+      id,
+      ts.values.toList,
+      boards.values.toList,
+      BoardSet.idNul,
+      Movement.idNul,
+      0,
+      0
+    )
   }
 
-  def getHands(md: MatchDuplicate) = {
+  def getHands(md: MatchDuplicate): List[DuplicateHand] = {
     var hands: List[DuplicateHand] = Nil
     hands = getHand(md, Board.id(1), team1, 3, "N", "N", "N", true, 5) :: hands
     hands = getHand(md, Board.id(2), team1, 4, "S", "N", "N", true, 5) :: hands
@@ -95,9 +103,10 @@ object TestMatchDuplicate {
     hands.reverse
   }
 
-  def getTeamScore() = Map(team1 -> 3, team2 -> 1, team3 -> 1, team4 -> 3)
+  def getTeamScore(): Map[Team.Id, Int] =
+    Map(team1 -> 3, team2 -> 1, team3 -> 1, team4 -> 3)
 
-  def getPlayedMatch(dupid: MatchDuplicate.Id) = {
+  def getPlayedMatch(dupid: MatchDuplicate.Id): MatchDuplicate = {
     var md = TestMatchDuplicate.create(dupid)
     val hands = TestMatchDuplicate.getHands(md)
     for (hand <- hands) {

@@ -14,7 +14,6 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.pages.Pixels
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
@@ -22,13 +21,14 @@ import com.github.thebridsk.materialui.TextColor
 object ViewPlayersFourthRound {
   import PagePlayers._
 
-  def apply(props: Props) = component(props)
+  def apply(props: Props) =
+    component(props) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   class Backend(scope: BackendScope[Props, ViewPlayersSecondRound.State]) {
 
     def show(desc: String, ps: ViewPlayersSecondRound.State) = ps
 
-    def setNorth(p: String)(e: ReactEventFromInput) =
+    def setNorth(p: String)(e: ReactEventFromInput): Callback =
       scope.modState(ps => {
         show(
           "setNorth",
@@ -41,40 +41,41 @@ object ViewPlayersFourthRound {
           )
         )
       })
-    def setSouth(p: String)(e: ReactEventFromInput) =
+    def setSouth(p: String)(e: ReactEventFromInput): Callback =
       scope.modState(ps => {
         show("setSouth", complete(ps.removePlayer(p).copy(south = p)))
       })
-    def setEast(p: String)(e: ReactEventFromInput) =
+    def setEast(p: String)(e: ReactEventFromInput): Callback =
       scope.modState(ps => {
         show("setEast", complete(ps.removePlayer(p).copy(east = p)))
       })
-    def setWest(p: String)(e: ReactEventFromInput) =
+    def setWest(p: String)(e: ReactEventFromInput): Callback =
       scope.modState(ps => {
         show("setWest", complete(ps.removePlayer(p).copy(west = p)))
       })
 
-    def setFirstDealer(p: PlayerPosition) =
+    def setFirstDealer(p: PlayerPosition): Callback =
       scope.modState(ps => ps.copy(dealer = Some(p)))
 
-    val changeScoreKeeper =
+    val changeScoreKeeper: Callback =
       scope.modState(s => s.copy(changingScoreKeeper = true))
 
-    val reset = scope.modState(
-      s =>
-        s.copy(
-          north = s.north,
-          south = "",
-          east = "",
-          west = "",
-          changingScoreKeeper = false
-        )
+    val reset: Callback = scope.modState(s =>
+      s.copy(
+        north = s.north,
+        south = "",
+        east = "",
+        west = "",
+        changingScoreKeeper = false
+      )
     )
 
     /**
       * Only call from within a scope.modState()
       */
-    def complete(state: ViewPlayersSecondRound.State) = {
+    def complete(
+        state: ViewPlayersSecondRound.State
+    ): ViewPlayersSecondRound.State = {
       val props = scope.withEffectsImpure.props
 
       val lastRound = props.chicago.rounds(props.chicago.rounds.size - 1)
@@ -134,7 +135,7 @@ object ViewPlayersFourthRound {
       state.copy(south = south, east = east, west = west)
     }
 
-    def render(props: Props, state: ViewPlayersSecondRound.State) = {
+    def render(props: Props, state: ViewPlayersSecondRound.State) = { // scalafix:ok ExplicitResultTypes; React
       import ChicagoStyles._
 
       val lastRound = props.chicago.rounds(props.chicago.rounds.size - 1)
@@ -211,7 +212,10 @@ object ViewPlayersFourthRound {
           "Dealer",
           baseStyles.nameButton,
           ^.onClick --> setFirstDealer(position),
-          BaseStyles.highlight(selected = state.isDealer(position), required=state.dealer.isEmpty),
+          BaseStyles.highlight(
+            selected = state.isDealer(position),
+            required = state.dealer.isEmpty
+          ),
           ^.tabIndex := tabindex
         )
 
@@ -340,7 +344,7 @@ object ViewPlayersFourthRound {
       )
     }
 
-    val ok = scope.stateProps { (state, props) =>
+    val ok: Callback = scope.stateProps { (state, props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(
           props.page.round.toString(),
@@ -369,7 +373,7 @@ object ViewPlayersFourthRound {
 
   }
 
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[Props]("ViewPlayersFourthRound")
     .initialStateFromProps { props =>
       {
