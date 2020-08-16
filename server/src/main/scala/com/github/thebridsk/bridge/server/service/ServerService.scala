@@ -78,7 +78,8 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
     ),
     responses = Array(
       new ApiResponse(responseCode = "204", description = "Accepted"),
-      new ApiResponse(responseCode = "400", description = "Bad request")
+      new ApiResponse(responseCode = "400", description = "Bad request"),
+      new ApiResponse(responseCode = "404", description = "Not found")
     )
   )
   def xxxshutdown: Unit = {}
@@ -97,17 +98,17 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
                     complete(StatusCodes.NoContent)
                   case None =>
                     log.severe("Error")
-                    complete(StatusCodes.BadRequest)
+                    complete(StatusCodes.NotFound)
                 }
               case _ =>
                 log.severe(
                   "Could not determine remote address or it is not local, ip=" + ip
                 )
-                complete(StatusCodes.BadRequest)
+                complete(StatusCodes.BadRequest, "Request not from valid address")
             }
           } else {
             log.severe("Missing secret")
-            complete(StatusCodes.BadRequest)
+            complete(StatusCodes.BadRequest, "Request is missing secret")
           }
         }
       }

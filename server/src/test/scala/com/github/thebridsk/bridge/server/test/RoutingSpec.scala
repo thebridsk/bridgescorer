@@ -20,4 +20,6 @@ trait RoutingSpec extends Directives {
 
   val remoteAddress: Map[AttributeKey[_],_] = remoteAddress(InetAddress.getLocalHost, 12345)
 
+  val remoteAddressLocal: Map[AttributeKey[_],_] = remoteAddress(InetAddress.getLoopbackAddress, 12345)
+
 }

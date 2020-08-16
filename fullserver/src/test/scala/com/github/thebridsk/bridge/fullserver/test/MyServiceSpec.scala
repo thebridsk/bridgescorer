@@ -7,8 +7,6 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.server.Route
 import akka.event.Logging
-import java.net.InetAddress
-import akka.http.scaladsl.model.RemoteAddress.IP
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.server.service.ResourceFinder
@@ -25,8 +23,6 @@ import scala.io.Source
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import akka.event.LoggingAdapter
-import akka.http.scaladsl.model.AttributeKey
-import akka.http.scaladsl.model.AttributeKeys
 import com.github.thebridsk.bridge.server.test.RoutingSpec
 
 class MyServiceSpec
@@ -311,27 +307,36 @@ class MyServiceSpec
 
     }
     val shutdownHook = new Hook
-    val remoteAddress: Map[AttributeKey[_],_] = Map(
-      AttributeKeys.remoteAddress -> IP(InetAddress.getLoopbackAddress, Some(12345)).value
-    )
+
     MyService.shutdownHook = Some(shutdownHook)
-    Post("/v1/shutdown").withAttributes(remoteAddress) ~> Route.seal {
+    Post("/v1/shutdown").withAttributes(remoteAddressLocal) ~> Route.seal {
       logRouteWithIp
     } ~> check {
       status mustBe BadRequest
+      responseAs[String] mustBe "Request is missing secret"
       shutdownHook.called mustBe false
     }
     Post("/v1/shutdown") ~> Route.seal { logRouteWithIp } ~> check {
       status mustBe BadRequest
+      responseAs[String] mustBe "Request is missing secret"
       shutdownHook.called mustBe false
     }
-    Get("/v1/shutdown").withAttributes(remoteAddress) ~> Route.seal {
+    Get("/v1/shutdown").withAttributes(remoteAddressLocal) ~> Route.seal {
       logRouteWithIp
     } ~> check {
       status mustBe MethodNotAllowed
+      responseAs[String] mustBe "Can't do that! Supported: POST!"
       shutdownHook.called mustBe false
     }
     Post("/v1/shutdown?doit=yes").withAttributes(remoteAddress) ~> Route.seal {
+      logRouteWithIp
+    } ~> check {
+      // request fails, not from loopback interface
+      status mustBe BadRequest
+      responseAs[String] mustBe "Request not from valid address"
+      shutdownHook.called mustBe false
+    }
+    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddressLocal) ~> Route.seal {
       logRouteWithIp
     } ~> check {
       status mustBe NoContent
