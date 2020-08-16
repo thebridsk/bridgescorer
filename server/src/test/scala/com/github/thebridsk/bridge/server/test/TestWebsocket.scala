@@ -29,6 +29,7 @@ import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.server.Route
+import TestDuplicateRestSpecImplicits._
 
 class TestWebsocket
     extends AnyFlatSpec
@@ -143,7 +144,7 @@ class TestWebsocket
 
   it should "Open a Websocket" in {
     val wsClient = WSProbe()
-    WS("/greeter", wsClient.flow) ~> websocketRoute ~>
+    WS("/greeter", wsClient.flow).addAttributes(remoteAddress) ~> websocketRoute ~>
       check {
         wsClient.inProbe.within(10 seconds) {
           isWebSocketUpgrade mustEqual true

@@ -53,6 +53,9 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 import akka.event.LoggingAdapter
+import akka.http.scaladsl.model.HttpRequest
+import akka.http.scaladsl.model.AttributeKey
+
 
 class TestDuplicateRestSpec
     extends AnyFlatSpec
@@ -438,7 +441,7 @@ class TestDuplicateRestSpec
       import scala.concurrent.duration._
       import scala.language.postfixOps
       val wsClient = WSProbe()
-      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil).withAttributes(remoteAddress) ~> myRouteWithLogging ~>
+      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil).addAttributes(remoteAddress) ~> myRouteWithLogging ~>
         check {
           isWebSocketUpgrade mustBe true
           wsClient.inProbe.within(10 seconds) {
@@ -500,7 +503,7 @@ class TestDuplicateRestSpec
       import scala.concurrent.duration._
       import scala.language.postfixOps
       val wsClient = WSProbe()
-      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil).withAttributes(remoteAddress) ~> myRouteWithLogging ~>
+      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil).addAttributes(remoteAddress) ~> myRouteWithLogging ~>
         check {
           isWebSocketUpgrade mustBe true
           wsClient.inProbe.within(10 seconds) {
@@ -1089,4 +1092,12 @@ object TestDuplicateRestSpecImplicits {
       wsClient.sendMessage(DuplexProtocol.toString(data))
     }
   }
+
+  implicit class WrapHttpRequest( val req: HttpRequest ) extends AnyVal {
+    def addAttributes(map: Map[AttributeKey[_],_]): HttpRequest = {
+      val old = req.attributes
+      req.withAttributes(old ++ map)
+    }
+  }
+
 }

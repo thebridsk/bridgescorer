@@ -17,6 +17,7 @@ import scala.concurrent.duration._
 import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
 import org.scalatest.Assertion
+import TestDuplicateRestSpecImplicits._
 
 trait XXX extends MyService {
   import com.github.thebridsk.bridge.server.rest.ServerPort
@@ -56,7 +57,7 @@ class TestLoggingWebsocket
 
   it should "Fail to open a Websocket" in {
     val wsClient = WSProbe()
-    WS("/v1/logger/ws/", wsClient.flow, "xxx" :: Nil).withAttributes(
+    WS("/v1/logger/ws/", wsClient.flow, "xxx" :: Nil).addAttributes(
       remoteAddress
     ) ~> Route.seal { myService.myRouteWithLogging } ~>
       check {
@@ -69,7 +70,7 @@ class TestLoggingWebsocket
 
   it should "Open a Websocket and send invalid data" in {
     val wsClient = WSProbe()
-    WS("/v1/logger/ws/", wsClient.flow, "Logging" :: Nil).withAttributes(
+    WS("/v1/logger/ws/", wsClient.flow, "Logging" :: Nil).addAttributes(
       remoteAddress
     ) ~> Route.seal { myService.myRouteWithLogging } ~>
       check {
@@ -130,7 +131,7 @@ class TestLoggingWebsocket
 
   it should "Open a Websocket and send valid data" in {
     val wsClient = WSProbe()
-    WS("/v1/logger/ws/", wsClient.flow, "Logging" :: Nil).withAttributes(
+    WS("/v1/logger/ws/", wsClient.flow, "Logging" :: Nil).addAttributes(
       remoteAddress
     ) ~> Route.seal { myService.myRouteWithLogging } ~>
       check {

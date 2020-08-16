@@ -212,6 +212,17 @@ class TestRoute extends AnyFlatSpec with RoutingSpec with ScalatestRouteTest wit
     }
   }
 
+  it should "return an OK for / and extract the client ip" in {
+    Get("/") ~!> myExtractClientIP ~> check {
+      status mustBe StatusCodes.OK
+      val resp = responseAs[String]
+      val r = resp.split(":")
+      r.length mustBe 2
+      r(0) mustBe InetAddress.getLoopbackAddress.getHostAddress
+      r(1) must fullyMatch regex """\d+"""
+    }
+  }
+
   behavior of "the compress"
 
   it should "produce identity responses when accept encoding identity is used as an argument" in {

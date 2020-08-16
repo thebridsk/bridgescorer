@@ -34,6 +34,7 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictur
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 import org.scalatest.Assertion
 import akka.http.scaladsl.model.AttributeKey
+import com.github.thebridsk.bridge.server.test.TestDuplicateRestSpecImplicits._
 
 @SuppressWarnings(
   Array( // Get really weird errors on missing implicits in WS() call
@@ -68,7 +69,7 @@ class WebsocketClient(implicit
       max: FiniteDuration = 10 seconds
   )(implicit testlog: LoggingAdapter) = {
     if (myAddress.isEmpty) {
-      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil).withAttributes(
+      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil).addAttributes(
         remoteAddress
       ) ~> route ~>
         check {
