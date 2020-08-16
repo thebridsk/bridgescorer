@@ -13,8 +13,6 @@ import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest._
-import akka.http.scaladsl.model.headers.`Remote-Address`
-import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
 import akka.http.scaladsl.model.MediaTypes
 import com.github.thebridsk.bridge.data.DuplicateHand
@@ -49,7 +47,8 @@ class TestDuplicateWebsocket
     with ScalatestRouteTest
     with Matchers
     with MyService
-    with BeforeAndAfterAll {
+    with BeforeAndAfterAll
+    with RoutingSpec {
 
   implicit val me: TestDuplicateWebsocket = this
 
@@ -72,18 +71,9 @@ class TestDuplicateWebsocket
   implicit lazy val testlog: LoggingAdapter =
     Logging(actorSystem, classOf[TestDuplicateWebsocket])
 
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) // scalafix:ok ; Remote-Address
-  val remoteAddress1 = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(11111))
-  ) // scalafix:ok ; Remote-Address
-  val remoteAddress2 = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(22222))
-  ) // scalafix:ok ; Remote-Address
-  val remoteAddress3 = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(33333))
-  ) // scalafix:ok ; Remote-Address
+  val remoteAddress1 = remoteAddress(InetAddress.getLocalHost, 11111)
+  val remoteAddress2 = remoteAddress(InetAddress.getLocalHost, 22222)
+  val remoteAddress3 = remoteAddress(InetAddress.getLocalHost, 33333)
 
   var client1: WebsocketClient = null
   var client2: WebsocketClient = null
@@ -196,7 +186,7 @@ class TestDuplicateWebsocket
       Post(
         "/v1/rest/duplicates?default",
         MatchDuplicate.create(MatchDuplicate.id(1))
-      ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         mediaType mustBe MediaTypes.`application/json`
@@ -283,7 +273,7 @@ class TestDuplicateWebsocket
         Put(
           "/v1/rest/duplicates/M1",
           BridgeServiceTesting.testingMatch
-        ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+        ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
           handled mustBe true
           status mustBe NoContent
 //        mediaType mustBe MediaTypes.`application/json`
@@ -304,9 +294,7 @@ class TestDuplicateWebsocket
         client1.within(10 seconds) {
           client1.testUpdate(BridgeServiceTesting.testingMatch)
         }
-        Get("/v1/rest/duplicates/M1") ~> addHeader(
-          remoteAddress
-        ) ~> myRouteWithLogging ~> check {
+        Get("/v1/rest/duplicates/M1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
           handled mustBe true
           status mustBe OK
           mediaType mustBe MediaTypes.`application/json`
@@ -320,9 +308,7 @@ class TestDuplicateWebsocket
   )
 
   it should "return a not found for match 2 for GET requests to /v1/rest/duplicates/M2" in {
-    Get("/v1/rest/duplicates/M2") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M2").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -338,7 +324,7 @@ class TestDuplicateWebsocket
       Post(
         "/v1/rest/duplicates?default",
         MatchDuplicate.create(MatchDuplicate.id(2))
-      ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         mediaType mustBe MediaTypes.`application/json`
@@ -364,9 +350,7 @@ class TestDuplicateWebsocket
 
   it should "return a MatchDuplicate json object for match 1 for GET requests to /v1/rest/duplicates/M1" in withListener(
     listenerstatus => {
-      Get("/v1/rest/duplicates/M1") ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Get("/v1/rest/duplicates/M1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe OK
         mediaType mustBe MediaTypes.`application/json`
@@ -383,9 +367,7 @@ class TestDuplicateWebsocket
   behavior of "MyService REST for names"
 
   it should "return a list of names for GET requests to /v1/rest/names" in {
-    Get("/v1/rest/names") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/names").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -408,9 +390,7 @@ class TestDuplicateWebsocket
   behavior of "MyService REST for duplicate boards"
 
   it should "return a Board json object for board 1 for GET requests to /v1/rest/duplicates/M1/boards/B1" in {
-    Get("/v1/rest/duplicates/M1/boards/B1") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/boards/B1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -424,9 +404,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a Board json object for board 2 for GET requests to /v1/rest/duplicates/M1/boards/B2" in {
-    Get("/v1/rest/duplicates/M1/boards/B2") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/boards/B2").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -440,9 +418,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a Board json object for board 3 for GET requests to /v1/rest/duplicates/M1/boards/B3" in {
-    Get("/v1/rest/duplicates/M1/boards/B3") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/boards/B3").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -456,9 +432,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a not found for board 4 for GET requests to /v1/rest/duplicates/M1/boards/B4" in {
-    Get("/v1/rest/duplicates/M1/boards/B4") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/boards/B4").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -470,9 +444,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a not found for match 4 for GET requests to /v1/rest/duplicates/M4/boards/B1" in {
-    Get("/v1/rest/duplicates/M4/boards/B1") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M4/boards/B1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -488,9 +460,7 @@ class TestDuplicateWebsocket
   var t: Team = null
 
   it should "return a Team json object for team 1 for GET requests to /v1/rest/duplicates/M1/teams/T1" in {
-    Get("/v1/rest/duplicates/M1/teams/T1") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/teams/T1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -506,9 +476,7 @@ class TestDuplicateWebsocket
 
   it should "return a Team json object for team 1 for PUT requests to /v1/rest/duplicates/M1/teams/T1" in {
     val nt = t.setPlayers("Fred", "George")
-    Put("/v1/rest/duplicates/M1/teams/T1", nt) ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Put("/v1/rest/duplicates/M1/teams/T1", nt).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NoContent
 //      mediaType mustBe MediaTypes.`application/json`
@@ -523,23 +491,17 @@ class TestDuplicateWebsocket
           fail(s"Unexpected unsolicited message $x")
       }
     }
-    Get("/v1/rest/duplicates/M1/teams/T1") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/teams/T1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
       assert(responseAs[Team].equalsIgnoreModifyTime(nt))
     }
-    Put("/v1/rest/duplicates/M1/teams/T1", t) ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Put("/v1/rest/duplicates/M1/teams/T1", t).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NoContent
     }
-    Get("/v1/rest/duplicates/M1/teams/T1") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/teams/T1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -558,9 +520,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a Team json object for team 2 for GET requests to /v1/rest/duplicates/M1/teams/T2" in {
-    Get("/v1/rest/duplicates/M1/teams/T2") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/teams/T2").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -574,9 +534,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a not found for team 5 for GET requests to /v1/rest/duplicates/M1/teams/T5" in {
-    Get("/v1/rest/duplicates/M1/teams/T5") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/teams/T5").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -588,9 +546,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a not found for match 3 for GET requests to /v1/rest/duplicates/M3/teams/B1" in {
-    Get("/v1/rest/duplicates/M3/teams/T9") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M3/teams/T9").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -604,9 +560,7 @@ class TestDuplicateWebsocket
   behavior of "MyService REST for duplicate hands"
 
   it should "return a hand json object for hand 1 for GET requests to /v1/rest/duplicates/M1/boards/B1/hands/T1" in {
-    Get("/v1/rest/duplicates/M1/boards/B1/hands/T1") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/boards/B1/hands/T1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       withClue("response is " + response) { status mustBe OK }
       mediaType mustBe MediaTypes.`application/json`
@@ -637,9 +591,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a not found for hand 3 for GET requests to /v1/rest/duplicates/M1/boards/B1/hands/T4" in {
-    Get("/v1/rest/duplicates/M1/boards/B1/hands/T4") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/boards/B1/hands/T4").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -651,9 +603,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a not found for board 4 for GET requests to /v1/rest/duplicates/M1/boards/B4/hands/T1" in {
-    Get("/v1/rest/duplicates/M1/boards/B4/hands/T1") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M1/boards/B4/hands/T1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -665,9 +615,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a not found for match 4 for GET requests to /v1/rest/duplicates/M4/boards/B1" in {
-    Get("/v1/rest/duplicates/M4/boards/B1") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates/M4/boards/B1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
@@ -698,9 +646,7 @@ class TestDuplicateWebsocket
         team3,
         team4
       )
-      Post("/v1/rest/duplicates/M1/boards/B2/hands", hand) ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Post("/v1/rest/duplicates/M1/boards/B2/hands", hand).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         header("Location") match {
@@ -736,18 +682,14 @@ class TestDuplicateWebsocket
   it should "return a deleted for Delete requests to /v1/rest/duplicates/M1/boards/B2/hands/T3" in withListener(
     listenerstatus => {
       var m1: Option[MatchDuplicate] = None
-      Get("/v1/rest/duplicates/M1") ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Get("/v1/rest/duplicates/M1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe OK
         mediaType mustBe MediaTypes.`application/json`
         val r = responseAs[MatchDuplicate]
         m1 = Some(r)
       }
-      Delete("/v1/rest/duplicates/M1/boards/B2/hands/T3") ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/M1/boards/B2/hands/T3").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe NoContent
 //      mediaType mustBe MediaTypes.`application/json`
@@ -775,18 +717,14 @@ class TestDuplicateWebsocket
   it should "return a deleted for Delete requests to /v1/rest/duplicates/M1" in withListener(
     listenerstatus => {
       var m1: Option[MatchDuplicate] = None
-      Get("/v1/rest/duplicates/M1") ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Get("/v1/rest/duplicates/M1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe OK
         mediaType mustBe MediaTypes.`application/json`
         val r = responseAs[MatchDuplicate]
         m1 = Some(r)
       }
-      Delete("/v1/rest/duplicates/M1") ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/M1").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe NoContent
 //      mediaType mustBe MediaTypes.`application/json`
@@ -804,9 +742,7 @@ class TestDuplicateWebsocket
   behavior of "MyService REST for names at end"
 
   it should "return a list of names for GET requests to /v1/rest/names" in {
-    Get("/v1/rest/names") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/names").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -824,7 +760,7 @@ class TestDuplicateWebsocket
       Post(
         "/v1/rest/duplicates?default",
         MatchDuplicate.create(MatchDuplicate.id(1))
-      ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         mediaType mustBe MediaTypes.`application/json`
@@ -857,7 +793,7 @@ class TestDuplicateWebsocket
       Post(
         "/v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table",
         MatchDuplicate.create(MatchDuplicate.id(1))
-      ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         mediaType mustBe MediaTypes.`application/json`
@@ -890,7 +826,7 @@ class TestDuplicateWebsocket
       Post(
         "/v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay",
         MatchDuplicate.create(MatchDuplicate.id(1))
-      ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+      ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         mediaType mustBe MediaTypes.`application/json`
@@ -919,9 +855,7 @@ class TestDuplicateWebsocket
   )
 
   it should "return a list of duplicate summaries for GET requests to /v1/rest/duplicatesummaries" in {
-    Get("/v1/rest/duplicatesummaries") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicatesummaries").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
@@ -934,9 +868,7 @@ class TestDuplicateWebsocket
   }
 
   it should "return a list of match duplicates for GET requests to /v1/rest/duplicates" in {
-    Get("/v1/rest/duplicates") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/duplicates").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`

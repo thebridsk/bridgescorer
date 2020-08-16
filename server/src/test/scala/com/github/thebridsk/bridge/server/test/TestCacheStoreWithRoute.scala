@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.server.test
 
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.RemoteAddress.IP
-import akka.http.scaladsl.model.headers.`Remote-Address`
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import java.net.InetAddress
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -176,7 +173,8 @@ class TestCacheStoreWithRoute
     with ScalatestRouteTest
     with Matchers
     with BeforeAndAfterAll
-    with MyService {
+    with MyService
+    with RoutingSpec {
   import TestCacheStoreWithRoute._
 
   val restService = new BridgeServiceTestFailure
@@ -195,17 +193,13 @@ class TestCacheStoreWithRoute
 
   behavior of "Store"
 
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) // scalafix:ok ; Remote-Address
-
   var dupid: Option[MatchDuplicate.Id] = None
 
   var dupidNotCached: Option[MatchDuplicate.Id] = None
 
   it should "store a value in the store" in {
     val omd = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?default=true", omd) ~> addHeader(remoteAddress) ~>
+    Post("/v1/rest/duplicates?default=true", omd).withAttributes(remoteAddress) ~>
       Route.seal { myRouteWithLogging } ~>
       check {
         status mustBe StatusCodes.Created
@@ -224,9 +218,7 @@ class TestCacheStoreWithRoute
         }
 
         val nmd = md.updateTeam(Team(Team.id(1), "Fred", "George", 0, 0))
-        Put(s"/v1/rest/duplicates/${md.id.id}", nmd) ~> addHeader(
-          remoteAddress
-        ) ~>
+        Put(s"/v1/rest/duplicates/${md.id.id}", nmd).withAttributes(remoteAddress) ~>
           Route.seal { myRouteWithLogging } ~>
           check {
             status mustBe StatusCodes.NoContent
@@ -240,7 +232,7 @@ class TestCacheStoreWithRoute
 
     val id = dupidNotCached.get
     restService.duplicates.getCached(id) mustBe None
-    Get(s"/v1/rest/duplicates/${id.id}") ~> addHeader(remoteAddress) ~>
+    Get(s"/v1/rest/duplicates/${id.id}").withAttributes(remoteAddress) ~>
       Route.seal { myRouteWithLogging } ~>
       check {
         status mustBe StatusCodes.InternalServerError
@@ -252,7 +244,7 @@ class TestCacheStoreWithRoute
 
         restService.persistent.failRead = false
 
-        Get(s"/v1/rest/duplicates/${id.id}") ~> addHeader(remoteAddress) ~>
+        Get(s"/v1/rest/duplicates/${id.id}").withAttributes(remoteAddress) ~>
           Route.seal { myRouteWithLogging } ~>
           check {
             status mustBe StatusCodes.OK
@@ -268,7 +260,7 @@ class TestCacheStoreWithRoute
     restService.persistent.failWrite = true
 
     val md = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?default=true", md) ~> addHeader(remoteAddress) ~>
+    Post("/v1/rest/duplicates?default=true", md).withAttributes(remoteAddress) ~>
       Route.seal { myRouteWithLogging } ~>
       check {
         status mustBe StatusCodes.InternalServerError
@@ -277,9 +269,7 @@ class TestCacheStoreWithRoute
         ] mustBe "An error occurred: Failure writing to persistent store!"
 
         restService.persistent.failWrite = false
-        Post("/v1/rest/duplicates?default=true", md) ~> addHeader(
-          remoteAddress
-        ) ~>
+        Post("/v1/rest/duplicates?default=true", md).withAttributes(remoteAddress) ~>
           Route.seal { myRouteWithLogging } ~>
           check {
             status mustBe StatusCodes.Created
@@ -295,7 +285,7 @@ class TestCacheStoreWithRoute
     restService.persistent.failGetAllIds = true
 
     val md = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?default=true", md) ~> addHeader(remoteAddress) ~>
+    Post("/v1/rest/duplicates?default=true", md).withAttributes(remoteAddress) ~>
       Route.seal { myRouteWithLogging } ~>
       check {
         status mustBe StatusCodes.Created
@@ -306,7 +296,7 @@ class TestCacheStoreWithRoute
   it should "fail to update a hand value in the store" in {
 
     val id = dupidNotCached.get
-    Get(s"/v1/rest/duplicates/${id.id}") ~> addHeader(remoteAddress) ~>
+    Get(s"/v1/rest/duplicates/${id.id}").withAttributes(remoteAddress) ~>
       Route.seal { myRouteWithLogging } ~>
       check {
         status mustBe StatusCodes.OK
@@ -344,7 +334,7 @@ class TestCacheStoreWithRoute
                 Put(
                   s"/v1/rest/duplicates/${id.id}/boards/${boardid.id}/hands/${handid.id}",
                   nhand
-                ) ~> addHeader(remoteAddress) ~>
+                ).withAttributes(remoteAddress) ~>
                   Route.seal { myRouteWithLogging } ~>
                   check {
                     status mustBe StatusCodes.InternalServerError
@@ -378,7 +368,7 @@ class TestCacheStoreWithRoute
                     Put(
                       s"/v1/rest/duplicates/${id.id}/boards/${boardid.id}/hands/${handid.id}",
                       nhand
-                    ) ~> addHeader(remoteAddress) ~>
+                    ).withAttributes(remoteAddress) ~>
                       Route.seal { myRouteWithLogging } ~>
                       check {
                         status mustBe StatusCodes.NoContent

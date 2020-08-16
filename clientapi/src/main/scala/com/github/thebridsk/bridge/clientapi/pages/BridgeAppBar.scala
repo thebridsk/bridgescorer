@@ -178,7 +178,6 @@ object BridgeAppBarInternal {
     }
 
     def isFullscreenEnabledI: Boolean = {
-      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
       logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
       val e = doc.fullscreenEnabled
@@ -189,7 +188,6 @@ object BridgeAppBarInternal {
     }
 
     def isFullscreen: Boolean = {
-      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
       logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
       if (isFullscreenEnabledI) {

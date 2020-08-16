@@ -24,19 +24,19 @@ object BldVersion {
 
 
   lazy val vAkka = "2.6.8"             // https://github.com/akka/akka
-  lazy val vAkkaHttp = "10.1.12"       // https://github.com/akka/akka-http
+  lazy val vAkkaHttp = "10.2.0"        // https://github.com/akka/akka-http
 
-  lazy val vAkkaHttpPlayJson="1.33.0"  // https://github.com/hseeberger/akka-http-json
+  lazy val vAkkaHttpPlayJson="1.34.0"  // https://github.com/hseeberger/akka-http-json
 
   lazy val vSwaggerAkkaHttp = "2.1.1"  // https://github.com/swagger-akka-http/swagger-akka-http
   lazy val vSwaggerScalaModule="2.1.2" // https://github.com/swagger-akka-http/swagger-scala-module
-  lazy val vSwagger="2.1.3"            // https://github.com/swagger-api/swagger-core
+  lazy val vSwagger="2.1.4"            // https://github.com/swagger-api/swagger-core
   lazy val vWsRsApi="2.1.6"            // https://github.com/eclipse-ee4j/jaxrs-api
-  lazy val vAkkaHttpCors = "1.0.0"     // https://github.com/lomigmegard/akka-http-cors
+  lazy val vAkkaHttpCors = "1.1.0"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.30.0"       // https://www.npmjs.com/package/swagger-ui-dist
-  lazy val vScalajsdom = "1.0.0"       // https://github.com/scala-js/scala-js-dom
-  lazy val vScalaJsReact = "1.7.3"     // https://github.com/japgolly/scalajs-react
+  lazy val vSwaggerUI = "3.31.1"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vScalajsdom = "1.1.0"       // https://github.com/scala-js/scala-js-dom
+  lazy val vScalaJsReact = "1.7.4"     // https://github.com/japgolly/scalajs-react
 
   lazy val vWebJarsReact = "16.13.1"   // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.5.0"     // https://www.npmjs.com/package/react-widgets
@@ -47,9 +47,9 @@ object BldVersion {
 
   lazy val vJQuery = "3.5.1"         // https://www.npmjs.com/package/jquery
 
-  lazy val vScalactic = "3.2.0"      // https://github.com/scalatest/scalatest
-  lazy val vScalatest = "3.2.0"      // https://github.com/scalatest/scalatest
-  lazy val vScalatestSelenium = "3.2.0.0"  // https://github.com/scalatest/scalatestplus-selenium
+  lazy val vScalactic = "3.2.1"      // https://github.com/scalatest/scalatest
+  lazy val vScalatest = "3.2.1"      // https://github.com/scalatest/scalatest
+  lazy val vScalatestSelenium = "3.2.1.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.13"           // https://github.com/junit-team/junit4
 
   lazy val vSelenium = "3.141.59"    // https://github.com/SeleniumHQ/selenium
@@ -59,15 +59,15 @@ object BldVersion {
 
   // jackson-module-scala usually updates a few days after the others are updated,
   // don't update until jackson-module-scala is updated
-  lazy val vJackson = "2.11.1"           // https://github.com/FasterXML/jackson-core
-  lazy val vJacksonDatabind = "2.11.1"   // https://github.com/FasterXML/jackson-databind
+  lazy val vJackson = "2.11.2"           // https://github.com/FasterXML/jackson-core
+  lazy val vJacksonDatabind = "2.11.2"   // https://github.com/FasterXML/jackson-databind
 
   // Selenium needs to be update to update to v23.0
   lazy val vGuavaJre = "29.0-jre"    // https://github.com/google/guava
 
-  lazy val vWebPack = "4.43.0"          // https://www.npmjs.com/package/webpack
+  lazy val vWebPack = "4.44.0"          // https://www.npmjs.com/package/webpack
 
-  lazy val vJsDom = "16.3.0"           // https://www.npmjs.com/package/jsdom
+  lazy val vJsDom = "16.4.0"           // https://www.npmjs.com/package/jsdom
 
   // version 0.2.3 is hardcoded in sbt-scalajs-bundler
   // current is 1.0.0   0.2.4
@@ -75,7 +75,7 @@ object BldVersion {
   // version 1.0.7 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.0
   lazy val vConcatWithSourcemaps = "1.1.0"  // https://www.npmjs.com/package/concat-with-sourcemaps
-  lazy val vTerser = "4.8.0"                // https://www.npmjs.com/package/terser
+  lazy val vTerser = "5.0.0"                // https://www.npmjs.com/package/terser
 
   lazy val vAjv = "6.12.3"                  // https://www.npmjs.com/package/ajv
 

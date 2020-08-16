@@ -47,7 +47,6 @@ import com.github.thebridsk.bridge.server.logging.RemoteLoggingConfig
 import com.github.thebridsk.bridge.server.backend.BridgeServiceWithLogging
 import com.github.thebridsk.bridge.server.backend.BridgeServiceZipStore
 import akka.http.scaladsl.settings.ServerSettings
-import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.ContentType
 import akka.http.scaladsl.model.MediaTypes
 import akka.http.scaladsl.HttpsConnectionContext
@@ -317,7 +316,7 @@ If both https and http is started, then http will be redirected to https
       new SecureRandom
     )
     // start up the web server
-    ConnectionContext.https(context)
+    ConnectionContext.httpsServer(context)
   }
 
   /**
@@ -335,7 +334,7 @@ If both https and http is started, then http will be redirected to https
       httpPort: Option[Int] = Some(8080),
       httpsPort: Option[Int] = None,
       bridge: Option[BridgeService] = None,
-      connectionContext: Option[ConnectionContext] = None,
+      connectionContext: Option[HttpsConnectionContext] = None,
       cache: Option[Duration] = None,
       optRemoteLogger: Option[Path] = None,
       optBrowserRemoteLogging: Option[String] = None,
@@ -493,7 +492,7 @@ private class StartServer {
 
     val http2Support = optionHttp2()
 
-    val context: Option[ConnectionContext] = if (httpsPort.isDefined) {
+    val context: Option[HttpsConnectionContext] = if (httpsPort.isDefined) {
       Some(serverSSLContext())
     } else {
       None
@@ -595,7 +594,7 @@ private class StartServer {
       httpPort: Option[Int] = Some(8080),
       httpsPort: Option[Int] = None,
       bridge: Option[BridgeService] = None,
-      connectionContext: Option[ConnectionContext] = None,
+      connectionContext: Option[HttpsConnectionContext] = None,
       cache: Option[Duration] = None,
       optRemoteLogger: Option[Path] = None,
       optBrowserRemoteLogging: Option[String] = None,
@@ -685,13 +684,18 @@ private class StartServer {
     )
     bindingHttps = if (httpsPort.isDefined) {
       Some(
-        Http().bindAndHandleAsync(
-          Route.asyncHandler(myService.myRouteWithLogging),
-          interface,
-          httpsPort.get,
-          connectionContext = connectionContext.getOrElse(serverSSLContext()),
-          settings = httpsSettings
-        )
+        Http()
+          .newServerAt(interface,httpsPort.get)
+          .enableHttps(connectionContext.getOrElse(serverSSLContext()))
+          .withSettings(httpsSettings)
+          .bind(myService.myRouteWithLogging)
+        // Http().bindAndHandleAsync(
+        //   Route.asyncHandler(myService.myRouteWithLogging),
+        //   interface,
+        //   httpsPort.get,
+        //   connectionContext = connectionContext.getOrElse(serverSSLContext()),
+        //   settings = httpsSettings
+        // )
       )
     } else {
       None
@@ -706,22 +710,30 @@ private class StartServer {
             .reduceLeft((ac, v) => ac ~ v)
         }
         Some(
-          Http().bindAndHandleAsync(
-            Route.asyncHandler(httpToHttps),
-            interface,
-            httpPort.get,
-            settings = httpSettings
-          )
+          Http()
+            .newServerAt(interface,httpPort.get)
+            .withSettings(httpSettings)
+            .bind(httpToHttps)
+          // Http().bindAndHandleAsync(
+          //   Route.asyncHandler(httpToHttps),
+          //   interface,
+          //   httpPort.get,
+          //   settings = httpSettings
+          // )
         )
       } else {
         // only http defined
         Some(
-          Http().bindAndHandleAsync(
-            Route.asyncHandler(myService.myRouteWithLogging),
-            interface,
-            httpPort.get,
-            settings = httpSettings
-          )
+          Http()
+            .newServerAt(interface,httpPort.get)
+            .withSettings(httpSettings)
+            .bind(myService.myRouteWithLogging)
+          // Http().bindAndHandleAsync(
+          //   Route.asyncHandler(myService.myRouteWithLogging),
+          //   interface,
+          //   httpPort.get,
+          //   settings = httpSettings
+          // )
         )
       }
     } else {
@@ -731,12 +743,16 @@ private class StartServer {
       } else {
         // no http or https port defined.  Use port 8080 for http
         Some(
-          Http().bindAndHandleAsync(
-            Route.asyncHandler(myService.myRouteWithLogging),
-            interface,
-            8080,
-            settings = httpSettings
-          )
+          Http()
+            .newServerAt(interface,8080)
+            .withSettings(httpSettings)
+            .bind(myService.myRouteWithLogging)
+          // Http().bindAndHandleAsync(
+          //   Route.asyncHandler(myService.myRouteWithLogging),
+          //   interface,
+          //   8080,
+          //   settings = httpSettings
+          // )
         )
       }
     }

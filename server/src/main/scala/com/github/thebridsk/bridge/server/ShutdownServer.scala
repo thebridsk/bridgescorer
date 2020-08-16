@@ -198,7 +198,7 @@ private class ShutdownServerAkka {
     keyManagerFactory.init(ks, password)
     context.init(keyManagerFactory.getKeyManagers, null, new SecureRandom)
     // start up the web server
-    ConnectionContext.https(context)
+    ConnectionContext.httpsClient(context)
   }
 
   /**

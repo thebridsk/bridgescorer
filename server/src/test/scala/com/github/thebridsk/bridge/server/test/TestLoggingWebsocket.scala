@@ -1,7 +1,5 @@
 package com.github.thebridsk.bridge.server.test
 
-import java.net.InetAddress
-
 import scala.language.postfixOps
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -10,8 +8,6 @@ import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.service.MyService
 
 import akka.event.Logging
-import akka.http.scaladsl.model.RemoteAddress.IP
-import akka.http.scaladsl.model.headers.`Remote-Address`
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.testkit.WSProbe
@@ -36,7 +32,8 @@ trait XXX extends MyService {
 class TestLoggingWebsocket
     extends AnyFlatSpec
     with ScalatestRouteTest
-    with Matchers {
+    with Matchers
+    with RoutingSpec {
 
   implicit lazy val actorSystem = system //scalafix:ok ExplicitResultTypes
   implicit lazy val actorExecutor = executor //scalafix:ok ExplicitResultTypes
@@ -57,13 +54,9 @@ class TestLoggingWebsocket
 
   behavior of "Test Websocket again"
 
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) // scalafix:ok ; Remote-Address
-
   it should "Fail to open a Websocket" in {
     val wsClient = WSProbe()
-    WS("/v1/logger/ws/", wsClient.flow, "xxx" :: Nil) ~> addHeader(
+    WS("/v1/logger/ws/", wsClient.flow, "xxx" :: Nil).withAttributes(
       remoteAddress
     ) ~> Route.seal { myService.myRouteWithLogging } ~>
       check {
@@ -76,7 +69,7 @@ class TestLoggingWebsocket
 
   it should "Open a Websocket and send invalid data" in {
     val wsClient = WSProbe()
-    WS("/v1/logger/ws/", wsClient.flow, "Logging" :: Nil) ~> addHeader(
+    WS("/v1/logger/ws/", wsClient.flow, "Logging" :: Nil).withAttributes(
       remoteAddress
     ) ~> Route.seal { myService.myRouteWithLogging } ~>
       check {
@@ -137,7 +130,7 @@ class TestLoggingWebsocket
 
   it should "Open a Websocket and send valid data" in {
     val wsClient = WSProbe()
-    WS("/v1/logger/ws/", wsClient.flow, "Logging" :: Nil) ~> addHeader(
+    WS("/v1/logger/ws/", wsClient.flow, "Logging" :: Nil).withAttributes(
       remoteAddress
     ) ~> Route.seal { myService.myRouteWithLogging } ~>
       check {

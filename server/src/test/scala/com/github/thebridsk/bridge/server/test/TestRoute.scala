@@ -4,18 +4,18 @@ import akka.event.LoggingAdapter
 import akka.event.Logging
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.model.headers.`Remote-Address`
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.UnacceptedResponseEncodingRejection
 import akka.http.scaladsl.server.directives.LoggingMagnet
 import akka.http.scaladsl.server.directives.DebuggingDirectives
 import akka.http.scaladsl.server.RouteResult.Complete
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.model.HttpHeader
-import akka.http.scaladsl.model.RemoteAddress.IP
 import java.net.InetAddress
 import com.github.thebridsk.utilities.logging.Logger
 import akka.http.scaladsl.server.{Directive0, StandardRoute}
+import org.scalatest.flatspec.AnyFlatSpec
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import org.scalatest.matchers.must.Matchers
 
 object TestRoute {
 
@@ -32,7 +32,7 @@ import TestRoute._
   * Some test cases that show how to write tests
   * See http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0/scala/http/routing-dsl/testkit.html
   */
-class TestRoute extends RoutingSpec {
+class TestRoute extends AnyFlatSpec with RoutingSpec with ScalatestRouteTest with Matchers {
 
   val testlog: Logger = Logger[TestRoute]()
 
@@ -186,32 +186,29 @@ class TestRoute extends RoutingSpec {
 
   behavior of "extracting client IP address"
 
-  def extractRemote: PartialFunction[HttpHeader, String] = {
-    case h: `Remote-Address` => h.toString()
-    case x                   => x.getClass().toString()
-  }
+  // def extractRemote: PartialFunction[HttpHeader, String] = {
+  //   case h: `Remote-Address` => h.toString()
+  //   case x                   => x.getClass().toString()
+  // }
   def myExtractClientIP: Route =
     logRequest(("myExtractClientIP", Logging.InfoLevel)) {
 //      headerValueByName("Remote-Address") { ip =>
-      headerValuePF(extractRemote) { ip =>
-        complete(ip)
+//      headerValuePF(extractRemote) { ip =>
+      extractClientIP { ip =>
+        complete(ip.value)
       } ~
         complete("oops")
 
     }
 
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) // scalafix:ok ; Remote-Address
-
   it should "return an OK for /" in {
-    Get("/") ~> addHeader(remoteAddress) ~> Route.seal {
+    Get("/").withAttributes(remoteAddress) ~> Route.seal {
       myExtractClientIP
     } ~> check {
       status mustBe StatusCodes.OK
       responseAs[
         String
-      ] mustBe "Remote-Address: " + InetAddress.getLocalHost.getHostAddress + ":12345"
+      ] mustBe InetAddress.getLocalHost.getHostAddress + ":12345"
     }
   }
 
@@ -252,7 +249,7 @@ class TestRoute extends RoutingSpec {
     }
   }
 
-  import akka.http.scaladsl.coding._
+  import akka.http.scaladsl.coding.Coders._
   val compressRoute: Route = encodeResponseWith(Gzip) { complete("content") }
   val compressGzipRoute: Route = encodeResponseWith(Gzip) {
     complete("content")
