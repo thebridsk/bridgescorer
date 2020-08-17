@@ -31,7 +31,7 @@ object ThankYouPageInternal {
       import org.scalajs.dom.document
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
 
-      if (document.isFullscreen) document.exitFullscreen()
+      if (document.myIsFullscreen) document.myExitFullscreen()
     }
 
   private[pages] val component = ScalaComponent

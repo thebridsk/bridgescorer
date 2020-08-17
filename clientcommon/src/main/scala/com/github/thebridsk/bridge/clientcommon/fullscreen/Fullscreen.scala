@@ -62,21 +62,21 @@ object Implicits {
 
     def doc: DocumentFullscreen = document.asInstanceOf[DocumentFullscreen]
 
-    def fullscreenEnabled: Boolean = Implicits.isFullscreenEnabled
+    def myFullscreenEnabled: Boolean = Implicits.isFullscreenEnabled
 
-    def fullscreenElement: Element = {
+    def myFullscreenElement: Element = {
       if (isFullscreenEnabled)
         if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
       else null
     }
-    def exitFullscreen(): js.Promise[Unit] = {
+    def myExitFullscreen(): js.Promise[Unit] = {
       if (isFullscreenEnabled)
         if (isIpad) doc.webkitExitFullscreen() else doc.exitFullscreen()
       else js.Promise.reject("fullscreen not enabled")
     }
 
-    def isFullscreen: Boolean = {
-      val fe = fullscreenElement
+    def myIsFullscreen: Boolean = {
+      val fe = myFullscreenElement
       !js.isUndefined(fe) && fe != null
     }
   }
@@ -104,7 +104,7 @@ object Fullscreen extends Listenable {
 
   def init(): Unit = {
     setFullscreenElement(
-      if (document.fullscreenEnabled) document.fullscreenElement
+      if (document.myFullscreenEnabled) document.myFullscreenElement
       else js.undefined
     )
   }
