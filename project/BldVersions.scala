@@ -36,7 +36,7 @@ object BldVersion {
 
   lazy val vSwaggerUI = "3.31.1"       // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "1.1.0"       // https://github.com/scala-js/scala-js-dom
-  lazy val vScalaJsReact = "1.7.4"     // https://github.com/japgolly/scalajs-react
+  lazy val vScalaJsReact = "1.7.5"     // https://github.com/japgolly/scalajs-react
 
   lazy val vWebJarsReact = "16.13.1"   // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.5.0"     // https://www.npmjs.com/package/react-widgets
@@ -47,13 +47,13 @@ object BldVersion {
 
   lazy val vJQuery = "3.5.1"         // https://www.npmjs.com/package/jquery
 
-  lazy val vScalactic = "3.2.0"      // https://github.com/scalatest/scalatest
-  lazy val vScalatest = "3.2.0"      // https://github.com/scalatest/scalatest
-  lazy val vScalatestSelenium = "3.2.0.0"  // https://github.com/scalatest/scalatestplus-selenium
+  lazy val vScalactic = "3.2.2"      // https://github.com/scalatest/scalatest
+  lazy val vScalatest = "3.2.2"      // https://github.com/scalatest/scalatest
+  lazy val vScalatestSelenium = "3.2.2.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.13"           // https://github.com/junit-team/junit4
 
   lazy val vSelenium = "3.141.59"    // https://github.com/SeleniumHQ/selenium
-  lazy val vScallop = "3.5.0"        // https://github.com/scallop/scallop
+  lazy val vScallop = "3.5.1"        // https://github.com/scallop/scallop
   lazy val vSlf4j = "1.7.30"         // https://github.com/qos-ch/slf4j
   lazy val vPlayJson = "2.9.0"       // https://github.com/playframework/play-json  from https://github.com/mliarakos/play-json/tree/feature/scalajs-1.0  local build
 
