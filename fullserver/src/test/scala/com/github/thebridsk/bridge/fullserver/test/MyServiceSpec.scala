@@ -328,7 +328,7 @@ class MyServiceSpec
       responseAs[String] mustBe "Can't do that! Supported: POST!"
       shutdownHook.called mustBe false
     }
-    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddress) ~> Route.seal {
+    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddressOther) ~> Route.seal {
       logRouteWithIp
     } ~> check {
       // request fails, not from loopback interface
