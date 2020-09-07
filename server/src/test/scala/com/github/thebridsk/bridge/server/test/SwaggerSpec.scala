@@ -9,13 +9,11 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.unmarshalling._
-import akka.http.scaladsl.model.RemoteAddress.IP
-import java.net.InetAddress
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import akka.http.scaladsl.model.headers.HttpEncodings
-import akka.http.scaladsl.coding.Gzip
-import akka.http.scaladsl.coding.Deflate
-import akka.http.scaladsl.coding.NoCoding
+import akka.http.scaladsl.coding.Coders.Gzip
+import akka.http.scaladsl.coding.Coders.Deflate
+import akka.http.scaladsl.coding.Coders.NoCoding
 import scala.concurrent.duration._
 import scala.reflect.ClassTag
 import akka.http.scaladsl.unmarshalling.Unmarshal
@@ -29,7 +27,8 @@ class SwaggerSpec
     extends AnyFlatSpec
     with ScalatestRouteTest
     with Matchers
-    with MyService {
+    with MyService
+    with RoutingSpec {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
@@ -52,14 +51,8 @@ class SwaggerSpec
 
   behavior of "the Swagger Server api"
 
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) // scalafix:ok ; Remote-Address
-
   it should "return the /v1/docs/ should be a redirect" in {
-    Get("/v1/docs/") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/docs/").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(httpheader) =>
@@ -155,9 +148,7 @@ class SwaggerSpec
   // }
 
   it should "return the swagger.yaml /v1/api-docs" in {
-    Get("/v1/api-docs") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/api-docs").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(httpheader) =>
@@ -180,9 +171,9 @@ class SwaggerSpec
   }
 
   it should "return the swagger.yaml from /v1/api-docs/swagger.yaml and should not contain the string 'Function1'" in {
-    Get("/v1/api-docs/swagger.yaml") ~> addHeader(
+    Get("/v1/api-docs/swagger.yaml").withAttributes(remoteAddress) ~> addHeader(
       `Accept-Encoding`(HttpEncodings.gzip)
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ) ~> myRouteWithLogging ~> check {
       status mustBe OK
       val swagger = httpResponseAs[String](decodeResponse(response))
       FileIO.writeFile(new File("target/swagger.yaml"), swagger)

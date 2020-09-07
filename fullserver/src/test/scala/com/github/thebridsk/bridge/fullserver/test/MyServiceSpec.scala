@@ -7,9 +7,6 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.server.Route
 import akka.event.Logging
-import java.net.InetAddress
-import akka.http.scaladsl.model.RemoteAddress.IP
-import akka.http.scaladsl.model.headers.`Remote-Address`
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.server.service.ResourceFinder
@@ -26,12 +23,14 @@ import scala.io.Source
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import akka.event.LoggingAdapter
+import com.github.thebridsk.bridge.server.test.RoutingSpec
 
 class MyServiceSpec
     extends AnyFlatSpec
     with ScalatestRouteTest
     with Matchers
-    with MyService {
+    with MyService
+    with RoutingSpec {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
@@ -91,12 +90,8 @@ class MyServiceSpec
 
   behavior of "MyService for static pages"
 
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) // scalafix:ok ; Remote-Address
-
   it should "return a redirect to /public/index.html for /" in {
-    Get("/") ~> addHeader(remoteAddress) ~> Route.seal {
+    Get("/").withAttributes(remoteAddress) ~> Route.seal {
       myRouteWithLogging
     } ~> check {
       status mustBe PermanentRedirect
@@ -109,7 +104,7 @@ class MyServiceSpec
   }
 
   it should "return a redirect to /public/index.html for /public" in {
-    Get("/public") ~> addHeader(remoteAddress) ~> Route.seal {
+    Get("/public").withAttributes(remoteAddress) ~> Route.seal {
       myRouteWithLogging
     } ~> check {
       status mustBe PermanentRedirect
@@ -130,7 +125,7 @@ class MyServiceSpec
 
   import akka.http.scaladsl.model.headers.`Content-Encoding`
   it should "return the index.html to /public/index.html" in {
-    Get("/public/index.html") ~> addHeader(remoteAddress) ~> Route.seal {
+    Get("/public/index.html").withAttributes(remoteAddress) ~> Route.seal {
       myRouteWithLogging
     } ~> check {
       status mustBe OK
@@ -145,7 +140,7 @@ class MyServiceSpec
   it should "return the index-fastopt.html to /html/index-fastopt.html" in {
     assume(!TestServer.useProductionPage)
     assume(!useFullOptOnly)
-    Get("/public/index-fastopt.html") ~> addHeader(remoteAddress) ~> Route
+    Get("/public/index-fastopt.html").withAttributes(remoteAddress) ~> Route
       .seal { myRouteWithLogging } ~> check {
       status mustBe OK
       header("Content-Encoding") mustBe Some(
@@ -167,7 +162,7 @@ class MyServiceSpec
       assume(!TestServer.useProductionPage)
       assume(!useFullOptOnly)
 
-      Get("/public/bridgescorer-client-fastopt.js") ~> addHeader(
+      Get("/public/bridgescorer-client-fastopt.js").withAttributes(
         remoteAddress
       ) ~> Route.seal { myRouteWithLogging } ~> check {
         status mustBe OK
@@ -182,7 +177,7 @@ class MyServiceSpec
 
   it should "return bridgescorer-client-opt.js to /public/bridgescorer-client-opt.js" in {
     assume(!useFastOptOnly)
-    Get("/public/bridgescorer-client-opt.js") ~> addHeader(
+    Get("/public/bridgescorer-client-opt.js").withAttributes(
       remoteAddress
     ) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
@@ -191,7 +186,7 @@ class MyServiceSpec
   }
 
   it should "return webjars/react-widgets/dist/css/react-widgets.css using webjars" in {
-    Get("/public/react-widgets/dist/css/react-widgets.css") ~> addHeader(
+    Get("/public/react-widgets/dist/css/react-widgets.css").withAttributes(
       remoteAddress
     ) ~> Route.seal { html } ~> check {
       status mustBe OK
@@ -202,7 +197,7 @@ class MyServiceSpec
   }
 
   it should "return webjars/react-widgets/dist/css/react-widgets.css using myRouteWithLogging" in {
-    Get("/public/react-widgets/dist/css/react-widgets.css") ~> addHeader(
+    Get("/public/react-widgets/dist/css/react-widgets.css").withAttributes(
       remoteAddress
     ) ~> Route.seal { myRouteWithLogging } ~> check {
       status mustBe OK
@@ -265,7 +260,7 @@ class MyServiceSpec
 
   it should "return OK for POST request to /v1/logging/entry" in {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
-    Post("/v1/logger/entry", logentry) ~> addHeader(
+    Post("/v1/logger/entry", logentry).withAttributes(
       remoteAddress
     ) ~> /* handleRejections(myRejectionHandler) { */ myRouteWithLogging /* } */ ~> check {
       status mustBe NoContent
@@ -312,26 +307,36 @@ class MyServiceSpec
 
     }
     val shutdownHook = new Hook
-    val remoteAddress =
-      `Remote-Address`(IP(InetAddress.getLoopbackAddress, Some(12345)))
+
     MyService.shutdownHook = Some(shutdownHook)
-    Post("/v1/shutdown") ~> addHeader(remoteAddress) ~> Route.seal {
+    Post("/v1/shutdown").withAttributes(remoteAddressLocal) ~> Route.seal {
       logRouteWithIp
     } ~> check {
       status mustBe BadRequest
+      responseAs[String] mustBe "Request is missing secret"
       shutdownHook.called mustBe false
     }
     Post("/v1/shutdown") ~> Route.seal { logRouteWithIp } ~> check {
       status mustBe BadRequest
+      responseAs[String] mustBe "Request is missing secret"
       shutdownHook.called mustBe false
     }
-    Get("/v1/shutdown") ~> addHeader(remoteAddress) ~> Route.seal {
+    Get("/v1/shutdown").withAttributes(remoteAddressLocal) ~> Route.seal {
       logRouteWithIp
     } ~> check {
       status mustBe MethodNotAllowed
+      responseAs[String] mustBe "Can't do that! Supported: POST!"
       shutdownHook.called mustBe false
     }
-    Post("/v1/shutdown?doit=yes") ~> addHeader(remoteAddress) ~> Route.seal {
+    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddressOther) ~> Route.seal {
+      logRouteWithIp
+    } ~> check {
+      // request fails, not from loopback interface
+      status mustBe BadRequest
+      responseAs[String] mustBe "Request not from valid address"
+      shutdownHook.called mustBe false
+    }
+    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddressLocal) ~> Route.seal {
       logRouteWithIp
     } ~> check {
       status mustBe NoContent

@@ -2,11 +2,8 @@ package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
-import akka.http.scaladsl.model.headers.`Remote-Address`
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.model.RemoteAddress.IP
-import java.net.InetAddress
 import play.api.libs.json._
 import com.github.thebridsk.bridge.server.service.graphql.Query
 import akka.http.scaladsl.model.StatusCodes
@@ -91,7 +88,7 @@ object TestGraphQL {
 /**
   * Test class to start the logging system
   */
-class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
+class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers with RoutingSpec {
   import TestGraphQL._
 
   TestStartLogging.startLogging()
@@ -317,10 +314,6 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
 
   }
 
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) // scalafix:ok ; Remote-Address
-
   it should "make a graphql query" in {
     val vars = Map("mdid" -> JsString("M1"), "iid" -> JsString("import.zip"))
     val request = queryToJson(
@@ -342,7 +335,7 @@ class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers {
 //       Some("SecondQuery")
     )
 
-    Post("/v1/graphql", request) ~> addHeader(
+    Post("/v1/graphql", request).withAttributes(
       remoteAddress
     ) ~> route.graphQLRoute ~> check {
       status mustBe OK

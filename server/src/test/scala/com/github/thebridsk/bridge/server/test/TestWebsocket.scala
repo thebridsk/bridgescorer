@@ -6,16 +6,12 @@ import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.stream.scaladsl.Flow
-import akka.http.scaladsl.model.headers.`Remote-Address`
-import akka.http.scaladsl.model.RemoteAddress.IP
-import java.net.InetAddress
 import akka.http.scaladsl.testkit.WSProbe
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.http.scaladsl.model.ws.Message
 import akka.stream.scaladsl.Source
 import akka.http.scaladsl.model.ws.BinaryMessage
 import akka.stream.scaladsl.Sink
-import akka.http.scaladsl.server.Directives._
 import akka.util.ByteString
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -33,12 +29,14 @@ import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.server.Route
+import TestDuplicateRestSpecImplicits._
 
 class TestWebsocket
     extends AnyFlatSpec
     with ScalatestRouteTest
     with Matchers
-    with MyService {
+    with MyService
+    with RoutingSpec {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
@@ -54,10 +52,6 @@ class TestWebsocket
     Logging(actorSystem, classOf[TestWebsocket])
 
   behavior of "Test Websocket"
-
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) // scalafix:ok ; Remote-Address
 
   def greeter: Flow[Message, Message, Any] =
     Flow[Message].mapConcat {
@@ -150,7 +144,7 @@ class TestWebsocket
 
   it should "Open a Websocket" in {
     val wsClient = WSProbe()
-    WS("/greeter", wsClient.flow) ~> websocketRoute ~>
+    WS("/greeter", wsClient.flow).addAttributes(remoteAddress) ~> websocketRoute ~>
       check {
         wsClient.inProbe.within(10 seconds) {
           isWebSocketUpgrade mustEqual true

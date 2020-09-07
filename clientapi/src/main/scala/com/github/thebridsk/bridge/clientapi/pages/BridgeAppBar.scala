@@ -180,8 +180,8 @@ object BridgeAppBarInternal {
     def isFullscreenEnabledI: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
-      val e = doc.fullscreenEnabled
+      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
+      val e = doc.myFullscreenEnabled
       if (!e) {
         logger.info("fullscreenEnabled = false")
       }
@@ -191,13 +191,13 @@ object BridgeAppBarInternal {
     def isFullscreen: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
+      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
       if (isFullscreenEnabledI) {
-        val fe = doc.fullscreenElement
+        val fe = doc.myFullscreenElement
         val r = !js.isUndefined(fe) && fe != null
         logger.fine(s"browser isfullscreen: $r")
         if (r) {
-          val elem = doc.fullscreenElement
+          val elem = doc.myFullscreenElement
           logger.info(s"browser fullscreen element is ${elem.nodeName}")
         }
         r
@@ -214,7 +214,7 @@ object BridgeAppBarInternal {
         val isfullscreen = isFullscreen
         if (isfullscreen) {
           logger.info(s"browser exiting fullscreen")
-          doc.exitFullscreen()
+          doc.myExitFullscreen()
         } else {
           logger.info(s"browser requesting fullscreen on body")
           body.requestFullscreen()

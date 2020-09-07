@@ -21,7 +21,7 @@ val sbtScalaJsBundlerSuffix = if (vScalaJSDefault.startsWith("0.6.")) "-sjs06" e
 val vSbtAssembly = "0.15.0"        // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.6.1"        // https://github.com/scoverage/sbt-scoverage
-val vSbtBuildInfo = "0.9.0"        // https://github.com/sbt/sbt-buildinfo
+val vSbtBuildInfo = "0.10.0"       // https://github.com/sbt/sbt-buildinfo
 // v1.0.12 causes java.lang.NoSuchMethodError: sbtrelease.ReleaseStateTransformations$.commitNextVersion()Lsbtrelease/ReleasePlugin$autoImport$ReleaseStep;
 val vSbtRelease = "1.0.13"         // https://github.com/sbt/sbt-release
 val vSbtDependencyGraph = "0.9.2"  // https://github.com/jrudolph/sbt-dependency-graph
@@ -37,9 +37,9 @@ val vSbtScalaJsBundler = "0.18.0"  // https://github.com/scalacenter/scalajs-bun
 val vSbtRevolver = "0.8.0"         // https://github.com/spray/sbt-revolver
 val vSbtUniDoc = "0.3.3"           // https://github.com/sbt/sbt-unidoc
 val vSbtDigest = "1.1.1"           // https://github.com/sbt/sbt-digest
-val vSbtScalaFmt="2.4.0"           // https://github.com/scalameta/sbt-scalafmt
-val vBloop = "1.4.3"               // https://github.com/scalacenter/bloop
-val vSbtScalaFix="0.9.19"          // https://github.com/scalacenter/sbt-scalafix
+val vSbtScalaFmt="2.4.2"           // https://github.com/scalameta/sbt-scalafmt
+val vBloop = "1.4.4"               // https://github.com/scalacenter/bloop
+val vSbtScalaFix="0.9.20"          // https://github.com/scalacenter/sbt-scalafix
 
 // The following is needed to get rid of the message
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".

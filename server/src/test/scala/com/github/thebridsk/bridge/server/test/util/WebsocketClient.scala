@@ -16,7 +16,6 @@ import org.scalatest.matchers.must.Matchers
 import akka.http.scaladsl.testkit.RouteTest
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.model.headers.`Remote-Address`
 import org.scalatest.Assertions
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicateTeam
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicateHand
@@ -34,6 +33,8 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 import org.scalatest.Assertion
+import akka.http.scaladsl.model.AttributeKey
+import com.github.thebridsk.bridge.server.test.TestDuplicateRestSpecImplicits._
 
 @SuppressWarnings(
   Array( // Get really weird errors on missing implicits in WS() call
@@ -63,12 +64,12 @@ class WebsocketClient(implicit
   def address = myAddress.getOrElse("<notConnected>")
 
   def connect(
-      remoteAddress: `Remote-Address`,
+      remoteAddress: Map[AttributeKey[_],_],
       route: Route,
       max: FiniteDuration = 10 seconds
   )(implicit testlog: LoggingAdapter) = {
     if (myAddress.isEmpty) {
-      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil) ~> addHeader(
+      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil).addAttributes(
         remoteAddress
       ) ~> route ~>
         check {

@@ -7,9 +7,6 @@ import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import akka.http.scaladsl.model.headers.`Remote-Address`
-import akka.http.scaladsl.model.RemoteAddress.IP
-import java.net.InetAddress
 import akka.http.scaladsl.model.MediaTypes.`application/json`
 import com.github.thebridsk.bridge.server.rest.ServerPort
 import com.github.thebridsk.bridge.data.BoardSet
@@ -20,7 +17,8 @@ class TestBoardSetsAndHands
     extends AnyFlatSpec
     with ScalatestRouteTest
     with Matchers
-    with MyService {
+    with MyService
+    with RoutingSpec {
   val restService = new BridgeServiceTesting
 
   val httpport = 8080
@@ -30,10 +28,6 @@ class TestBoardSetsAndHands
   implicit lazy val actorExecutor = executor //scalafix:ok ExplicitResultTypes
   implicit lazy val actorMaterializer =
     materializer //scalafix:ok ExplicitResultTypes
-
-  val remoteAddress = `Remote-Address`(
-    IP(InetAddress.getLocalHost, Some(12345))
-  ) //scalafix:ok
 
   var boardsetArmonkBoards: Option[BoardSet] = None
   var originalNumberBoardSets: Int = 0
@@ -45,9 +39,7 @@ class TestBoardSetsAndHands
   behavior of "MyService REST for BoardSet"
 
   it should "return a table json object for boardset ArmonkBoards for GET requests to /v1/rest/boardsets/ArmonkBoards" in {
-    Get("/v1/rest/boardsets/ArmonkBoards") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets/ArmonkBoards").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
@@ -71,9 +63,7 @@ class TestBoardSetsAndHands
   }
 
   it should "return a json array of two boardset json object for GET requests to /v1/rest/boardsets" in {
-    Get("/v1/rest/boardsets") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[BoardSet]]
@@ -85,7 +75,7 @@ class TestBoardSetsAndHands
     Post(
       "/v1/rest/boardsets",
       boardsetArmonkBoards.get.copy(name = BoardSet.id("change"))
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[BoardSet]
@@ -94,9 +84,7 @@ class TestBoardSetsAndHands
   }
 
   it should "return a json array of three boardset json object for GET requests to /v1/rest/boardsets" in {
-    Get("/v1/rest/boardsets") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[BoardSet]]
@@ -108,15 +96,13 @@ class TestBoardSetsAndHands
     Put(
       "/v1/rest/boardsets/ArmonkBoards",
       boardsetArmonkBoards.get.copy(description = "change")
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe NoContent
 //      mediaType mustBe `application/json`
 //      val resp = responseAs[BoardSet]
 //      resp.description mustBe "change"
     }
-    Get("/v1/rest/boardsets/ArmonkBoards") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets/ArmonkBoards").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val resp = responseAs[BoardSet]
@@ -125,9 +111,7 @@ class TestBoardSetsAndHands
   }
 
   it should "return a json array of three boardset json object for GET requests to /v1/rest/boardsets, the second time" in {
-    Get("/v1/rest/boardsets") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[BoardSet]]
@@ -136,9 +120,7 @@ class TestBoardSetsAndHands
   }
 
   it should "return a boardset json object for boardset ArmonkBoards for GET requests to /v1/rest/boardsets/ArmonkBoards" in {
-    Get("/v1/rest/boardsets/ArmonkBoards") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets/ArmonkBoards").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
@@ -158,14 +140,10 @@ class TestBoardSetsAndHands
   }
 
   it should "return a success for DELETE request to /v1/rest/boardsets/change, and get /v1/rest/boardsets returns two BoardSet objects" in {
-    Delete("/v1/rest/boardsets/change") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Delete("/v1/rest/boardsets/change").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe NoContent
     }
-    Get("/v1/rest/boardsets") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[BoardSet]]
@@ -174,22 +152,16 @@ class TestBoardSetsAndHands
   }
 
   it should "return a success for DELETE request to /v1/rest/boardsets/ArmonkBoards, and get /v1/rest/boardsets returns two BoardSet objects, and still return an ArmonkBoards " in {
-    Delete("/v1/rest/boardsets/ArmonkBoards") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Delete("/v1/rest/boardsets/ArmonkBoards").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe NoContent
     }
-    Get("/v1/rest/boardsets") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[BoardSet]]
       r.length mustBe originalNumberBoardSets // only deletes the changed one, the original is in read only storage
     }
-    Get("/v1/rest/boardsets/ArmonkBoards") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/boardsets/ArmonkBoards").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
@@ -204,9 +176,7 @@ class TestBoardSetsAndHands
   behavior of "MyService REST for Movement"
 
   it should "return a table json object for Movement 2TablesArmonk for GET requests to /v1/rest/movements/2TablesArmonk" in {
-    Get("/v1/rest/movements/2TablesArmonk") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements/2TablesArmonk").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
@@ -233,9 +203,7 @@ class TestBoardSetsAndHands
   }
 
   it should "return a json array of one Movement json object for GET requests to /v1/rest/movements" in {
-    Get("/v1/rest/movements") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[Movement]]
@@ -247,7 +215,7 @@ class TestBoardSetsAndHands
     Post(
       "/v1/rest/movements",
       Movement2TablesArmonk.get.copy(name = Movement.id("change"))
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[Movement]
@@ -256,9 +224,7 @@ class TestBoardSetsAndHands
   }
 
   it should "return a json array of two Movement json object for GET requests to /v1/rest/movements" in {
-    Get("/v1/rest/movements") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[Movement]]
@@ -270,15 +236,13 @@ class TestBoardSetsAndHands
     Put(
       "/v1/rest/movements/2TablesArmonk",
       Movement2TablesArmonk.get.copy(description = "change")
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe NoContent
 //      mediaType mustBe `application/json`
 //      val resp = responseAs[Movement]
 //      resp.description mustBe "change"
     }
-    Get("/v1/rest/movements/2TablesArmonk") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements/2TablesArmonk").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val resp = responseAs[Movement]
@@ -287,9 +251,7 @@ class TestBoardSetsAndHands
   }
 
   it should "return a json array of three Movement json object for GET requests to /v1/rest/movements/, the second time" in {
-    Get("/v1/rest/movements") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[Movement]]
@@ -298,9 +260,7 @@ class TestBoardSetsAndHands
   }
 
   it should "return a Movement json object for Movement 2TablesArmonk for GET requests to /v1/rest/movements/2TablesArmonk" in {
-    Get("/v1/rest/movements/2TablesArmonk") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements/2TablesArmonk").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
@@ -323,14 +283,10 @@ class TestBoardSetsAndHands
   }
 
   it should "return a success for DELETE request to /v1/rest/movements/change, and get /v1/rest/movements returns one Movement objects" in {
-    Delete("/v1/rest/movements/change") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Delete("/v1/rest/movements/change").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe NoContent
     }
-    Get("/v1/rest/movements") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[Movement]]
@@ -339,22 +295,16 @@ class TestBoardSetsAndHands
   }
 
   it should "return a success for DELETE request to /v1/rest/movements/2TablesArmonk, and get /v1/rest/movements returns one Movement objects, and still return an 2TablesArmonk " in {
-    Delete("/v1/rest/movements/2TablesArmonk") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Delete("/v1/rest/movements/2TablesArmonk").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe NoContent
     }
-    Get("/v1/rest/movements") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe OK
       mediaType mustBe `application/json`
       val r = responseAs[Array[Movement]]
       r.length mustBe originalNumberMovement // only deletes the changed one, the original is in read only storage
     }
-    Get("/v1/rest/movements/2TablesArmonk") ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Get("/v1/rest/movements/2TablesArmonk").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe `application/json`
@@ -369,9 +319,7 @@ class TestBoardSetsAndHands
       .create(MatchDuplicate.idNul)
       .copy(teams = MatchDuplicate.createTeams(4))
       .copy(boards = boards)
-    Post("/v1/rest/duplicates", md) ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates", md).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -381,9 +329,7 @@ class TestBoardSetsAndHands
         resp.equalsIgnoreModifyTime(md.copy(id = resp.id)),
         "response must be equal to what was sent"
       )
-      Delete("/v1/rest/duplicates/" + resp.id.id) ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/" + resp.id.id).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
@@ -392,9 +338,7 @@ class TestBoardSetsAndHands
   var defaultMatchDuplicate: Option[MatchDuplicate] = None
   it should "return a match duplicate for POST request to /v1/rest/duplicates?default with 4 teams and 18 boards" in {
     val md = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?default", md) ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?default", md).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -403,9 +347,7 @@ class TestBoardSetsAndHands
       resp.getBoard(Board.id(2)).get.dealer mustBe "W"
       resp.getBoard(Board.id(2)).get.ewVul mustBe true
       defaultMatchDuplicate = Some(resp)
-      Delete("/v1/rest/duplicates/" + resp.id.id) ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/" + resp.id.id).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
@@ -416,7 +358,7 @@ class TestBoardSetsAndHands
     Post(
       "/v1/rest/duplicates?boards=ArmonkBoards&movements=2TablesArmonk",
       md
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -430,9 +372,7 @@ class TestBoardSetsAndHands
         ),
         "Response must be identical to default response"
       )
-      Delete("/v1/rest/duplicates/" + resp.id.id) ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/" + resp.id.id).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
@@ -440,9 +380,7 @@ class TestBoardSetsAndHands
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates?boards=ArmonkBoards with 4 teams and 18 boards identical to default, except id" in {
     val md = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?boards=ArmonkBoards", md) ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?boards=ArmonkBoards", md).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -456,9 +394,7 @@ class TestBoardSetsAndHands
         ),
         "Response must be identical to default response"
       )
-      Delete("/v1/rest/duplicates/" + resp.id.id) ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/" + resp.id.id).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
@@ -466,9 +402,7 @@ class TestBoardSetsAndHands
 
   it should "return a match duplicate for POST request to /v1/rest/duplicates?movements=2TablesArmonk with 4 teams and 18 boards identical to default, except id" in {
     val md = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?movements=2TablesArmonk", md) ~> addHeader(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
+    Post("/v1/rest/duplicates?movements=2TablesArmonk", md).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -482,9 +416,7 @@ class TestBoardSetsAndHands
         ),
         "Response must be identical to default response"
       )
-      Delete("/v1/rest/duplicates/" + resp.id.id) ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/" + resp.id.id).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
@@ -495,7 +427,7 @@ class TestBoardSetsAndHands
     Post(
       "/v1/rest/duplicates?boards=StandardBoards&movements=2TablesArmonk",
       md
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe Created
       mediaType mustBe `application/json`
       val resp = responseAs[MatchDuplicate]
@@ -509,9 +441,7 @@ class TestBoardSetsAndHands
         ),
         "Response must be different from the default response"
       )
-      Delete("/v1/rest/duplicates/" + resp.id.id) ~> addHeader(
-        remoteAddress
-      ) ~> myRouteWithLogging ~> check {
+      Delete("/v1/rest/duplicates/" + resp.id.id).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         status mustBe NoContent
       }
     }
@@ -522,7 +452,7 @@ class TestBoardSetsAndHands
     Post(
       "/v1/rest/duplicates?boards=xxx&movements=2TablesArmonk",
       md
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe BadRequest
     }
   }
@@ -532,7 +462,7 @@ class TestBoardSetsAndHands
     Post(
       "/v1/rest/duplicates?boards=StandardBoards&movements=xxx",
       md
-    ) ~> addHeader(remoteAddress) ~> myRouteWithLogging ~> check {
+    ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
       status mustBe BadRequest
     }
   }
