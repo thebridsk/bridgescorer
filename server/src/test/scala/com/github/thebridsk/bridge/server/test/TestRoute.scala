@@ -16,6 +16,10 @@ import akka.http.scaladsl.server.{Directive0, StandardRoute}
 import org.scalatest.flatspec.AnyFlatSpec
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.matchers.must.Matchers
+import scala.concurrent.duration._
+import akka.http.scaladsl.testkit.RouteTestTimeout
+import akka.testkit.TestDuration
+
 
 object TestRoute {
 
@@ -191,7 +195,7 @@ class TestRoute extends AnyFlatSpec with RoutingSpec with ScalatestRouteTest wit
   //   case x                   => x.getClass().toString()
   // }
   def myExtractClientIP: Route =
-    logRequest(("myExtractClientIP", Logging.InfoLevel)) {
+    logRequest(("myExtractClientIP", Logging.DebugLevel)) {
 //      headerValueByName("Remote-Address") { ip =>
 //      headerValuePF(extractRemote) { ip =>
       extractClientIP { ip =>
@@ -213,6 +217,7 @@ class TestRoute extends AnyFlatSpec with RoutingSpec with ScalatestRouteTest wit
   }
 
   it should "return an OK for / and extract the client ip" in {
+    implicit val timeout = RouteTestTimeout(5.seconds.dilated)
     Get("/") ~!> myExtractClientIP ~> check {
       status mustBe StatusCodes.OK
       val resp = responseAs[String]
