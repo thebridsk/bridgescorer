@@ -24,8 +24,6 @@ import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.react.DateUtils
 import com.github.thebridsk.bridge.clientcommon.react.DateTimePicker
 import scala.scalajs.js.Date
-import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.globalize.Moment
-import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.globalize.ReactWidgetsMoment
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -340,9 +338,6 @@ object PageDuplicateResultEditInternal {
           )
         )
       }
-
-      Moment.locale("en")
-      ReactWidgetsMoment()
 
       <.div(
         DuplicatePageBridgeAppBar(
