@@ -19,6 +19,8 @@ import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.bridge.clientcommon.react.Tooltip
 import com.github.thebridsk.bridge.client.pages.Pixels
+import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.Localizer
+import scala.scalajs.js
 
 /**
   * @author werewolf
@@ -78,9 +80,20 @@ object Bridge { // need to figure out how to use new way to call main
 
     }
 
+  def setLanguage(): Unit =
+      {
+        val lang = document.defaultView.navigator.language
+        val lang2 = if (js.isUndefined(lang)) "en"
+                    else lang
+        Localizer.initLocalizer(lang2)
+        logger.info(s"Setting Language to $lang2, browser set to $lang")
+      }
+
   def startClient(): Unit =
     Alerter.tryitWithUnit {
       logger.info("Bridge Scorer Starting")
+
+      setLanguage()
 
       try {
         val div = getElement()

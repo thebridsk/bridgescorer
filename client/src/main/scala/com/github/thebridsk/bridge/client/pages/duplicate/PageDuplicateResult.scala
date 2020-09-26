@@ -12,8 +12,6 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.Summar
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.github.thebridsk.bridge.clientcommon.react.DateUtils
 import scala.scalajs.js.Date
-import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.globalize.Moment
-import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.globalize.ReactWidgetsMoment
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateResult
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.materialui.MuiTypography
@@ -92,9 +90,6 @@ object PageDuplicateResultInternal {
 
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       import DuplicateStyles._
-
-      Moment.locale("en")
-      ReactWidgetsMoment()
 
       <.div(
         PopupOkCancel(

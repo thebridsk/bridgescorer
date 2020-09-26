@@ -188,6 +188,11 @@ object BldDependencies {
       "react-widgets" -> vReactWidgets,
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
+      // "globalize" -> vGlobalize,
+      // "react-widgets-globalize" -> vReactWidgetsGlobalize,
+      // "cldrjs" -> vCldrjs,
+      // // "cldr" -> vCldr,
+      // "cldr-data" -> vCldrData,
       "@material-ui/core" -> vMaterialUIcore,
       "@material-ui/icons" -> vMaterialUIicons
   )
@@ -199,6 +204,11 @@ object BldDependencies {
       "react-widgets" -> vReactWidgets,
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
+      // "globalize" -> vGlobalize,
+      // "react-widgets-globalize" -> vReactWidgetsGlobalize,
+      // "cldrjs" -> vCldrjs,
+      // // "cldr" -> vCldr,
+      // "cldr-data" -> vCldrData,
       "swagger-ui-dist" -> vSwaggerUI,
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
