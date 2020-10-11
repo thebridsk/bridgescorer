@@ -20,8 +20,14 @@ import play.api.libs.json.KeyReads
   *
   * @param A the ID type
   */
-@Schema(description = "The ID", `type` = "string", format = "id")
-case class Id[A] private[data] (val id: String, useName: Boolean = false)(
+@Schema(description = "The ID", `type` = "string") //, format = "id")
+case class Id[A] private[data] (
+    @Schema(hidden = true)
+    val id: String,
+    @Schema(hidden = true)
+    useName: Boolean = false
+)(
+    @Schema(hidden = true)
     implicit private[Id] val classTag: ClassTag[A]
 ) extends Ordered[Id[A]] {
   override def equals(other: Any): Boolean = {
@@ -71,6 +77,7 @@ case class Id[A] private[data] (val id: String, useName: Boolean = false)(
 
   def toInt = toNumber.toInt
 
+  @Schema(hidden = true)
   def isNul: Boolean = id == ""
 
   def toBase[B >: A]: Id[B] = this.asInstanceOf[Id[B]]
