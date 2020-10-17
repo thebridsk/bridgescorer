@@ -9,6 +9,21 @@ import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces.ScoringMethod
 import com.github.thebridsk.bridge.data.DuplicateSummaryEntry
 import com.github.thebridsk.utilities.logging.Logger
+import io.swagger.v3.oas.annotations.media.ArraySchema
+
+object TeamPlaces {
+  @ArraySchema(
+    schema = new Schema(
+      description =
+        "The number of teams tied for the place",
+      `type` = "integer"
+    ),
+    arraySchema = new Schema(
+      description = "List of number of teams tied for place, index is number of teams",
+    )
+  )
+  class NumberTeams
+}
 
 @Schema(
   title = "PlayerPlaces - Player place stats",
@@ -31,10 +46,17 @@ case class PlayerPlaces(
 case class PlayerPlace(
     @Schema(description = "The name of the player", required = true)
     name: String,
-    @Schema(
-      description =
-        "First index is place, place = i+1.  Second index is number of other teams tied.",
-      required = true
+    @ArraySchema(
+      // this does not generate the correct schema.  It generates an array of array of objects instead of array of array of int
+      schema = new Schema(
+        description =
+          "The count of the number of teams tied for place",
+        // implementation = classOf[TeamPlaces.NumberTeams]
+      ),
+      arraySchema = new Schema(
+        description = "List of results, index+1 is the place, second index is the number of teams tied for place",
+        required = true,
+      )
     )
     place: List[List[Int]],
     @Schema(

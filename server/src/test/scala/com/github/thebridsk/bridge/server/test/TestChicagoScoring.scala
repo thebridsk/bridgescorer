@@ -27,7 +27,7 @@ class TestChicagoScoring extends AnyFlatSpec with Matchers {
   }
 
   it should "allow the names to be set and scoring should still work" in {
-    mc = mc.setPlayers("North" :: "South" :: "East" :: "West" :: Nil)
+    mc = mc.setPlayersList("North" :: "South" :: "East" :: "West" :: Nil)
     val cs = ChicagoScoring(mc)
 
     cs.players mustBe "North" :: "South" :: "East" :: "West" :: Nil
@@ -56,7 +56,7 @@ class TestChicagoScoring extends AnyFlatSpec with Matchers {
 
   it should "show 2 possible fixtures" in {
     var chi = MatchChicago(chiid, "" :: "" :: "" :: "" :: Nil, Nil, 0, false)
-    chi = chi.setPlayers("North" :: "South" :: "East" :: "West" :: Nil)
+    chi = chi.setPlayersList("North" :: "South" :: "East" :: "West" :: Nil)
     chi = chi.addRound(
       Round.create("0", "North", "South", "East", "West", "N", Nil)
     )

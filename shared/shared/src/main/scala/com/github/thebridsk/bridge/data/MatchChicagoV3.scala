@@ -50,10 +50,10 @@ case class MatchChicagoV3(
     )
     rounds: List[Round],
     @Schema(
-      description = "The number of games per round.",
+      description = "The number of games per round.  1 indicates fast rotation.  0 indicates normal rotation but number of hands in round has not been determined.",
       required = true,
       `type` = "enum",
-      allowableValues = Array("0", "4", "6", "8")
+      allowableValues = Array("0", "1", "4", "6", "8")
     )
     gamesPerRound: Int,
     @Schema(description = "Use simple rotation.", required = true)
@@ -81,6 +81,7 @@ case class MatchChicagoV3(
     throw new IllegalArgumentException("Must have 4 or 5 players")
   }
 
+  @Schema(hidden = true)
   def setId(
       newId: MatchChicago.Id,
       forCreate: Boolean,
@@ -184,7 +185,7 @@ case class MatchChicagoV3(
     * @param nplayers the new player names.  Must specify the same number as in the players field.
     */
   def setPlayers(nplayers: String*): MatchChicagoV3 = {
-    setPlayers(nplayers.toList)
+    setPlayersList(nplayers.toList)
   }
 
   def hasPlayStarted: Boolean = {
@@ -197,7 +198,8 @@ case class MatchChicagoV3(
     * Change the player names.
     * @param nplayers the new player names.  Must specify the same number as in the players field.
     */
-  def setPlayers(nplayers: List[String]): MatchChicagoV3 = {
+  @Schema(hidden = true)
+  def setPlayersList(nplayers: List[String]): MatchChicagoV3 = {
     if (nplayers.length != players.length && hasPlayStarted)
       throw new IllegalArgumentException(
         "Number of new player names must equal number of players"
