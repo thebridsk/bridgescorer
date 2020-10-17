@@ -6,7 +6,7 @@
 
 name := "project-bridgescorer"
 
-scalaVersion := "2.12.12"
+// scalaVersion := "2.12.12"
 
 val vLog4j = "1.7.30"              // https://github.com/qos-ch/slf4j
 val vJGit = "5.9.0.202009080501-r" // https://github.com/eclipse/jgit

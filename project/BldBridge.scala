@@ -150,7 +150,14 @@ object BldBridge {
       scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(verScalaVersion),
       semanticdbEnabled := false,
       semanticdbVersion := scalafixSemanticdb.revision,
+
+      Global / excludeLintKeys ++= Set(
+        scalafixScalaBinaryVersion,
+        cleanKeepGlobs in BldBridgeClient.`bridgescorer-client`,
+        cleanKeepGlobs in BldBridgeClientApi.`bridgescorer-clientapi`,
+      )
     )
+
   )
 
   val setOptimize = Command.command(
@@ -193,7 +200,8 @@ object BldBridge {
       .run(checkForUpdates)
       .run("reload plugins")
       .run(dependencyUpdates)
-    state
+      .run("reload return")
+    // state
       .run( "project {utilities}utilities" )
       .run( "reload plugins")
       .run( dependencyUpdates )
