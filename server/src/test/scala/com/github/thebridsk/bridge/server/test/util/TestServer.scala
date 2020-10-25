@@ -114,10 +114,10 @@ object TestServer {
   val portuse: String = if (port == schemeport) "" else { ":" + port }
   val hosturl: String =
     useTestServerURL.getOrElse(scheme + "://" + hostname + portuse) + "/"
-  val pageprod: String = hosturl + "public/index.html"
-  val pagedev: String = hosturl + "public/index-fastopt.html"
-  val pagedemoprod: String = hosturl + "public/demo.html"
-  val pagedemodev: String = hosturl + "public/demo-fastopt.html"
+  private val pageprod: String = hosturl + "public/index.html"
+  private val pagedev: String = hosturl + "public/index-fastopt.html"
+  private val pagedemoprod: String = hosturl + "public/demo.html"
+  private val pagedemodev: String = hosturl + "public/demo-fastopt.html"
   val docs: String = hosturl + "v1/docs/"
 
   testlog.info(s"""Testing ${if (testProductionPage) "Prod" else "Dev"} pages""")

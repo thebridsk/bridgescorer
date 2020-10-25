@@ -63,10 +63,11 @@ object BldBridgeHelp {
 
       hugosetup := {
         {
-          val testgen = new File( baseDirectory.value + "/../fullserver/target/docs" )
+          val testgen = new File( baseDirectory.value, "/../fullserver/target/docs" ).getCanonicalFile
           val gen = new File( baseDirectory.value, "docs/static/images/gen" )
-          println( s"Copy ${testgen} to ${gen}" )
-          MyFileUtils.copyDirectory( testgen, gen, "png", 2 )
+          val log = streams.value.log
+          log.info( s"Copy ${testgen} to ${gen}" )
+          MyFileUtils.copyDirectory(testgen, gen, 2)(MyFileUtils.onlyCopy("png"))
         }
       },
 
