@@ -55,6 +55,7 @@ object BldBridge {
         |  serverssl          run server with HTTPS
         |  test:serverhttps2  run server with HTTPS and HTTP 2
         |  allassembly        build big jar and test jar
+        |  webassembly        build web files
         |
         |Tasks on bridgescorer-fullserver project, without help pages
         |  serverlogs         run server with logs to stdout
@@ -86,8 +87,7 @@ object BldBridge {
         |Environment Variables that affect build
         |  UseBrowser <browser>        the browser to use in selenium tests, default is "chrome"
         |  SkipGenerateImage <bool>    skip generating images in help pages, default is false
-        |  OnlyBuildDebug <bool>       only build fastOpt for scala.js code, default is false
-        |  UseFullOpt <bool>           only build fullOpt for scala.js code, default is false
+        |  BuildProduction <bool>      build using full optimization
         |  ServerTestToRun <clsname>   test to run in fullserver when running test task
         |  TRAVIS_BUILD_NUMBER <n>     running in Travis-CI
         |  BuildForHelpOnly            if defined only tests that generate help images are run
@@ -100,7 +100,6 @@ object BldBridge {
         |  UseBridgeScorerHost             Override host of server URL, default: localhost
         |  UseBridgeScorerPort             Override port of server URL, default: 8081
         |  UseWebsocketLogging             use websockets for client logging
-        |  UseProductionPage <bool>        use only fullopt pages during tests
         |  OptRemoteLogger <file>          the remote logger configuration to use
         |  OptBrowserRemoteLogging <name>  the name of the configuration to use for browsers
         |  OptIPadRemoteLogging <name>     the name of the configuration to use for iPads

@@ -70,7 +70,7 @@ object BldBridgeClient {
         Glob((crossTarget in npmUpdate in Test).value, "node_modules") / **
       ),
 
-      scalaJSLinkerConfig in fastOptJS ~= (_.withSourceMap(false)),
+      // scalaJSLinkerConfig in fastOptJS ~= (_.withSourceMap(false)),
 
       // testOptions in Test += Tests.Filter(s => { println("Using Test: "+s); true}),
       testOptions in Test += Tests.Filter(s => {
@@ -91,10 +91,10 @@ object BldBridgeClient {
       // jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
 
       // Compile tests to JS using fast-optimisation
-      if (useFullOpt) {
-        scalaJSStage in Test := FullOptStage
+      if (buildProduction) {
+        scalaJSStage := FullOptStage
       } else {
-        scalaJSStage in Test := FastOptStage
+        scalaJSStage := FastOptStage
       },
       libraryDependencies ++= bridgeScorerDeps.value,
       libraryDependencies ++= bridgeScorerClientDeps.value,

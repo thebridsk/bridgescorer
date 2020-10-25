@@ -38,17 +38,13 @@ object BldCommonSettings {
     .map(s => s.toBoolean)
     .getOrElse(false)
 
-  lazy val onlyBuildDebug = sys.props
-    .get("OnlyBuildDebug")
-    .orElse(sys.env.get("OnlyBuildDebug"))
+  lazy val buildProduction = sys.props
+    .get("BuildProduction")
+    .orElse(sys.env.get("BuildProduction"))
     .map(s => s.toBoolean)
     .getOrElse(false)
 
-  lazy val useFullOpt = sys.props
-    .get("UseFullOpt")
-    .orElse(sys.env.get("UseFullOpt"))
-    .map(s => s.toBoolean)
-    .getOrElse(false)
+  lazy val testProductionPage = s"""-DTestProductionPage=${if (buildProduction) "1" else "0"}"""
 
   lazy val serverTestToRun =
     sys.props.get("ServerTestToRun").orElse(sys.env.get("ServerTestToRun"))
@@ -205,12 +201,11 @@ object BldCommonSettings {
 
   val skipGenerateImageSetting = settingKey[Boolean]("if true images generation is skipped if they already exist")
 
-  val hugo = taskKey[Unit]("Run Hugo")
+  val hugo = taskKey[Seq[(java.io.File, String)]]("Run Hugo")
   val hugoserver = taskKey[Unit]("Run Hugo Server")
   val hugosetup = taskKey[Unit]("Setup to run Hugo")
-  val hugoWithTest = taskKey[Unit]("Run Hugo")
+  val hugoWithTest = taskKey[Seq[(java.io.File, String)]]("Run Hugo")
   val hugosetupWithTest = taskKey[Unit]("Setup to run Hugo")
-  val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
 
   val generateDemo = taskKey[Unit]("Generate demo gh-pages in target/demo")
   val publishDemo = taskKey[Unit]("Publish demo gh-pages in target/demo")

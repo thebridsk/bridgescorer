@@ -26,20 +26,13 @@ object TestServer {
   val useTestServerHost: Option[String] = getProp("UseBridgeScorerHost")
   val useTestServerPort: Option[String] = getProp("UseBridgeScorerPort")
   val useWebsocketLogging: Option[String] = getProp("UseWebsocketLogging")
-  val envUseProductionPage: Boolean = getBooleanProp("UseProductionPage", false)
-
-  val useFastOptOnly: Boolean = getBooleanProp("OnlyBuildDebug", false)
-
-  val useFullOptOnly: Boolean = getBooleanProp("UseFullOpt", false)
+  val testProductionPage: Boolean = getBooleanProp("TestProductionPage", false)
 
   val optRemoteLogger: Option[String] = getProp("OptRemoteLogger")
   val optBrowserRemoteLogging: Option[String] = getProp(
     "OptBrowserRemoteLogging"
   )
   val optIPadRemoteLogging: Option[String] = getProp("OptIPadRemoteLogging")
-
-  val useProductionPage: Boolean =
-    useFullOptOnly || (envUseProductionPage && !useFastOptOnly)
 
   def loggingConfig(l: List[String]): LoggerConfig =
     LoggerConfig("[root]=ALL" :: Nil, "console=INFO" :: l)
@@ -127,7 +120,7 @@ object TestServer {
   val pagedemodev: String = hosturl + "public/demo-fastopt.html"
   val docs: String = hosturl + "v1/docs/"
 
-  testlog.info(s"""Testing ${if (useProductionPage) "Prod" else "Dev"} pages""")
+  testlog.info(s"""Testing ${if (testProductionPage) "Prod" else "Dev"} pages""")
 
   private var startCount = 0
   private def getAndIncrementStartCount() =
@@ -217,30 +210,30 @@ object TestServer {
   def isServerStartedByTest = startingServer
 
   def getAppPage: String =
-    if (useProductionPage) getAppPageProd else getAppPageDev
+    if (testProductionPage) getAppPageProd else getAppPageDev
   def getAppPageUrl(uri: String): String =
-    if (useProductionPage) getAppPageProdUrl(uri) else getAppPageDevUrl(uri)
+    if (testProductionPage) getAppPageProdUrl(uri) else getAppPageDevUrl(uri)
 
-  def getAppPageProd = pageprod
-  def getAppPageProdUrl(uri: String): String =
+  private def getAppPageProd = pageprod
+  private def getAppPageProdUrl(uri: String): String =
     if (uri.length() == 0) pageprod else pageprod + "#" + uri
 
-  def getAppPageDev = pagedev
-  def getAppPageDevUrl(uri: String): String =
+  private def getAppPageDev = pagedev
+  private def getAppPageDevUrl(uri: String): String =
     if (uri.length() == 0) pagedev else pagedev + "#" + uri
 
   def getAppDemoPage: String =
-    if (useProductionPage) getAppDemoPageProd else getAppDemoPageDev
+    if (testProductionPage) getAppDemoPageProd else getAppDemoPageDev
   def getAppDemoPageUrl(uri: String): String =
-    if (useProductionPage) getAppDemoPageProdUrl(uri)
+    if (testProductionPage) getAppDemoPageProdUrl(uri)
     else getAppDemoPageDevUrl(uri)
 
-  def getAppDemoPageProd = pagedemoprod
-  def getAppDemoPageProdUrl(uri: String): String =
+  private def getAppDemoPageProd = pagedemoprod
+  private def getAppDemoPageProdUrl(uri: String): String =
     if (uri.length() == 0) pagedemoprod else pagedemoprod + "#" + uri
 
-  def getAppDemoPageDev = pagedemodev
-  def getAppDemoPageDevUrl(uri: String): String =
+  private def getAppDemoPageDev = pagedemodev
+  private def getAppDemoPageDevUrl(uri: String): String =
     if (uri.length() == 0) pagedemodev else pagedemodev + "#" + uri
 
   def getDocs = docs

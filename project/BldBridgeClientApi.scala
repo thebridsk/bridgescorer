@@ -61,7 +61,7 @@ object BldBridgeClientApi {
         Glob((crossTarget in npmUpdate in Compile).value, "node_modules") / **,
       ),
 
-      scalaJSLinkerConfig in fastOptJS ~= (_.withSourceMap(false)),
+      // scalaJSLinkerConfig in fastOptJS ~= (_.withSourceMap(false)),
 
 //    testOptions in Test += Tests.Filter(s => { println("Using Test: "+s); true}),
       testOptions in Test += Tests.Filter(s => {
@@ -75,8 +75,6 @@ object BldBridgeClientApi {
         }
       }),
 
-      version in webpack := vWebPack,
-
       // this is for SBT 1.0
       // 11/18/17, 12/4/17 currently does not work, looks like JSDOM is not loaded
       // see https://github.com/scalacenter/scalajs-bundler/issues/181
@@ -84,10 +82,10 @@ object BldBridgeClientApi {
       // jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
 
       // Compile tests to JS using fast-optimisation
-      if (useFullOpt) {
-        scalaJSStage in Test := FullOptStage
+      if (buildProduction) {
+        scalaJSStage := FullOptStage
       } else {
-        scalaJSStage in Test := FastOptStage
+        scalaJSStage := FastOptStage
       },
       libraryDependencies ++= bridgeScorerDeps.value,
       libraryDependencies ++= bridgeScorerClientApiDeps.value,

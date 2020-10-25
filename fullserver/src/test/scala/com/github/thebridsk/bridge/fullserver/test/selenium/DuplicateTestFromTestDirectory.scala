@@ -134,7 +134,7 @@ class DuplicateTestFromTestDirectory
 //  }
 
   forAll(templates) { md =>
-    it should s"play a complete match ${md.id}" in {
+    it should s"play a complete match ${md.id.id}" in {
       firstScorekeeper = firstScorekeeper.nextDealer
       testlog.info(
         "Starting on MatchDuplicate " + md.id + ", first scorekeeper " + firstScorekeeper.name

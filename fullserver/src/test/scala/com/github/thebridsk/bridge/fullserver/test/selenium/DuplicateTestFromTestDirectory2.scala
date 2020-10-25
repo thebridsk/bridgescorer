@@ -142,7 +142,7 @@ class DuplicateTestFromTestDirectory2
 //  }
 
   TableDrivenPropertyChecks.forAll(templates) { md =>
-    it should s"play a complete match for ${md.id}" in {
+    it should s"play a complete match for ${md.id.id}" in {
       firstScorekeeper = firstScorekeeper.nextDealer
       testlog.warning(
         "Starting on MatchDuplicate " + md.id + ", first scorekeeper " + firstScorekeeper.name

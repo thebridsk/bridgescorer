@@ -45,12 +45,6 @@ class MyServiceSpec
   implicit lazy val actorMaterializer = materializer
   // scalafix:on
 
-  val useFastOptOnly: Boolean =
-    TestServer.getProp("OnlyBuildDebug").map(s => s.toBoolean).getOrElse(false)
-
-  val useFullOptOnly: Boolean =
-    TestServer.getProp("UseFullOpt").map(s => s.toBoolean).getOrElse(false)
-
   TestStartLogging.startLogging()
 
   val testlog: LoggingAdapter = Logging(system, "MyServiceSpec")
@@ -59,7 +53,7 @@ class MyServiceSpec
 
   val version = ResourceFinder.htmlResources.version
 
-  val itOrIgnore: Object = if (TestServer.useProductionPage) ignore else it
+  val itOrIgnore: Object = if (TestServer.testProductionPage) ignore else it
 
   it should "find index.html as a resource" in {
     val theClassLoader = getClass.getClassLoader
@@ -70,7 +64,7 @@ class MyServiceSpec
   }
 
   it should "find bridgescorer-client-opt.js as a resource" in {
-    assume(!useFastOptOnly)
+    assume(TestServer.testProductionPage)
     val theClassLoader = getClass.getClassLoader
     val theResource = theClassLoader.getResource(
       webJarLocationForServer + version + "/bridgescorer-client-opt.js"
@@ -79,8 +73,7 @@ class MyServiceSpec
   }
 
   it should "find bridgescorer-client-fastopt.js as a resource" in {
-    assume(!useFullOptOnly)
-    assume(!TestServer.useProductionPage)
+    assume(!TestServer.testProductionPage)
     val theClassLoader = getClass.getClassLoader
     val theResource = theClassLoader.getResource(
       webJarLocationForServer + version + "/bridgescorer-client-fastopt.js"
@@ -138,8 +131,7 @@ class MyServiceSpec
   }
 
   it should "return the index-fastopt.html to /html/index-fastopt.html" in {
-    assume(!TestServer.useProductionPage)
-    assume(!useFullOptOnly)
+    assume(!TestServer.testProductionPage)
     Get("/public/index-fastopt.html").withAttributes(remoteAddress) ~> Route
       .seal { myRouteWithLogging } ~> check {
       status mustBe OK
@@ -159,8 +151,7 @@ class MyServiceSpec
     implicit val timeout = RouteTestTimeout(5.seconds dilated)
 
     it should "return bridgescorer-client-fastopt.js to /public/bridgescorer-client-fastopt.js" in {
-      assume(!TestServer.useProductionPage)
-      assume(!useFullOptOnly)
+      assume(!TestServer.testProductionPage)
 
       Get("/public/bridgescorer-client-fastopt.js").withAttributes(
         remoteAddress
@@ -176,7 +167,7 @@ class MyServiceSpec
   }
 
   it should "return bridgescorer-client-opt.js to /public/bridgescorer-client-opt.js" in {
-    assume(!useFastOptOnly)
+    assume(TestServer.testProductionPage)
     Get("/public/bridgescorer-client-opt.js").withAttributes(
       remoteAddress
     ) ~> Route.seal { myRouteWithLogging } ~> check {

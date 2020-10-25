@@ -84,7 +84,7 @@ object BldBridgeFullServer {
         "-DSessionDirector=" + useBrowser,
         "-DSessionTable1=" + useBrowser,
         "-DSessionTable2=" + useBrowser,
-        s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}"""
+        testProductionPage
       ),
       // parallelExecution in Test := false,
 
@@ -99,23 +99,7 @@ object BldBridgeFullServer {
       libraryDependencies ++= bridgeScorerFullServerDeps.value,
       bridgeScorerNpmAssets(BldBridgeClientApi.`bridgescorer-clientapi`),
       scalaJSProjects := Seq(BldBridgeClient.`bridgescorer-client`, BldBridgeClientApi.`bridgescorer-clientapi`),
-      pipelineStages in Assets := {
-        if (onlyBuildDebug) {
-          Seq(scalaJSDev, gzip),
-        } else if (useFullOpt) {
-          Seq(scalaJSProd, gzip)
-        } else {
-          Seq(scalaJSProd, scalaJSDev, gzip),
-        }
-      },
-      pipelineStages in Test in Assets := {
-        if (onlyBuildDebug) {
-          Seq(scalaJSDev, gzip),
-        } else if (useFullOpt) {
-          Seq(scalaJSProd, gzip)
-        } else {
-          Seq(scalaJSProd, scalaJSDev, gzip),
-        }
-      },
+      pipelineStages in Assets :=  Seq(scalaJSPipeline, gzip),
+      pipelineStages in Test in Assets :=  Seq(scalaJSPipeline, gzip),
     )
 }

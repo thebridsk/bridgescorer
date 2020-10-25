@@ -11,6 +11,7 @@ import com.typesafe.sbt.GitPlugin.autoImport._
 import com.typesafe.sbt.GitVersioning
 import com.typesafe.sbt.GitBranchPrompt
 import sbtassembly.AssemblyPlugin.autoImport._
+import sbtassembly.MergeStrategy
 import com.typesafe.sbt.gzip.SbtGzip.autoImport._
 import com.typesafe.sbt.web.SbtWeb.autoImport._
 import webscalajs.WebScalaJS.autoImport._
@@ -27,6 +28,63 @@ import MyReleaseVersion._
 object BldBridgeScoreKeeper {
 
   val cleanAssemblyCache = taskKey[Unit]("Cleans assembly cache of old builds") in Distribution
+
+  def mergeStrategy( superStrategy: String => MergeStrategy ): PartialFunction[String, MergeStrategy] = {
+    case x =>
+      val y = pfnMergeStrategy(superStrategy)(x)
+      if (x.indexOf("fastopt") >= 0
+          || x.indexOf("defaults.html") >= 0
+          || x.indexOf("index.html") >= 0
+      ) {
+        println( s"mergeStrategy of ${y.name} for $x" )
+      }
+      y
+  }
+
+  def pfnMergeStrategy( superStrategy: String => MergeStrategy ): PartialFunction[String, MergeStrategy] = {
+        case PathList(
+            "META-INF",
+            "resources",
+            "webjars",
+            "bridgescorer-fullserver",
+            ver,
+            dir,
+            xs @ _*
+            )
+            if (!xs.isEmpty && patternSourceDir.pattern
+              .matcher(dir)
+              .matches && (xs.last endsWith ".scala")) =>
+          MergeStrategy.discard
+        case PathList("META-INF", "maven", xs @ _*)
+            if (!xs.isEmpty && (xs.last endsWith ".properties")) =>
+          MergeStrategy.first
+        case PathList("JS_DEPENDENCIES") =>
+          MergeStrategy.rename
+        case PathList("module-info.class") =>
+          MergeStrategy.rename
+        case PathList("license") =>
+          MergeStrategy.rename
+        case PathList("META-INF", "versions", "9", "module-info.class") =>
+          MergeStrategy.rename
+        case PathList("META-INF", "versions", "9") =>
+          // selenium jar files have a file with this name,
+          // that causes unzip errors with files in that directory
+          MergeStrategy.discard
+//      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
+        case PathList(
+            "META-INF",
+            "resources",
+            "webjars",
+            "bridgescorekeeper",
+            version,
+            "lib",
+            "bridgescorer-fullserver",
+            rest @ _*
+            ) =>
+          MergeStrategy.discard
+        case x =>
+          superStrategy(x)
+      }
 
   lazy val bridgescorekeeper: Project = project
     .in(file("bridgescorekeeper"))
@@ -92,22 +150,13 @@ object BldBridgeScoreKeeper {
         log.info(s"SHA-256: ${sha}")
         x
       },
-      helptask := {
-        val depend = (hugoWithTest in BldBridgeHelp.help).value
-        val rootdir = (target in BldBridgeHelp.help).value
-        val helpdir = new File(rootdir, "help")
-        val prefix = rootdir.toString.length + 1
-        helpdir.allPaths.pair(f => Some(f.toString.substring(prefix)))
-
-      },
       npmAssets := {
-        helptask.value
+        val log = streams.value.log
+        log.info( "Running npmAssets" )
+        val depend = (hugoWithTest in BldBridgeHelp.help).value
+        depend
       },
-//      includeFilter in gzip := "*.html" || "*.css" || "*.js",
-      scalaJSProjects := Seq(),
-      pipelineStages in Assets := (if (onlyBuildDebug) Seq()
-                                   else
-                                     Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip),
+      pipelineStages in Assets := Seq( scalaJSPipeline ),
 
       cleanAssemblyCache in assembly := {
         cleanCacheDir((streams in assemblyOption).value)
@@ -121,67 +170,8 @@ object BldBridgeScoreKeeper {
       assembly in Test := ((assembly in Test) dependsOn (cleanAssemblyCache in (Test,assembly))).value,
 
       assemblyMergeStrategy in assembly := {
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorer",
-            xs @ _*
-            )
-            if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
-          MergeStrategy.discard
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorer-fullserver",
-            xs @ _*
-            )
-            if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
-          MergeStrategy.discard
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorer-fullserver",
-            ver,
-            dir,
-            xs @ _*
-            )
-            if (!xs.isEmpty && patternSourceDir.pattern
-              .matcher(dir)
-              .matches && (xs.last endsWith ".scala")) =>
-          MergeStrategy.discard
-        case PathList("META-INF", "maven", xs @ _*)
-            if (!xs.isEmpty && (xs.last endsWith ".properties")) =>
-          MergeStrategy.first
-        case PathList("JS_DEPENDENCIES") =>
-          MergeStrategy.rename
-        case PathList("module-info.class") =>
-          MergeStrategy.rename
-        case PathList("license") =>
-          MergeStrategy.rename
-        case PathList("META-INF", "versions", "9", "module-info.class") =>
-          MergeStrategy.rename
-        case PathList("META-INF", "versions", "9") =>
-          // selenium jar files have a file with this name,
-          // that causes unzip errors with files in that directory
-          MergeStrategy.discard
-//      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorekeeper",
-            version,
-            "lib",
-            "bridgescorer-fullserver",
-            rest @ _*
-            ) =>
-          MergeStrategy.discard
-        case x =>
-          val oldStrategy = (assemblyMergeStrategy in assembly).value
-          oldStrategy(x)
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        mergeStrategy( x => oldStrategy(x) )
       },
       assemblyMergeStrategy in (Test, assembly) := {
         case PathList("META-INF", "maven", xs @ _*)
@@ -237,8 +227,7 @@ object BldBridgeScoreKeeper {
       webassembly := { val x = (assembledMappings in assembly).value },
 
       prereqintegrationtests := {
-        val x = (assembly in Compile).value
-        val y = (assembly in Test).value
+        val x = allassembly.value
       },
       integrationtests := Def
         .sequential(prereqintegrationtests in Distribution, fvt in Distribution)
@@ -257,7 +246,7 @@ object BldBridgeScoreKeeper {
         }
         val args =
           "-Xmx4096M" ::
-          "-DUseProductionPage=1" ::
+          testProductionPage ::
           "-DToMonitorFile=logs/atestTcpMonitorTimeWait.csv" ::
           "-DUseLogFilePrefix=logs/atest" ::
           "-DDefaultWebDriver=" + useBrowser ::
@@ -297,7 +286,7 @@ object BldBridgeScoreKeeper {
         ) {
           val jvmargs = server.getTestDefine() :::
             "-Xmx4096M" ::
-            "-DUseProductionPage=1" ::
+            testProductionPage ::
             "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
             "-DUseLogFilePrefix=logs/itest" ::
             "-DTestDataDirectory=" + itestdataDir ::
@@ -352,7 +341,7 @@ object BldBridgeScoreKeeper {
         ) {
           val jvmargs = server.getTestDefine() :::
             "-Xmx4096M" ::
-            "-DUseProductionPage=1" ::
+            testProductionPage ::
             "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
             "-DUseLogFilePrefix=logs/itest" ::
             "-DTestDataDirectory=" + itestdataDir ::
@@ -397,7 +386,7 @@ object BldBridgeScoreKeeper {
         ) {
           val jvmargs = server.getTestDefine() :::
             "-Xmx4096M" ::
-            "-DUseProductionPage=1" ::
+            testProductionPage ::
             "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
             "-DUseLogFilePrefix=logs/itest" ::
             "-DTestDataDirectory=" + itestdataDir ::
@@ -438,7 +427,7 @@ object BldBridgeScoreKeeper {
         val server = new BridgeServer(assemblyJar)
         val jvmargs = server.getTestDefine() :::
           "-Xmx4096M" ::
-          "-DUseProductionPage=1" ::
+          testProductionPage ::
           "-DToMonitorFile=logs/ssltestTcpMonitorTimeWait.csv" ::
           "-DUseLogFilePrefix=logs/ssltest" ::
           "-DTestDataDirectory=" + itestdataDir ::

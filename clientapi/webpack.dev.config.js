@@ -24,14 +24,28 @@ config.node = {
 //   (Emitted value instead of an instance of Error) Cannot find source file '../src/validateWithCustomRules.ts': Error: Can't resolve
 config.module = config.module || {}
 config.module.rules = config.module.rules || []
-config.module.rules.push(
-  {
-    test: /\.js$/,
-    enforce: "pre",
-    loader: "source-map-loader",
-    exclude: [/node_modules/ ],
+if (config.module.rules.length == 1
+    && config.module.rules[0].test.source == "\\.js$"
+  ) {
+    config.module.rules[0].exclude = [
+      // instead of /\/node_modules\//
+      path.join(process.cwd(), 'node_modules')
+    ]
+  } else {
+    config.module.rules.push(
+      {
+        test: /\.js$/,
+        enforce: "pre",
+        use: "source-map-loader",
+        exclude: [
+          // instead of /\/node_modules\//
+          path.join(process.cwd(), 'node_modules')
+        ]
+      }
+    )
   }
-)
+
+console.warn( "config.module.rules is ", config.module.rules )
 
 // this suppresses the warning
 //    Critical dependency: the request of a dependency is an expression
