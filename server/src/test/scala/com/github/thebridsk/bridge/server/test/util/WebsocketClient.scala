@@ -64,14 +64,15 @@ class WebsocketClient(implicit
   def address = myAddress.getOrElse("<notConnected>")
 
   def connect(
-      remoteAddress: Map[AttributeKey[_],_],
+      remoteAddress: Map[AttributeKey[_], _],
       route: Route,
       max: FiniteDuration = 10 seconds
   )(implicit testlog: LoggingAdapter) = {
     if (myAddress.isEmpty) {
-      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil).addAttributes(
-        remoteAddress
-      ) ~> route ~>
+      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
+        .addAttributes(
+          remoteAddress
+        ) ~> route ~>
         check {
           myAddress = Some(remoteAddress.toString())
           try {

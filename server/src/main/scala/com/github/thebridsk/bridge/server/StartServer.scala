@@ -685,7 +685,7 @@ private class StartServer {
     bindingHttps = if (httpsPort.isDefined) {
       Some(
         Http()
-          .newServerAt(interface,httpsPort.get)
+          .newServerAt(interface, httpsPort.get)
           .enableHttps(connectionContext.getOrElse(serverSSLContext()))
           .withSettings(httpsSettings)
           .bind(myService.myRouteWithLogging)
@@ -711,7 +711,7 @@ private class StartServer {
         }
         Some(
           Http()
-            .newServerAt(interface,httpPort.get)
+            .newServerAt(interface, httpPort.get)
             .withSettings(httpSettings)
             .bind(httpToHttps)
           // Http().bindAndHandleAsync(
@@ -725,7 +725,7 @@ private class StartServer {
         // only http defined
         Some(
           Http()
-            .newServerAt(interface,httpPort.get)
+            .newServerAt(interface, httpPort.get)
             .withSettings(httpSettings)
             .bind(myService.myRouteWithLogging)
           // Http().bindAndHandleAsync(
@@ -744,7 +744,7 @@ private class StartServer {
         // no http or https port defined.  Use port 8080 for http
         Some(
           Http()
-            .newServerAt(interface,8080)
+            .newServerAt(interface, 8080)
             .withSettings(httpSettings)
             .bind(myService.myRouteWithLogging)
           // Http().bindAndHandleAsync(

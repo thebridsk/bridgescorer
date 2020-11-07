@@ -20,7 +20,6 @@ import scala.concurrent.duration._
 import akka.http.scaladsl.testkit.RouteTestTimeout
 import akka.testkit.TestDuration
 
-
 object TestRoute {
 
   implicit class PimpString(private val underlying: String) extends AnyVal {
@@ -36,7 +35,11 @@ import TestRoute._
   * Some test cases that show how to write tests
   * See http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0/scala/http/routing-dsl/testkit.html
   */
-class TestRoute extends AnyFlatSpec with RoutingSpec with ScalatestRouteTest with Matchers {
+class TestRoute
+    extends AnyFlatSpec
+    with RoutingSpec
+    with ScalatestRouteTest
+    with Matchers {
 
   val testlog: Logger = Logger[TestRoute]()
 

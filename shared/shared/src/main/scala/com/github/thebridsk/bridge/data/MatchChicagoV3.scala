@@ -50,7 +50,8 @@ case class MatchChicagoV3(
     )
     rounds: List[Round],
     @Schema(
-      description = "The number of games per round.  1 indicates fast rotation.  0 indicates normal rotation but number of hands in round has not been determined.",
+      description =
+        "The number of games per round.  1 indicates fast rotation.  0 indicates normal rotation but number of hands in round has not been determined.",
       required = true,
       `type` = "enum",
       allowableValues = Array("0", "1", "4", "6", "8")

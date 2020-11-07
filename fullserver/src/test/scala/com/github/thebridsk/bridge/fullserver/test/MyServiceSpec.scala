@@ -285,17 +285,19 @@ class MyServiceSpec
       responseAs[String] mustBe "Can't do that! Supported: POST!"
       shutdownHook.called mustBe false
     }
-    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddressOther) ~> Route.seal {
-      logRouteWithIp
-    } ~> check {
+    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddressOther) ~> Route
+      .seal {
+        logRouteWithIp
+      } ~> check {
       // request fails, not from loopback interface
       status mustBe BadRequest
       responseAs[String] mustBe "Request not from valid address"
       shutdownHook.called mustBe false
     }
-    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddressLocal) ~> Route.seal {
-      logRouteWithIp
-    } ~> check {
+    Post("/v1/shutdown?doit=yes").withAttributes(remoteAddressLocal) ~> Route
+      .seal {
+        logRouteWithIp
+      } ~> check {
       status mustBe NoContent
       shutdownHook.called mustBe true
     }

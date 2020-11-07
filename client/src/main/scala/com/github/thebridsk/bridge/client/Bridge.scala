@@ -80,14 +80,14 @@ object Bridge { // need to figure out how to use new way to call main
 
     }
 
-  def setLanguage(): Unit =
-      {
-        val lang = document.defaultView.navigator.language
-        val lang2 = if (js.isUndefined(lang)) "en"
-                    else lang
-        Localizer.initLocalizer(lang2)
-        logger.info(s"Setting Language to $lang2, browser set to $lang")
-      }
+  def setLanguage(): Unit = {
+    val lang = document.defaultView.navigator.language
+    val lang2 =
+      if (js.isUndefined(lang)) "en"
+      else lang
+    Localizer.initLocalizer(lang2)
+    logger.info(s"Setting Language to $lang2, browser set to $lang")
+  }
 
   def startClient(): Unit =
     Alerter.tryitWithUnit {

@@ -84,6 +84,7 @@ object BldBridge {
         |Tasks in any project
         |  test:testClass <clsname>...  run tests on specified class(es), wildcard * matches any number of characters
         |  scalafix           run scalafix, for help run scalafix --help
+        |  scalafmt           run scalafmt
         |
         |Environment Variables that affect build
         |  UseBrowser <browser>        the browser to use in selenium tests, default is "chrome"
@@ -130,6 +131,17 @@ object BldBridge {
         |     test:scalafix
         |
         |  Note: running bridgescorekeeper/test:scalafix will cause bridgescorer-fullserver/test to execute
+        |
+        |Scalafmt
+        |  To run scalafmt on all projects, run
+        |
+        |     project bridgescorer
+        |     scalafmt
+        |     test:scalafmt
+        |     project {utilities}utilities
+        |     scalafmt
+        |     test:scalafmt
+        |
         |""".stripMargin
     )
     state
