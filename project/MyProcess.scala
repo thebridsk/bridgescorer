@@ -236,11 +236,9 @@ object MyProcess {
 
 }
 
-class CopyFileVisitor( destDir: Path, srcDir: Path, onlyExt: String ) extends FileVisitor[Path] {
+class CopyFileVisitor( destDir: Path, srcDir: Path )( filter: (Path,BasicFileAttributes ) => Boolean ) extends FileVisitor[Path] {
 
     Files.createDirectories(destDir)
-
-    val ext = "."+onlyExt
 
     /**
      * Invoked for a directory before entries in the directory are visited.
@@ -277,11 +275,9 @@ class CopyFileVisitor( destDir: Path, srcDir: Path, onlyExt: String ) extends Fi
      *          if an I/O error occurs
      */
     def visitFile( file: Path, attrs: BasicFileAttributes ): FileVisitResult = {
-      if (attrs.isRegularFile()) {
-        if (file.toString().toLowerCase().endsWith(ext)) {
-          val tar = destDir.resolve(srcDir.relativize(file))
-          Files.copy(file, destDir.resolve(tar), StandardCopyOption.REPLACE_EXISTING)
-        }
+      if (filter(file,attrs)) {
+        val tar = destDir.resolve(srcDir.relativize(file))
+        Files.copy(file, destDir.resolve(tar), StandardCopyOption.REPLACE_EXISTING)
       }
       FileVisitResult.CONTINUE
     }
@@ -328,21 +324,39 @@ class CopyFileVisitor( destDir: Path, srcDir: Path, onlyExt: String ) extends Fi
 
 object MyFileUtils {
 
+  private val patternExtension = """.*?\.([^.]*)""".r
+
+  def onlyCopy( ext: String* )(path: Path, attrs: BasicFileAttributes ): Boolean = {
+    if (attrs.isRegularFile()) {
+      path.toString match {
+        case patternExtension(fext) if ext.contains(fext) =>
+          // println(s"copying file $path")
+          true
+        case _ =>
+          // println(s"not copying file $path")
+          false
+      }
+    } else {
+      // println(s"not copying $path, is a directory")
+      false
+    }
+  }
+
   /**
    * Copies all files from source directory to target directory.
    * Does NOT recurse into subdirectories.
    *
    * @param src the source directory
    * @param dest the destination directory
-   * @param onlyExt only files with this extension
-   * @param maxDepth max directory depth, default is 1, copy only files in src
+   * @param maxDepth max directory depth, default is 1, copy only files in src.  Default is to copy all files
+   * @param filter a filter function, called for every file.  if filter returns true, the file is copied.
    *
    */
-  def copyDirectory( src: File, dest: File, onlyExt: String, maxDepth: Int = 1 ) = {
+  def copyDirectory( src: File, dest: File, maxDepth: Int = 1 )( filter: (Path,BasicFileAttributes ) => Boolean = (_,_) => true ) = {
     val srcPath = src.toPath()
     val destPath = dest.toPath()
 
-    val visitor = new CopyFileVisitor(destPath, srcPath, onlyExt)
+    val visitor = new CopyFileVisitor(destPath, srcPath)(filter)
     val options = EnumSet.noneOf(classOf[FileVisitOption])
     Files.walkFileTree(srcPath, options, maxDepth, visitor)
 

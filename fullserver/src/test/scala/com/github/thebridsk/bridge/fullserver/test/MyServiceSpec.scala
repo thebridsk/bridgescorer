@@ -45,21 +45,16 @@ class MyServiceSpec
   implicit lazy val actorMaterializer = materializer
   // scalafix:on
 
-  val useFastOptOnly: Boolean =
-    TestServer.getProp("OnlyBuildDebug").map(s => s.toBoolean).getOrElse(false)
-
-  val useFullOptOnly: Boolean =
-    TestServer.getProp("UseFullOpt").map(s => s.toBoolean).getOrElse(false)
-
   TestStartLogging.startLogging()
 
   val testlog: LoggingAdapter = Logging(system, "MyServiceSpec")
 
+  val jstype = if (TestServer.testProductionPage) "-opt" else "-fastopt"
+  val htmltype = if (TestServer.testProductionPage) "" else "-fastopt"
+
   behavior of "Server"
 
   val version = ResourceFinder.htmlResources.version
-
-  val itOrIgnore: Object = if (TestServer.useProductionPage) ignore else it
 
   it should "find index.html as a resource" in {
     val theClassLoader = getClass.getClassLoader
@@ -69,21 +64,10 @@ class MyServiceSpec
     theResource must not be null
   }
 
-  it should "find bridgescorer-client-opt.js as a resource" in {
-    assume(!useFastOptOnly)
+  it should s"find bridgescorer-client${jstype}.js as a resource" in {
     val theClassLoader = getClass.getClassLoader
     val theResource = theClassLoader.getResource(
-      webJarLocationForServer + version + "/bridgescorer-client-opt.js"
-    )
-    theResource must not be null
-  }
-
-  it should "find bridgescorer-client-fastopt.js as a resource" in {
-    assume(!useFullOptOnly)
-    assume(!TestServer.useProductionPage)
-    val theClassLoader = getClass.getClassLoader
-    val theResource = theClassLoader.getResource(
-      webJarLocationForServer + version + "/bridgescorer-client-fastopt.js"
+      webJarLocationForServer + version + s"/bridgescorer-client${jstype}.js"
     )
     theResource must not be null
   }
@@ -124,30 +108,16 @@ class MyServiceSpec
   }
 
   import akka.http.scaladsl.model.headers.`Content-Encoding`
-  it should "return the index.html to /public/index.html" in {
-    Get("/public/index.html").withAttributes(remoteAddress) ~> Route.seal {
-      myRouteWithLogging
-    } ~> check {
-      status mustBe OK
-      header("Content-Encoding") mustBe Some(
-        `Content-Encoding`(HttpEncodings.gzip)
-      )
-      val sbody = getGzipBody(responseAs[Array[Byte]])
-      sbody must include regex """(?s-)(?m-)<html.*bridgescorer-client-opt\.js.*</html>"""
-    }
-  }
 
-  it should "return the index-fastopt.html to /html/index-fastopt.html" in {
-    assume(!TestServer.useProductionPage)
-    assume(!useFullOptOnly)
-    Get("/public/index-fastopt.html").withAttributes(remoteAddress) ~> Route
+  it should s"return the index${htmltype}.html to /html/index${htmltype}.html" in {
+    Get(s"/public/index${htmltype}.html").withAttributes(remoteAddress) ~> Route
       .seal { myRouteWithLogging } ~> check {
       status mustBe OK
       header("Content-Encoding") mustBe Some(
         `Content-Encoding`(HttpEncodings.gzip)
       )
       val sbody = getGzipBody(responseAs[Array[Byte]])
-      sbody must include regex """(?s)<html>.*bridgescorer-client-fastopt\.js.*</html>"""
+      sbody must include regex """(?s-)(?m-)<html>.*bridgescorer-client""" + jstype + """\.js.*</html>"""
     }
 
   }
@@ -158,11 +128,8 @@ class MyServiceSpec
     import scala.language.postfixOps
     implicit val timeout = RouteTestTimeout(5.seconds dilated)
 
-    it should "return bridgescorer-client-fastopt.js to /public/bridgescorer-client-fastopt.js" in {
-      assume(!TestServer.useProductionPage)
-      assume(!useFullOptOnly)
-
-      Get("/public/bridgescorer-client-fastopt.js").withAttributes(
+    it should s"return bridgescorer-client${jstype}.js to /public/bridgescorer-client${jstype}.js" in {
+      Get(s"/public/bridgescorer-client${jstype}.js").withAttributes(
         remoteAddress
       ) ~> Route.seal { myRouteWithLogging } ~> check {
         status mustBe OK
@@ -172,16 +139,6 @@ class MyServiceSpec
         val sbody = getGzipBody(responseAs[Array[Byte]])
         sbody must include regex "(?s).*function.*"
       }
-    }
-  }
-
-  it should "return bridgescorer-client-opt.js to /public/bridgescorer-client-opt.js" in {
-    assume(!useFastOptOnly)
-    Get("/public/bridgescorer-client-opt.js").withAttributes(
-      remoteAddress
-    ) ~> Route.seal { myRouteWithLogging } ~> check {
-      status mustBe OK
-      getGzipBody(responseAs[Array[Byte]]) must include regex "(?s).*function.*"
     }
   }
 

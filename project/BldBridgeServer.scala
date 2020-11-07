@@ -64,7 +64,7 @@ object BldBridgeServer {
         "-DSessionDirector=" + useBrowser,
         "-DSessionTable1=" + useBrowser,
         "-DSessionTable2=" + useBrowser,
-        s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}"""
+        testProductionPage
       ),
 
       // The following depend on the javax.xml.bind version
@@ -111,7 +111,7 @@ object BldBridgeServer {
           }
         } else {
           Def.task {
-            (run in Compile).toTask(
+            val x = (run in Compile).toTask(
               """ sslkey"""+
               s""" -d $keydir"""+
               """ generateselfsigned"""+

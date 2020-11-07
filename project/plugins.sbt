@@ -6,14 +6,14 @@
 
 name := "project-bridgescorer"
 
-scalaVersion := "2.12.12"
+// scalaVersion := "2.12.12"
 
 val vLog4j = "1.7.30"              // https://github.com/qos-ch/slf4j
 val vJGit = "5.9.0.202009080501-r" // https://github.com/eclipse/jgit
 
 val vCrossProject = "1.0.0"        // https://github.com/portable-scala/sbt-crossproject
 // scala-react does not compile on scalajs 1.0 yet
-val vScalaJSDefault = "1.2.0"      // http://www.scala-js.org/
+val vScalaJSDefault = "1.3.0"      // http://www.scala-js.org/
 val vEnvJsDomNodejs = "1.1.0"      // https://github.com/scala-js/scala-js-env-jsdom-nodejs
 
 val sbtScalaJsBundlerSuffix = if (vScalaJSDefault.startsWith("0.6.")) "-sjs06" else ""  // "" - for ScalaJS 1.0 "-sjs06" for ScalaJS 0.6
@@ -30,7 +30,8 @@ val vSbtUpdates = "0.5.1"          // https://github.com/rtimush/sbt-updates
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
-val vSbtScalaJsBundler = "0.18.0"  // https://github.com/scalacenter/scalajs-bundler
+val vSbtScalaJsBundler = "0.20.0"  // https://github.com/scalacenter/scalajs-bundler
+val vSbtWebScalajs = "1.1.0"       // https://github.com/vmunier/sbt-web-scalajs
 
 // not used:
 
@@ -38,8 +39,8 @@ val vSbtRevolver = "0.8.0"         // https://github.com/spray/sbt-revolver
 val vSbtUniDoc = "0.3.3"           // https://github.com/sbt/sbt-unidoc
 val vSbtDigest = "1.1.1"           // https://github.com/sbt/sbt-digest
 val vSbtScalaFmt="2.4.2"           // https://github.com/scalameta/sbt-scalafmt
-val vBloop = "1.4.4"               // https://github.com/scalacenter/bloop
-val vSbtScalaFix="0.9.21"          // https://github.com/scalacenter/sbt-scalafix
+val vBloop = "1.4.5"               // https://github.com/scalacenter/bloop
+val vSbtScalaFix="0.9.23"          // https://github.com/scalacenter/sbt-scalafix
 
 // The following is needed to get rid of the message
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
@@ -80,6 +81,8 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % vSbtGzip withSources())
 
 addSbtPlugin("ch.epfl.scala" % s"sbt-web-scalajs-bundler${sbtScalaJsBundlerSuffix}" % vSbtScalaJsBundler withSources())
 addSbtPlugin("ch.epfl.scala" % s"sbt-scalajs-bundler${sbtScalaJsBundlerSuffix}" % vSbtScalaJsBundler withSources())
+addSbtPlugin("com.vmunier"   % "sbt-web-scalajs" % vSbtWebScalajs withSources())
+
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % vSbtScalaFmt withSources())
 addSbtPlugin("ch.epfl.scala" % "sbt-bloop" % vBloop withSources())
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % vSbtScalaFix withSources())

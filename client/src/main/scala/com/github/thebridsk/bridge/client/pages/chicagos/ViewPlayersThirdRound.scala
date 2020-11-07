@@ -202,32 +202,32 @@ object ViewPlayersThirdRound {
                   <.td()
                 )
               ),
+            ),
+            <.div(
+              baseStyles.divFooter,
               <.div(
-                baseStyles.divFooter,
-                <.div(
-                  baseStyles.divFooterLeft,
-                  AppButton(
-                    "Ok",
-                    "OK",
-                    ^.disabled := !valid,
-                    BaseStyles.highlight(required = valid),
-                    baseStyles.appButton,
-                    ^.onClick --> ok
-                  )
-                ),
-                <.div(
-                  baseStyles.divFooterCenter,
-                  AppButton(
-                    "Cancel",
-                    "Cancel",
-                    baseStyles.appButton,
-                    props.router.setOnClick(props.page.toSummaryView)
-                  )
-                ),
-                <.div(
-                  baseStyles.divFooterRight
-                  //              HelpButton("../help/chicago/four/selectnames4.html")
+                baseStyles.divFooterLeft,
+                AppButton(
+                  "Ok",
+                  "OK",
+                  ^.disabled := !valid,
+                  BaseStyles.highlight(required = valid),
+                  baseStyles.appButton,
+                  ^.onClick --> ok
                 )
+              ),
+              <.div(
+                baseStyles.divFooterCenter,
+                AppButton(
+                  "Cancel",
+                  "Cancel",
+                  baseStyles.appButton,
+                  props.router.setOnClick(props.page.toSummaryView)
+                )
+              ),
+              <.div(
+                baseStyles.divFooterRight
+                // HelpButton("../help/chicago/four/selectnames4.html")
               )
             )
           )

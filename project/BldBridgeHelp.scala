@@ -37,6 +37,12 @@ object BldBridgeHelp {
         }
 
         Hugo.run(log, bd, targ, helpversion, shorthelpversion)
+
+        val rootdir = target.value
+        val helpdir = new File(rootdir, "help")
+        val prefix = rootdir.toString.length + 1
+        helpdir.allPaths.pair(f => Some(f.toString.substring(prefix)))
+
       },
 
       hugoserver := {
@@ -50,30 +56,40 @@ object BldBridgeHelp {
           case _ => helpversion
         }
 
+        log.info( "Running hugo" )
+
         Hugo.runServer(log, bd, helpversion, shorthelpversion)
       },
 
       hugosetup := {
         {
-          val testgen = new File( baseDirectory.value + "/../fullserver/target/docs" )
+          val testgen = new File( baseDirectory.value, "/../fullserver/target/docs" ).getCanonicalFile
           val gen = new File( baseDirectory.value, "docs/static/images/gen" )
-          println( s"Copy ${testgen} to ${gen}" )
-          MyFileUtils.copyDirectory( testgen, gen, "png", 2 )
+          val log = streams.value.log
+          log.info( s"Copy ${testgen} to ${gen}" )
+          MyFileUtils.copyDirectory(testgen, gen, 2)(MyFileUtils.onlyCopy("png"))
         }
       },
 
       hugoWithTest := Def.sequential( hugosetupWithTest, hugo ).value,
 
-      hugoWithTest := Def.taskDyn {
+      hugoWithTest := (Def.taskDyn {
         val log = streams.value.log
+        log.info( "Running hugoWithTest" )
         val bd = new File(baseDirectory.value, "docs" )
-        val oldtask = hugoWithTest.taskValue
         if (skipGenerateImageSetting.value && Hugo.gotGeneratedImages(log,bd)) {
-          hugo
+          Def.task {
+            val h = hugo.value
+            h
+          }
         } else {
-          Def.task(oldtask.value)
+          val hugoTest = hugoWithTest.taskValue
+          Def.task {
+            val h = hugoTest.value
+            h
+          }
         }
-      }.value,
+      }).value,
 
       hugosetupWithTest := Def.sequential( test in Test in BldBridgeFullServer.`bridgescorer-fullserver`, hugosetup ).value,
 
