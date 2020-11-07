@@ -49,8 +49,8 @@ class MyServiceSpec
 
   val testlog: LoggingAdapter = Logging(system, "MyServiceSpec")
 
-  val jstype = if (TestServer.testProductionPage) "-opt" else "-fastopt"
-  val htmltype = if (TestServer.testProductionPage) "" else "-fastopt"
+  val jstype: String = if (TestServer.testProductionPage) "-opt" else "-fastopt"
+  val htmltype: String = if (TestServer.testProductionPage) "" else "-fastopt"
 
   behavior of "Server"
 

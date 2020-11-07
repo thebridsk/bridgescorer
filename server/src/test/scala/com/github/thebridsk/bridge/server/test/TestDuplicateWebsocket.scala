@@ -41,6 +41,7 @@ import com.github.thebridsk.bridge.server.backend.resource.CreateChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.UpdateChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.DeleteChangeContext
 import akka.event.LoggingAdapter
+import akka.http.scaladsl.model.AttributeKey
 
 class TestDuplicateWebsocket
     extends AnyFlatSpec
@@ -65,15 +66,14 @@ class TestDuplicateWebsocket
 
   implicit lazy val actorSystem = system //scalafix:ok ExplicitResultTypes
   implicit lazy val actorExecutor = executor //scalafix:ok ExplicitResultTypes
-  implicit lazy val actorMaterializer =
-    materializer //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer = materializer //scalafix:ok ExplicitResultTypes
 
   implicit lazy val testlog: LoggingAdapter =
     Logging(actorSystem, classOf[TestDuplicateWebsocket])
 
-  val remoteAddress1 = remoteAddress(InetAddress.getLocalHost, 11111)
-  val remoteAddress2 = remoteAddress(InetAddress.getLocalHost, 22222)
-  val remoteAddress3 = remoteAddress(InetAddress.getLocalHost, 33333)
+  val remoteAddress1: Map[AttributeKey[_],Any] = remoteAddress(InetAddress.getLocalHost, 11111)
+  val remoteAddress2: Map[AttributeKey[_],Any] = remoteAddress(InetAddress.getLocalHost, 22222)
+  val remoteAddress3: Map[AttributeKey[_],Any] = remoteAddress(InetAddress.getLocalHost, 33333)
 
   var client1: WebsocketClient = null
   var client2: WebsocketClient = null

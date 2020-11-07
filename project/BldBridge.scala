@@ -46,6 +46,7 @@ object BldBridge {
         |  distribution:travis1   run build that is run in step 1 in Travis-CI
         |  distribution:travis2   run build that is run in step 2 in Travis-CI
         |  myrelease-with-defaults do a release using defaults
+        |  bridgescalafix         run scalafix on all projects with semanticDB, runs bridgescorer-fullserver/test
         |Note, the following will fail:
         |  release with-defaults  does a release bumping the patch version
         |  release release-version 1.0.99 next-version 1.2.0-SNAPSHOT    set the release version and next version for release process
@@ -115,7 +116,21 @@ object BldBridge {
         |  version, and committed.  The "release" branch and the version tag should be pushed to GitHub, and a Pull Request
         |  should be made from the "release" branch to the "master" branch.  The commit with the version tag will be
         |  built by Travis-CI and the bridgescorekeeper jar file is added as an artifact to the release in GitHub.
-      """.stripMargin
+        |
+        |Scalafix
+        |  To run scalafix on all projects, run
+        |
+        |     setSemanticDB
+        |     project bridgescorer
+        |     scalafix
+        |     test:scalafix
+        |     project {utilities}utilities
+        |     setSemanticDB
+        |     scalafix
+        |     test:scalafix
+        |
+        |  Note: running bridgescorekeeper/test:scalafix will cause bridgescorer-fullserver/test to execute
+        |""".stripMargin
     )
     state
   }
@@ -182,11 +197,20 @@ object BldBridge {
   }
 
   implicit class WrapState( val state: State ) extends AnyVal {
+    def runAggregated[T]( key: TaskKey[T] ) = {
+      releaseStepTaskAggregated(key)(state)
+    }
     def run[T]( key: TaskKey[T] ) = {
       releaseStepTask(key)(state)
     }
+    def runWithInput[T](key: InputKey[T], input: String = "") = {
+      releaseStepInputTask(key,input)
+    }
     def run( command: String ) = {
       releaseStepCommandAndRemaining(command)(state)
+    }
+    def run(command: Command, input: String = "") = {
+      releaseStepCommand(command, input)(state)
     }
   }
 
@@ -205,6 +229,20 @@ object BldBridge {
       .run( "reload plugins")
       .run( dependencyUpdates )
 //      .run("reload return")
+    state
+  }
+
+  val bridge_scalafix = Command.command(
+    "bridgescalafix",
+    "Run scalafix on all projects",
+    "Run scalafix on all projects, will run setSemanticDB, will run bridgescorer-fullserver/test"
+  ) { state =>
+    state
+      .run(setSemanticDB)
+      .run("scalafix")
+      .run( "project {utilities}utilities" )
+      .run(setSemanticDB)
+      .run("scalafix")
     state
   }
 
@@ -285,7 +323,7 @@ object BldBridge {
       serverhelp := { (serverhelp in BldBridgeScoreKeeper.bridgescorekeeper).value },
       serverlogs := { (serverlogs in BldBridgeScoreKeeper.bridgescorekeeper).value },
 
-      commands ++= Seq( apphelp, setOptimize, updateCheck, releaseWithDefaults, setSemanticDB )
+      commands ++= Seq( apphelp, setOptimize, updateCheck, releaseWithDefaults, setSemanticDB, bridge_scalafix )
     ).
     settings(
       checkForUpdates := Def

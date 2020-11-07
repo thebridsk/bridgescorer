@@ -1093,7 +1093,7 @@ object TestDuplicateRestSpecImplicits {
     }
   }
 
-  implicit class WrapHttpRequest( val req: HttpRequest ) extends AnyVal {
+  implicit class WrapHttpRequest( private val req: HttpRequest ) extends AnyVal {
     def addAttributes(map: Map[AttributeKey[_],_]): HttpRequest = {
       val old = req.attributes
       req.withAttributes(old ++ map)

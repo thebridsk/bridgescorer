@@ -71,7 +71,7 @@ package reactwidgets {
   }
 
   object Localizer {
-    def initLocalizer( locale: String ) = {
+    def initLocalizer( locale: String ): Unit = {
       import globalize._
       // Globalize.locale(locale)
       // ReactWidgetsGlobalize()
