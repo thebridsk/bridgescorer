@@ -446,7 +446,7 @@ object GitHub {
 //  "html_url": "https://github.com/thebridsk/bridgescorer/releases/tag/v1.0.2",
 //  "id": 9273387,
 //  "tag_name": "v1.0.2",
-//  "target_commitish": "master",
+//  "target_commitish": "main
 //  "name": null,
 //  "draft": false,
 //  "author": {

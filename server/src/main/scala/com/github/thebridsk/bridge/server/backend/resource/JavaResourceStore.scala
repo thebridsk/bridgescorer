@@ -23,7 +23,7 @@ object JavaResourceStore {
   ]](
       name: String,
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader,
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
@@ -36,7 +36,7 @@ object JavaResourceStore {
     new JavaResourceStore(
       name,
       resourcedirectory,
-      masterfile,
+      mainfile,
       loader,
       cacheInitialCapacity,
       cacheMaxCapacity,
@@ -48,7 +48,7 @@ object JavaResourceStore {
 
 /**
   * @param resourcedirectory must start and end with a '/'
-  * @param masterfile the master file that contains the names of all the resource files.  This file must be in resourcedirectory.
+  * @param mainfile the main file that contains the names of all the resource files.  This file must be in resourcedirectory.
   */
 class JavaResourcePersistentSupport[VId <: Comparable[
   VId
@@ -58,7 +58,7 @@ class JavaResourcePersistentSupport[VId <: Comparable[
   VId
 ]](
     val resourcedirectory: String,
-    val masterfile: String,
+    val mainfile: String,
     val loader: ClassLoader
 )(implicit
     support: StoreSupport[VId, VType],
@@ -66,7 +66,7 @@ class JavaResourcePersistentSupport[VId <: Comparable[
 ) extends PersistentSupport[VId, VType] {
 
   log.fine(
-    s"JavaResourcePersistentSupport ${resourceURI} resourceDirectory=${resourcedirectory}, masterfile=${masterfile}"
+    s"JavaResourcePersistentSupport ${resourceURI} resourceDirectory=${resourcedirectory}, mainfile=${mainfile}"
   )
 
   private var knownIds: Option[Set[VId]] = None
@@ -76,7 +76,7 @@ class JavaResourcePersistentSupport[VId <: Comparable[
   )(f: BufferedSource => Option[T]): Option[T] = {
     val res = resource.substring(1) // remove leading slash
     log.fine(
-      s"JavaResourcePersistentSupport ${resourceURI} looking for ${res} resourceDirectory=${resourcedirectory}, masterfile=${masterfile}"
+      s"JavaResourcePersistentSupport ${resourceURI} looking for ${res} resourceDirectory=${resourcedirectory}, mainfile=${mainfile}"
     )
     val stream: InputStream = loader.getResourceAsStream(res)
     if (stream != null) {
@@ -125,7 +125,7 @@ class JavaResourcePersistentSupport[VId <: Comparable[
         val resdir =
           if (resourcedirectory.endsWith("/")) resourcedirectory
           else (resourcedirectory + "/")
-        val map = getSource(resdir + masterfile) { mfile =>
+        val map = getSource(resdir + mainfile) { mfile =>
           Some(
             mfile
               .getLines()
@@ -142,7 +142,7 @@ class JavaResourcePersistentSupport[VId <: Comparable[
         map.getOrElse(Set())
       }
     log.fine(
-      s"JavaResourcePersistentSupport ${resourceURI} resourceDirectory=${resourcedirectory}, masterfile=${masterfile}, Ids=${ret}"
+      s"JavaResourcePersistentSupport ${resourceURI} resourceDirectory=${resourcedirectory}, mainfile=${mainfile}, Ids=${ret}"
     )
     ret
   }
@@ -273,19 +273,19 @@ object JavaResourcePersistentSupport {
     VId
   ]](
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader
   )(implicit
       support: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): JavaResourcePersistentSupport[VId, VType] = {
-    new JavaResourcePersistentSupport(resourcedirectory, masterfile, loader)
+    new JavaResourcePersistentSupport(resourcedirectory, mainfile, loader)
   }
 }
 
 /**
   * @param resourcedirectory must end with a '/'
-  * @param masterfile the master file that contains the names of all the resource files.  This file must
+  * @param mainfile the main file that contains the names of all the resource files.  This file must
   * be in resourcedirectory.
   * @param cacheInitialCapacity
   * @param cacheMaxCapacity
@@ -299,7 +299,7 @@ class JavaResourceStore[VId <: Comparable[VId], VType <: VersionedInstance[
 ]](
     name: String,
     val resourcedirectory: String,
-    val masterfile: String,
+    val mainfile: String,
     val loader: ClassLoader,
     cacheInitialCapacity: Int = 5,
     cacheMaxCapacity: Int = 100,
@@ -312,7 +312,7 @@ class JavaResourceStore[VId <: Comparable[VId], VType <: VersionedInstance[
       name,
       new JavaResourcePersistentSupport[VId, VType](
         resourcedirectory,
-        masterfile,
+        mainfile,
         loader
       ),
       cacheInitialCapacity,

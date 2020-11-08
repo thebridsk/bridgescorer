@@ -22,7 +22,7 @@ env:
 
 branches:
   only:
-  - master
+  - main
   - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
 
 # These directories are cached to S3 at the end of the build

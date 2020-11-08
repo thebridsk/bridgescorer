@@ -205,7 +205,7 @@ object MultiPersistentSupport {
     * The file persistent support is the primary, and all created resources are written to the file persistent support.
     * @param directory the directory for the file persistent support
     * @param resourcedirectory the resource directory for the java resource persistent.  Must end in '/'
-    * @param masterfile the master file for the java resource persistent suppport.
+    * @param mainfile the main file for the java resource persistent suppport.
     */
   def createFileAndResource[VId <: Comparable[VId], VType <: VersionedInstance[
     VType,
@@ -214,7 +214,7 @@ object MultiPersistentSupport {
   ]](
       directory: Directory,
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader
   )(implicit
       cachesupport: StoreSupport[VId, VType],
@@ -224,7 +224,7 @@ object MultiPersistentSupport {
       new FilePersistentSupport[VId, VType](directory),
       new JavaResourcePersistentSupport[VId, VType](
         resourcedirectory,
-        masterfile,
+        mainfile,
         loader
       )
     )
@@ -235,7 +235,7 @@ object MultiPersistentSupport {
     * The file persistent support is the primary, and all created resources are written to the file persistent support.
     * @param directory the directory for the file persistent support
     * @param resourcedirectory the resource directory for the java resource persistent.  Must end in '/'
-    * @param masterfile the master file for the java resource persistent suppport.
+    * @param mainfile the main file for the java resource persistent suppport.
     */
   def createInMemoryAndResource[VId <: Comparable[
     VId
@@ -245,7 +245,7 @@ object MultiPersistentSupport {
     VId
   ]](
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader
   )(implicit
       cachesupport: StoreSupport[VId, VType],
@@ -255,7 +255,7 @@ object MultiPersistentSupport {
       new InMemoryPersistent[VId, VType](),
       new JavaResourcePersistentSupport[VId, VType](
         resourcedirectory,
-        masterfile,
+        mainfile,
         loader
       )
     )
@@ -306,7 +306,7 @@ object MultiStore {
     * The file persistent support is the primary, and all created resources are written to the file persistent support.
     * @param directory the directory for the file persistent support
     * @param resourcedirectory the resource directory for the java resource persistent.  Must end in '/'
-    * @param masterfile the master file for the java resource persistent suppport.
+    * @param mainfile the main file for the java resource persistent suppport.
     */
   def createFileAndResource[VId <: Comparable[VId], VType <: VersionedInstance[
     VType,
@@ -316,7 +316,7 @@ object MultiStore {
       name: String,
       directory: Directory,
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader,
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
@@ -329,7 +329,7 @@ object MultiStore {
     val p = MultiPersistentSupport.createFileAndResource(
       directory,
       resourcedirectory,
-      masterfile,
+      mainfile,
       loader
     )
     new MultiStore[VId, VType](
@@ -347,7 +347,7 @@ object MultiStore {
     * The file persistent support is the primary, and all created resources are written to the file persistent support.
     * @param directory the directory for the file persistent support
     * @param resourcedirectory the resource directory for the java resource persistent.  Must end in '/'
-    * @param masterfile the master file for the java resource persistent suppport.
+    * @param mainfile the main file for the java resource persistent suppport.
     */
   def createInMemoryAndResource[VId <: Comparable[
     VId
@@ -358,7 +358,7 @@ object MultiStore {
   ]](
       name: String,
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader,
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
@@ -370,7 +370,7 @@ object MultiStore {
   ): MultiStore[VId, VType] = {
     val p = MultiPersistentSupport.createInMemoryAndResource(
       resourcedirectory,
-      masterfile,
+      mainfile,
       loader
     )
     new MultiStore[VId, VType](

@@ -62,7 +62,7 @@ object MyReleaseVersion {
 
   private val releaseFromBranch = sys.props
     .get("ReleaseFromBranch")
-    .getOrElse(sys.env.get("ReleaseFromBranch").getOrElse("master"))
+    .getOrElse(sys.env.get("ReleaseFromBranch").getOrElse("main"))
 
   private val globalVersionString = "git.baseVersion in ThisBuild := \"%s\""
   private val versionString = "git.baseVersion := \"%s\""
@@ -323,10 +323,10 @@ object MyReleaseVersion {
     }
   )
 
-  def gitMergeReleaseMaster: ReleaseStep = ReleaseStep(
+  def gitMergeReleaseMain: ReleaseStep = ReleaseStep(
     // action
     { st: State =>
-      st.git("checkout", "master")
+      st.git("checkout", "main")
       st.git("merge", releaseBranch)
       st.git("branch", "--delete", "--force", releaseBranch)
       recalculateVersion.action(st)
