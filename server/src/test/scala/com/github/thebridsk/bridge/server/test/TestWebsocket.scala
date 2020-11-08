@@ -42,11 +42,10 @@ class TestWebsocket
   val httpport = 8080
   override def ports: ServerPort = ServerPort(Option(httpport), None)
 
-  // scalafix:off
-  implicit lazy val actorSystem = system
-  implicit lazy val actorExecutor = executor
-  implicit lazy val actorMaterializer = materializer
-  // scalafix:on
+  implicit lazy val actorSystem = system //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorExecutor = executor //scalafix:ok ExplicitResultTypes
+  implicit lazy val actorMaterializer =
+    materializer //scalafix:ok ExplicitResultTypes
 
   lazy val testlog: LoggingAdapter =
     Logging(actorSystem, classOf[TestWebsocket])
@@ -144,7 +143,9 @@ class TestWebsocket
 
   it should "Open a Websocket" in {
     val wsClient = WSProbe()
-    WS("/greeter", wsClient.flow).addAttributes(remoteAddress) ~> websocketRoute ~>
+    WS("/greeter", wsClient.flow).addAttributes(
+      remoteAddress
+    ) ~> websocketRoute ~>
       check {
         wsClient.inProbe.within(10 seconds) {
           isWebSocketUpgrade mustEqual true

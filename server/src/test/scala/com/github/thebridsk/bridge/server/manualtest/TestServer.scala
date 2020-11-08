@@ -20,7 +20,7 @@ object TestServer extends App {
     }
 
   val bindingFuture: Future[Http.ServerBinding] =
-      Http().newServerAt("localhost", 8080).bind(route)
+    Http().newServerAt("localhost", 8080).bind(route)
 //    Http().bindAndHandle(route, "localhost", 8080)
 
   println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")

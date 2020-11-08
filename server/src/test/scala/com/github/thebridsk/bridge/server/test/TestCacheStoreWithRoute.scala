@@ -199,7 +199,9 @@ class TestCacheStoreWithRoute
 
   it should "store a value in the store" in {
     val omd = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?default=true", omd).withAttributes(remoteAddress) ~>
+    Post("/v1/rest/duplicates?default=true", omd).withAttributes(
+      remoteAddress
+    ) ~>
       Route.seal { myRouteWithLogging } ~>
       check {
         status mustBe StatusCodes.Created
@@ -218,7 +220,8 @@ class TestCacheStoreWithRoute
         }
 
         val nmd = md.updateTeam(Team(Team.id(1), "Fred", "George", 0, 0))
-        Put(s"/v1/rest/duplicates/${md.id.id}", nmd).withAttributes(remoteAddress) ~>
+        Put(s"/v1/rest/duplicates/${md.id.id}", nmd)
+          .withAttributes(remoteAddress) ~>
           Route.seal { myRouteWithLogging } ~>
           check {
             status mustBe StatusCodes.NoContent
@@ -260,7 +263,9 @@ class TestCacheStoreWithRoute
     restService.persistent.failWrite = true
 
     val md = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?default=true", md).withAttributes(remoteAddress) ~>
+    Post("/v1/rest/duplicates?default=true", md).withAttributes(
+      remoteAddress
+    ) ~>
       Route.seal { myRouteWithLogging } ~>
       check {
         status mustBe StatusCodes.InternalServerError
@@ -269,7 +274,9 @@ class TestCacheStoreWithRoute
         ] mustBe "An error occurred: Failure writing to persistent store!"
 
         restService.persistent.failWrite = false
-        Post("/v1/rest/duplicates?default=true", md).withAttributes(remoteAddress) ~>
+        Post("/v1/rest/duplicates?default=true", md).withAttributes(
+          remoteAddress
+        ) ~>
           Route.seal { myRouteWithLogging } ~>
           check {
             status mustBe StatusCodes.Created
@@ -285,7 +292,9 @@ class TestCacheStoreWithRoute
     restService.persistent.failGetAllIds = true
 
     val md = MatchDuplicate.create(MatchDuplicate.idNul)
-    Post("/v1/rest/duplicates?default=true", md).withAttributes(remoteAddress) ~>
+    Post("/v1/rest/duplicates?default=true", md).withAttributes(
+      remoteAddress
+    ) ~>
       Route.seal { myRouteWithLogging } ~>
       check {
         status mustBe StatusCodes.Created

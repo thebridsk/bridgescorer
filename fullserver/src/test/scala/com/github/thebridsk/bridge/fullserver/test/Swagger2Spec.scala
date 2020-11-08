@@ -55,7 +55,9 @@ class Swagger2Spec
   behavior of "the Swagger Server api"
 
   it should "return the /v1/docs/ should be a redirect" in {
-    Get("/v1/docs/").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
+    Get("/v1/docs/").withAttributes(
+      remoteAddress
+    ) ~> myRouteWithLogging ~> check {
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(httpheader) =>
@@ -131,7 +133,9 @@ class Swagger2Spec
   }
 
   it should "return the /public/swagger-ui-dist/index.html" in {
-    Get("/public/swagger-ui-dist/index.html").withAttributes(remoteAddress) ~> addHeader(
+    Get("/public/swagger-ui-dist/index.html").withAttributes(
+      remoteAddress
+    ) ~> addHeader(
       `Accept-Encoding`(HttpEncodings.gzip)
     ) ~> myRouteWithLogging ~> check {
       status mustBe OK

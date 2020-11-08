@@ -201,7 +201,7 @@ object ViewPlayersThirdRound {
                   ),
                   <.td()
                 )
-              ),
+              )
             ),
             <.div(
               baseStyles.divFooter,

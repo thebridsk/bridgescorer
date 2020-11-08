@@ -104,7 +104,10 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
                 log.severe(
                   "Could not determine remote address or it is not local, ip=" + ip
                 )
-                complete(StatusCodes.BadRequest, "Request not from valid address")
+                complete(
+                  StatusCodes.BadRequest,
+                  "Request not from valid address"
+                )
             }
           } else {
             log.severe("Missing secret")

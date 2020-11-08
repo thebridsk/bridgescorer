@@ -14,12 +14,12 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 object TeamPlaces {
   @ArraySchema(
     schema = new Schema(
-      description =
-        "The number of teams tied for the place",
+      description = "The number of teams tied for the place",
       `type` = "integer"
     ),
     arraySchema = new Schema(
-      description = "List of number of teams tied for place, index is number of teams",
+      description =
+        "List of number of teams tied for place, index is number of teams"
     )
   )
   class NumberTeams
@@ -49,13 +49,13 @@ case class PlayerPlace(
     @ArraySchema(
       // this does not generate the correct schema.  It generates an array of array of objects instead of array of array of int
       schema = new Schema(
-        description =
-          "The count of the number of teams tied for place",
+        description = "The count of the number of teams tied for place"
         // implementation = classOf[TeamPlaces.NumberTeams]
       ),
       arraySchema = new Schema(
-        description = "List of results, index+1 is the place, second index is the number of teams tied for place",
-        required = true,
+        description =
+          "List of results, index+1 is the place, second index is the number of teams tied for place",
+        required = true
       )
     )
     place: List[List[Int]],

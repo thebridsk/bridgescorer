@@ -88,7 +88,11 @@ object TestGraphQL {
 /**
   * Test class to start the logging system
   */
-class TestGraphQL extends AsyncFlatSpec with ScalatestRouteTest with Matchers with RoutingSpec {
+class TestGraphQL
+    extends AsyncFlatSpec
+    with ScalatestRouteTest
+    with Matchers
+    with RoutingSpec {
   import TestGraphQL._
 
   TestStartLogging.startLogging()

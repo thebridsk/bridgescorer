@@ -52,7 +52,9 @@ class SwaggerSpec
   behavior of "the Swagger Server api"
 
   it should "return the /v1/docs/ should be a redirect" in {
-    Get("/v1/docs/").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
+    Get("/v1/docs/").withAttributes(
+      remoteAddress
+    ) ~> myRouteWithLogging ~> check {
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(httpheader) =>
@@ -148,7 +150,9 @@ class SwaggerSpec
   // }
 
   it should "return the swagger.yaml /v1/api-docs" in {
-    Get("/v1/api-docs").withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
+    Get("/v1/api-docs").withAttributes(
+      remoteAddress
+    ) ~> myRouteWithLogging ~> check {
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(httpheader) =>
