@@ -1,6 +1,6 @@
 # Bridge Scorer Project
 
-[![Build Status](https://travis-ci.org/thebridsk/bridgescorer.svg?branch=master)](https://travis-ci.org/thebridsk/bridgescorer)
+[![Build Status](https://travis-ci.org/thebridsk/bridgescorer.svg?branch=main)](https://travis-ci.org/thebridsk/bridgescorer)
 [![GitHub release](https://img.shields.io/github/release/thebridsk/bridgescorer.svg)](https://github.com/thebridsk/bridgescorer/releases/latest)
 [![ZenHub](https://img.shields.io/badge/Managed_with-ZenHub-5e60ba.svg)](https://app.zenhub.com/workspace/o/thebridsk/bridgescorer/boards)
 
@@ -14,7 +14,7 @@ Use pull requests
 
 ## Releasing
 
-To release a new version, the current branch must be `master`, the workspace must be clean.  The `release` branch must not exist.
+To release a new version, the current branch must be `main`, the workspace must be clean.  The `release` branch must not exist.
 
 To create the release, execute:
 

@@ -93,7 +93,7 @@ object BldBridge {
         |  ServerTestToRun <clsname>   test to run in fullserver when running test task
         |  TRAVIS_BUILD_NUMBER <n>     running in Travis-CI
         |  BuildForHelpOnly            if defined only tests that generate help images are run
-        |  ReleaseFromBranch <branch>  current branch when release is executed, default "master"
+        |  ReleaseFromBranch <branch>  current branch when release is executed, default "main"
         |  UseLogFilePrefix  <path>    prefix to use for logging when running tests
         |
         |Environment Variables when using server in tests
@@ -110,12 +110,12 @@ object BldBridge {
         |  To test the build that runs in Travis-CI first set the environment variable TRAVIS_BUILD_NUMBER to a number,
         |  then invoke "sbt distribution:travis1" or "sbt distribution:travis2"
         |
-        |  To make a release, checkout the master branch, be sure the submodules are at the correct commit and that
+        |  To make a release, checkout the main branch, be sure the submodules are at the correct commit and that
         |  commit has been pushed to GitHub.  Then invoke "sbt release".  The release process will create a branch
         |  called "release" from the HEAD, then modifies version.sbt, and commits this, tags it with the version number
         |  and runs "distribution:disttest".  If the build succeeds then version.sbt is updated to the next snapshot
         |  version, and committed.  The "release" branch and the version tag should be pushed to GitHub, and a Pull Request
-        |  should be made from the "release" branch to the "master" branch.  The commit with the version tag will be
+        |  should be made from the "release" branch to the "main" branch.  The commit with the version tag will be
         |  built by Travis-CI and the bridgescorekeeper jar file is added as an artifact to the release in GitHub.
         |
         |Scalafix

@@ -63,7 +63,7 @@ object Version {
 
   def apply(version: String) = new Version(version)
 
-//  val version: String = "1.0.2-SNAPSHOT-cd6b6f20d04a785b3b7dd268eeb9b7ca7de1a81c-SNAPSHOT-master"
+//  val version: String = "1.0.2-SNAPSHOT-cd6b6f20d04a785b3b7dd268eeb9b7ca7de1a81c-SNAPSHOT-main
 
   val pattern: Regex = """([0-9a-zA-Z.]+).*""".r
 
