@@ -1,33 +1,12 @@
 package com.github.thebridsk.bridge.server.service
 
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.http.scaladsl.model.StatusCode
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.DuplicateSummary
 import javax.ws.rs.Path
-import com.github.thebridsk.bridge.data.RestMessage
-import com.github.thebridsk.bridge.data.SystemTime
-import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.RejectionHandler
-import akka.http.scaladsl.server.MissingCookieRejection
-import akka.http.scaladsl.server.AuthorizationFailedRejection
-import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.UnsupportedWebSocketSubprotocolRejection
-import akka.util.ByteString
 import akka.http.scaladsl.model.RemoteAddress
 import scala.concurrent.duration._
-import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
@@ -35,16 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
-import io.swagger.v3.oas.annotations.tags.Tags
-import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.POST
-import io.swagger.v3.oas.annotations.parameters.RequestBody
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.jaxrs2.ReaderListener
-import io.swagger.v3.jaxrs2.Reader
-import io.swagger.v3.oas.models.OpenAPI
-import java.util.TreeMap
 import com.github.thebridsk.utilities.logging.Logger
+import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
+import scala.concurrent.Future
 
 /**
   * <p>
@@ -54,7 +27,7 @@ import com.github.thebridsk.utilities.logging.Logger
 @Tags(Array(new Tag(name = "Server")))
 class ServerService(totallyMissingHandler: RejectionHandler) {
 
-  val log = Logger[ServerService]
+  val log: Logger = Logger[ServerService]()
 
   /**
     * Allow the logging level to be overridden for
@@ -67,7 +40,7 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
   /**
     * spray route for all the methods on this resource
     */
-  val serverRoute = {
+  val serverRoute: RequestContext => Future[RouteResult] = {
     extractClientIP { ip =>
       {
         pathPrefix(serverUrlPrefix) {
@@ -86,8 +59,6 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
     */
 //  def totallyMissingHandler: RejectionHandler
 
-  import scala.language.postfixOps
-
   @Path("/shutdown")
   @POST
   @Operation(
@@ -105,22 +76,14 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
         schema = new Schema(`type` = "string", allowableValues = Array("yes"))
       )
     ),
-    requestBody = new RequestBody(
-      description = "movement to create",
-      content = Array(
-        new Content(
-          mediaType = "text/plain",
-          schema = new Schema(`type` = "string")
-        )
-      )
-    ),
     responses = Array(
       new ApiResponse(responseCode = "204", description = "Accepted"),
-      new ApiResponse(responseCode = "400", description = "Bad request")
+      new ApiResponse(responseCode = "400", description = "Bad request"),
+      new ApiResponse(responseCode = "404", description = "Not found")
     )
   )
-  def xxxshutdown = {}
-  def shutdown(@Parameter(hidden = true) ip: RemoteAddress) =
+  def xxxshutdown: Unit = {}
+  def shutdown(@Parameter(hidden = true) ip: RemoteAddress): Route =
     logRequestResult(ip.toString(), logLevelForTracingRequestResponse) {
       post {
         parameterMap { params =>
@@ -135,17 +98,20 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
                     complete(StatusCodes.NoContent)
                   case None =>
                     log.severe("Error")
-                    complete(StatusCodes.BadRequest)
+                    complete(StatusCodes.NotFound)
                 }
               case _ =>
                 log.severe(
                   "Could not determine remote address or it is not local, ip=" + ip
                 )
-                complete(StatusCodes.BadRequest)
+                complete(
+                  StatusCodes.BadRequest,
+                  "Request not from valid address"
+                )
             }
           } else {
             log.severe("Missing secret")
-            complete(StatusCodes.BadRequest)
+            complete(StatusCodes.BadRequest, "Request is missing secret")
           }
         }
       }

@@ -1,11 +1,8 @@
 package com.github.thebridsk.bridge.client.modules
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSImport
-
 object Loader {
 
-  def init = {}
+  def init: Unit = {}
 
 //  @JSImport("expose-loader?React!react", JSImport.Namespace)
 //  @js.native

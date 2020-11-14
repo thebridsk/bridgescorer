@@ -1,6 +1,5 @@
 package com.github.thebridsk.bridge.data
 
-import scala.annotation.meta._
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import io.swagger.v3.oas.annotations.media.Schema
 
@@ -20,11 +19,11 @@ case class RubberHand(
     honors: Int,
     @Schema(
       description =
-        "The player that got the honors points, ignored if honors is 0.",
+        "The player that got the honors points, Must be specified if honors not equal to 0, ignored otherwise",
       allowableValues = Array("N", "S", "E", "W"),
-      required = true
+      required = false
     )
-    honorsPlayer: String,
+    honorsPlayer: Option[String],
     @Schema(
       description =
         "When the duplicate hand was created, in milliseconds since 1/1/1970 UTC",
@@ -39,14 +38,14 @@ case class RubberHand(
     updated: Timestamp
 ) {
 
-  def equalsIgnoreModifyTime(other: RubberHand) = {
+  def equalsIgnoreModifyTime(other: RubberHand): Boolean = {
     other.id == id &&
     other.honors == honors &&
     other.honorsPlayer == honorsPlayer &&
     other.hand.equalsIgnoreModifyTime(hand)
   }
 
-  def setId(newId: String, forCreate: Boolean) = {
+  def setId(newId: String, forCreate: Boolean): RubberHand = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -56,7 +55,7 @@ case class RubberHand(
     )
   }
 
-  def copyForCreate(id: String) = {
+  def copyForCreate(id: String): RubberHand = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, hand = hand.copyForCreate(id), created = time, updated = time)
   }
@@ -77,7 +76,7 @@ object RubberHand {
       id: String,
       hand: Hand,
       honors: Int,
-      honorsPlayer: String,
+      honorsPlayer: Option[String],
       created: Timestamp,
       updated: Timestamp
   ) =

@@ -3,10 +3,13 @@ package com.github.thebridsk.bridge.server.backend.resource
 import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.VersionedInstance
 
-class SyncStore[VId, VType <: VersionedInstance[VType, VType, VId]](
+class SyncStore[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     store: Store[VId, VType]
 ) {
 
@@ -17,7 +20,7 @@ class SyncStore[VId, VType <: VersionedInstance[VType, VType, VId]](
   private def await[T](timeout: Duration)(fut: Future[T]) =
     Await.result(fut, timeout)
 
-  val defaultTimeout = 30.seconds
+  val defaultTimeout: FiniteDuration = 30.seconds
 
   /**
     * Create a new value in the collection

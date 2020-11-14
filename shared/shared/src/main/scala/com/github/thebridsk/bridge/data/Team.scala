@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.data
 
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(
@@ -11,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 )
 case class Team(
     @Schema(description = "The ID of the team.", required = true)
-    id: Id.Team,
+    id: Team.Id,
     @Schema(description = "The name of player 1 on the team", required = true)
     player1: String,
     @Schema(description = "The name of player 2 on the team", required = true)
@@ -30,10 +29,10 @@ case class Team(
     updated: Timestamp
 ) {
 
-  def equalsIgnoreModifyTime(other: Team) =
+  def equalsIgnoreModifyTime(other: Team): Boolean =
     this == other.copy(created = created, updated = updated)
 
-  def setId(newId: Id.Team, forCreate: Boolean) = {
+  def setId(newId: Team.Id, forCreate: Boolean): Team = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -42,20 +41,20 @@ case class Team(
     )
   }
 
-  def copyForCreate(id: Id.Team) = {
+  def copyForCreate(id: Team.Id): Team = {
     val time = SystemTime.currentTimeMillis()
     copy(id = id, created = time, updated = time)
   }
 
-  def areBothPlayersSet() =
+  def areBothPlayersSet(): Boolean =
     player1 != null && player1.length() > 0 && player2 != null && player2
       .length() > 0
 
-  def setPlayers(p1: String, p2: String) = {
+  def setPlayers(p1: String, p2: String): Team = {
     val time = SystemTime.currentTimeMillis()
     copy(
-      player1 = if (p1 == null) ""; else p1,
-      player2 = if (p2 == null) ""; else p2,
+      player1 = Option(p1).getOrElse(""),
+      player2 = Option(p2).getOrElse(""),
       updated = time
     )
   }
@@ -65,7 +64,7 @@ case class Team(
     * The timestamp is not changed.
     * @return None if the names were not changed.  Some() with the modified object
     */
-  def modifyPlayers(nameMap: Map[String, String]) = {
+  def modifyPlayers(nameMap: Map[String, String]): Option[Team] = {
 
     def getName(n: String) = nameMap.get(n).getOrElse(n)
 
@@ -80,13 +79,16 @@ case class Team(
   }
 }
 
-object Team {
-  def create(id: Id.Team, player1: String, player2: String) = {
+trait IdTeam
+
+object Team extends HasId[IdTeam]("T") {
+  def create(id: Team.Id, player1: String, player2: String): Team = {
     val time = SystemTime.currentTimeMillis()
     new Team(id, player1, player2, time, time)
   }
-  def create(id: Id.Team) = {
+  def create(id: Team.Id): Team = {
     val time = SystemTime.currentTimeMillis()
     new Team(id, "", "", time, time)
   }
+
 }

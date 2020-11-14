@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
@@ -62,10 +59,15 @@ object MenuListProps extends PropsFactory[MenuListProps] {
 }
 
 object MuiMenuList extends ComponentFactory[MenuListProps] {
-  @js.native @JSImport("@material-ui/core/MenuList", JSImport.Default) private object MenuList
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/MenuList",
+    JSImport.Default
+  ) private object MenuList extends js.Any
 
-  protected val f = JsComponent[MenuListProps, Children.Varargs, Null](MenuList)
+  protected val f =
+    JsComponent[MenuListProps, Children.Varargs, Null](
+      MenuList
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param autoFocus If true, the list will be focused during the first mount.
@@ -95,7 +97,7 @@ object MuiMenuList extends ComponentFactory[MenuListProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: MenuListProps = MenuListProps(
       autoFocus = autoFocus,
       disableListWrap = disableListWrap,

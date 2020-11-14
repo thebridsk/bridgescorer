@@ -1,23 +1,13 @@
 package com.github.thebridsk.bridge.server.rest
 
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.http.scaladsl.model.StatusCode
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.DuplicateSummary
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
-import com.github.thebridsk.bridge.data.SystemTime
-import akka.http.scaladsl.model.headers.Location
 import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.model.StatusCodes
@@ -38,6 +28,11 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import com.github.thebridsk.bridge.data.BoardSet
+import com.github.thebridsk.bridge.data.Movement
+import scala.concurrent.Future
+import com.github.thebridsk.bridge.server.backend.resource.Result
+import akka.http.scaladsl.server.Route
 
 /**
   * Rest API implementation for the board resource.
@@ -61,11 +56,12 @@ trait RestDuplicate extends HasActorSystem {
 
   val nestedBoards = new RestNestedBoard
   val nestedTeams = new RestNestedTeam
+  lazy val nestedPictures = new RestNestedPicture(store, this)
 
   /**
     * spray route for all the methods on this resource
     */
-  val route = pathPrefix(resName) {
+  val route: Route = pathPrefix(resName) {
 //    logRequest("route", DebugLevel) {
     getDuplicate ~ getDuplicates ~ postDuplicate ~ putDuplicate ~ deleteDuplicate ~ nested
 //      }
@@ -93,8 +89,8 @@ trait RestDuplicate extends HasActorSystem {
       )
     )
   )
-  def xxxgetDuplicates() = {}
-  val getDuplicates = pathEnd {
+  def xxxgetDuplicates(): Unit = {}
+  val getDuplicates: Route = pathEnd {
     get {
       resourceMap(store.readAll())
     }
@@ -136,31 +132,56 @@ trait RestDuplicate extends HasActorSystem {
             schema = new Schema(implementation = classOf[RestMessage])
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
-  def xxxgetDuplicate() = {}
-  val getDuplicate = logRequest("RestDuplicate.getDuplicate", DebugLevel) {
-    logResult("RestDuplicate.getDuplicate") {
-      get {
-        pathPrefix("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
-          pathEndOrSingleSlash {
-            resource(store.select(id).read())
+  def xxxgetDuplicate(): Unit = {}
+  val getDuplicate: Route =
+    logRequest("RestDuplicate.getDuplicate", DebugLevel) {
+      logResult("RestDuplicate.getDuplicate") {
+        get {
+          pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
+            val id = MatchDuplicate.id(sid)
+            pathEndOrSingleSlash {
+              resource(store.select(id).read())
+            }
           }
         }
       }
     }
-  }
 
-  val nested = logRequest("RestDuplicate.nested", DebugLevel) {
+  val nested: Route = logRequest("RestDuplicate.nested", DebugLevel) {
     logResult("RestDuplicate.nested") {
-      pathPrefix("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
+      pathPrefix("""[a-zA-Z0-9]+""".r) { sid =>
+        val id = MatchDuplicate.id(sid)
         val selected = store.select(id)
         nestedBoards.route(selected.resourceBoards) ~
-          nestedTeams.route(selected.resourceTeams)
+          nestedTeams.route(selected.resourceTeams) ~
+          nestedPictures.route(id)
       }
     }
   }
+
+  import scala.language.implicitConversions
+  implicit def addIdToFuture(
+      f: Future[Result[MatchDuplicate]]
+  ): Future[Result[(String, MatchDuplicate)]] =
+    f.map { r =>
+      r match {
+        case Right(md) => Right((md.id.id, md))
+        case Left(e)   => Left(e)
+      }
+    }
 
   @POST
   @Operation(
@@ -180,7 +201,7 @@ trait RestDuplicate extends HasActorSystem {
         in = ParameterIn.QUERY,
         allowEmptyValue = true,
         description =
-          "If present, indicates boards and hands should be added.  Default movements is Armonk2Tables, default boards is ArmonkBoards, value is ignored.",
+          "If present, indicates boards and hands should be added.  Default movements is 2TablesArmonk, default boards is ArmonkBoards, value is ignored.",
         required = false,
         schema = new Schema(implementation = classOf[String])
       ),
@@ -198,7 +219,7 @@ trait RestDuplicate extends HasActorSystem {
         in = ParameterIn.QUERY,
         allowEmptyValue = false,
         description =
-          "If present, indicates which movements to use, example values: Howell3TableNoRelay, Mitchell3Table, Howell2Table5Teams, Armonk2Tables",
+          "If present, indicates which movements to use, example values: Howell3TableNoRelay, Mitchell3Table, Howell2Table5Teams, 2TablesArmonk",
         required = false,
         schema = new Schema(implementation = classOf[String])
       )
@@ -242,13 +263,13 @@ trait RestDuplicate extends HasActorSystem {
       )
     )
   )
-  def xxxpostDuplicate() = {}
-  val postDuplicate =
+  def xxxpostDuplicate(): Unit = {}
+  val postDuplicate: Route =
     logRequest("RestDuplicate.postDuplicate") {
       logResult("RestDuplicate.postDuplicate") {
         pathEnd {
           post {
-            parameter('test.?, 'default.?, 'boards.?, 'movements.?) {
+            parameter("test".?, "default".?, "boards".?, "movements".?) {
               (test, default, boards, movements) =>
                 entity(as[MatchDuplicate]) { dup =>
 //                log.warning("Creating duplicate match from "+dup)
@@ -257,8 +278,8 @@ trait RestDuplicate extends HasActorSystem {
                     dup,
                     test,
                     default,
-                    boards,
-                    movements
+                    boards.map(BoardSet.id(_)),
+                    movements.map(Movement.id(_))
                   ) match {
                     case Some(fut) =>
                       onComplete(fut) {
@@ -337,12 +358,13 @@ trait RestDuplicate extends HasActorSystem {
       )
     )
   )
-  def xxxputDuplicate() = {}
-  val putDuplicate =
+  def xxxputDuplicate(): Unit = {}
+  val putDuplicate: Route =
     logRequest("RestDuplicate.putDuplicate") {
       logResult("RestDuplicate.putDuplicate") {
         put {
-          path("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
+          path("""[a-zA-Z0-9]+""".r) { sid =>
+            val id = MatchDuplicate.id(sid)
             entity(as[MatchDuplicate]) { dup =>
               resourceUpdated(store.select(id).update(dup))
             }
@@ -366,15 +388,24 @@ trait RestDuplicate extends HasActorSystem {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "duplicate deleted.")
+      new ApiResponse(responseCode = "204", description = "duplicate deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
-  def xxxdeleteDuplicate() = {}
-  val deleteDuplicate = delete {
-    path("""[a-zA-Z0-9]+""".r) { id: Id.MatchDuplicate =>
-      {
-        resourceDelete(store.select(id).delete())
-      }
+  def xxxdeleteDuplicate(): Unit = {}
+  val deleteDuplicate: Route = delete {
+    path("""[a-zA-Z0-9]+""".r) { sid =>
+      val id = MatchDuplicate.id(sid)
+      resourceDelete(store.select(id).delete())
     }
   }
 }
@@ -385,9 +416,9 @@ object RestDuplicate {
       dup: MatchDuplicate,
       test: Option[String],
       default: Option[String],
-      boards: Option[String],
-      movements: Option[String]
-  ) = {
+      boards: Option[BoardSet.Id],
+      movements: Option[Movement.Id]
+  ): Option[Future[Result[MatchDuplicate]]] = {
     test match {
       case None =>
         if (default.isDefined || boards.isDefined || movements.isDefined) {

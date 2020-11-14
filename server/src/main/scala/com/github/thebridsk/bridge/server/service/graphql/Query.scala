@@ -6,7 +6,6 @@ import scala.util.Success
 import scala.util.Failure
 import sangria.execution.Executor
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import sangria.execution.deferred.DeferredResolver
 import scala.concurrent.ExecutionContext.Implicits.global
 import sangria.marshalling.playJson._
 import akka.http.scaladsl.model.StatusCodes
@@ -19,7 +18,7 @@ import sangria.parser.SyntaxError
 
 object Query {
 
-  val log = Logger[Query]
+  val log: Logger = Logger[Query]()
 }
 
 class Query {

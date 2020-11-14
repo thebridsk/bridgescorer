@@ -2,8 +2,8 @@ package com.github.thebridsk.bridge.server.json
 
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport
 import play.api.libs.json.Writes
-import akka.http.scaladsl.marshalling.{Marshaller, ToEntityMarshaller}
-import akka.http.scaladsl.unmarshalling.{FromEntityUnmarshaller, Unmarshaller}
+import akka.http.scaladsl.marshalling.ToEntityMarshaller
+import akka.http.scaladsl.unmarshalling.FromEntityUnmarshaller
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import scala.language.implicitConversions
@@ -20,13 +20,13 @@ trait BridgePlayJsonSupport extends JsonSupport {
   implicit def unmarshaller[A: Reads]: FromEntityUnmarshaller[A] =
     PlayJsonSupport.unmarshaller
 
-  implicit def playJsonMarshallerConverter[T](writer: Writes[T])(
-      implicit printer: JsValue => String = Json.stringify
+  implicit def playJsonMarshallerConverter[T](writer: Writes[T])(implicit
+      printer: JsValue => String = Json.stringify
   ): ToEntityMarshaller[T] =
     playJsonMarshaller[T](writer, printer)
 
-  implicit def playJsonMarshaller[T](
-      implicit writer: Writes[T],
+  implicit def playJsonMarshaller[T](implicit
+      writer: Writes[T],
       printer: JsValue => String = Json.stringify
   ): ToEntityMarshaller[T] =
     PlayJsonSupport.marshaller // compose writer.writes

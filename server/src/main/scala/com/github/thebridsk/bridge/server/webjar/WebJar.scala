@@ -1,26 +1,19 @@
 package com.github.thebridsk.bridge.server.webjar
 
-import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model._
-import akka.http.scaladsl.server._
-import akka.http.scaladsl.model.headers.RawHeader
 import com.github.thebridsk.utilities.logging.Logger
-import java.util.logging.Level
 import akka.event.Logging
-import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.model.headers.CacheDirectives._
 import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.duration.Duration
-import com.github.thebridsk.bridge.server.service.ResourceFinder
+import akka.http.scaladsl.server.Route
 
 trait WebJar {
 
   private val logger = Logger(getClass.getName, null)
 
-  lazy val cacheDuration = Duration("0s")
+  lazy val cacheDuration: Duration = Duration("0s")
 
   private lazy val cacheHeaders = {
     import akka.http.scaladsl.model.headers._
@@ -53,8 +46,8 @@ trait WebJar {
 //    .handleNotFound { complete(StatusCodes.NotFound, "Not here!"+where) }
 //    .result()
 
-  val webjarsResources
-      : List[FileFinder] = Nil // new FileFinder( "org.webjars", "swagger-ui" ) :: Nil
+  val webjarsResources: List[FileFinder] =
+    Nil // new FileFinder( "org.webjars", "swagger-ui" ) :: Nil
 
 //  val faviconResources = ResourceFinder.htmlResources
 
@@ -65,7 +58,7 @@ trait WebJar {
   /**
     * The spray route for the js static files
     */
-  val webjars = logRequest("webjars", Logging.InfoLevel) {
+  val webjars: Route = logRequest("webjars", Logging.InfoLevel) {
     logResult("webjars", Logging.InfoLevel) {
       pathPrefix("libs") {
 //      pathPrefix("public") {
@@ -82,7 +75,7 @@ trait WebJar {
           logger.fine(
             "Looking for webjars " + artifactid + " resource " + resource
           )
-          respondWithHeaders(cacheHeaders: _*) {
+          respondWithHeaders(cacheHeaders) {
             webjarsResources.find { x =>
               x.isArtifact(artifactid)
             } match {

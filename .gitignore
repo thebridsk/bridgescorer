@@ -20,4 +20,5 @@ test-output/
 /debugDomSuggestion.html
 .metals/
 .bloop/
+.bsp/
 .vscode/

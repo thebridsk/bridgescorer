@@ -1,10 +1,9 @@
 package com.github.thebridsk.bridge.data.bridge
 
 import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.ScoreHand
 import com.github.thebridsk.utilities.logging.Logger
-import java.io.StringWriter
+import com.github.thebridsk.bridge.data.Team
 
 case class ContractForScore(
     contract: String,
@@ -23,17 +22,17 @@ case class ContractForScore(
   * @param points the duplicate points scored
   */
 case class TeamBoardScore(
-    teamId: Id.Team,
+    teamId: Team.Id,
     isNS: Boolean,
     played: Boolean,
     hidden: Boolean,
     score: Int,
     points: Double,
     contract: Option[ContractForScore],
-    opponent: Option[Id.Team],
+    opponent: Option[Team.Id],
     imps: Double
 ) {
-  def showScore =
+  def showScore: String =
     if (played) {
       if (hidden) "?"
       else score.toString
@@ -41,7 +40,7 @@ case class TeamBoardScore(
       ""
     }
 
-  def showPoints =
+  def showPoints: String =
     if (played) {
       if (hidden) "?"
       else points.toString
@@ -49,7 +48,7 @@ case class TeamBoardScore(
       ""
     }
 
-  def showImps =
+  def showImps: String =
     if (played) {
       if (hidden) "?"
       else f"${imps}%.1f"
@@ -73,7 +72,7 @@ case class TeamBoardScore(
       Left("")
     }
 
-  def showContract =
+  def showContract: String =
     if (played) {
       if (hidden) "?"
       else
@@ -84,7 +83,7 @@ case class TeamBoardScore(
     } else {
       ""
     }
-  def showDeclarer =
+  def showDeclarer: String =
     if (played) {
       if (hidden) "?"
       else
@@ -95,7 +94,7 @@ case class TeamBoardScore(
     } else {
       ""
     }
-  def showMade =
+  def showMade: String =
     if (played) {
       if (hidden) "?"
       else
@@ -106,7 +105,7 @@ case class TeamBoardScore(
     } else {
       ""
     }
-  def showDown =
+  def showDown: String =
     if (played) {
       if (hidden) "?"
       else
@@ -121,7 +120,7 @@ case class TeamBoardScore(
 
 object TeamBoardScore {
   def apply(
-      teamId: Id.Team,
+      teamId: Team.Id,
       played: Boolean,
       hidden: Boolean,
       score: Int,
@@ -139,12 +138,12 @@ object TeamBoardScore {
       0
     )
   def apply(
-      teamId: Id.Team,
+      teamId: Team.Id,
       played: Boolean,
       hidden: Boolean,
       score: Int,
       points: Double,
-      opponent: Id.Team
+      opponent: Team.Id
   ) =
     new TeamBoardScore(
       teamId,
@@ -158,12 +157,12 @@ object TeamBoardScore {
       0
     )
   def apply(
-      teamId: Id.Team,
+      teamId: Team.Id,
       played: Boolean,
       hidden: Boolean,
       score: Int,
       points: Double,
-      opponent: Id.Team,
+      opponent: Team.Id,
       contract: ContractForScore
   ) =
     new TeamBoardScore(
@@ -237,7 +236,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
   private def internalScores =
     (nsScores ::: ewScores).map(s => (s.teamId -> s)).toMap
 
-  def findOpponent(teamid: Id.Team): Option[Id.Team] = {
+  def findOpponent(teamid: Team.Id): Option[Team.Id] = {
     board.hands.find { hand =>
       hand.nsTeam == teamid || hand.ewTeam == teamid
     } match {
@@ -248,18 +247,19 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
     }
   }
 
-  def hasTeamPlayed(teamid: Id.Team): Boolean =
+  def hasTeamPlayed(teamid: Team.Id): Boolean =
     internalScores.get(teamid) match {
       case Some(score) => score.played
       case _           => false
     }
 
-  def hasTeamPlayed(teamid: Option[Id.Team]): Boolean = teamid match {
-    case Some(tid) => hasTeamPlayed(tid)
-    case None      => false
-  }
+  def hasTeamPlayed(teamid: Option[Team.Id]): Boolean =
+    teamid match {
+      case Some(tid) => hasTeamPlayed(tid)
+      case None      => false
+    }
 
-  def isHidden(ignoreTableSize: Boolean = true) =
+  def isHidden(ignoreTableSize: Boolean = true): Boolean =
     !allplayed && (perspective match {
       case PerspectiveComplete => true
       case PerspectiveDirector => false
@@ -271,7 +271,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
         rc
     })
 
-  def scores(ignoreTableSize: Boolean = true): Map[Id.Team, TeamBoardScore] =
+  def scores(ignoreTableSize: Boolean = true): Map[Team.Id, TeamBoardScore] =
     if (!isHidden(ignoreTableSize)) {
       internalScores
     } else {
@@ -288,7 +288,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
 
   def id = board.id
 
-  override def toString() = {
+  override def toString(): String = {
     scores(false).values
       .map(tbs => tbs.toString())
       .mkString(
@@ -329,7 +329,7 @@ class BoardScore(val board: Board, perspective: DuplicateViewPerspective) {
     })
   }
 
-  def showVul =
+  def showVul: String =
     if (board.nsVul) {
       if (board.ewVul) {
         "Both Vul"
@@ -349,7 +349,7 @@ object BoardScore {
   def apply(board: Board, perspective: DuplicateViewPerspective) =
     new BoardScore(board, perspective)
 
-  val log = Logger("bridge.BoardScore")
+  val log: Logger = Logger("bridge.BoardScore")
 
 //  https://www.bridgehands.com/I/IMP.htm
 //
@@ -382,7 +382,7 @@ object BoardScore {
 
   case class IMPEntry(min: Int, max: Int, IMP: Int)
 
-  val IMPTable = List(
+  val IMPTable: List[IMPEntry] = List(
     IMPEntry(0, 10, 0),
     IMPEntry(20, 40, 1),
     IMPEntry(50, 80, 2),
@@ -410,7 +410,7 @@ object BoardScore {
     IMPEntry(4000, 100000, 24)
   )
 
-  def getIMPs(points: Int) = {
+  def getIMPs(points: Int): Int = {
     IMPTable
       .find { entry =>
         entry.min <= points && entry.max >= points

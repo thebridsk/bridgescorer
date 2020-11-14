@@ -1,18 +1,16 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.UndefOr
 
 class ToolbarVariant(val value: String) extends AnyVal
 object ToolbarVariant {
   val regular = new ToolbarVariant("regular")
   val dense = new ToolbarVariant("dense")
 
-  val values = List(regular, dense)
+  val values: List[ToolbarVariant] = List(regular, dense)
 }
 
 @js.native
@@ -22,7 +20,10 @@ protected trait ToolbarPropsPrivate extends js.Any {
 }
 
 @js.native
-trait ToolbarProps extends AdditionalProps with ToolbarPropsPrivate with StandardProps {
+trait ToolbarProps
+    extends AdditionalProps
+    with ToolbarPropsPrivate
+    with StandardProps {
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val component: js.UndefOr[String] = js.native
   val disableGutters: js.UndefOr[Boolean] = js.native
@@ -30,9 +31,10 @@ trait ToolbarProps extends AdditionalProps with ToolbarPropsPrivate with Standar
 }
 object ToolbarProps extends PropsFactory[ToolbarProps] {
 
-  implicit class WrapToolbarProps(val p: ToolbarProps) extends AnyVal {
+  implicit class WrapToolbarProps(private val p: ToolbarProps) extends AnyVal {
 
-    def variant = p.variantInternal.map(s => new ToolbarVariant(s))
+    def variant: UndefOr[ToolbarVariant] =
+      p.variantInternal.map(s => new ToolbarVariant(s))
 
 //    def variant_= (v: js.UndefOr[ToolbarVariant]): Unit = {
 //      v.map{ vv=>p.variantInternal=vv.value; None }.
@@ -76,10 +78,15 @@ object ToolbarProps extends PropsFactory[ToolbarProps] {
 }
 
 object MuiToolbar {
-  @js.native @JSImport("@material-ui/core/Toolbar", JSImport.Default) private object Toolbar
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/Toolbar",
+    JSImport.Default
+  ) private object Toolbar extends js.Any
 
-  protected val f = JsComponent[ToolbarProps, Children.Varargs, Null](Toolbar)
+  protected val f =
+    JsComponent[ToolbarProps, Children.Varargs, Null](
+      Toolbar
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.
@@ -102,7 +109,7 @@ object MuiToolbar {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ToolbarProps = ToolbarProps(
       classes = classes,
       component = component,

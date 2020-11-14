@@ -7,7 +7,7 @@ import com.github.thebridsk.materialui.MuiAppBar
 import com.github.thebridsk.materialui.Position
 import com.github.thebridsk.materialui.MuiToolbar
 import com.github.thebridsk.materialui.MuiIconButton
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.ColorVariant
 import com.github.thebridsk.materialui.TextVariant
@@ -15,34 +15,27 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.vdom.HtmlStyles
 import com.github.thebridsk.materialui.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
-import com.github.thebridsk.bridge.clientapi.routes.AppRouter.About
-import com.github.thebridsk.bridge.clientcommon.react.AppButtonLinkNewWindow
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
-import com.github.thebridsk.bridge.clientapi.routes.AppRouter.Home
-import org.scalajs.dom.experimental.URL
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.GraphQLAppPage
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.GraphiQLView
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.VoyagerView
-import com.github.thebridsk.bridge.clientapi.routes.AppRouter.PageTest
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.ColorView
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.LogView
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
-import com.github.thebridsk.bridge.clientcommon.logger.Init
-import com.github.thebridsk.materialui.MuiButton
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
+import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
 /**
   * A simple AppBar for the Bridge client.
@@ -88,7 +81,7 @@ object BridgeAppBar {
       showHomeButton: Boolean = true
   )(
       mainMenu: CtorType.ChildArg*
-  ) =
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(
       Props(
         mainMenu,
@@ -106,21 +99,21 @@ object BridgeAppBar {
 object BridgeAppBarInternal {
   import BridgeAppBar._
 
-  val logger = Logger("bridge.BridgeAppBar")
+  val logger: Logger = Logger("bridge.BridgeAppBar")
 
   /**
     * Internal state for rendering the component.
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause State to leak.
-    *
     */
   case class State(
       anchorMoreEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMoreMenu(n: Node) = copy(anchorMoreEl = n.asInstanceOf[Element])
-    def closeMoreMenu() = copy(anchorMoreEl = js.undefined)
+    def openMoreMenu(n: Node): State =
+      copy(anchorMoreEl = n.asInstanceOf[Element])
+    def closeMoreMenu(): State = copy(anchorMoreEl = js.undefined)
   }
 
   /**
@@ -128,27 +121,25 @@ object BridgeAppBarInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMoreClick(event: ReactEvent) =
-      event.extract(_.currentTarget)(
-        currentTarget =>
-          scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
+    def handleMoreClick(event: ReactEvent): Unit =
+      event.extract(_.currentTarget)(currentTarget =>
+        scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
       )
-    def handleMoreCloseClick(event: ReactEvent) =
+    def handleMoreCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMoreMenu()).runNow()
-    def handleMoreClose( /* event: js.Object, reason: String */ ) = {
+    def handleMoreClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine("MoreClose called")
       scope.modState(s => s.closeMoreMenu()).runNow()
     }
 
-    def gotoPage(uri: String) = {
+    def gotoPage(uri: String): Unit = {
       GotoPage.inNewWindow(uri)
     }
 
-    def handleHelpGotoPageClick(uri: String)(event: ReactEvent) = {
+    def handleHelpGotoPageClick(uri: String)(event: ReactEvent): Unit = {
       logger.info(s"""Going to page ${uri}""")
 //      handleMoreClose()
 
@@ -169,13 +160,13 @@ object BridgeAppBarInternal {
       }
     }
 
-    def serverUrlClick(event: ReactEvent) = {
+    def serverUrlClick(event: ReactEvent): Unit = {
       logger.info("Requesting to show server URL popup")
       ServerURLPopup.setShowServerURLPopup(true)
     }
 
     // data-theme="dark"
-    def toggleLightDark(event: ReactEvent) = {
+    def toggleLightDark(event: ReactEvent): Unit = {
       logger.info("toggle light dark")
       val ntheme = ColorThemeStorage.getColorTheme() match {
         case Some(curtheme) =>
@@ -186,26 +177,27 @@ object BridgeAppBarInternal {
       ColorThemeStorage.setColorTheme(ntheme)
     }
 
-    def isFullscreenEnabledI = {
+    def isFullscreenEnabledI: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
-      val e = doc.fullscreenEnabled
+      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
+      val e = doc.myFullscreenEnabled
       if (!e) {
         logger.info("fullscreenEnabled = false")
       }
       e
     }
 
-    def isFullscreen = {
+    def isFullscreen: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
+      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
       if (isFullscreenEnabledI) {
-        val r = doc.fullscreenElement != null
-        logger.info(s"browser isfullscreen: $r")
+        val fe = doc.myFullscreenElement
+        val r = !js.isUndefined(fe) && fe != null
+        logger.fine(s"browser isfullscreen: $r")
         if (r) {
-          val elem = doc.fullscreenElement
+          val elem = doc.myFullscreenElement
           logger.info(s"browser fullscreen element is ${elem.nodeName}")
         }
         r
@@ -214,8 +206,7 @@ object BridgeAppBarInternal {
       }
     }
 
-    def toggleFullscreen( event: ReactEvent ): Unit = {
-      import scala.concurrent.ExecutionContext.Implicits.global
+    def toggleFullscreen(event: ReactEvent): Unit = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val body = document.documentElement
       val doc = document
@@ -223,18 +214,20 @@ object BridgeAppBarInternal {
         val isfullscreen = isFullscreen
         if (isfullscreen) {
           logger.info(s"browser exiting fullscreen")
-          doc.exitFullscreen()
+          doc.myExitFullscreen()
         } else {
           logger.info(s"browser requesting fullscreen on body")
           body.requestFullscreen()
         }
-        scalajs.js.timers.setTimeout(500) { scope.withEffectsImpure.forceUpdate }
+        scalajs.js.timers.setTimeout(500) {
+          scope.withEffectsImpure.forceUpdate
+        }
       } else {
         logger.info(s"fullscreen is disabled")
       }
     }
 
-    def render(props: Props, state: State) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
       def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
@@ -260,7 +253,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.Help()
+            icons.Help()
           ),
           MuiIconButton(
             id = "ServerURL",
@@ -269,7 +262,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.Place()
+            icons.Place()
           ),
           MuiIconButton(
             id = "LightDark",
@@ -288,9 +281,9 @@ object BridgeAppBarInternal {
             classes = buttonStyle
           )(
             if (isfullscreen) {
-              MuiIcons.FullscreenExit()
+              icons.FullscreenExit()
             } else {
-              MuiIcons.Fullscreen()
+              icons.Fullscreen()
             }
           ),
           MuiIconButton(
@@ -300,7 +293,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.MoreVert()
+            icons.MoreVert()
           )
         )
 
@@ -329,7 +322,8 @@ object BridgeAppBarInternal {
         List(
           <.div(
             baseStyles.appBarTitle,
-            <.div( baseStyles.appBarTitleWhenFullscreen ).when(isfullscreen && Values.isIpad),
+            <.div(baseStyles.appBarTitleWhenFullscreen)
+              .when(isfullscreen && Values.isIpad),
             !props.mainMenu.isEmpty ?= MuiIconButton(
               id = "MainMenu",
               onClick = props.handleMainClick,
@@ -337,7 +331,7 @@ object BridgeAppBarInternal {
               color = ColorVariant.inherit,
               classes = buttonStyle
             )(
-              MuiIcons.Menu()
+              icons.Menu()
             ),
             if (props.showHomeButton) {
               MuiIconButton(
@@ -347,7 +341,7 @@ object BridgeAppBarInternal {
                 color = ColorVariant.inherit,
                 classes = buttonStyle
               )(
-                MuiIcons.Home()
+                icons.Home()
               )
             } else {
               TagMod.empty
@@ -468,20 +462,22 @@ object BridgeAppBarInternal {
       bar
     }
 
+    val fullscreenCB = scope.forceUpdate
+
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
-
+      Fullscreen.addListener("fullscreenchange", fullscreenCB)
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
-
+      Fullscreen.removeListener("fullscreenchange", fullscreenCB)
     }
   }
 
-  val component = ScalaComponent
+  private[pages] val component = ScalaComponent
     .builder[Props]("BridgeAppBar")
     .initialStateFromProps { props =>
       State()

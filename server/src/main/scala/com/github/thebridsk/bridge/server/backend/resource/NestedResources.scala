@@ -8,10 +8,10 @@ import com.github.thebridsk.source.SourcePosition
 class NestedResources[PVId, PVType, NVId, NVType](
     val parent: Resource[PVId, PVType],
     val nested: NestedResourceSupport[PVType, NVId, NVType]
-)(
-    implicit execute: ExecutionContext
+)(implicit
+    execute: ExecutionContext
 ) extends Resources[NVId, NVType] {
-  val resourceURI = s"${parent.resourceURI}/${nested.resourceURI}"
+  val resourceURI: String = s"${parent.resourceURI}/${nested.resourceURI}"
 
   /**
     * Create a new value in the collection
@@ -22,8 +22,8 @@ class NestedResources[PVId, PVType, NVId, NVType](
   def createChild(
       newvalue: NVType,
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit caller: SourcePosition
+  )(implicit
+      caller: SourcePosition
   ): Future[Result[NVType]] = {
     parent
       .update(
@@ -49,8 +49,8 @@ class NestedResources[PVId, PVType, NVId, NVType](
     * @param context the change context for this operation
     * @return a future to the resources
     */
-  def readAll()(
-      implicit caller: SourcePosition
+  def readAll()(implicit
+      caller: SourcePosition
   ): Future[Result[Map[NVId, NVType]]] = {
     parent
       .read()
@@ -69,8 +69,8 @@ class NestedResources[PVId, PVType, NVId, NVType](
   def updateAll(
       newvalue: Map[NVId, NVType],
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit caller: SourcePosition
+  )(implicit
+      caller: SourcePosition
   ): Future[Result[Map[NVId, NVType]]] = {
     parent.update(
       new Updator[PVType, PVType, Map[NVId, NVType]] {
@@ -98,8 +98,8 @@ class NestedResources[PVId, PVType, NVId, NVType](
     */
   def deleteAll(
       changeContext: ChangeContext = ChangeContext()
-  )(
-      implicit caller: SourcePosition
+  )(implicit
+      caller: SourcePosition
   ): Future[Result[Map[NVId, NVType]]] = {
     updateAll(Map(), changeContext).logit(s"DeleteAll ${resourceURI}")
   }
@@ -110,15 +110,15 @@ class NestedResources[PVId, PVType, NVId, NVType](
     * @param context the change context for this operation
     * @return a future to the resource
     */
-  def read(id: NVId)(
-      implicit caller: SourcePosition
+  def read(id: NVId)(implicit
+      caller: SourcePosition
   ): Future[Result[NVType]] = {
     parent
       .read()
       .map { r =>
         r.flatMap(p => nested.getResource(p, parent.resourceURI, id))
       }
-      .logit(s"Read ${resourceURI}/${id}")
+      .logit(s"Read ${resourceURI}/${Resources.vidToString(id)}")
   }
 
   /**
@@ -130,8 +130,8 @@ class NestedResources[PVId, PVType, NVId, NVType](
     * @param context the change context for this operation
     * @return a future to the new value
     */
-  def update[T, R](id: NVId, updator: Updator[NVType, T, R])(
-      implicit caller: SourcePosition
+  def update[T, R](id: NVId, updator: Updator[NVType, T, R])(implicit
+      caller: SourcePosition
   ): Future[Result[R]] = {
 
     val u = new Updator[PVType, T, R] {
@@ -142,7 +142,10 @@ class NestedResources[PVId, PVType, NVId, NVType](
           updator.updater(ov).flatMap { e =>
             val (nv, t) = e
             nested.updateResource(p, parent.resourceURI, id, nv).map { e =>
-              prepend(ChangeContext.update(e._2, s"${resourceURI}/$id"))
+              prepend(
+                ChangeContext
+                  .update(e._2, s"${resourceURI}/${Resources.vidToString(id)}")
+              )
               (e._1, t)
             }
           }
@@ -159,7 +162,9 @@ class NestedResources[PVId, PVType, NVId, NVType](
         }
       }
     }
-    parent.update(u).logit(s"Update ${resourceURI}/${id}")
+    parent
+      .update(u)
+      .logit(s"Update ${resourceURI}/${Resources.vidToString(id)}")
   }
 
   /**
@@ -168,8 +173,8 @@ class NestedResources[PVId, PVType, NVId, NVType](
     * @param context the change context for this operation
     * @return a future to the old values
     */
-  def delete(id: NVId, changeContext: ChangeContext = ChangeContext())(
-      implicit caller: SourcePosition
+  def delete(id: NVId, changeContext: ChangeContext = ChangeContext())(implicit
+      caller: SourcePosition
   ): Future[Result[NVType]] = {
     parent
       .update(
@@ -178,7 +183,10 @@ class NestedResources[PVId, PVType, NVId, NVType](
           def updater(p: PVType): Result[(PVType, NVType)] = {
             nested.deleteResource(p, parent.resourceURI, id).map { e =>
               val (np, ov) = e
-              prepend(ChangeContext.delete(ov, s"${resourceURI}/${id}"))
+              prepend(
+                ChangeContext
+                  .delete(ov, s"${resourceURI}/${Resources.vidToString(id)}")
+              )
               (np, ov)
             }
           }
@@ -188,7 +196,7 @@ class NestedResources[PVId, PVType, NVId, NVType](
           }
         }
       )
-      .logit(s"Delete ${resourceURI}/${id}")
+      .logit(s"Delete ${resourceURI}/${Resources.vidToString(id)}")
   }
 
 }

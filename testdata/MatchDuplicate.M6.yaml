@@ -49,7 +49,7 @@ boards:
     created: 0
     updated: 1476920868157
   - played:
-    - id: "T3"
+    - id: "T4"
       contractTricks: 2
       contractSuit: "S"
       contractDoubled: "N"
@@ -63,9 +63,9 @@ boards:
     table: "2"
     round: 2
     board: "B1"
-    nsTeam: "T3"
+    nsTeam: "T4"
     nIsPlayer1: true
-    ewTeam: "T4"
+    ewTeam: "T3"
     eIsPlayer1: false
     created: 0
     updated: 1476922172703
@@ -98,7 +98,7 @@ boards:
     created: 0
     updated: 1476921376517
   - played:
-    - id: "T3"
+    - id: "T4"
       contractTricks: 3
       contractSuit: "N"
       contractDoubled: "N"
@@ -112,9 +112,9 @@ boards:
     table: "2"
     round: 2
     board: "B2"
-    nsTeam: "T3"
+    nsTeam: "T4"
     nIsPlayer1: true
-    ewTeam: "T4"
+    ewTeam: "T3"
     eIsPlayer1: false
     created: 0
     updated: 1476922670074
@@ -147,7 +147,7 @@ boards:
     created: 0
     updated: 1476921794767
   - played:
-    - id: "T3"
+    - id: "T4"
       contractTricks: 1
       contractSuit: "N"
       contractDoubled: "N"
@@ -161,9 +161,9 @@ boards:
     table: "2"
     round: 2
     board: "B3"
-    nsTeam: "T3"
+    nsTeam: "T4"
     nIsPlayer1: true
-    ewTeam: "T4"
+    ewTeam: "T3"
     eIsPlayer1: false
     created: 0
     updated: 1476922949329
@@ -196,7 +196,7 @@ boards:
     created: 0
     updated: 1476922239741
   - played:
-    - id: "T4"
+    - id: "T3"
       contractTricks: 3
       contractSuit: "N"
       contractDoubled: "N"
@@ -210,9 +210,9 @@ boards:
     table: "2"
     round: 1
     board: "B4"
-    nsTeam: "T4"
+    nsTeam: "T3"
     nIsPlayer1: true
-    ewTeam: "T3"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476920899360
@@ -245,7 +245,7 @@ boards:
     created: 0
     updated: 1476922815071
   - played:
-    - id: "T4"
+    - id: "T3"
       contractTricks: 2
       contractSuit: "S"
       contractDoubled: "N"
@@ -259,9 +259,9 @@ boards:
     table: "2"
     round: 1
     board: "B5"
-    nsTeam: "T4"
+    nsTeam: "T3"
     nIsPlayer1: true
-    ewTeam: "T3"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476921409010
@@ -294,7 +294,7 @@ boards:
     created: 0
     updated: 1476923311091
   - played:
-    - id: "T4"
+    - id: "T3"
       contractTricks: 2
       contractSuit: "H"
       contractDoubled: "N"
@@ -308,9 +308,9 @@ boards:
     table: "2"
     round: 1
     board: "B6"
-    nsTeam: "T4"
+    nsTeam: "T3"
     nIsPlayer1: true
-    ewTeam: "T3"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476921691618
@@ -322,7 +322,7 @@ boards:
   dealer: "S"
   hands:
   - played:
-    - id: "T2"
+    - id: "T4"
       contractTricks: 0
       contractSuit: "N"
       contractDoubled: "N"
@@ -336,9 +336,9 @@ boards:
     table: "2"
     round: 4
     board: "B7"
-    nsTeam: "T2"
+    nsTeam: "T4"
     nIsPlayer1: false
-    ewTeam: "T4"
+    ewTeam: "T2"
     eIsPlayer1: true
     created: 0
     updated: 1476925311674
@@ -371,7 +371,7 @@ boards:
   dealer: "W"
   hands:
   - played:
-    - id: "T2"
+    - id: "T4"
       contractTricks: 3
       contractSuit: "N"
       contractDoubled: "N"
@@ -385,9 +385,9 @@ boards:
     table: "2"
     round: 4
     board: "B8"
-    nsTeam: "T2"
+    nsTeam: "T4"
     nIsPlayer1: false
-    ewTeam: "T4"
+    ewTeam: "T2"
     eIsPlayer1: true
     created: 0
     updated: 1476925600667
@@ -420,7 +420,7 @@ boards:
   dealer: "N"
   hands:
   - played:
-    - id: "T2"
+    - id: "T4"
       contractTricks: 6
       contractSuit: "D"
       contractDoubled: "N"
@@ -434,9 +434,9 @@ boards:
     table: "2"
     round: 4
     board: "B9"
-    nsTeam: "T2"
+    nsTeam: "T4"
     nIsPlayer1: false
-    ewTeam: "T4"
+    ewTeam: "T2"
     eIsPlayer1: true
     created: 0
     updated: 1476925977761
@@ -490,7 +490,7 @@ boards:
     created: 0
     updated: 1476925901778
   - played:
-    - id: "T4"
+    - id: "T2"
       contractTricks: 4
       contractSuit: "H"
       contractDoubled: "N"
@@ -504,9 +504,9 @@ boards:
     table: "2"
     round: 3
     board: "B10"
-    nsTeam: "T4"
+    nsTeam: "T2"
     nIsPlayer1: true
-    ewTeam: "T2"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476924251037
@@ -539,7 +539,7 @@ boards:
     created: 0
     updated: 1476926358781
   - played:
-    - id: "T4"
+    - id: "T2"
       contractTricks: 4
       contractSuit: "S"
       contractDoubled: "N"
@@ -553,9 +553,9 @@ boards:
     table: "2"
     round: 3
     board: "B11"
-    nsTeam: "T4"
+    nsTeam: "T2"
     nIsPlayer1: true
-    ewTeam: "T2"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476924595538
@@ -588,7 +588,7 @@ boards:
     created: 0
     updated: 1476926893552
   - played:
-    - id: "T4"
+    - id: "T2"
       contractTricks: 3
       contractSuit: "N"
       contractDoubled: "N"
@@ -602,9 +602,9 @@ boards:
     table: "2"
     round: 3
     board: "B12"
-    nsTeam: "T4"
+    nsTeam: "T2"
     nIsPlayer1: true
-    ewTeam: "T2"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476925004981
@@ -616,7 +616,7 @@ boards:
   dealer: "S"
   hands:
   - played:
-    - id: "T1"
+    - id: "T4"
       contractTricks: 4
       contractSuit: "S"
       contractDoubled: "N"
@@ -630,9 +630,9 @@ boards:
     table: "2"
     round: 6
     board: "B13"
-    nsTeam: "T1"
+    nsTeam: "T4"
     nIsPlayer1: false
-    ewTeam: "T4"
+    ewTeam: "T1"
     eIsPlayer1: false
     created: 0
     updated: 1476928983998
@@ -665,7 +665,7 @@ boards:
   dealer: "E"
   hands:
   - played:
-    - id: "T1"
+    - id: "T4"
       contractTricks: 5
       contractSuit: "C"
       contractDoubled: "N"
@@ -679,9 +679,9 @@ boards:
     table: "2"
     round: 6
     board: "B14"
-    nsTeam: "T1"
+    nsTeam: "T4"
     nIsPlayer1: false
-    ewTeam: "T4"
+    ewTeam: "T1"
     eIsPlayer1: false
     created: 0
     updated: 1476929404961
@@ -714,7 +714,7 @@ boards:
   dealer: "W"
   hands:
   - played:
-    - id: "T1"
+    - id: "T4"
       contractTricks: 5
       contractSuit: "D"
       contractDoubled: "N"
@@ -728,9 +728,9 @@ boards:
     table: "2"
     round: 6
     board: "B15"
-    nsTeam: "T1"
+    nsTeam: "T4"
     nIsPlayer1: false
-    ewTeam: "T4"
+    ewTeam: "T1"
     eIsPlayer1: false
     created: 0
     updated: 1476929779899
@@ -784,7 +784,7 @@ boards:
     created: 0
     updated: 1476929143898
   - played:
-    - id: "T4"
+    - id: "T1"
       contractTricks: 3
       contractSuit: "N"
       contractDoubled: "N"
@@ -798,9 +798,9 @@ boards:
     table: "2"
     round: 5
     board: "B16"
-    nsTeam: "T4"
+    nsTeam: "T1"
     nIsPlayer1: true
-    ewTeam: "T1"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476927813279
@@ -833,7 +833,7 @@ boards:
     created: 0
     updated: 1476929659726
   - played:
-    - id: "T4"
+    - id: "T1"
       contractTricks: 3
       contractSuit: "N"
       contractDoubled: "N"
@@ -847,9 +847,9 @@ boards:
     table: "2"
     round: 5
     board: "B17"
-    nsTeam: "T4"
+    nsTeam: "T1"
     nIsPlayer1: true
-    ewTeam: "T1"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476928197337
@@ -882,7 +882,7 @@ boards:
     created: 0
     updated: 1476929985828
   - played:
-    - id: "T4"
+    - id: "T1"
       contractTricks: 4
       contractSuit: "S"
       contractDoubled: "N"
@@ -896,15 +896,15 @@ boards:
     table: "2"
     round: 5
     board: "B18"
-    nsTeam: "T4"
+    nsTeam: "T1"
     nIsPlayer1: true
-    ewTeam: "T1"
+    ewTeam: "T4"
     eIsPlayer1: true
     created: 0
     updated: 1476928548626
   created: 0
   updated: 0
 boardset: "ArmonkBoards"
-movement: "Armonk2Tables"
+movement: "2TablesArmonk"
 created: 1476919904396
 updated: 1476929798812

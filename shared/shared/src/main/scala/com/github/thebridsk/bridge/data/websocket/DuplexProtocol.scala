@@ -1,13 +1,5 @@
 package com.github.thebridsk.bridge.data.websocket
 
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.DuplicateHand
-import com.github.thebridsk.bridge.data.Team
-import play.api.libs.json._
-import com.github.thebridsk.bridge.data.rest.JsonSupport._
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
@@ -57,6 +49,16 @@ object DuplexProtocol {
     * @param data the data
     */
   case class Unsolicited(data: ToBrowserMessage) extends DuplexMessage
+
+  /**
+    * Complete the stream
+    */
+  case class Complete(reason: String = "") extends DuplexMessage
+
+  /**
+    * The stream failed
+    */
+  case class Fail(ex: Exception) extends DuplexMessage
 
   /**
     * For sending log entries to the server
@@ -110,6 +112,6 @@ object DuplexProtocol {
 
   def toString(msg: DuplexMessage) = msg.toJson
 
-  def fromString(str: String) = str.parseJson[DuplexMessage]
+  def fromString(str: String): DuplexMessage = str.parseJson[DuplexMessage]
 
 }

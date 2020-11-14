@@ -1,7 +1,5 @@
 package com.github.thebridsk.bridge.data
 
-import scala.annotation.meta._
-
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
@@ -17,7 +15,7 @@ import io.swagger.v3.oas.annotations.Hidden
 )
 case class MatchRubberV1(
     @Schema(description = "The round ID", required = true)
-    id: String,
+    id: MatchRubber.Id,
     @Schema(description = "The north player", required = true)
     north: String,
     @Schema(description = "The south player", required = true)
@@ -66,9 +64,9 @@ case class MatchRubberV1(
       implementation = classOf[RubberBestMatch]
     )
     bestMatch: Option[RubberBestMatch] = None
-) extends VersionedInstance[MatchRubberV1, MatchRubberV1, String] {
+) extends VersionedInstance[MatchRubberV1, MatchRubberV1, MatchRubber.Id] {
 
-  def equalsIgnoreModifyTime(other: MatchRubberV1) = {
+  def equalsIgnoreModifyTime(other: MatchRubberV1): Boolean = {
     other.id == id &&
     other.north == north &&
     other.south == south &&
@@ -83,10 +81,10 @@ case class MatchRubberV1(
   }
 
   def setId(
-      newId: String,
+      newId: MatchRubber.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
-  ) = {
+  ): MatchRubberV1 = {
     if (dontUpdateTime) {
       copy(id = newId)
     } else {
@@ -98,7 +96,7 @@ case class MatchRubberV1(
     }
   }
 
-  def copyForCreate(id: String) = {
+  def copyForCreate(id: MatchRubber.Id): MatchRubberV1 = {
     val time = SystemTime.currentTimeMillis()
     val xhands = hands.map { e =>
       e.copyForCreate(e.id)
@@ -107,7 +105,12 @@ case class MatchRubberV1(
 
   }
 
-  def setPlayers(north: String, south: String, east: String, west: String) =
+  def setPlayers(
+      north: String,
+      south: String,
+      east: String,
+      west: String
+  ): MatchRubberV1 =
     copy(
       north = north,
       south = south,
@@ -116,7 +119,7 @@ case class MatchRubberV1(
       updated = SystemTime.currentTimeMillis()
     )
 
-  def gotAllPlayers() = {
+  def gotAllPlayers(): Boolean = {
     north != null && north != "" && south != null && south != "" && east != null && east != "" && west != null && west != ""
   }
 
@@ -124,13 +127,13 @@ case class MatchRubberV1(
     * @param pos the first dealer, N, S, E, W
     */
   @Hidden
-  def setFirstDealer(pos: String) =
+  def setFirstDealer(pos: String): MatchRubberV1 =
     copy(dealerFirstHand = pos, updated = SystemTime.currentTimeMillis())
 
   /**
     * Will set the id of the hand to the next ID.
     */
-  def addHand(h: RubberHand) = {
+  def addHand(h: RubberHand): MatchRubberV1 = {
     val hh = h.setId(hands.length.toString(), false)
     copy(
       hands = (hh :: (hands.reverse)).reverse,
@@ -138,18 +141,18 @@ case class MatchRubberV1(
     )
   }
 
-  def getHand(id: String) = {
+  def getHand(id: String): Option[RubberHand] = {
     hands.find { h =>
       h.id == id
     }
   }
 
-  def setHands(newhands: Map[String, RubberHand]) = {
+  def setHands(newhands: Map[String, RubberHand]): MatchRubberV1 = {
     val nhs = newhands.values.toList.sortBy(h => h.id.toInt)
     copy(hands = nhs)
   }
 
-  def updateHand(nh: RubberHand) = {
+  def updateHand(nh: RubberHand): MatchRubberV1 = {
     val newhs = hands.map { h =>
       if (h.id == nh.id) nh
       else h
@@ -157,7 +160,7 @@ case class MatchRubberV1(
     copy(hands = newhs)
   }
 
-  def deleteHand(hid: String) = {
+  def deleteHand(hid: String): MatchRubberV1 = {
     val last = hands.length - 1
     if (hid.toInt != last) {
       throw new IllegalArgumentException(
@@ -167,19 +170,20 @@ case class MatchRubberV1(
     copy(hands = hands.take(last))
   }
 
-  def partnerOf(p: String) = p match {
-    case `north` => south
-    case `south` => north
-    case `east`  => west
-    case `west`  => east
-    case _       => null
-  }
+  def partnerOf(p: String): String =
+    p match {
+      case `north` => south
+      case `south` => north
+      case `east`  => west
+      case `west`  => east
+      case _       => null
+    }
 
   /**
     * The hand with the same id as the specified hand will get updated
     * If the id is not in hands, then hands will not be updated, but the updated time will be changed.
     */
-  def modifyHand(h: RubberHand) = {
+  def modifyHand(h: RubberHand): MatchRubberV1 = {
     val hs = hands.map { hh =>
       if (hh.id == h.id) h else hh
     }
@@ -190,7 +194,7 @@ case class MatchRubberV1(
     * Modify the player names according to the specified name map.
     * The timestamp is not changed.
     */
-  def modifyPlayers(nameMap: Map[String, String]) = {
+  def modifyPlayers(nameMap: Map[String, String]): Option[MatchRubberV1] = {
 
     def getName(p: String) = nameMap.get(p).getOrElse(p)
 
@@ -199,30 +203,35 @@ case class MatchRubberV1(
     val e = getName(east)
     val w = getName(west)
 
-    if (n.equals(north) && s.equals(south) && e.equals(east) && w.equals(west)) {
+    if (
+      n.equals(north) && s.equals(south) && e.equals(east) && w.equals(west)
+    ) {
       None
     } else {
       Some(copy(north = n, south = s, east = e, west = w))
     }
   }
 
-  def convertToCurrentVersion() = (true, this)
+  def convertToCurrentVersion: (Boolean, MatchRubberV1) = (true, this)
 
-  def readyForWrite() = copy(bestMatch = None)
+  def readyForWrite: MatchRubberV1 = copy(bestMatch = None)
 
-  def addBestMatch(bm: RubberBestMatch) = copy(bestMatch = Option(bm))
+  def addBestMatch(bm: RubberBestMatch): MatchRubberV1 =
+    copy(bestMatch = Option(bm))
 }
 
-object MatchRubberV1 {
+trait IdMatchRubber
+
+object MatchRubberV1 extends HasId[IdMatchRubber]("R") {
   def apply(
-      id: String,
+      id: MatchRubber.Id,
       north: String,
       south: String,
       east: String,
       west: String,
       dealerFirstHand: String,
       hands: List[RubberHand]
-  ) = {
+  ): MatchRubberV1 = {
     val time = SystemTime.currentTimeMillis()
     new MatchRubberV1(
       id,
@@ -251,7 +260,7 @@ case class RubberBestMatch(
       required = true,
       `type` = "string"
     )
-    id: Option[String],
+    id: Option[MatchRubber.Id],
     @ArraySchema(
       schema = new Schema(
         `type` = "string",
@@ -265,7 +274,7 @@ case class RubberBestMatch(
     differences: Option[List[String]]
 ) {
 
-  def determineDifferences(l: List[String]) = {
+  def determineDifferences(l: List[String]): List[String] = {
     val list = l
       .map { s =>
         val i = s.lastIndexOf(".")
@@ -296,7 +305,7 @@ case class RubberBestMatch(
       .sorted
   }
 
-  def htmlTitle = {
+  def htmlTitle: Option[String] = {
     differences.map { l =>
       if (l.isEmpty) "Same"
       else determineDifferences(l).mkString("Differences:\n", "\n", "")
@@ -309,7 +318,7 @@ object RubberBestMatch {
 
   def noMatch = new RubberBestMatch(-1, None, None)
 
-  def apply(id: String, diff: Difference) = {
+  def apply(id: MatchRubber.Id, diff: Difference): RubberBestMatch = {
     new RubberBestMatch(diff.percentSame, Some(id), Some(diff.differences))
   }
 }

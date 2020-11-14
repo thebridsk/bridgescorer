@@ -6,7 +6,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.rest.JsonException
 
 object Converter {
-  private[resource] val log = Logger[Converter]
+  private[resource] val log = Logger[Converter]()
 
   /**
     * Returns a converter for yaml or json.
@@ -49,12 +49,12 @@ trait Converter {
   /**
     * get the file extensions to use when reading files.  The order is the order they should be tried.
     */
-  def getReadExtensions(): List[String] = List(getWriteExtension)
+  def getReadExtensions: List[String] = List(getWriteExtension)
 
   /**
     * get the file extension to use when writing files.
     */
-  def getWriteExtension(): String
+  def getWriteExtension: String
 }
 
 /**
@@ -74,7 +74,7 @@ object JsonConverter extends Converter {
     YamlSupport.writePrettyJson(t)
   }
 
-  def getWriteExtension(): String = ".json"
+  def getWriteExtension: String = ".json"
 }
 
 /**
@@ -94,7 +94,7 @@ object YamlConverter extends Converter {
     YamlSupport.writeYaml(t)
   }
 
-  def getWriteExtension(): String = ".yaml"
+  def getWriteExtension: String = ".yaml"
 
 }
 
@@ -140,14 +140,14 @@ class JsonYamlConverter(primary: Converter, secondary: Converter*)
   /**
     * get the file extensions to use when reading files.  The order is the order they should be tried.
     */
-  override def getReadExtensions(): List[String] =
-    secondary.foldLeft(primary.getReadExtensions()) { (ac, s) =>
-      ac ::: s.getReadExtensions()
+  override def getReadExtensions: List[String] =
+    secondary.foldLeft(primary.getReadExtensions) { (ac, s) =>
+      ac ::: s.getReadExtensions
     }
 
   /**
     * get the file extension to use when writing files.
     */
-  def getWriteExtension(): String = primary.getWriteExtension()
+  def getWriteExtension: String = primary.getWriteExtension
 
 }

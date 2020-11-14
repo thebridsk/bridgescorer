@@ -1,29 +1,11 @@
 package com.github.thebridsk.bridge.server.service
 
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.MatchDuplicate
 import akka.event.Logging
-import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.http.scaladsl.model.StatusCode
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.DuplicateSummary
 import javax.ws.rs.Path
-import com.github.thebridsk.bridge.data.RestMessage
-import com.github.thebridsk.bridge.data.SystemTime
-import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.RejectionHandler
-import akka.http.scaladsl.server.MissingCookieRejection
-import akka.http.scaladsl.server.AuthorizationFailedRejection
-import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.StatusCodes
-import akka.http.scaladsl.server.UnsupportedWebSocketSubprotocolRejection
 import akka.util.ByteString
 import com.github.thebridsk.bridge.server.rest.Service
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
@@ -32,12 +14,13 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import io.swagger.v3.oas.annotations.Parameter
+import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
+import scala.concurrent.Future
 
 /**
   * <p>
@@ -55,7 +38,7 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
   /**
     * spray route for all the methods on this resource
     */
-  val loggingRoute = {
+  val loggingRoute: RequestContext => Future[RouteResult] = {
     extractClientIP { ip =>
       {
 //        log.debug(s"In loggingRoute from ${ip.toString()}")
@@ -77,8 +60,6 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
     */
   def totallyMissingHandler: RejectionHandler
 
-  import scala.language.postfixOps
-
   @Path("/logger/entry")
   @POST
   @Operation(
@@ -98,8 +79,8 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
       new ApiResponse(responseCode = "204", description = "Accepted")
     )
   )
-  def xxxcallRemoteLogging = {}
-  def callRemoteLogging(@Parameter(hidden = true) ips: String) =
+  def xxxcallRemoteLogging: Unit = {}
+  def callRemoteLogging(@Parameter(hidden = true) ips: String): Route =
     path("entry") {
       (post | put) {
         import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
@@ -152,8 +133,8 @@ trait LoggingService extends HasActorSystem with ClientLoggingService {
       )
     )
   )
-  def xxxcallRemoteLoggingWS = {}
-  def callRemoteLoggingWS(@Parameter(hidden = true) ips: String) =
+  def xxxcallRemoteLoggingWS: Unit = {}
+  def callRemoteLoggingWS(@Parameter(hidden = true) ips: String): Route =
     pathPrefix("ws") {
 //      logRequest(ips, logLevelForTracingRequestResponse) {
       routeLogging(ips)

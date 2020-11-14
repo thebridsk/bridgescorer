@@ -10,8 +10,8 @@
 //import japgolly.scalajs.react.ReactDOM
 //import japgolly.scalajs.react.Callback
 //import japgolly.scalajs.react.CallbackTo
-//import org.scalatest.FlatSpec
-//import org.scalatest.MustMatchers
+//import org.scalatest.flatspec.AnyFlatSpec
+//import org.scalatest.matchers.must.Matchers
 //
 //object WorkingThingsOutComponents {
 //
@@ -32,7 +32,7 @@
 ///**
 // * @author werewolf
 // */
-//class WorkingThingsOut extends FlatSpec with MustMatchers {
+//class WorkingThingsOut extends AnyFlatSpec with Matchers {
 //  import WorkingThingsOutComponents._
 //
 //  behavior of "WorkingThingsOut in bridgescorer-client"

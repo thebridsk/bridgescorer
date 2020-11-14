@@ -1,53 +1,24 @@
 package com.github.thebridsk.bridge.server
 
-import akka.actor.{Actor, ActorSystem, Props}
-import akka.io.IO
-import akka.pattern.ask
+import akka.actor.ActorSystem
 import akka.util.Timeout
 import scala.concurrent.duration._
-import scala.language.postfixOps
-import com.github.thebridsk.utilities.main.Main
-import java.util.logging.Level
 import scala.concurrent.Future
 import scala.concurrent.Await
-import akka.actor.ActorRef
-import akka.io.Tcp
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.server.service.MyService
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.Http.ServerBinding
-import akka.stream.ActorMaterializer
-import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.client.RequestBuilding
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.scaladsl.{Flow, Sink, Source}
-import com.github.thebridsk.bridge.server.service.MyService
-import com.github.thebridsk.bridge.server.util.SystemTimeJVM
+import akka.stream.scaladsl.{Sink, Source}
 import akka.event.Logging
 import akka.http.scaladsl.ConnectionContext
 import javax.net.ssl.SSLContext
-import akka.http.scaladsl.HttpExt
-import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
-import scala.reflect.io.Directory
-import scala.reflect.io.Path
-import java.io.File
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 import java.security.SecureRandom
-import com.github.thebridsk.bridge.server.rest.ServerPort
-import akka.http.scaladsl.model.StatusCodes
 import java.io.FileInputStream
 import org.rogach.scallop._
-import scala.concurrent.Promise
 import java.util.concurrent.TimeoutException
-import scala.util.Try
 import scala.util.Success
 import java.net.InetSocketAddress
 import java.net.InetAddress
@@ -59,21 +30,22 @@ import java.net.URL
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.io.IOException
+import akka.event.LoggingAdapter
+import akka.http.scaladsl.HttpsConnectionContext
+import scala.concurrent.ExecutionContextExecutor
 
 /**
   * This is the main program for the REST server for our application.
   */
 object ShutdownServer extends Subcommand("shutdown") {
 
-  val logger = Logger(ShutdownServer.getClass.getName)
+  val logger: Logger = Logger(ShutdownServer.getClass.getName)
 
   val defaultHttpsPort = 8443
-  val defaultCertificate = "keys/example.com.p12"
+  val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
-
-  import com.github.thebridsk.utilities.main.Converters._
 
   descr("Shutdown a running bridge server")
 
@@ -83,7 +55,7 @@ Stops the HTTP server
 Syntax:
   ${Server.cmdName} shutdown options
 Options:""")
-  val optionPort = opt[Int](
+  val optionPort: ScallopOption[Int] = opt[Int](
     "port",
     short = 'p',
     descr = "the port the server listens on, use 0 for no http, default=8080",
@@ -93,7 +65,7 @@ Options:""")
       p >= 0 && p <= 65535
     }
   )
-  val optionHttps = opt[Int](
+  val optionHttps: ScallopOption[Int] = opt[Int](
     "https",
     short = 'h',
     descr = "https port to use",
@@ -103,14 +75,14 @@ Options:""")
       p > 0 && p <= 65535
     }
   );
-  val optionCertificate = opt[String](
+  val optionCertificate: ScallopOption[String] = opt[String](
     "certificate",
     short = 'c',
     descr = "the private certificate for the server, default=None",
     argName = "p12",
     default = None
   )
-  val optionCertPassword = opt[String](
+  val optionCertPassword: ScallopOption[String] = opt[String](
     "certpassword",
     descr = "the password for the private certificate, default=None",
     argName = "pw",
@@ -169,19 +141,18 @@ private class ShutdownServer {
 private class ShutdownServerAkka {
   import ShutdownServer._
   // we need an ActorSystem to host our application in
-  implicit val system = ActorSystem("bridgescorer")
-  val log = Logging(system, Server.getClass)
-  implicit val executor = system.dispatcher
-  implicit val myMaterializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem("bridgescorer")
+  val log: LoggingAdapter = Logging(system, Server.getClass)
+  implicit val executor: ExecutionContextExecutor = system.dispatcher
 
-  implicit val timeout = Timeout(20.seconds)
+  implicit val timeout: Timeout = Timeout(20.seconds)
 
   val defaultRunFor = "12h"
 
   val defaultHttpsPort = 8443
-  val defaultCertificate = "keys/example.com.p12"
+  val defaultCertificate = "keys/examplebridgescorekeeper.p12"
 
-  def getHttpPortOption() = {
+  def getHttpPortOption(): Option[Int] = {
     optionPort.toOption match {
       case Some(0) => None
       case x       => x
@@ -207,8 +178,11 @@ private class ShutdownServerAkka {
   /**
     * Get the ssl context
     */
-  def serverContext = {
-    val password = optionCertPassword.toOption.getOrElse("abcdef").toCharArray // default NOT SECURE
+  def serverContext: HttpsConnectionContext = {
+    val password =
+      optionCertPassword.toOption
+        .getOrElse("abcdef")
+        .toCharArray // default NOT SECURE
     val context = SSLContext.getInstance("TLS")
     val ks = KeyStore.getInstance("PKCS12")
     optionCertificate.toOption match {
@@ -224,7 +198,7 @@ private class ShutdownServerAkka {
     keyManagerFactory.init(ks, password)
     context.init(keyManagerFactory.getKeyManagers, null, new SecureRandom)
     // start up the web server
-    ConnectionContext.https(context)
+    ConnectionContext.httpsClient(context)
   }
 
   /**

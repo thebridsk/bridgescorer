@@ -1,19 +1,20 @@
 package com.github.thebridsk.bridge.server.util
 
 import scala.annotation.tailrec
+import scala.util.matching.Regex
 
 class Version(val version: String) extends Ordered[Version] {
 
-  val components = version.split("\\.").toList
+  val components: List[String] = version.split("\\.").toList
 
-  override def equals(other: Any) = {
+  override def equals(other: Any): Boolean = {
     other match {
       case v: Version => v.version == version
       case _          => false
     }
   }
 
-  override def hashCode() = version.hashCode()
+  override def hashCode(): Int = version.hashCode()
 
   /** Result of comparing `this` with operand `that`.
     *
@@ -26,7 +27,6 @@ class Version(val version: String) extends Ordered[Version] {
     *   - `x == 0` when `this == that`
     *
     *   - `x > 0` when  `this > that`
-    *
     */
   def compare(that: Version): Int = {
 
@@ -63,11 +63,11 @@ object Version {
 
   def apply(version: String) = new Version(version)
 
-//  val version: String = "1.0.2-SNAPSHOT-cd6b6f20d04a785b3b7dd268eeb9b7ca7de1a81c-SNAPSHOT-master"
+//  val version: String = "1.0.2-SNAPSHOT-cd6b6f20d04a785b3b7dd268eeb9b7ca7de1a81c-SNAPSHOT-main
 
-  val pattern = """([0-9a-zA-Z.]+).*""".r
+  val pattern: Regex = """([0-9a-zA-Z.]+).*""".r
 
-  def create(version: String) = {
+  def create(version: String): Version = {
     version match {
       case pattern(v) => new Version(v)
       case _ =>
@@ -75,35 +75,35 @@ object Version {
     }
   }
 
-  def main(args: Array[String]): Unit = {
-    val v05 = Version("v0.5")
-    val v10 = Version("v1.0")
-    val v101 = Version("v1.0.1")
-    val v11 = Version("v1.1")
+  // def main(args: Array[String]): Unit = {
+  //   val v05 = Version("v0.5")
+  //   val v10 = Version("v1.0")
+  //   val v101 = Version("v1.0.1")
+  //   val v11 = Version("v1.1")
 
-    test(v05, v05)
-    test(v05, v10)
-    test(v05, v101)
-    test(v05, v11)
+  //   test(v05, v05)
+  //   test(v05, v10)
+  //   test(v05, v101)
+  //   test(v05, v11)
 
-    test(v10, v05)
-    test(v10, v10)
-    test(v10, v101)
-    test(v10, v11)
+  //   test(v10, v05)
+  //   test(v10, v10)
+  //   test(v10, v101)
+  //   test(v10, v11)
 
-    test(v101, v05)
-    test(v101, v10)
-    test(v101, v101)
-    test(v101, v11)
+  //   test(v101, v05)
+  //   test(v101, v10)
+  //   test(v101, v101)
+  //   test(v101, v11)
 
-    test(v11, v05)
-    test(v11, v10)
-    test(v11, v101)
-    test(v11, v11)
+  //   test(v11, v05)
+  //   test(v11, v10)
+  //   test(v11, v101)
+  //   test(v11, v11)
 
-  }
+  // }
 
-  def test(v1: Version, v2: Version) = {
+  def test(v1: Version, v2: Version): Unit = {
     val lt = v1 < v2
     val eq = v1 == v2
     val gt = v1 > v2

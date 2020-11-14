@@ -1,10 +1,7 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.pages.chicagos.PagePlayers.Props
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring
 import com.github.thebridsk.bridge.data.Round
@@ -17,7 +14,6 @@ import com.github.thebridsk.bridge.data.util.Strings
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.bridge.clientcommon.react.HelpButton
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
@@ -36,22 +32,21 @@ import com.github.thebridsk.materialui.TextColor
 object ViewPlayersFive {
   import ViewPlayersFiveInternal._
 
-  def apply(props: Props) = component(props)
+  def apply(props: Props) =
+    component(props) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object ViewPlayersFiveInternal {
-  import ViewPlayersFive._
   import ChicagoStyles._
 
-  val logger = Logger("bridge.ViewPlayersFive")
+  val logger: Logger = Logger("bridge.ViewPlayersFive")
 
   /**
     * Internal state for rendering the component.
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause State to leak.
-    *
     */
   case class State(
       scoring: ChicagoScoring,
@@ -66,11 +61,11 @@ object ViewPlayersFiveInternal {
   )
 
   object State {
-    def apply(props: Props) = {
+    def apply(props: Props): State = {
       val s = ChicagoScoring(props.chicago)
-      val pathSoFar = s.getFixturesSoFar()
+      val pathSoFar = s.getFixturesSoFar
       logger.info("Path So Far: " + pathSoFar)
-      val npf = s.getNextPossibleFixtures()
+      val npf = s.getNextPossibleFixtures
       logger.info("Next Fixtures: " + npf)
       val n = npf.keys.size
       val e = if (n == 1) {
@@ -108,15 +103,14 @@ object ViewPlayersFiveInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    val reset = scope.props >>= { props =>
+    val reset: Callback = scope.props >>= { props =>
       scope.modState(s => State(props))
     }
 
-    def setPlayerSittingOut(p: String) =
+    def setPlayerSittingOut(p: String): Callback =
       scope.modState(s => {
         val fix = s.possibleNext.get(p)
         (fix match {
@@ -139,7 +133,7 @@ object ViewPlayersFiveInternal {
         }
       })
 
-    def renderSelectSittingOut(props: Props, state: State) = {
+    def renderSelectSittingOut(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       <.div(
         chiStyles.divPageSelectSittingOut,
         <.p("Sitting out"),
@@ -172,19 +166,18 @@ object ViewPlayersFiveInternal {
       )
     }
 
-    def setFixture(f: ChicagoScoring.Fixture) =
-      scope.modState(
-        s =>
-          s.copy(
-            fixture = Some(f),
-            north = Some(f.north),
-            south = Some(f.south),
-            east = Some(f.east),
-            west = Some(f.west)
-          )
+    def setFixture(f: ChicagoScoring.Fixture): Callback =
+      scope.modState(s =>
+        s.copy(
+          fixture = Some(f),
+          north = Some(f.north),
+          south = Some(f.south),
+          east = Some(f.east),
+          west = Some(f.west)
+        )
       )
 
-    def renderSelectFixture(props: Props, state: State) = {
+    def renderSelectFixture(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       def renderSelectFixtureSittingOut(
           props: Props,
@@ -237,21 +230,21 @@ object ViewPlayersFiveInternal {
       }
     }
 
-    val rotateClockwise = scope.modState(
-      s =>
-        s.copy(north = s.west, south = s.east, east = s.north, west = s.south)
+    val rotateClockwise: Callback = scope.modState(s =>
+      s.copy(north = s.west, south = s.east, east = s.north, west = s.south)
     )
 
-    val rotateCounterClockwise = scope.modState(
-      s =>
-        s.copy(north = s.east, south = s.west, east = s.south, west = s.north)
+    val rotateCounterClockwise: Callback = scope.modState(s =>
+      s.copy(north = s.east, south = s.west, east = s.south, west = s.north)
     )
 
-    val swapEW = scope.modState(s => s.copy(east = s.west, west = s.east))
+    val swapEW: Callback =
+      scope.modState(s => s.copy(east = s.west, west = s.east))
 
-    val swapNS = scope.modState(s => s.copy(north = s.south, south = s.north))
+    val swapNS: Callback =
+      scope.modState(s => s.copy(north = s.south, south = s.north))
 
-    val ok = scope.stateProps { (state, props) =>
+    val ok: Callback = scope.stateProps { (state, props) =>
       val r = if (props.chicago.rounds.size <= props.page.round) {
         Round.create(
           props.page.round.toString(),
@@ -278,17 +271,17 @@ object ViewPlayersFiveInternal {
       props.router.set(props.page.toHandView(0))
     }
 
-    def setDealer(pos: PlayerPosition) =
+    def setDealer(pos: PlayerPosition): Callback =
       scope.modState(s => s.copy(dealer = Some(pos)))
 
-    def renderSelectPos(props: Props, state: State) = {
+    def renderSelectPos(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       val valid = state.fixture.isDefined
 
       def pos(
           name: String,
           arrow: String,
           pos: PlayerPosition,
-          swap: () => Callback
+          swap: Callback
       ) = {
         val selected = state.dealer match {
           case Some(s) => s == pos
@@ -309,7 +302,7 @@ object ViewPlayersFiveInternal {
           AppButton(
             "Swap" + pos.pos,
             arrow,
-            ^.onClick --> swap(),
+            ^.onClick --> swap,
             baseStyles.requiredNotNext
           )
         )
@@ -332,13 +325,13 @@ object ViewPlayersFiveInternal {
           <.tbody(
             <.tr(
               <.td(
-                ),
-              pos(state.south.getOrElse("south"), southArrow, South, swapNS _),
+              ),
+              pos(state.south.getOrElse("south"), southArrow, South, swapNS),
               <.td(
-                )
+              )
             ),
             <.tr(
-              pos(state.east.getOrElse("east"), eastArrow, East, swapEW _),
+              pos(state.east.getOrElse("east"), eastArrow, East, swapEW),
               <.td(
                 AppButton(
                   "clockwise",
@@ -354,14 +347,14 @@ object ViewPlayersFiveInternal {
                   baseStyles.requiredNotNext
                 )
               ),
-              pos(state.west.getOrElse("west"), westArrow, West, swapEW _)
+              pos(state.west.getOrElse("west"), westArrow, West, swapEW)
             ),
             <.tr(
               <.td(
-                ),
-              pos(state.north.getOrElse("north"), northArrow, North, swapNS _),
+              ),
+              pos(state.north.getOrElse("north"), northArrow, North, swapNS),
               <.td(
-                )
+              )
             )
           )
         ),
@@ -369,8 +362,9 @@ object ViewPlayersFiveInternal {
       )
     }
 
-    def render(props: Props, state: State) = {
-      val valid = state.north.isDefined && state.south.isDefined && state.east.isDefined && state.west.isDefined && state.dealer.isDefined
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+      val valid =
+        state.north.isDefined && state.south.isDefined && state.east.isDefined && state.west.isDefined && state.dealer.isDefined
       <.div(
         ChicagoPageBridgeAppBar(
           title = Seq[CtorType.ChildArg](
@@ -399,7 +393,7 @@ object ViewPlayersFiveInternal {
                 "OK",
                 "OK",
                 ^.disabled := !valid,
-                BaseStyles.highlight(requiredNotNext = valid),
+                BaseStyles.highlight(required = valid),
                 ^.onClick --> ok
               )
             ),
@@ -412,7 +406,7 @@ object ViewPlayersFiveInternal {
               AppButton(
                 "Cancel",
                 "Cancel",
-                props.router.setOnClick(props.page.toSummaryView())
+                props.router.setOnClick(props.page.toSummaryView)
               )
               //            HelpButton("../help/chicago/five/selectnames5.html")
             )
@@ -422,7 +416,7 @@ object ViewPlayersFiveInternal {
     }
   }
 
-  val component = ScalaComponent
+  private[chicagos] val component = ScalaComponent
     .builder[Props]("ViewPlayersFive")
     .initialStateFromProps { props =>
       State(props)

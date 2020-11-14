@@ -12,10 +12,9 @@ import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.reflect.io.Path
 import java.io.PrintStream
-import com.github.thebridsk.bridge.data.Id
-import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerStats
 import com.github.thebridsk.bridge.data.duplicate.stats.ContractStats
+import scala.util.Using
 
 object DuplicateStatsCommand extends Subcommand("stats") {
   import DataStoreCommands.optionStore
@@ -35,14 +34,14 @@ Syntax:
   ${DataStoreCommands.cmdName} show stats options
 Options:""")
 
-  val optionOut = opt[Path](
+  val optionOut: ScallopOption[Path] = opt[Path](
     "out",
     short = 'o',
     descr = "The output csv file, default output to stdout",
     argName = "csv",
     default = None
   )
-  val optionPercent = toggle(
+  val optionPercent: ScallopOption[Boolean] = toggle(
     "percent",
     default = Some(false),
     short = 'p',
@@ -52,7 +51,7 @@ Options:""")
 
 //  footer(s""" """)
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   def executeSubcommand(): Int = {
     val store = optionStore()
@@ -68,9 +67,7 @@ Options:""")
         override def close() = {} // don't close System.out
       })
 
-    import resource._
-
-    managed(ps).foreach { out =>
+    Using.resource(ps) { out =>
       await(bs.duplicates.readAll()) match {
         case Right(dups) =>
           PlayerStats.statsToCsv(PlayerStats.stats(dups), optionPercent())

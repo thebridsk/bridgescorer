@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.client.pages.rubber
 
-import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import japgolly.scalajs.react.vdom.TagMod
 
 object RubberStyles {
 
@@ -16,16 +16,16 @@ object RubberStyles {
 class RubberStyles {
   import BaseStyles._
 
-  val listPage = cls("rubListPage")
-  val namesPage = cls("rubNamesPage")
+  val listPage: TagMod = cls("rubListPage")
+  val namesPage: TagMod = cls("rubNamesPage")
 
-  val tableNumber = cls("rubTableNumber")
-  val tableLabel = cls("rubTableLabel")
-  val tableGameLabel = cls("rubTableGameLabel")
-  val divRubberMatch = cls("rubDivRubberMatch")
-  val divRubberMatchView = cls("rubDivRubberMatchView")
-  val divDetailsView = cls("rubDivDetailsView")
-  val aboveLine = cls("rubAboveLine")
-  val belowLine = cls("rubBelowLine")
+  val tableNumber: TagMod = cls("rubTableNumber")
+  val tableLabel: TagMod = cls("rubTableLabel")
+  val tableGameLabel: TagMod = cls("rubTableGameLabel")
+  val divRubberMatch: TagMod = cls("rubDivRubberMatch")
+  val divRubberMatchView: TagMod = cls("rubDivRubberMatchView")
+  val divDetailsView: TagMod = cls("rubDivDetailsView")
+  val aboveLine: TagMod = cls("rubAboveLine")
+  val belowLine: TagMod = cls("rubBelowLine")
 
 }

@@ -2,12 +2,13 @@ package com.github.thebridsk.bridge.server.backend.resource
 
 import scala.reflect.io.File
 import java.util.zip.ZipFile
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import java.util.zip.ZipEntry
 import scala.io.Source
 import com.github.thebridsk.utilities.logging.Logger
 
 import ZipFileForStore.log
+import java.io.InputStream
 
 class ZipFileForStore(
     val zipfilename: File
@@ -27,7 +28,7 @@ class ZipFileForStore(
     * @param zipentry
     * @return None if an error occurred
     */
-  def getInputStream(zipentry: ZipEntry) = {
+  def getInputStream(zipentry: ZipEntry): Option[InputStream] = {
     try {
       Option(zipfile.getInputStream(zipentry))
     } catch {
@@ -37,6 +38,19 @@ class ZipFileForStore(
           x
         )
         None
+    }
+  }
+
+  /**
+    * Returns the input stream of a zip entry
+    * @param zipentry
+    * @return None if an error occurred
+    */
+  def getInputStream(zipentry: String): Option[InputStream] = {
+    Option(zipfile.getEntry(zipentry)) match {
+      case None => None
+      case Some(ze) =>
+        getInputStream(ze)
     }
   }
 
@@ -59,13 +73,13 @@ class ZipFileForStore(
     }
   }
 
-  def close() = {
+  def close(): Unit = {
     zipfile.close()
   }
 }
 
 object ZipFileForStore {
 
-  val log = Logger[ZipFileForStore]
+  val log: Logger = Logger[ZipFileForStore]()
 
 }

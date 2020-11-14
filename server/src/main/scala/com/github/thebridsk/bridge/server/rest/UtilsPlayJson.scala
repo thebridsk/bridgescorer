@@ -1,32 +1,26 @@
 package com.github.thebridsk.bridge.server.rest
 
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.RestMessage
-
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.StatusCodes.{Success => _, _}
 import akka.http.scaladsl.model.headers.Location
 import akka.http.scaladsl.server.Directives._
-import scala.concurrent.ExecutionContext
 import scala.reflect.ClassTag
 import com.github.thebridsk.bridge.server.json.BridgePlayJsonSupport
 import akka.http.scaladsl.marshalling._
-import akka.http.scaladsl.unmarshalling._
 import play.api.libs.json._
 import akka.http.scaladsl.server.Route
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
-import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.utilities.logging.Logger
+import akka.http.scaladsl.server.{RequestContext, RouteResult}
 
 class UtilsPlayJson
 
 object UtilsPlayJson extends BridgePlayJsonSupport {
 
-  val utilslog = Logger[UtilsPlayJson]
+  val utilslog: Logger = Logger[UtilsPlayJson]()
 
   def resourceCreated[T](
       resName: String,
@@ -87,22 +81,14 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
         complete((InternalServerError, s"An error occurred: ${ex.getMessage}"))
     }
 
-  import scala.language.implicitConversions
-  implicit def addIdToFuture[VType <: VersionedInstance[VType, VType, _]](
-      f: Future[Result[VType]]
-  ): Future[Result[(String, VType)]] =
-    f.map { r =>
-      r match {
-        case Right(md) => Right((md.id.toString(), md))
-        case Left(e)   => Left(e)
-      }
-    }
-
   def resourceUpdated[T](
       f: Future[Result[T]],
       successStatus: StatusCode = NoContent,
       msg: Option[String] = None
-  )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]) =
+  )(implicit
+      marshaller: ToResponseMarshaller[T],
+      writer: Writes[T]
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -121,7 +107,10 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
   def resource[T](
       f: Future[Result[T]],
       successStatus: StatusCode = OK
-  )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]) =
+  )(implicit
+      marshaller: ToResponseMarshaller[T],
+      writer: Writes[T]
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -136,7 +125,7 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
       f: Future[Result[T]],
       successStatus: StatusCode = NoContent,
       msg: Option[String] = None
-  ) =
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -159,12 +148,12 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
         complete((InternalServerError, s"An error occurred: ${ex.getMessage}"))
     }
 
-  def resourceMap[T](f: Future[Result[Map[String, T]]])(
-      implicit arrayMarshaller: ToResponseMarshaller[Array[T]],
+  def resourceMap[T, I](f: Future[Result[Map[I, T]]])(implicit
+      arrayMarshaller: ToResponseMarshaller[Array[T]],
       awriter: Writes[Array[T]],
       twriter: Writes[T],
       classtag: ClassTag[T]
-  ) =
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {
@@ -177,12 +166,12 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
         complete((InternalServerError, s"An error occurred: ${ex.getMessage}"))
     }
 
-  def resourceList[T](f: Future[Result[List[T]]])(
-      implicit arrayMarshaller: ToResponseMarshaller[Array[T]],
+  def resourceList[T](f: Future[Result[List[T]]])(implicit
+      arrayMarshaller: ToResponseMarshaller[Array[T]],
       awriter: Writes[Array[T]],
       twriter: Writes[T],
       classtag: ClassTag[T]
-  ) =
+  ): RequestContext => Future[RouteResult] =
     onComplete(f) {
       case Success(r) =>
         r match {

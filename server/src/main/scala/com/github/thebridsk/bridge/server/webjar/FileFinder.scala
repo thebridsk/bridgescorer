@@ -4,7 +4,7 @@ import java.util.Properties
 import com.github.thebridsk.utilities.logging.Logger
 
 object FileFinder {
-  val log = Logger[FileFinder]
+  val log: Logger = Logger[FileFinder]()
 }
 
 /**
@@ -19,8 +19,8 @@ class FileFinder(
     suffix: Option[String] = None
 ) {
 
-  val loader = classOf[FileFinder].getClassLoader
-  val version = versionoverride match {
+  val loader: ClassLoader = classOf[FileFinder].getClassLoader
+  val version: String = versionoverride match {
     case None =>
       val pin = loader.getResourceAsStream(
         "META-INF/maven/" + groupid + "/" + artifactid + "/pom.properties"
@@ -41,12 +41,14 @@ class FileFinder(
     * determine if this is the artifact ID of the webjar
     * @param art the artifact ID of the webjar
     */
-  def isArtifact(art: String) = artifactid == art
+  def isArtifact(art: String): Boolean = artifactid == art
 
-  val baseName1 = "META-INF/resources/webjars/" + artifactid + "/" + version
-  val baseName = suffix.map(s => baseName1 + "/" + s).getOrElse(baseName1)
+  val baseName1: String =
+    "META-INF/resources/webjars/" + artifactid + "/" + version
+  val baseName: String =
+    suffix.map(s => baseName1 + "/" + s).getOrElse(baseName1)
 
-  def resourceName(res: String) =
+  def resourceName(res: String): String =
     baseName + (if (res.startsWith("/")) res; else "/" + res)
 
   /**
@@ -77,7 +79,9 @@ class FileFinder(
 
   def checkName(res: String): Boolean = {
     val i = res.indexOf("/../")
-    if (res.startsWith("../") || res.endsWith("/..") || res.indexOf("/../") >= 0)
+    if (
+      res.startsWith("../") || res.endsWith("/..") || res.indexOf("/../") >= 0
+    )
       false
     else true
   }

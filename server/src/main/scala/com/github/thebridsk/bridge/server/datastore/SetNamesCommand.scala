@@ -7,13 +7,10 @@ import scala.concurrent.duration.Duration
 import scala.reflect.io.Path
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import java.io.File
-import java.io.Reader
-import java.io.BufferedReader
 import scala.io.Source
 import scala.io.BufferedSource
 import scala.util.Left
 import java.io.InputStream
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
 import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.MatchChicago
@@ -26,13 +23,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import scala.util.Using
+import scala.util.matching.Regex
 
 trait SetNamesCommand
 
 object SetNamesCommand extends Subcommand("setnames") {
   import DataStoreCommands.optionStore
 
-  val log = Logger[SetNamesCommand]
+  val log: Logger = Logger[SetNamesCommand]()
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -48,7 +47,7 @@ Syntax:
   ${DataStoreCommands.cmdName} setnames [options]
 Options:""")
 
-  val optionMapFileName = opt[String](
+  val optionMapFileName: ScallopOption[String] = opt[String](
     "mapfile",
     short = 'm',
     descr = "the name mapping file",
@@ -56,7 +55,7 @@ Options:""")
     default = None
   )
 
-  val optionIds = opt[List[String]](
+  val optionIds: ScallopOption[List[String]] = opt[List[String]](
     "ids",
     short = 'i',
     descr = "the ids to map",
@@ -64,7 +63,7 @@ Options:""")
     default = None
   )
 
-  val optionSort = opt[String](
+  val optionSort: ScallopOption[String] = opt[String](
     "sort",
     noshort = true,
     descr =
@@ -74,7 +73,7 @@ Options:""")
     default = Some("id")
   )
 
-  val optionTarget = opt[Path](
+  val optionTarget: ScallopOption[Path] = opt[Path](
     "target",
     short = 't',
     descr = "directory for new datastore, default is to overwrite existing",
@@ -82,7 +81,7 @@ Options:""")
     default = None
   )
 
-  val optionAdd = toggle(
+  val optionAdd: ScallopOption[Boolean] = toggle(
     "add",
     default = Some(false),
     noshort = true,
@@ -117,8 +116,8 @@ Sam->Norman
 //    Id.idComparer(k1, k2) < 0
 //  }
 
-  def getidd(t: MatchDuplicate) = t.id.toString()
-  def getiddr(t: MatchDuplicateResult) = t.id.toString()
+  def getidd(t: MatchDuplicate) = t.id
+  def getiddr(t: MatchDuplicateResult) = t.id
   def getidc(t: MatchChicago) = t.id
   def getidr(t: MatchRubber) = t.id
 
@@ -134,13 +133,13 @@ Sam->Norman
     t1.created < t2.created
 
   def sortByMDId(t1: MatchDuplicate, t2: MatchDuplicate): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMDRId(t1: MatchDuplicateResult, t2: MatchDuplicateResult): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMCId(t1: MatchChicago, t2: MatchChicago): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
   def sortByMRId(t1: MatchRubber, t2: MatchRubber): Boolean =
-    Id.idComparer(t1.id.toString(), t2.id.toString()) < 0
+    t1.id < t2.id
 
   def executeSubcommand(): Int = {
 
@@ -163,7 +162,7 @@ Sam->Norman
 
       val ids = optionIds.toOption
 
-      def idFilter(id: String) = ids.map(l => l.contains(id)).getOrElse(true)
+      def idFilter(id: Id[_]) = ids.map(l => l.contains(id.id)).getOrElse(true)
 
       val allnames = datastore.getAllNames()
 
@@ -252,7 +251,7 @@ Sam->Norman
 
   }
 
-  def await[T](fut: Future[T]) = Await.result(fut, 30.seconds)
+  def await[T](fut: Future[T]): T = Await.result(fut, 30.seconds)
 
   /**
     * Copy all values from src store to dest store
@@ -260,11 +259,11 @@ Sam->Norman
     * @param src
     * @param dest
     */
-  def copyStore[K, T <: VersionedInstance[T, T, K]](
+  def copyStore[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       src: Store[K, T],
       dest: Store[K, T]
-  ) = {
+  ): Unit = {
     await(src.readAll()) match {
       case Right(dups) =>
         dups.foreach { e =>
@@ -282,7 +281,7 @@ Sam->Norman
     }
   }
 
-  def setValue[K, T <: VersionedInstance[T, T, K]](
+  def setValue[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       out: Store[K, T],
       id: K,
@@ -328,7 +327,7 @@ Sam->Norman
     * @param converter A function that changes the names in the value.
     *                  If the function returns None, than this value is not modified.  It will be copied.
     */
-  def change[K, T <: VersionedInstance[T, T, K]](
+  def change[K <: Comparable[K], T <: VersionedInstance[T, T, K]](
       name: String,
       in: Store[K, T],
       out: Store[K, T],
@@ -338,7 +337,7 @@ Sam->Norman
       getid: T => K,
       add: Boolean,
       idfilter: K => Boolean
-  )(converter: (K, T) => Option[T]) = {
+  )(converter: (K, T) => Option[T]): Unit = {
     val comparer = optionSort() match {
       case "id" =>
         log.info("Sorting by ID")
@@ -387,9 +386,9 @@ Sam->Norman
     }
   }
 
-  val patternName = """\s*(.*?)\s*\-\>\s*(.*?)\s*""".r
-  val patternComment = """\s*\#.*""".r
-  val patternBlankLine = """\s*""".r
+  val patternName: Regex = """\s*(.*?)\s*\-\>\s*(.*?)\s*""".r
+  val patternComment: Regex = """\s*\#.*""".r
+  val patternBlankLine: Regex = """\s*""".r
 
   /**
     * Parse the names in the specified reader (a mapfile)
@@ -435,17 +434,17 @@ Sam->Norman
     * @return None if there was an error, Some(map), where map is a String->String map
     */
   def getNamesMap(mapfile: File): Map[String, String] = {
-    import resource._
     val name = mapfile.toString()
-    val m = for (s <- managed(Source.fromFile(mapfile, "UTF8"))) yield {
+    val m = Using.resource(Source.fromFile(mapfile, "UTF8")) { s =>
       getNamesMap(s, name)
     }
-    m.either.either match {
-      case Left(err) =>
-        val e = new Exception(s"Error reading ${name}")
-        err.foreach(x => e.addSuppressed(x))
-        throw e
-      case Right(om) => om
-    }
+    m
+    // m.either.either match {
+    //   case Left(err) =>
+    //     val e = new Exception(s"Error reading ${name}")
+    //     err.foreach(x => e.addSuppressed(x))
+    //     throw e
+    //   case Right(om) => om
+    // }
   }
 }

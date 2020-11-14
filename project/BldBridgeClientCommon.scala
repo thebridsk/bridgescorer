@@ -30,7 +30,7 @@ object BldBridgeClientCommon {
       libraryDependencies ++= clientcommonDeps.value,
       testOptions in Test += Tests.Filter(s => {
 //        if (s == "com.github.thebridsk.bridge.clientcommon.test.AllCommonUnitTests") {
-          if (s == "com.github.thebridsk.bridge.clientcommon.test.TestColor") {
+          if (s == "xxx") {
             println("Using Test:    " + s)
             true
           } else {

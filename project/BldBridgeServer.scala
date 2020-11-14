@@ -23,8 +23,6 @@ import BldCommonSettings._
 import BldVersion._
 import MyReleaseVersion._
 
-// import MyReleaseVersion._
-
 object BldBridgeServer {
 
   lazy val `bridgescorer-server`: Project = project
@@ -33,15 +31,10 @@ object BldBridgeServer {
       commonSettings,
       buildInfo("com.github.thebridsk.bridge.server.version", "VersionServer")
     )
-    .enablePlugins(WebScalaJSBundlerPlugin)
     .dependsOn(BldBridgeShared.sharedJVM)
     .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
     .dependsOn(BldBridgeRotation.rotationJVM % "test")
-    .dependsOn(BldBrowserPages.browserpages % "test->compile")
     .dependsOn(BldColor.colorJVM % "test->compile")
-    .settings(
-      inConfig(Test)(baseAssemblySettings): _*
-    )
     .settings(
       name := "bridgescorer-server",
       //    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
@@ -49,50 +42,12 @@ object BldBridgeServer {
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
       Compile / run / fork := true,
       server := {
-        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store""").value
+        (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs""").value
       },
-      serverssl := {
-        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --certificate key/example.com.p12 --certpassword abcdef --https 8443""").value
-      },
-      serverhttps2 in Test := {
-        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --certificate key/example.com.p12 --certpassword abcdef --https 8443 --http2""").value
-      },
-      serverhttp2 in Test := {
-        (runMain in Test).toTask(""" com.github.thebridsk.bridge.server.Server --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store store --http2""").value
-      },
-      servertemp := {
-        (run in Compile).toTask(""" --logfile "logs/server.sbt.%d.%u.log" start --cache 0s --store temp""").value
-      },
-      serverlogs := {
-        (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store store""").value
-      },
-      // shebang the jar file.  7z and jar will no longer see it as a valid zip file.
-      //    assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript)),
-      //    assemblyJarName in assembly := s"${name.value}-{version.value}",
-      test in assembly := {},
-      test in (Test, assembly) := {}, // { val x = assembly.value },
-      assemblyJarName in (assembly) := s"${name.value}-assembly-${version.value
-        .replaceAll("[\\/]", "_")}.jar",
-      assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value
-        .replaceAll("[\\/]", "_")}.jar",
-      webassembly := { val x = (assembledMappings in assembly).value },
-      assembly := {
-        val log = streams.value.log
-        val x = (assembly).value
-        val sha = Sha256.generate(x)
-        log.info(s"SHA-256: ${sha}")
-        x
-      },
-      assembly in Test := {
-        val log = streams.value.log
-        val x = (assembly in Test).value
-        val sha = Sha256.generate(x)
-        log.info(s"SHA-256: ${sha}")
-        x
-      },
+
       mainClass in Test := Some("org.scalatest.tools.Runner"),
       testOptions in Test += Tests.Filter { s =>
-        if (s == testToRun) {
+        if (s == "com.github.thebridsk.bridge.server.test.AllUnitTests") {
           println("Using Test:    " + s)
           true
         } else {
@@ -100,11 +55,7 @@ object BldBridgeServer {
           false
         }
       },
-      // baseDirectory in Test := {
-      //   val x = (baseDirectory in Test).value
-      //   println(s"baseDirectory in test is ${x}")
-      //   x
-      // },
+
       fork in Test := true,
       javaOptions in Test ++= Seq(
         "-Xmx4096M",
@@ -113,289 +64,87 @@ object BldBridgeServer {
         "-DSessionDirector=" + useBrowser,
         "-DSessionTable1=" + useBrowser,
         "-DSessionTable2=" + useBrowser,
-        s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}"""
+        testProductionPage
+      ),
+
+      // The following depend on the javax.xml.bind version
+      //   "io.swagger.core.v3" % "swagger-core"
+      // This must be included to prevent assembly failure because of duplicate files
+      // the new library is "jakarta.xml.bind" % "jakarta.xml.bind-api"
+      excludeDependencies ++= Seq(
+        ExclusionRule(organization = "javax.xml.bind" ),
       ),
       libraryDependencies ++= bridgeScorerDeps.value,
       libraryDependencies ++= bridgeScorerServerDeps.value,
-      bridgeScorerNpmAssets(BldBridgeClientApi.`bridgescorer-clientapi`),
-      scalaJSProjects := Seq(BldBridgeClient.`bridgescorer-client`, BldBridgeClientApi.`bridgescorer-clientapi`),
-      pipelineStages in Assets := {
-        if (onlyBuildDebug) {
-          Seq(scalaJSDev, gzip),
-        } else if (useFullOpt) {
-          Seq(scalaJSProd, gzip)
+
+      cleanFiles += baseDirectory.value / "key",
+
+      generatesslkeys := (Def.taskDyn {
+
+        val keydir = "key"
+
+        val baseDir = baseDirectory.value
+
+        val dir = baseDir / keydir
+
+        val pw = "abcdef"
+
+        val serverprefix = "examplebridgescorekeeper"
+        val caprefix = "examplebridgescorekeeperca"
+        val trustprefix = "examplebridgescorekeepertrust"
+
+        val serverAlias = "bsk"
+
+        val info = BldCommonSettings.SSLKeys(
+            keystore = dir / s"${serverprefix}.jks",
+            keystorepass = pw,
+            serveralias = serverAlias,
+            keypass = pw,
+            truststore = dir / s"${trustprefix}.jks"
+        )
+
+        val marker = dir / "GenerateSSLKeys.Marker.txt"
+
+        if (marker.isFile) {
+          Def.task {
+            info
+          }
         } else {
-          Seq(scalaJSProd, scalaJSDev, gzip),
+          Def.task {
+            val x = (run in Compile).toTask(
+              """ sslkey"""+
+              s""" -d $keydir"""+
+              """ generateselfsigned"""+
+              s""" -a $serverAlias"""+
+              s""" --ca $caprefix"""+
+              """ --caalias ca"""+
+              """ --cadname "CN=BridgeScoreKeeperCA, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US""""+
+              s""" --cakeypw $pw"""+
+              s""" --castorepw $pw"""+
+              """ --dname "CN=BridgeScoreKeeper, OU=BridgeScoreKeeper, O=BridgeScoreKeeper, L=New York, ST=New York, C=US""""+
+              s""" --keypass $pw"""+
+              s""" --server $serverprefix"""+
+              s""" --storepass $pw"""+
+              s""" --trustpw $pw"""+
+              s""" --truststore $trustprefix"""+
+              """ -v"""+
+              """ --nginx"""+
+              """ --clean"""
+            ).value
+            info
+          }
         }
-      },
-      pipelineStages in Test in Assets := {
-        if (onlyBuildDebug) {
-          Seq(scalaJSDev, gzip),
-        } else if (useFullOpt) {
-          Seq(scalaJSProd, gzip)
-        } else {
-          Seq(scalaJSProd, scalaJSDev, gzip),
-        }
-      },
-      assemblyMergeStrategy in assembly := {
-        case PathList("META-INF", "maven", xs @ _*)
-            if (!xs.isEmpty && (xs.last endsWith ".properties")) =>
-          MergeStrategy.first
-        case PathList("JS_DEPENDENCIES") => MergeStrategy.rename
-        //      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
-        case x =>
-          val oldStrategy = (assemblyMergeStrategy in assembly).value
-          oldStrategy(x)
-      },
-      assemblyExcludedJars in (Test, assembly) := {
-        val log = streams.value.log
-        val ccp = (fullClasspath in (Compile, assembly)).value.map {
-          _.data.getName
-        }
-        log.info("fullClasspath in (Compile,assembly): " + ccp)
-        val cp = (fullClasspath in (Test, assembly)).value
-        log.info("fullClasspath in (Test,assembly): " + ccp)
-        cp filter { x =>
-          val rc = ccp.contains(x.data.getName)
-          log.info(
-            "  " + (if (rc) "Excluding " else "Using     ") + x.data.getName
-          )
-          rc
-        }
-      },
-      prereqintegrationtests := {
-        val x = (assembly in Compile).value
-        val y = (assembly in Test).value
-      },
-      integrationtests := Def
-        .sequential(prereqintegrationtests in Distribution, fvt in Distribution)
-        .value,
-      fvt := {
-        val log = streams.value.log
-        def getclasspath() = {
-          val (projjar, testjar) = BridgeServer.findBridgeJars(
-                                      (crossTarget in Compile).value,
-                                      (assemblyJarName in assembly).value,
-                                      (assemblyJarName in (Test, assembly)).value
-                                   )
-          val cp = projjar + java.io.File.pathSeparator + testjar
-          log.info("Classpath is " + cp)
-          cp
-        }
-        val args = "-DUseProductionPage=1" ::
-          "-DToMonitorFile=logs/atestTcpMonitorTimeWait.csv" ::
-          "-DUseLogFilePrefix=logs/atest" ::
-          "-DDefaultWebDriver=" + useBrowser ::
-          "-cp" :: getclasspath() ::
-          "org.scalatest.tools.Runner" ::
-          "-oD" ::
-          "-s" ::
-          testToRun ::
-          Nil
-        val inDir = baseDirectory.value
-        log.info(
-          s"""Running in directory ${inDir}: java ${args.mkString(" ")}"""
-        )
-        val rc =
-          Fork.java(ForkOptions().withWorkingDirectory(Some(inDir)), args)
-        if (rc != 0) throw new RuntimeException("integration tests failed")
-      },
-      moretests := Def
-        .sequential(prereqintegrationtests in Distribution, svt in Distribution)
-        .value,
-      svt := {
-        val log = streams.value.log
-        val (assemblyJar, testJar) = {
-          val cp = BridgeServer.findBridgeJars(
-                                  (crossTarget in Compile).value,
-                                  (assemblyJarName in assembly).value,
-                                  (assemblyJarName in (Test, assembly)).value
-                                 )
-          log.info("Jars are " + cp)
-          cp
-        }
-        val cp = assemblyJar + java.io.File.pathSeparator + testJar
+      }).value,
 
-        val server = new BridgeServer(assemblyJar)
-        server.runWithServer(
-          log,
-          baseDirectory.value + "/logs/itestServerInTest.%u.log"
-        ) {
-          val jvmargs = server.getTestDefine() :::
-            "-DUseProductionPage=1" ::
-            "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
-            "-DUseLogFilePrefix=logs/itest" ::
-            "-DTestDataDirectory=" + testdataDir ::
-            "-DDefaultWebDriver=" + useBrowser ::
-            "-cp" :: cp ::
-            "org.scalatest.tools.Runner" ::
-            "-oD" ::
-            "-s" ::
-            moretestToRun ::
-            Nil
-          val inDir = baseDirectory.value
-          log.info(
-            s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}"""
-          )
-          BridgeServer.runjava(log, jvmargs, Some(baseDirectory.value))
-        }
-      },
-      travismoretests := Def
-        .sequential(
-          prereqintegrationtests in Distribution,
-          travissvt in Distribution
-        )
-        .value,
-      travissvt := {
-        val log = streams.value.log
-        val (assemblyJar, testJar) = {
-          val cp = BridgeServer.findBridgeJars(
-                                  (crossTarget in Compile).value,
-                                  (assemblyJarName in assembly).value,
-                                  (assemblyJarName in (Test, assembly)).value
-                                 )
-          log.info("Jars are " + cp)
-          cp
-        }
-        val cp = assemblyJar + java.io.File.pathSeparator + testJar
+      ssltests in Test := Def.sequential(
+        generatesslkeys,
+        (Test/testClass).toTask(" com.github.thebridsk.bridge.server.test.ssl.AllSuitesSSL")
+      ).value,
 
-        val server = new BridgeServer(assemblyJar)
-        server.runWithServer(
-          log,
-          baseDirectory.value + "/logs/itestServerInTest.%u.log"
-        ) {
-          val jvmargs = server.getTestDefine() :::
-            "-DUseProductionPage=1" ::
-            "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
-            "-DUseLogFilePrefix=logs/itest" ::
-            "-DTestDataDirectory=" + testdataDir ::
-            "-DMatchToTest=10" ::
-            "-DDefaultWebDriver=" + useBrowser ::
-            "-cp" :: cp ::
-            "org.scalatest.tools.Runner" ::
-            "-oD" ::
-            "-s" ::
-            travisMoretestToRun ::
-            Nil
-          val inDir = baseDirectory.value
-          log.info(
-            s"""Running in directory ${inDir}: java ${jvmargs.mkString(" ")}"""
-          )
-          BridgeServer.runjava(log, jvmargs, Some(baseDirectory.value))
-        }
-      },
-      standalonetests := Def
-        .sequential(fvt in Distribution, svt in Distribution)
-        .value,
-      disttests := Def
-        .sequential(integrationtests in Distribution, moretests in Distribution)
-        .value,
-      publishdir := {
-        // returns an Option[File]
-
-        val log = streams.value.log
-
-        import java.io.File
-        sys.props("user.home") match {
-          case homedir if (homedir != null) =>
-            val configfile = new File(homedir, "bridgescorer/config.properties")
-            if (configfile.exists()) {
-              import java.util.Properties
-              import java.io.InputStreamReader
-              import java.io.FileInputStream
-              val props = new Properties
-              props.load(
-                new InputStreamReader(new FileInputStream(configfile), "UTF8")
-              )
-              val dd = props.getProperty("DistributionDirectory")
-              if (dd != null) {
-                import java.io.File
-
-                val distdir = dd.replace('\\', '/')
-                val f = new File(distdir)
-                if (f.isDirectory()) {
-                  log.info("Publishing to " + f)
-                  Some(f)
-                } else {
-                  throw new RuntimeException(
-                    "DistributionDirectory directory does not exist: " + f
-                  )
-                  None
-                }
-              } else {
-                throw new RuntimeException(
-                  "DistributionDirectory property does not exist in file ~/bridgescorer/config.properties"
-                )
-                None
-              }
-            } else {
-              throw new RuntimeException(
-                "file ~/bridgescorer/config.properties does not exist"
-              )
-              None
-            }
-          case _ =>
-            throw new RuntimeException("Home directory not set")
-            None
-        }
-      },
-      mypublishcopy := {
-
-        val log = streams.value.log
-
-        val dd = publishdir.value
-        dd match {
-          case Some(distdir) =>
-            import java.nio.file.Path
-            import java.nio.file.StandardCopyOption
-            import java.nio.file.Files
-
-            log.info("Publishing to " + distdir)
-
-            val targetdir = (crossTarget in Compile).value
-            val assemblyjar = (assemblyJarName in assembly).value
-            val testjar = (assemblyJarName in (Test, assembly)).value
-
-            val sourceassemblyjar = new File(targetdir, assemblyjar)
-            val targetassemblyjar = new File(distdir, assemblyjar)
-            val sourcetestjar = new File(targetdir, testjar)
-            val targettestjar = new File(distdir, testjar)
-
-            IO.listFiles(distdir, GlobFilter("*.jar")).foreach { jar =>
-              {
-                log.info("Moving jar to save: " + jar)
-                IO.move(
-                  jar,
-                  new File(new File(jar.getParentFile, "save"), jar.getName)
-                )
-              }
-            }
-
-            log.info("Publishing " + assemblyjar + " to " + distdir)
-            Files.copy(
-              sourceassemblyjar.toPath,
-              targetassemblyjar.toPath,
-              StandardCopyOption.REPLACE_EXISTING
-            )
-            log.info("Publishing " + testjar + " to " + distdir)
-            Files.copy(
-              sourcetestjar.toPath,
-              targettestjar.toPath,
-              StandardCopyOption.REPLACE_EXISTING
-            )
-
-            log.info("Published to " + distdir)
-          case None =>
-            throw new RuntimeException("DistributionDirectory is not set")
-        }
-
-      },
-      mypublish := Def
-        .sequential(
-          disttests in Distribution,
-          mypublishcopy in Distribution
-        )
-        .value
+      test in Test := {
+        val ssl = (ssltests in Test).value
+        val t = (test in Test).value
+      }
     )
 
 }

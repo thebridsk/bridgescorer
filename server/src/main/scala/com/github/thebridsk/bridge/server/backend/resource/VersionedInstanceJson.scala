@@ -3,12 +3,11 @@ package com.github.thebridsk.bridge.server.backend.resource
 import com.github.thebridsk.bridge.data.VersionedInstance
 import scala.reflect.ClassTag
 import com.github.thebridsk.utilities.logging.Logger
-import scala.language.reflectiveCalls
 import play.api.libs.json._
 import com.github.thebridsk.bridge.data.rest.JsonException
 
 object VersionedInstanceJson {
-  val log = Logger[VersionedInstanceJson[_, _]]
+  val log: Logger = Logger[VersionedInstanceJson[_, _]]()
 
   /**
     * Provides to/from JSON conversion of a resource object.
@@ -24,8 +23,8 @@ object VersionedInstanceJson {
     * @param writer a Writes object to convert an object to JSON/YAML representation.
     * @param classtag ClassTag object of the type of the latest version.
     */
-  def apply[TId, T <: VersionedInstance[T, T, TId]](
-      implicit converter: Converter,
+  def apply[TId, T <: VersionedInstance[T, T, TId]](implicit
+      converter: Converter,
       reader: Reads[T],
       writer: Writes[T],
       classtag: ClassTag[T]
@@ -45,12 +44,16 @@ object VersionedInstanceJson {
   * @param classtag ClassTag object of the type of the old version.
   * @param classtagCurrent ClassTag object of the type of the latest version.
   */
-private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: VersionedInstance[
+private class ReaderAndConvert[TId, T <: VersionedInstance[
+  T,
+  T,
+  TId
+], R <: VersionedInstance[
   T,
   R,
   TId
-]](
-    implicit converter: Converter,
+]](implicit
+    converter: Converter,
     reader: Reads[R],
     writer: Writes[R],
     classtag: ClassTag[R],
@@ -59,7 +62,7 @@ private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: Vers
 
   def parse(s: String): (Boolean, T) = {
     val (primary, r) = parseOld(s)
-    val cur = r.convertToCurrentVersion()
+    val cur = r.convertToCurrentVersion
     (primary && cur._1, cur._2)
   }
 
@@ -70,15 +73,16 @@ private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: Vers
     */
   def parseOld(s: String): (Boolean, R) = converter.read[R](s)
 
-  def toJsonOld(r: R) = converter.write(r)
+  def toJsonOld(r: R): String = converter.write(r)
 
-  def getOldClass = classtag.runtimeClass.asInstanceOf[Class[R]]
-  def getCurrentClass = classtagCurrent.runtimeClass.asInstanceOf[Class[T]]
+  def getOldClass: Class[R] = classtag.runtimeClass.asInstanceOf[Class[R]]
+  def getCurrentClass: Class[T] =
+    classtagCurrent.runtimeClass.asInstanceOf[Class[T]]
 
   def nameOld = getOldClass.getName
   def nameCurrent = getCurrentClass.getName
 
-  override def toString() = s"Convert(${nameOld} -> ${nameCurrent})"
+  override def toString(): String = s"Convert(${nameOld} -> ${nameCurrent})"
 
 }
 
@@ -96,8 +100,7 @@ private class ReaderAndConvert[TId, T <: VersionedInstance[T, T, TId], R <: Vers
   * @param writer a Writes object to convert an object to JSON/YAML representation.
   * @param classtagCurrent ClassTag object of the type of the latest version.
   */
-class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](
-    implicit
+class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](implicit
     converter: Converter,
     reader: Reads[T],
     writer: Writes[T],
@@ -123,8 +126,8 @@ class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](
     * @param classtag ClassTag object of the type of the older version.
     * @return this.  allowing chaining all the old versions in one statement.
     */
-  def add[R <: VersionedInstance[T, R, TId]](
-      implicit reader: Reads[R],
+  def add[R <: VersionedInstance[T, R, TId]](implicit
+      reader: Reads[R],
       writer: Writes[R],
       classtag: ClassTag[R]
   ): VersionedInstanceJson[TId, T] = {
@@ -166,18 +169,18 @@ class VersionedInstanceJson[TId, T <: VersionedInstance[T, T, TId]](
     * @param t the object to convert.  Only the latest version can be written.
     * @return the string representation.
     */
-  def toJson(t: T) = {
+  def toJson(t: T): String = {
     converter.write(t)
   }
 
   /**
     * get the file extensions to use when reading files.  The order is the order they should be tried.
     */
-  def getReadExtensions(): List[String] = converter.getReadExtensions()
+  def getReadExtensions: List[String] = converter.getReadExtensions
 
   /**
     * get the file extension to use when writing files.
     */
-  def getWriteExtension(): String = converter.getWriteExtension()
+  def getWriteExtension: String = converter.getWriteExtension
 
 }

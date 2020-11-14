@@ -34,14 +34,14 @@ case class PairData(
 ) {
   import PairsData._
 
-  def normalize = {
+  def normalize: PairData = {
     val (p1, p2) = key(player1, player2)
     copy(player1 = p1, player2 = p2)
   }
 
-  def swapNames = copy(player1 = player2, player2 = player1)
+  def swapNames: PairData = copy(player1 = player2, player2 = player1)
 
-  def isNormalized = (player1, player2) == key(player1, player2)
+  def isNormalized: Boolean = (player1, player2) == key(player1, player2)
 
   def add(
       win: Boolean,
@@ -54,7 +54,7 @@ case class PairData(
       aimp: Double,
       playMP: Boolean,
       maxMPPer: Double
-  ) = {
+  ): PairData = {
     val ds = det
       .map { d =>
         Some(
@@ -83,26 +83,26 @@ case class PairData(
     )
   }
 
-  def addIncomplete = copy(incompleteGames = incompleteGames + 1)
+  def addIncomplete: PairData = copy(incompleteGames = incompleteGames + 1)
 
-  def getkey = (player1, player2)
+  def getkey: (String, String) = (player1, player2)
 
-  def pointsPercent =
+  def pointsPercent: Double =
     if (totalPoints == 0) 0.0 else points / totalPoints * 100.0
-  def winPercent =
+  def winPercent: Double =
     if (played == 0) 0.0 else (won.toDouble + wonImp) / played * 100.0
-  def winPtsPercent =
+  def winPtsPercent: Double =
     if (played == 0) 0.0 else (wonPts.toDouble + wonImpPts) / played * 100.0
-  def avgIMP = if (playedIMP == 0) 0.0 else imp / playedIMP
+  def avgIMP: Double = if (playedIMP == 0) 0.0 else imp / playedIMP
 
-  def contains(player: String) = player1 == player || player2 == player
+  def contains(player: String): Boolean = player1 == player || player2 == player
 
   /**
     * Add this PairData to the specified PairData.
     * @param pd the other PairData.  This PairData must have player1 as one of its players.
     * @return the sum.  player2 contains the players that were added together.  eg: "p1,p2,p3"
     */
-  def addPairData(pd: PairData) = {
+  def addPairData(pd: PairData): PairData = {
     if (!pd.contains(player1))
       throw new IllegalArgumentException(
         "Player 1 must be one of the players in pd"
@@ -141,9 +141,9 @@ case class PairData(
 }
 
 object PairsData {
-  val log = Logger("bridge.PairsData")
+  val log: Logger = Logger("bridge.PairsData")
 
-  def key(player1: String, player2: String) =
+  def key(player1: String, player2: String): (String, String) =
     if (player1 < player2) (player2, player1) else (player1, player2)
 
   def apply(
@@ -202,7 +202,23 @@ class PairsData(
       val newpd = tdata
         .get(pp)
         .getOrElse(
-          PairData(pp._1, pp._2, 0, 0, 0, 0, 0, 0, None, 0, 0, 0, 0, 0, 0.0).normalize
+          PairData(
+            pp._1,
+            pp._2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            None,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.0
+          ).normalize
         )
       val reallynewpd = if (incomplete) {
         newpd.addIncomplete
@@ -329,7 +345,7 @@ class PairsData(
     * @param player1
     * @param player2
     */
-  def get(player1: String, player2: String) = {
+  def get(player1: String, player2: String): Option[PairData] = {
     data.get(key(player1, player2))
   }
 
@@ -338,7 +354,7 @@ class PairsData(
     * that involve the specified player.
     * @param player
     */
-  def get(player: String, playerFilter: Option[List[String]]) = {
+  def get(player: String, playerFilter: Option[List[String]]): PairData = {
     val (r, p) = data.values
       .filter { pd =>
         pd.contains(player) && playerFilter
@@ -469,9 +485,11 @@ object Stat {
       stats: Stat*
   ): Unit = {
     pds.foreach { pd =>
-      if (filter
-            .map(f => f.contains(pd.player1) && f.contains(pd.player2))
-            .getOrElse(true)) {
+      if (
+        filter
+          .map(f => f.contains(pd.player1) && f.contains(pd.player2))
+          .getOrElse(true)
+      ) {
         stats.foreach { s =>
           s.add(s.colorBy.value(pd), s.colorBy.n(pd))
         }
@@ -514,9 +532,9 @@ class PairsDataSummary(
 ) {
 
   val players = pds.players
-  val playerFilter = filter.getOrElse(players)
+  val playerFilter: List[String] = filter.getOrElse(players)
 
-  val playerTotals = playerFilter.map { player =>
+  val playerTotals: Map[String, PairData] = playerFilter.map { player =>
     player -> pds.get(player, if (displayOnly) None else filter)
   }.toMap
 
@@ -525,7 +543,7 @@ class PairsDataSummary(
     * @param player1
     * @param player2
     */
-  def get(player1: String, player2: String) = {
+  def get(player1: String, player2: String): Option[PairData] = {
     if (playerFilter.contains(player1) && playerFilter.contains(player2)) {
       pds.get(player1, player2)
     } else {
@@ -533,7 +551,8 @@ class PairsDataSummary(
     }
   }
 
-  val extraStatsPlayerTotals = extraColorBy.map(e => new Stat(e)).toList
+  val extraStatsPlayerTotals: List[Stat] =
+    extraColorBy.map(e => new Stat(e)).toList
   val colorStatPlayerTotals = new Stat(colorBy)
 
   Stat.addPairsPlayer1(
@@ -542,7 +561,7 @@ class PairsDataSummary(
     colorStatPlayerTotals :: extraStatsPlayerTotals: _*
   )
 
-  val extraStats = extraColorBy.map(e => new Stat(e)).toList
+  val extraStats: List[Stat] = extraColorBy.map(e => new Stat(e)).toList
   val colorStat = new Stat(colorBy)
   Stat.add(pds, filter, colorStat :: extraStats: _*)
 

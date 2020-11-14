@@ -1,4 +1,3 @@
-
 package com.github.thebridsk.bridge.client.bridge.store
 
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
@@ -13,20 +12,22 @@ import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import japgolly.scalajs.react.vdom.html_<^._
 
 object ServerURLStore extends ChangeListenable {
-  val logger = Logger("bridge.ServerURLStore")
+  val logger: Logger = Logger("bridge.ServerURLStore")
 
   private var updateRequested: Boolean = false
   private var urls: Option[ServerURL] = None
 
-  def hasURLs() = urls.isDefined
-  def getURLs() = urls.getOrElse( ServerURL(List()) )
+  def hasURLs = urls.isDefined
+  def getURLs: ServerURL = urls.getOrElse(ServerURL(List()))
 
   /**
-   * @return A TagMod that contains one or more li elements.
-   */
-  def getURLItems(): TagMod = {
+    * @return A TagMod that contains one or more li elements.
+    */
+  def getURLItems: TagMod = {
     if (BridgeDemo.isDemo) {
-      <.li("Demo mode, all data entered will be lost on page refresh or closing page")
+      <.li(
+        "Demo mode, all data entered will be lost on page refresh or closing page"
+      )
     } else {
       val urls = ServerURLStore.getURLs.serverUrl
       if (urls.isEmpty) {
@@ -36,30 +37,36 @@ object ServerURLStore extends ChangeListenable {
           <.li("No network interfaces found")
         }
       } else {
-        urls.map{ url => <.li(url) }.toTagMod
+        urls.map { url => <.li(url) }.toTagMod
       }
     }
   }
 
-  private var dispatchToken: Option[DispatchToken] = Some(BridgeDispatcher.register(dispatch _))
+  private var dispatchToken: Option[DispatchToken] = Some(
+    BridgeDispatcher.register(dispatch _)
+  )
 
-  def dispatch( msg: Any ) = Alerter.tryitWithUnit {
-    msg match {
-      case ActionUpdateServerURLs(serverurl) =>
-        urls = Some(serverurl)
-        notifyChange
-      case _ =>
+  def dispatch(msg: Any): Unit =
+    Alerter.tryitWithUnit {
+      msg match {
+        case ActionUpdateServerURLs(serverurl) =>
+          urls = Some(serverurl)
+          notifyChange()
+        case _ =>
+      }
     }
-  }
 
-  def updateURLs( force: Boolean = false ) = {
+  def updateURLs(force: Boolean = false): Unit = {
     if (force || !hasURLs) {
       if (!BridgeDemo.isDemo) {
         updateRequested = true
-        RestClientServerURL.list().recordFailure().foreach( serverUrl => {
-          BridgeDispatcher.updateServerURL(serverUrl(0))
-          updateRequested = false
-        })
+        RestClientServerURL
+          .list()
+          .recordFailure()
+          .foreach(serverUrl => {
+            BridgeDispatcher.updateServerURL(serverUrl(0))
+            updateRequested = false
+          })
       }
     }
 

@@ -31,7 +31,7 @@ object BldBrowserPages {
         "-DSessionDirector=" + useBrowser,
         "-DSessionTable1=" + useBrowser,
         "-DSessionTable2=" + useBrowser,
-        s"""-DUseProductionPage=${if (useFullOpt) "1" else "0"}"""
+        testProductionPage
       ),
       libraryDependencies ++= browserPagesDeps.value,
     )

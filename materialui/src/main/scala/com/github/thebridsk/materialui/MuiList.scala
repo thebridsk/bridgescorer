@@ -1,9 +1,6 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
@@ -57,10 +54,15 @@ object ListProps extends PropsFactory[ListProps] {
 }
 
 object MuiList extends ComponentFactory[ListProps] {
-  @js.native @JSImport("@material-ui/core/List", JSImport.Default) private object MList
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/List",
+    JSImport.Default
+  ) private object MList extends js.Any
 
-  protected val f = JsComponent[ListProps, Children.Varargs, Null](MList)
+  protected val f =
+    JsComponent[ListProps, Children.Varargs, Null](
+      MList
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component. See CSS API below for more details.
@@ -85,7 +87,7 @@ object MuiList extends ComponentFactory[ListProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: ListProps = ListProps(
       classes = classes,
       component = component,

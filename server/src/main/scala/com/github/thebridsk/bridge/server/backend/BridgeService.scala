@@ -1,27 +1,13 @@
 package com.github.thebridsk.bridge.server.backend
 
-import com.github.thebridsk.bridge.data.Board
-import com.github.thebridsk.bridge.data.Table
-import com.github.thebridsk.bridge.data.Hand
-import com.github.thebridsk.bridge.data.MatchChicago
-import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.LoggerConfig
-import com.github.thebridsk.bridge.data.bridge.North
-import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.DuplicateHand
-import akka.http.scaladsl.model.StatusCodes._
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.Board
-import scala.util.parsing.json.JSON
-import scala.io.Source
-import scala.collection.immutable.Map
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import com.github.thebridsk.bridge.server.backend.resource.MultiStore
-import com.github.thebridsk.bridge.server.backend.resource.JavaResourceStore
 import akka.http.scaladsl.model.StatusCodes
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
@@ -33,8 +19,6 @@ import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.server.backend.resource.Store
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.concurrent.Promise
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.server.backend.resource.InMemoryStore
 import com.github.thebridsk.bridge.server.backend.resource.Implicits
@@ -42,10 +26,8 @@ import com.github.thebridsk.bridge.data.RestMessage
 import java.io.OutputStream
 import java.util.zip.ZipOutputStream
 import java.nio.charset.StandardCharsets
-import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 import com.github.thebridsk.bridge.data.VersionedInstance
 import java.util.zip.ZipEntry
-import java.io.OutputStreamWriter
 import java.io.BufferedOutputStream
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import scala.reflect.io.Directory
@@ -53,6 +35,14 @@ import scala.reflect.io.Path
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 import com.github.thebridsk.bridge.data.duplicate.stats.CalculatePlayerPlaces
+import com.github.thebridsk.bridge.data.ImportStoreData
+import com.github.thebridsk.bridge.server.backend.resource.ZipStoreInternal
+import com.github.thebridsk.bridge.server.version.VersionServer
+import com.github.thebridsk.bridge.data.version.VersionShared
+import com.github.thebridsk.utilities.version.VersionUtilities
+import scala.util.Using
+import java.io.FileInputStream
+import java.io.InputStream
 
 /**
   * The backend trait for our service.
@@ -65,20 +55,43 @@ abstract class BridgeService(val id: String) {
 
   def loggerConfig(ip: String, iPad: Boolean): LoggerConfig
 
-  def setDefaultLoggerConfig(default: LoggerConfig, iPad: Boolean)
+  def setDefaultLoggerConfig(default: LoggerConfig, iPad: Boolean): Unit
 
-  val chicagos: Store[Id.MatchChicago, MatchChicago]
-  val duplicates: Store[Id.MatchDuplicate, MatchDuplicate]
-  val duplicateresults: Store[Id.MatchDuplicateResult, MatchDuplicateResult]
-  val rubbers: Store[String, MatchRubber]
+  val chicagos: Store[MatchChicago.Id, MatchChicago]
+  val duplicates: Store[MatchDuplicate.Id, MatchDuplicate]
+  val duplicateresults: Store[MatchDuplicateResult.Id, MatchDuplicateResult]
+  val rubbers: Store[MatchRubber.Id, MatchRubber]
 
-  val boardSets: Store[String, BoardSet]
-  val movements: Store[String, Movement]
+  val boardSets: Store[BoardSet.Id, BoardSet]
+  val movements: Store[Movement.Id, Movement]
 
   /**
     * The import store.  Some some of the implementations support this, and will override this value.
     */
   val importStore: Option[ImportStore] = None
+
+  val diagnosticDir: Option[Directory] = None
+
+  def importStoreData: Future[ImportStoreData] = {
+
+    def count[T](frs: Future[Result[Set[T]]]) =
+      frs.map { rs =>
+        rs match {
+          case Right(s)    => s.size
+          case Left(value) => 0
+        }
+      }
+
+    val r = for {
+      nd <- count(duplicates.getAllIds())
+      ndr <- count(duplicateresults.getAllIds())
+      nc <- count(chicagos.getAllIds())
+      nr <- count(rubbers.getAllIds())
+    } yield {
+      ImportStoreData(id, getDate, nd, ndr, nc, nr)
+    }
+    r
+  }
 
   /**
     * Writes the store contents in export format to the output stream.
@@ -90,16 +103,63 @@ abstract class BridgeService(val id: String) {
     */
   def export(
       out: OutputStream,
-      filter: Option[List[String]] = None
+      filter: Option[List[String]] = None,
+      diagnostics: Boolean = false
   ): Future[Result[List[String]]] = {
+    BridgeServiceWithLogging.log.fine(
+      s"exporting: diagnostics=$diagnostics, filter=$filter"
+    )
+
     val converters = new BridgeServiceFileStoreConverters(true)
-    import converters._
 
     val buf = new BufferedOutputStream(out)
     val zip = new ZipOutputStream(buf, StandardCharsets.UTF_8)
 
-    exportToZip(zip, filter).map { r =>
-      zip.finish(); buf.flush(); r
+    Future {
+      {
+        val nameInZip = "version.txt"
+        val ze = new ZipEntry(nameInZip)
+        BridgeServiceWithLogging.log.fine(
+          s"Adding version info => ${ze.getName}"
+        )
+        zip.putNextEntry(ze)
+        val v =
+          s"""${VersionServer.toString}\n${VersionShared.toString}\n${VersionUtilities.toString}"""
+        zip.write(v.getBytes("UTF8"))
+        zip.closeEntry()
+      }
+
+      // BridgeService.copyResourceToZip(
+      //   "com/github/thebridsk/bridge/bridgescorer/version/VersionBridgeScorer.properties",
+      //   "VersionBridgeScorer.properties",
+      //   zip
+      // )
+
+      // BridgeService.copyResourceToZip(
+      //   "com/github/thebridsk/utilities/version/VersionUtilities.properties",
+      //   "VersionUtilities.properties",
+      //   zip
+      // )
+
+      if (diagnostics) {
+        diagnosticDir.foreach { dir =>
+          BridgeServiceWithLogging.log.fine(
+            s"Looking for logs in directory ${dir}"
+          )
+          dir.files
+            .filter(f => f.extension == "log" || f.extension == "csv")
+            .foreach { f =>
+              zip.putNextEntry(new ZipEntry("logs/" + f.name))
+              Using.resource(new FileInputStream(f.jfile)) { in =>
+                BridgeService.copy(in, zip)
+              }
+            }
+        }
+      }
+    }.flatMap { u =>
+      exportToZip(zip, filter).map { r =>
+        zip.finish(); buf.flush(); r
+      }
     }
 
   }
@@ -117,7 +177,6 @@ abstract class BridgeService(val id: String) {
       filter: Option[List[String]] = None
   ): Future[Result[List[String]]] = {
     val converters = new BridgeServiceFileStoreConverters(true)
-    import converters._
 
     exportStore(zip, duplicates, filter).flatMap { rd =>
       exportStore(zip, duplicateresults, filter).flatMap { re =>
@@ -143,45 +202,16 @@ abstract class BridgeService(val id: String) {
     }
   }
 
-  def exportStore[TId, T <: VersionedInstance[T, T, TId]](
+  def exportStore[TId <: Comparable[TId], T <: VersionedInstance[T, T, TId]](
       zip: ZipOutputStream,
       store: Store[TId, T],
       filter: Option[List[String]]
   ): Future[Result[List[String]]] = {
-    store.readAll().map { rmap =>
-      rmap match {
-        case Right(map) =>
-          Result(
-            map
-              .filter { entry =>
-                val (id, v) = entry
-                filter
-                  .map { f =>
-                    f.contains(id.toString())
-                  }
-                  .getOrElse(true)
-              }
-              .map { entry =>
-                val (id, v) = entry
-                val name =
-                  s"store/${store.support.resourceName}.${id}${store.support.getWriteExtension()}"
-                val content = store.support.toJSON(v)
-                zip.putNextEntry(new ZipEntry(name))
-                val out = new OutputStreamWriter(zip, "UTF8")
-                out.write(content)
-                out.flush
-                id.toString()
-              }
-              .toList
-          )
-        case Left((statusCode, msg)) =>
-          Result(statusCode, msg)
-      }
-    }
+    ZipStoreInternal.exportStore(zip, store, filter)
   }
 
-  val defaultBoards = "ArmonkBoards"
-  val defaultMovement = "Armonk2Tables"
+  val defaultBoards = BoardSet.default
+  val defaultMovement = Movement.default
 
   def fillBoards(dup: MatchDuplicate): Future[Result[MatchDuplicate]] = {
     fillBoards(dup, defaultBoards, defaultMovement)
@@ -189,8 +219,8 @@ abstract class BridgeService(val id: String) {
 
   def fillBoards(
       dup: MatchDuplicate,
-      boardset: String,
-      movement: String
+      boardset: BoardSet.Id,
+      movement: Movement.Id
   ): Future[Result[MatchDuplicate]] = {
 
     val fmv = movements.read(movement)
@@ -229,8 +259,8 @@ abstract class BridgeService(val id: String) {
           var d = dd
           val hands = TestMatchDuplicate.getHand(
             d,
-            "B3",
-            "T1",
+            Board.id(3),
+            Team.id(1),
             3,
             "N",
             "N",
@@ -238,7 +268,17 @@ abstract class BridgeService(val id: String) {
             true,
             5
           ) ::
-            TestMatchDuplicate.getHand(d, "B3", "T3", 3, "N", "N", "N", true, 5) ::
+            TestMatchDuplicate.getHand(
+              d,
+              Board.id(3),
+              Team.id(3),
+              3,
+              "N",
+              "N",
+              "N",
+              true,
+              5
+            ) ::
             TestMatchDuplicate.getHands(d)
           for (h <- hands) {
             d = d.updateHand(h)
@@ -392,7 +432,10 @@ abstract class BridgeService(val id: String) {
     }
   }
 
-  def getDuplicatePlaceResults( scoringMethod: CalculatePlayerPlaces.ScoringMethod = CalculatePlayerPlaces.AsPlayedScoring ): Future[Result[PlayerPlaces]] = {
+  def getDuplicatePlaceResults(
+      scoringMethod: CalculatePlayerPlaces.ScoringMethod =
+        CalculatePlayerPlaces.AsPlayedScoring
+  ): Future[Result[PlayerPlaces]] = {
     val fmds = duplicates.readAll().map { fmds =>
       fmds match {
         case Right(m) =>
@@ -414,8 +457,8 @@ abstract class BridgeService(val id: String) {
       fmdrs.map { mdrs =>
         Result {
           val calc = new CalculatePlayerPlaces(scoringMethod)
-          (mds ::: mdrs).map(d=>calc.add(d))
-          calc.finish
+          (mds ::: mdrs).map(d => calc.add(d))
+          calc.finish()
         }
       }
     }
@@ -448,18 +491,20 @@ object BridgeService {
       useIdFromValue: Boolean = false,
       dontUpdateTime: Boolean = false,
       useYaml: Boolean = true,
-      id: Option[String] = None
-  )(
-      implicit
+      id: Option[String] = None,
+      diagnosticDirectory: Option[Directory] = None
+  )(implicit
       execute: ExecutionContext
-  ) = {
+  ): BridgeServiceWithLogging = {
     if (path.isFile) {
       if (path.extension == "zip") {
         new BridgeServiceZipStore(
           id.getOrElse(path.name),
           path.toFile,
           useYaml
-        )(execute)
+        )(execute) {
+          override val diagnosticDir: Option[Directory] = diagnosticDirectory
+        }
       } else {
         throw new IllegalArgumentException(
           "path parameter must be a zipfile or a directory"
@@ -472,15 +517,59 @@ object BridgeService {
         dontUpdateTime,
         useYaml,
         id
-      )(execute)
+      )(execute) {
+        override val diagnosticDir: Option[Directory] = diagnosticDirectory
+      }
     }
   }
+
+  /**
+    * Copy the specified resource into the zip file with the given name.
+    * If resource does not exist, then this is a noop.
+    * @param resource the resource to load
+    * @param nameInZip the name of the file in the zipfile.
+    * @param zip the zip output stream
+    */
+  def copyResourceToZip(
+      resource: String,
+      nameInZip: String,
+      zip: ZipOutputStream
+  ): Unit = {
+    val cl = getClass.getClassLoader
+    val instream = cl.getResourceAsStream(resource)
+    if (instream != null) {
+      Using.resource(instream) { in =>
+        val ze = new ZipEntry(nameInZip)
+        BridgeServiceWithLogging.log.fine(
+          s"Adding version info => ${ze.getName}"
+        )
+        zip.putNextEntry(ze)
+        copy(in, zip)
+        zip.closeEntry()
+      }
+    } else {
+      BridgeServiceWithLogging.log.fine(s"Did not find resource $resource")
+    }
+  }
+
+  def copy(in: InputStream, out: OutputStream): Long = {
+    val b = new Array[Byte](1024 * 1024)
+
+    var count: Long = 0
+    var rlen = 0
+    while ({ rlen = in.read(b); rlen } > 0) {
+      out.write(b, 0, rlen)
+      count += rlen
+    }
+    count
+  }
+
 }
 
 object BridgeServiceWithLogging {
-  val log = Logger[BridgeServiceWithLogging]
+  val log: Logger = Logger[BridgeServiceWithLogging]()
 
-  def getDefaultRemoteLoggerConfig() = {
+  def getDefaultRemoteLoggerConfig(): Option[RemoteLoggingConfig] = {
     RemoteLoggingConfig.getDefaultRemoteLoggerConfig()
   }
 }
@@ -490,10 +579,11 @@ abstract class BridgeServiceWithLogging(id: String) extends BridgeService(id) {
 
   import scala.collection.mutable.Map
 
-  protected val fLoggerConfigs = Map[String, LoggerConfig]()
+  protected val fLoggerConfigs: Map[String, LoggerConfig] =
+    Map[String, LoggerConfig]()
 
-  protected var defaultLoggerConfig = LoggerConfig(Nil, Nil)
-  protected var defaultLoggerConfigIPad = LoggerConfig(Nil, Nil)
+  protected var defaultLoggerConfig: LoggerConfig = LoggerConfig(Nil, Nil)
+  protected var defaultLoggerConfigIPad: LoggerConfig = LoggerConfig(Nil, Nil)
 
   init()
 
@@ -513,14 +603,14 @@ abstract class BridgeServiceWithLogging(id: String) extends BridgeService(id) {
     }
   }
 
-  def loggerConfig(ip: String, iPad: Boolean) = {
+  def loggerConfig(ip: String, iPad: Boolean): LoggerConfig = {
     fLoggerConfigs.getOrElse(
       ip,
       if (iPad) defaultLoggerConfigIPad else defaultLoggerConfig
     )
   }
 
-  def setDefaultLoggerConfig(default: LoggerConfig, iPad: Boolean) =
+  def setDefaultLoggerConfig(default: LoggerConfig, iPad: Boolean): Unit =
     if (iPad) {
       log.fine(s"Setting default iPad logging to ${default}")
       defaultLoggerConfigIPad = default
@@ -529,7 +619,7 @@ abstract class BridgeServiceWithLogging(id: String) extends BridgeService(id) {
       defaultLoggerConfig = default
     }
 
-  def getDefaultLoggerConfig(iPad: Boolean) =
+  def getDefaultLoggerConfig(iPad: Boolean): LoggerConfig =
     if (iPad) {
       defaultLoggerConfigIPad
     } else {
@@ -551,31 +641,31 @@ class BridgeServiceInMemory(
 
   self =>
 
-  val bridgeResources = BridgeResources(useYaml)
+  val bridgeResources: BridgeResources = BridgeResources(useYaml)
   import bridgeResources._
 
-  val chicagos: Store[Id.MatchChicago, MatchChicago] =
-    InMemoryStore[Id.MatchChicago, MatchChicago](id)
+  val chicagos: Store[MatchChicago.Id, MatchChicago] =
+    InMemoryStore[MatchChicago.Id, MatchChicago](id)
 
-  val duplicates: Store[Id.MatchDuplicate, MatchDuplicate] =
-    InMemoryStore[Id.MatchDuplicate, MatchDuplicate](id)
+  val duplicates: Store[MatchDuplicate.Id, MatchDuplicate] =
+    InMemoryStore[MatchDuplicate.Id, MatchDuplicate](id)
 
-  val duplicateresults: Store[Id.MatchDuplicateResult, MatchDuplicateResult] =
-    InMemoryStore[Id.MatchDuplicateResult, MatchDuplicateResult](id)
+  val duplicateresults: Store[MatchDuplicateResult.Id, MatchDuplicateResult] =
+    InMemoryStore[MatchDuplicateResult.Id, MatchDuplicateResult](id)
 
-  val rubbers: Store[String, MatchRubber] =
-    InMemoryStore[String, MatchRubber](id)
+  val rubbers: Store[MatchRubber.Id, MatchRubber] =
+    InMemoryStore[MatchRubber.Id, MatchRubber](id)
 
-  val boardSets: Store[String, BoardSet] =
-    MultiStore.createInMemoryAndResource[String, BoardSet](
+  val boardSets: Store[BoardSet.Id, BoardSet] =
+    MultiStore.createInMemoryAndResource[BoardSet.Id, BoardSet](
       id,
       "/com/github/thebridsk/bridge/server/backend/",
       "Boardsets.txt",
       self.getClass.getClassLoader
     )
 
-  val movements: Store[String, Movement] =
-    MultiStore.createInMemoryAndResource[String, Movement](
+  val movements: Store[Movement.Id, Movement] =
+    MultiStore.createInMemoryAndResource[Movement.Id, Movement](
       id,
       "/com/github/thebridsk/bridge/server/backend/",
       "Movements.txt",

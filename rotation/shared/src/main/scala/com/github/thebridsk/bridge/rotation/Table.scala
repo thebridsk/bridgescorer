@@ -9,14 +9,14 @@ case class Table(
 ) {
   import Table._
 
-  override def toString() = {
+  override def toString(): String = {
     s"Table( $north-$south, $east-$west, $sittingOut )"
   }
 
   /**
     * Returns the location of the specified player
     */
-  def find(p: String) = {
+  def find(p: String): Option[Location] = {
     p match {
       case `north`      => Some(North)
       case `south`      => Some(South)
@@ -30,11 +30,11 @@ case class Table(
   /**
     * Returns the player at specified location
     */
-  def find(l: Location) = {
+  def find(l: Location): String = {
     l.player(this)
   }
 
-  def findNotSittingOut(p: String) = {
+  def findNotSittingOut(p: String): Option[Location] = {
     p match {
       case `north`      => Some(North)
       case `south`      => Some(South)
@@ -45,29 +45,32 @@ case class Table(
     }
   }
 
-  def partnerLocOf(l: Location): Option[Location] = l match {
-    case North      => Some(South)
-    case South      => Some(North)
-    case East       => Some(West)
-    case West       => Some(East)
-    case SittingOut => None
-  }
+  def partnerLocOf(l: Location): Option[Location] =
+    l match {
+      case North      => Some(South)
+      case South      => Some(North)
+      case East       => Some(West)
+      case West       => Some(East)
+      case SittingOut => None
+    }
 
-  def leftLocOf(l: Location): Option[Location] = l match {
-    case North      => Some(East)
-    case South      => Some(West)
-    case East       => Some(South)
-    case West       => Some(North)
-    case SittingOut => None
-  }
+  def leftLocOf(l: Location): Option[Location] =
+    l match {
+      case North      => Some(East)
+      case South      => Some(West)
+      case East       => Some(South)
+      case West       => Some(North)
+      case SittingOut => None
+    }
 
-  def rightLocOf(l: Location): Option[Location] = l match {
-    case North      => Some(West)
-    case South      => Some(East)
-    case East       => Some(North)
-    case West       => Some(South)
-    case SittingOut => None
-  }
+  def rightLocOf(l: Location): Option[Location] =
+    l match {
+      case North      => Some(West)
+      case South      => Some(East)
+      case East       => Some(North)
+      case West       => Some(South)
+      case SittingOut => None
+    }
 
   def partnerOf(p: String): Option[String] = {
     find(p) match {
@@ -76,10 +79,11 @@ case class Table(
     }
   }
 
-  def partnerOf(l: Location): Option[String] = partnerLocOf(l) match {
-    case Some(p) => Some(p.player(this))
-    case None    => None
-  }
+  def partnerOf(l: Location): Option[String] =
+    partnerLocOf(l) match {
+      case Some(p) => Some(p.player(this))
+      case None    => None
+    }
 
   def leftOf(p: String): Option[String] = {
     find(p) match {
@@ -88,10 +92,11 @@ case class Table(
     }
   }
 
-  def leftOf(l: Location): Option[String] = leftLocOf(l) match {
-    case Some(p) => Some(p.player(this))
-    case None    => None
-  }
+  def leftOf(l: Location): Option[String] =
+    leftLocOf(l) match {
+      case Some(p) => Some(p.player(this))
+      case None    => None
+    }
 
   def rightOf(p: String): Option[String] = {
     find(p) match {
@@ -100,12 +105,13 @@ case class Table(
     }
   }
 
-  def rightOf(l: Location): Option[String] = rightLocOf(l) match {
-    case Some(p) => Some(p.player(this))
-    case None    => None
-  }
+  def rightOf(l: Location): Option[String] =
+    rightLocOf(l) match {
+      case Some(p) => Some(p.player(this))
+      case None    => None
+    }
 
-  def setPlayer(l: Location, p: String) = {
+  def setPlayer(l: Location, p: String): Table = {
     l match {
       case North      => copy(north = p)
       case South      => copy(south = p)
@@ -215,11 +221,11 @@ case class Table(
     swapSittingOutAnd(l).swapLeftRight(l)
   }
 
-  def hasPartnership(p1: String, p2: String) = {
+  def hasPartnership(p1: String, p2: String): Boolean = {
     (north == p1 && south == p2) || (north == p2 && south == p1) || (east == p1 && west == p2) || (east == p2 && west == p1)
   }
 
-  def players() = {
+  def players(): List[String] = {
     north :: south :: east :: west :: sittingOut :: Nil
   }
 }
@@ -266,7 +272,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     var s = ts.last
     var players =
@@ -293,7 +299,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     var t = ts.last
     val l = getLocationNotSittingOut(order.head, ts)
@@ -314,7 +320,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     var t = ts.last
     val l = getLocationNotSittingOut(order.head, ts)
@@ -335,7 +341,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     var s = ts.last
     var players =
@@ -363,7 +369,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     val s = ts.last
     val players =
@@ -392,7 +398,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     val s = ts.last
     val loc = getLocationNotSittingOut(playerGoingOut, list)
@@ -410,7 +416,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     val s = ts.last
     val loc = getLocationNotSittingOut(playerGoingOut, list)
@@ -443,7 +449,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     val s = ts.last
     val loc = getLocationNotSittingOut(playerGoingOut, ts)
@@ -466,7 +472,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
 
 // http://www.bridgeguys.com/pdf/FrenchPartyBridge04.pdf
 //
@@ -529,7 +535,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var nextPlayer = order.tail
     def next = {
       nextPlayer match {
@@ -654,7 +660,7 @@ object Chicago5Rotation {
         west = "4",
         sittingOut = "5"
       ) :: Nil
-  ) = {
+  ): List[Table] = {
     var ts = list
     var last = list.last
     for (maneuver <- maneuvers) {

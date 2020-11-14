@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.server
 
 import scala.concurrent.duration.Duration
-import scala.language.postfixOps
 
 import org.rogach.scallop.ValueConverter
 import org.rogach.scallop.singleArgConverter
@@ -10,24 +9,13 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.utilities.main.Subcommand
 import scala.reflect.io.Path
 import scala.reflect.io.Directory
-import java.net.URL
-import java.io.File
-import java.util.jar.JarFile
-import java.io.IOException
-import java.io.BufferedInputStream
-import java.io.InputStream
-import java.io.Writer
-import java.io.OutputStream
-import java.io.BufferedOutputStream
-import java.io.FileOutputStream
 import java.nio.file.Files
-import java.nio.file.{Path => JPath}
 import java.nio.file.StandardCopyOption
-import com.github.thebridsk.utilities.classpath.ClassPath
 import java.nio.file.Paths
 import com.github.thebridsk.bridge.server.util.GitHub
 import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.server.util.Version
+import scala.util.Using
 
 /**
   * This is the update subcommand.
@@ -36,7 +24,7 @@ import com.github.thebridsk.bridge.server.util.Version
   */
 object UpdateInstall extends Subcommand("update") {
 
-  val logger = Logger(UpdateInstall.getClass.getName)
+  val logger: Logger = Logger(UpdateInstall.getClass.getName)
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
@@ -77,7 +65,10 @@ Options:""")
         .flatMap { release =>
           release.assets.find(a => a.name.endsWith(".jar")) match {
             case Some(asset) =>
-              github.downloadFileAndCheckSHA(asset.browser_download_url, ".") match {
+              github.downloadFileAndCheckSHA(
+                asset.browser_download_url,
+                "."
+              ) match {
                 case Right((file, sha)) =>
                   output(
                     s"Downloaded new version: ${file} ${github.shaAlgorithm} ${sha}"
@@ -108,17 +99,16 @@ Options:""")
   */
 object Install extends Subcommand("install") {
 
-  val logger = Logger(Install.getClass.getName)
+  val logger: Logger = Logger(Install.getClass.getName)
 
-  val filesForWindows = "server.bat" :: "serverMemory.bat" ::
+  val filesForWindows: List[String] = "server.bat" :: "serverMemory.bat" ::
     "collectlogs.bat" :: "update.bat" ::
     "findServerJar.bat" :: Nil
-  val filesForLinux = "server" :: "serverMemory" :: "collectlogs" :: "update" :: Nil
+  val filesForLinux: List[String] =
+    "server" :: "serverMemory" :: "collectlogs" :: "update" :: Nil
 
   implicit def dateConverter: ValueConverter[Duration] =
     singleArgConverter[Duration](Duration(_))
-
-  import com.github.thebridsk.utilities.main.Converters._
 
   descr("Install the jar used to run this command")
 
@@ -160,18 +150,18 @@ Copy the server jar file to the installation directory.  Then run the following 
     }
   }
 
-  def getOsName() = {
+  def getOsName(): String = {
     sys.env.get("OS_OVERRIDE") match {
       case Some(s) => s
       case None    => sys.props.getOrElse("os.name", "oops").toLowerCase()
     }
   }
 
-  def isWindows() = getOsName().contains("win")
+  def isWindows(): Boolean = getOsName().contains("win")
 
-  def isMac() = getOsName().contains("mac")
+  def isMac(): Boolean = getOsName().contains("mac")
 
-  def isLinux() = {
+  def isLinux(): Boolean = {
     val x = getOsName()
     x.contains("nix") || x.contains("nux")
   }
@@ -182,13 +172,12 @@ Copy the server jar file to the installation directory.  Then run the following 
     * @param f - the jar file that contains the file to copy
     * @param fileToCopy - the file to be copied out of the jar file into the tdir
     */
-  def writeFile(tdir: Directory, fileToCopy: String) = {
+  def writeFile(tdir: Directory, fileToCopy: String): AnyVal = {
 
     val outfile = tdir / fileToCopy
     Option(getClass.getClassLoader.getResourceAsStream(fileToCopy)) match {
       case Some(in) =>
-        import resource._
-        for (min <- managed(in)) {
+        Using.resource(in) { min =>
           Files.copy(
             min,
             Paths.get(outfile.toString),

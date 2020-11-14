@@ -5,8 +5,8 @@
 //import japgolly.scalajs.react._
 //import org.scalajs.dom.raw.HTMLInputElement
 //import japgolly.scalajs.react.extra.LogLifecycle
-//import org.scalatest.FlatSpec
-//import org.scalatest.MustMatchers
+//import org.scalatest.flatspec.AnyFlatSpec
+//import org.scalatest.matchers.must.Matchers
 //import com.github.thebridsk.bridge.data.js.SystemTimeJs
 //
 //object TestingStateComponent {
@@ -54,7 +54,7 @@
 //    def ok( e: ReactEventFromHtml) = {
 //      val s = state.runNow()
 //      println("TestingState.Backend.ok: calling callback with state "+s)
-//      scope.props.runNow.ok( s )
+//      scope.props.runNow().ok( s )
 //    }
 //
 //    def newok( e: ReactEventFromHtml) = scope.props >>= { p => state >>= { s => p.ok(s) }}
@@ -88,7 +88,7 @@
 ///**
 // * @author werewolf
 // */
-//class TestingState extends FlatSpec with MustMatchers {
+//class TestingState extends AnyFlatSpec with Matchers {
 //
 //  SystemTimeJs()
 //

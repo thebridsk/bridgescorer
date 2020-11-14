@@ -9,19 +9,16 @@ import java.io.InputStreamReader
 import com.github.thebridsk.utilities.logging.Logger
 import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPInputStream
-import play.api.libs.json.Reads
-import java.io.OutputStreamWriter
-import play.api.libs.json.Format
 import java.io.OutputStream
 import java.security.MessageDigest
 import java.security.DigestOutputStream
 import java.io.FileOutputStream
 import java.io.File
-import java.io.StringWriter
+import scala.util.Using
 
 object HttpUtilsInternal {
 
-  private[util] val logger = Logger[HttpUtils]
+  private[util] val logger = Logger[HttpUtils]()
 
   private[util] val bufsize = 1024 * 1024
 }
@@ -157,7 +154,7 @@ trait HttpUtils {
     httpResp.copy(hash = Some(toHexString(md.digest())))
   }
 
-  def toHexString(hash: Array[Byte]) = {
+  def toHexString(hash: Array[Byte]): String = {
     hash.map(b => f"${b}%02x").mkString
   }
 
@@ -175,9 +172,7 @@ trait HttpUtils {
       followRedirects: Boolean = false
   ): ResponseFromHttp = {
 
-    import resource._
-
-    managed(new FileOutputStream(outfile)).acquireAndGet { out =>
+    Using.resource(new FileOutputStream(outfile)) { out =>
       copyFromWeb(url, out, hashalgo, followRedirects)
     }
 
@@ -197,12 +192,12 @@ object HttpUtils extends HttpUtils {
 
   object NullOutputStream extends OutputStream {
 
-    def write(i: Int) = {}
-    override def write(b: Array[Byte]) = {}
-    override def write(b: Array[Byte], off: Int, len: Int) = {}
+    def write(i: Int): Unit = {}
+    override def write(b: Array[Byte]): Unit = {}
+    override def write(b: Array[Byte], off: Int, len: Int): Unit = {}
 
-    override def close() = {}
-    override def flush() = {}
+    override def close(): Unit = {}
+    override def flush(): Unit = {}
 
   }
 }

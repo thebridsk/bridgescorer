@@ -1,11 +1,6 @@
 package com.github.thebridsk.materialui
 
-import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
-import scala.scalajs.js.annotation._
 
 @js.native
 trait TransitionDuration extends js.Object {
@@ -16,12 +11,13 @@ trait TransitionDuration extends js.Object {
 }
 object TransitionDuration {
 
-  def apply() = new js.Object().asInstanceOf[TransitionDuration]
+  def apply(): TransitionDuration =
+    new js.Object().asInstanceOf[TransitionDuration]
 
   def apply(
       enter: js.UndefOr[Double] = js.undefined,
       exit: js.UndefOr[Double] = js.undefined
-  ) = {
+  ): TransitionDuration = {
     val p = js.Dynamic.literal()
 
     enter.foreach(p.updateDynamic("enter")(_))

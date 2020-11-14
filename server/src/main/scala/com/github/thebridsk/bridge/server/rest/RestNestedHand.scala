@@ -1,21 +1,10 @@
 package com.github.thebridsk.bridge.server.rest
 
-import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
-import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.Id
-import akka.event.Logging
 import akka.event.Logging._
-import akka.http.scaladsl.model.StatusCode
-import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
-import com.github.thebridsk.bridge.server.util.HasActorSystem
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
-import akka.http.scaladsl.model.headers.Location
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Resources
 import scala.concurrent.Future
@@ -37,9 +26,11 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.PUT
 import javax.ws.rs.DELETE
+import com.github.thebridsk.bridge.data.Team
+import akka.http.scaladsl.server.Route
 
 object RestNestedHand {
-  val log = Logger[RestNestedHand]
+  val log: Logger = Logger[RestNestedHand]()
 }
 
 import RestNestedHand._
@@ -60,13 +51,14 @@ class RestNestedHand {
     * spray route for all the methods on this resource
     */
   @Hidden
-  def route(
-      implicit @Parameter(hidden = true) res: Resources[Id.Team, DuplicateHand]
-  ) = pathPrefix("hands") {
-    logRequestResult("route", DebugLevel) {
-      getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
+  def route(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    pathPrefix("hands") {
+      logRequestResult("route", DebugLevel) {
+        getHand ~ getHands ~ postHand ~ putHand ~ deleteHand
+      }
     }
-  }
 
   @GET
   @Operation(
@@ -111,20 +103,31 @@ class RestNestedHand {
             )
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
-  def xxxgetHands = {}
-  def getHands(
-      implicit @Parameter(hidden = true) res: Resources[
-        Id.DuplicateHand,
+  def xxxgetHands: Unit = {}
+  def getHands(implicit
+      @Parameter(hidden = true) res: Resources[
+        Team.Id,
         DuplicateHand
       ]
-  ) = pathEndOrSingleSlash {
-    get {
-      resourceMap(res.readAll())
+  ): Route =
+    pathEndOrSingleSlash {
+      get {
+        resourceMap(res.readAll())
+      }
     }
-  }
 
   @Path("/{handId}")
   @GET
@@ -178,19 +181,30 @@ class RestNestedHand {
             schema = new Schema(implementation = classOf[RestMessage])
           )
         )
+      ),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
       )
     )
   )
-  def xxxgetHand = {}
-  def getHand(
-      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
-  ) = logRequest("getHand", DebugLevel) {
-    get {
-      path("""[a-zA-Z0-9]+""".r) { id =>
-        resource(res.select(id).read())
+  def xxxgetHand: Unit = {}
+  def getHand(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    logRequest("getHand", DebugLevel) {
+      get {
+        path("""[a-zA-Z0-9]+""".r) { id =>
+          resource(res.select(Team.id(id)).read())
+        }
       }
     }
-  }
 
   @POST
   @Operation(
@@ -254,24 +268,25 @@ class RestNestedHand {
       )
     )
   )
-  def xxxpostHand = {}
-  def postHand(
-      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
-  ) = pathEnd {
-    post {
-      entity(as[DuplicateHand]) { hand =>
-        log.fine(s"Creating new hand ${hand} in ${res.resourceURI}")
-        resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+  def xxxpostHand: Unit = {}
+  def postHand(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    pathEnd {
+      post {
+        entity(as[DuplicateHand]) { hand =>
+          log.fine(s"Creating new hand ${hand} in ${res.resourceURI}")
+          resourceCreated(res.resourceURI, addIdToFuture(res.createChild(hand)))
+        }
       }
     }
-  }
 
   def addIdToFuture(
       f: Future[Result[DuplicateHand]]
   ): Future[Result[(String, DuplicateHand)]] =
     f.map { r =>
       r match {
-        case Right(md) => Right((md.id.toString(), md))
+        case Right(md) => Right((md.id.id, md))
         case Left(e)   => Left(e)
       }
     }
@@ -341,20 +356,21 @@ class RestNestedHand {
       )
     )
   )
-  def xxxputHand = {}
-  def putHand(
-      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
-  ) = logRequest("putHand", DebugLevel) {
-    logResult("putHand", DebugLevel) {
-      put {
-        path("""[a-zA-Z0-9]+""".r) { id =>
-          entity(as[DuplicateHand]) { hand =>
-            resourceUpdated(res.select(id).update(hand))
+  def xxxputHand: Unit = {}
+  def putHand(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    logRequest("putHand", DebugLevel) {
+      logResult("putHand", DebugLevel) {
+        put {
+          path("""[a-zA-Z0-9]+""".r) { id =>
+            entity(as[DuplicateHand]) { hand =>
+              resourceUpdated(res.select(Team.id(id)).update(hand))
+            }
           }
         }
       }
     }
-  }
 
   @Path("/{handId}")
   @DELETE
@@ -389,15 +405,26 @@ class RestNestedHand {
       )
     ),
     responses = Array(
-      new ApiResponse(responseCode = "204", description = "Hand deleted.")
+      new ApiResponse(responseCode = "204", description = "Hand deleted."),
+      new ApiResponse(
+        responseCode = "400",
+        description = "Bad request",
+        content = Array(
+          new Content(
+            mediaType = "application/json",
+            schema = new Schema(implementation = classOf[RestMessage])
+          )
+        )
+      )
     )
   )
-  def xxxdeleteHand = {}
-  def deleteHand(
-      implicit @Parameter(hidden = true) res: Resources[String, DuplicateHand]
-  ) = delete {
-    path("""[a-zA-Z0-9]+""".r) { id =>
-      resourceDelete(res.select(id).delete())
+  def xxxdeleteHand: Unit = {}
+  def deleteHand(implicit
+      @Parameter(hidden = true) res: Resources[Team.Id, DuplicateHand]
+  ): Route =
+    delete {
+      path("""[a-zA-Z0-9]+""".r) { id =>
+        resourceDelete(res.select(Team.id(id)).delete())
+      }
     }
-  }
 }

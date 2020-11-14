@@ -8,7 +8,6 @@ import sbt.Logger
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.File
-import org.apache.tools.ant.util.FileUtils
 import java.nio.file.Path
 import java.nio.file.Files
 import java.nio.file.FileVisitor
@@ -20,13 +19,40 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.DirectoryNotEmptyException
 import sbt.io.IO
 import java.nio.file.StandardCopyOption
+import collection.JavaConverters._
+import java.lang.ProcessBuilder.Redirect
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
+import sbt.Fork
+import sbt.ForkOptions
+import scala.io.Source
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
+object ProcessPrivate {
+  implicit val ec = ExecutionContext.global
+}
 
 class MyProcess( logger: Option[Logger] = None ) {
+  import ProcessPrivate._
 
   val counter = new AtomicInteger()
 
+  def logStream( log: String => Unit, in: InputStream ) = {
+    Future {
+      val buf = Source.fromInputStream( in, "UTF8" )
+      try {
+        for ( line <- buf.getLines()) {
+          log(line)
+        }
+      } finally {
+        buf.close
+      }
+    }
+  }
+
   def exec( cmd: List[String], cwd: File  ): Process = {
-    import scala.collection.JavaConverters._
     val i = counter.incrementAndGet()
     logger.foreach( l => l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""") )
     val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).inheritIO()
@@ -35,7 +61,6 @@ class MyProcess( logger: Option[Logger] = None ) {
   }
 
   def exec( cmd: List[String], addEnvp: Map[String,String], cwd: File  ): Process = {
-    import scala.collection.JavaConverters._
     val i = counter.incrementAndGet()
     logger.foreach( l => l.info(s"""Executing OS command($i): ${cmd.mkString(" ")}""") )
     val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).inheritIO()
@@ -45,7 +70,64 @@ class MyProcess( logger: Option[Logger] = None ) {
     proc
   }
 
+  /**
+    * execute a program, stdin of program gets string in stdin argument.
+    *
+    * @param cmd
+    * @param addEnvp
+    * @param cwd
+    * @param stdin the data in UTF8
+    * @return
+    */
+  def exec( cmd: List[String], addEnvp: Map[String,String], cwd: File, stdin: Option[String], pcmd: Option[List[String]] = None ): Process = {
+    val i = counter.incrementAndGet()
+    logger.foreach( l => l.info(s"""Executing OS command($i): ${pcmd.getOrElse(cmd).mkString(" ")}""") )
+    val redirect = logger.map( l => Redirect.PIPE).getOrElse(Redirect.INHERIT)
+    val pb = new ProcessBuilder().command(cmd.asJava).directory(cwd).redirectOutput(redirect).redirectError(redirect).redirectInput(Redirect.PIPE)
+    val env = pb.environment()
+    addEnvp.foreach( e => env.put(e._1, e._2) )
+    val proc = pb.start()
+    val outfuture = logger.map { l =>
+      val f1 = logStream( s => l.info(s), proc.getInputStream())
+      val f2 = logStream( s => l.warn(s), proc.getErrorStream())
+      Future.foldLeft(List(f1,f2))(0) { (ac,v) => ac }
+    }.getOrElse( Future(0) )
+    stdin.foreach { data =>
+      val pipeIn = proc.getOutputStream()
+      val in = new OutputStreamWriter( pipeIn, "UTF8" )
+      try {
+        in.write(data)
+        in.flush
+      } finally {
+        in.close
+      }
+    }
+    Await.ready( outfuture, Duration.Inf )
+    proc
+  }
 
+  /**
+    * Execute a command using bash shell on windows.  This requires WSL on windows.
+    * On linux, the command will be executed as is.
+    * @param cmd
+    * @param addEnvp
+    * @param cwd
+    * @param stdin the data in UTF8
+    * @param printcmd the command to print, with pw removed
+    * @return Process object
+    */
+  def bash( cmd: List[String], addEnvp: Map[String,String], workingDirectory: Option[File], stdin: Option[String] = None, printcmd: Option[List[String]] = None ) = {
+    val wd = workingDirectory.getOrElse( new File(".") ).getAbsoluteFile()
+    val c = sys.props.getOrElse("os.name", "oops").toLowerCase() match {
+      case os: String if (os.contains("win")) => List("bash", "-c", cmd.mkString(" "))
+      case os: String if (os.contains("mac")) => cmd
+      case os: String if (os.contains("nix")||os.contains("nux")) => cmd
+      case os =>
+        logger.foreach( _.error("Unknown operating system: "+os) )
+        throw new Exception("Unknown operating system: "+os)
+    }
+    exec( c, addEnvp, wd, stdin, printcmd );
+  }
 
   def startOnWindows( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
     val env = addEnvp.getOrElse(Map.empty)
@@ -53,12 +135,14 @@ class MyProcess( logger: Option[Logger] = None ) {
   }
 
   def startOnMac( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
-    exec( "sh"::"-c"::cmd.mkString(" ")::Nil, cwd );
+    val env = addEnvp.getOrElse(Map.empty)
+    exec( "sh"::"-c"::cmd.mkString(" ")::Nil, env, cwd );
   }
 
   def startOnLinux( cwd: File, addEnvp: Option[Map[String,String]], cmd: String* ) = {
+    val env = addEnvp.getOrElse(Map.empty)
     val c = "sh"::"-c"::cmd.mkString(" ")::Nil
-    exec(c, cwd);
+    exec(c, env, cwd);
   }
 
   /**
@@ -99,6 +183,33 @@ class MyProcess( logger: Option[Logger] = None ) {
     }
 
   }
+
+  def keytool(
+      cmd: List[String],
+      workingDirectory: Option[File] = None,
+      env: Option[Map[String,String]] = None,
+      printcmd: Option[List[String]] = None,
+      stdin: Option[String] = None
+  ): Unit = {
+    val pcmd = printcmd.getOrElse(cmd)
+    val wd = workingDirectory.getOrElse( new File(".") ).getAbsolutePath()
+    logger.foreach { l =>
+      l.info( s"Working Directory is $wd")
+      l.info( s"Running: keytool ${pcmd.mkString(" ")}" )
+    }
+    val ecmd = "keytool"::cmd
+    val proc = exec(ecmd, env.getOrElse(Map()), workingDirectory.getOrElse(new File(".")), stdin, Some("keytool"::pcmd) )
+    val rc = proc.waitFor()
+    if (rc != 0) throw new Error(s"Failed, with rc=${rc} running keytool ${pcmd.mkString(" ")}")
+  }
+
+  def java( cmd: List[String], workingDirectory: Option[File], envVars: Option[Map[String,String]] = None ): Unit = {
+    logger.foreach( _.info( "Running java "+cmd.mkString(" ") ))
+    val fo = envVars.map( env => ForkOptions().withEnvVars(env) ).getOrElse(ForkOptions()).withWorkingDirectory( workingDirectory)
+    val rc = Fork.java( fo, cmd )
+    if (rc != 0) throw new Error("Failed running java "+cmd.mkString(" "))
+  }
+
 }
 
 object MyProcess {
@@ -125,11 +236,9 @@ object MyProcess {
 
 }
 
-class CopyFileVisitor( destDir: Path, srcDir: Path, onlyExt: String ) extends FileVisitor[Path] {
+class CopyFileVisitor( destDir: Path, srcDir: Path )( filter: (Path,BasicFileAttributes ) => Boolean ) extends FileVisitor[Path] {
 
     Files.createDirectories(destDir)
-
-    val ext = "."+onlyExt
 
     /**
      * Invoked for a directory before entries in the directory are visited.
@@ -166,11 +275,9 @@ class CopyFileVisitor( destDir: Path, srcDir: Path, onlyExt: String ) extends Fi
      *          if an I/O error occurs
      */
     def visitFile( file: Path, attrs: BasicFileAttributes ): FileVisitResult = {
-      if (attrs.isRegularFile()) {
-        if (file.toString().toLowerCase().endsWith(ext)) {
-          val tar = destDir.resolve(srcDir.relativize(file))
-          Files.copy(file, destDir.resolve(tar), StandardCopyOption.REPLACE_EXISTING)
-        }
+      if (filter(file,attrs)) {
+        val tar = destDir.resolve(srcDir.relativize(file))
+        Files.copy(file, destDir.resolve(tar), StandardCopyOption.REPLACE_EXISTING)
       }
       FileVisitResult.CONTINUE
     }
@@ -217,21 +324,39 @@ class CopyFileVisitor( destDir: Path, srcDir: Path, onlyExt: String ) extends Fi
 
 object MyFileUtils {
 
+  private val patternExtension = """.*?\.([^.]*)""".r
+
+  def onlyCopy( ext: String* )(path: Path, attrs: BasicFileAttributes ): Boolean = {
+    if (attrs.isRegularFile()) {
+      path.toString match {
+        case patternExtension(fext) if ext.contains(fext) =>
+          // println(s"copying file $path")
+          true
+        case _ =>
+          // println(s"not copying file $path")
+          false
+      }
+    } else {
+      // println(s"not copying $path, is a directory")
+      false
+    }
+  }
+
   /**
    * Copies all files from source directory to target directory.
    * Does NOT recurse into subdirectories.
    *
    * @param src the source directory
    * @param dest the destination directory
-   * @param onlyExt only files with this extension
-   * @param maxDepth max directory depth, default is 1, copy only files in src
+   * @param maxDepth max directory depth, default is 1, copy only files in src.  Default is to copy all files
+   * @param filter a filter function, called for every file.  if filter returns true, the file is copied.
    *
    */
-  def copyDirectory( src: File, dest: File, onlyExt: String, maxDepth: Int = 1 ) = {
+  def copyDirectory( src: File, dest: File, maxDepth: Int = 1 )( filter: (Path,BasicFileAttributes ) => Boolean = (_,_) => true ) = {
     val srcPath = src.toPath()
     val destPath = dest.toPath()
 
-    val visitor = new CopyFileVisitor(destPath, srcPath, onlyExt)
+    val visitor = new CopyFileVisitor(destPath, srcPath)(filter)
     val options = EnumSet.noneOf(classOf[FileVisitOption])
     Files.walkFileTree(srcPath, options, maxDepth, visitor)
 

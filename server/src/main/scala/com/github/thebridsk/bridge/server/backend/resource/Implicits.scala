@@ -12,7 +12,7 @@ object Implicits {
 
   import Result._
 
-  implicit class WrapResult[T](val r: Result[T]) extends AnyVal {
+  implicit class WrapResult[T](private val r: Result[T]) extends AnyVal {
     def logit(
         comment: => String
     )(implicit pos: Position, caller: SourcePosition): Result[T] = {
@@ -36,7 +36,8 @@ object Implicits {
     def toFuture: Future[Result[T]] = Result.future(r)
   }
 
-  implicit class WrapOptionResult[T](val r: Option[Result[T]]) extends AnyVal {
+  implicit class WrapOptionResult[T](private val r: Option[Result[T]])
+      extends AnyVal {
     def logit(
         comment: => String
     )(implicit pos: Position, caller: SourcePosition): Option[Result[T]] = {
@@ -63,16 +64,17 @@ object Implicits {
 
   private val counter = new AtomicInteger
 
-  def toObjectId[T](o: T) = {
+  def toObjectId[T](o: T): String = {
     o.getClass.getName + "@" + Integer.toHexString(o.hashCode())
   }
 
-  implicit class WrapFutureResult[T](val fr: Future[Result[T]]) extends AnyVal {
-    def onError(comment: String)(
-        implicit executor: ExecutionContext,
+  implicit class WrapFutureResult[T](private val fr: Future[Result[T]])
+      extends AnyVal {
+    def onError(comment: String)(implicit
+        executor: ExecutionContext,
         pos: Position,
         caller: SourcePosition
-    ) = {
+    ): Future[Result[T]] = {
       fr.failed.foreach { ex =>
         log.warning(
           s"${comment}: ${pos.line} returning to caller ${caller.line} got exception",
@@ -82,8 +84,8 @@ object Implicits {
       fr
     }
 
-    def logit(comment: String)(
-        implicit execute: ExecutionContext,
+    def logit(comment: String)(implicit
+        execute: ExecutionContext,
         pos: Position,
         caller: SourcePosition
     ): Future[Result[T]] = {
@@ -107,21 +109,22 @@ object Implicits {
     }
   }
 
-  implicit class WrapFutureOptionResult[T](val fr: Future[Option[Result[T]]])
-      extends AnyVal {
-    def onError(comment: String)(
-        implicit executor: ExecutionContext,
+  implicit class WrapFutureOptionResult[T](
+      private val fr: Future[Option[Result[T]]]
+  ) extends AnyVal {
+    def onError(comment: String)(implicit
+        executor: ExecutionContext,
         pos: Position,
         caller: SourcePosition
-    ) = {
+    ): Future[Option[Result[T]]] = {
       fr.failed.foreach { ex =>
         log.warning(s"${comment}: ${pos.line} got exception", ex)
       }
       fr
     }
 
-    def logit(comment: String)(
-        implicit execute: ExecutionContext,
+    def logit(comment: String)(implicit
+        execute: ExecutionContext,
         pos: Position,
         caller: SourcePosition
     ): Future[Option[Result[T]]] = {

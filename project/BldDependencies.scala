@@ -4,7 +4,6 @@ import Keys._
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{crossProject => _, CrossType => _, _}
 import scalajsbundler.sbtplugin.WebScalaJSBundlerPlugin.autoImport._
 
 import BldVersion._
@@ -29,7 +28,7 @@ object BldDependencies {
       ))
 
   val loggingDeps = Def.setting(scalatestDeps.value ++ Seq(
-      "com.jsuereth" %% "scala-arm" % vScalaArm withSources()
+      // "com.jsuereth" %% "scala-arm" % vScalaArm withSources()
       ))
 
   val utilitiesDeps = Def.setting(scalatestDeps.value ++ Seq(
@@ -65,6 +64,7 @@ object BldDependencies {
     "org.seleniumhq.selenium" %   "selenium-java" % vSelenium withSources(),
 
     "org.scalatest" %%% "scalatest" % vScalatest withSources(),
+    "org.scalatestplus" %%% "selenium-3-141" % vScalatestSelenium withSources(),
     "org.scalactic" %%% "scalactic" % vScalactic withSources(),
 
 // Test
@@ -74,22 +74,22 @@ object BldDependencies {
 
   val bridgeScorerServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
 
-      "com.typesafe.akka"   %%  "akka-actor"    % vAkka withSources(),
+      "com.typesafe.akka"   %% "akka-actor"              % vAkka withSources(),
+      // "com.typesafe.akka"   %% "akka-actor-typed"        % vAkka withSources(),
       "com.typesafe.akka"   %% "akka-stream"             % vAkka withSources(),
+      "com.typesafe.akka"   %% "akka-slf4j"              % vAkka withSources(),
       "com.typesafe.akka"   %% "akka-http"               % vAkkaHttp withSources(),
       "com.typesafe.akka"   %% "akka-http-caching"       % vAkkaHttp withSources(),
       // add http2 support to test only for now.  annoying if cert from trusted CA is not used
       "com.typesafe.akka"   %% "akka-http2-support"      % vAkkaHttp % "test" withSources(),
       "de.heikoseeberger"   %% "akka-http-play-json"     % vAkkaHttpPlayJson withSources(),
 
-//      (
       "com.github.swagger-akka-http" %%  "swagger-scala-module" % vSwaggerScalaModule withSources(),
-//      ).exclude("com.google.code.findbugs","jsr305"),
       "com.github.swagger-akka-http" %% "swagger-akka-http" % vSwaggerAkkaHttp withSources(),
       "ch.megard" %% "akka-http-cors" % vAkkaHttpCors withSources(),
 
       "org.sangria-graphql" %% "sangria" % vSangria withSources(),
-      "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
+      // "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
       "org.sangria-graphql" %% "sangria-play-json" % vSangriaPlayJson withSources(),
 
       "io.swagger.core.v3" % "swagger-core" % vSwagger withSources(),
@@ -99,7 +99,6 @@ object BldDependencies {
 
       "jakarta.ws.rs" % "jakarta.ws.rs-api" % vWsRsApi withSources(),
 
-      "com.jsuereth" %% "scala-arm" % vScalaArm withSources(),
       lScallop,
       "org.slf4j" % "slf4j-jdk14" % vSlf4j withSources(),
 
@@ -115,9 +114,23 @@ object BldDependencies {
 
       "com.typesafe.akka"       %% "akka-http-testkit" % vAkkaHttp % "test" withSources(),
 
-      "org.seleniumhq.selenium" %   "selenium-java" % vSelenium  % "test" withSources(),
-
       ))
+
+  val bridgeScorerFullServerDeps = Def.setting(morejacksons ++ jacksons ++ Seq(
+
+// Test
+    lJunit,
+
+    "com.typesafe.akka"   %% "akka-http-xml"           % vAkkaHttp % "test" withSources(),
+
+    "com.typesafe.akka"       %%  "akka-testkit"  % vAkka      % "test" withSources(),
+    "com.typesafe.akka"       %%  "akka-stream-testkit"  % vAkka      % "test" withSources(),
+
+    "com.typesafe.akka"       %% "akka-http-testkit" % vAkkaHttp % "test" withSources(),
+
+    "org.seleniumhq.selenium" %   "selenium-java" % vSelenium  % "test" withSources(),
+
+    ))
 
   val bridgeScorerSharedDeps = Def.setting(Seq(
       "com.typesafe.play" %%% "play-json" % vPlayJson withSources(),
@@ -164,8 +177,6 @@ object BldDependencies {
       "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
       "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
 
-      "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
-
       "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
       ))
 
@@ -177,10 +188,10 @@ object BldDependencies {
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
 
-    "org.querki" %%% "jquery-facade" % vJqueryFacade % "test" withSources(),
-
     "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
     ))
+
+  val bridgeScorerDemoDeps = Seq()
 
   val bridgeScorerNpmDeps = Seq(
       "react" -> vWebJarsReact,
@@ -189,6 +200,11 @@ object BldDependencies {
       "react-widgets" -> vReactWidgets,
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
+      // "globalize" -> vGlobalize,
+      // "react-widgets-globalize" -> vReactWidgetsGlobalize,
+      // "cldrjs" -> vCldrjs,
+      // // "cldr" -> vCldr,
+      // "cldr-data" -> vCldrData,
       "@material-ui/core" -> vMaterialUIcore,
       "@material-ui/icons" -> vMaterialUIicons
   )
@@ -200,6 +216,11 @@ object BldDependencies {
       "react-widgets" -> vReactWidgets,
       "react-widgets-moment" -> vReactWidgetsMoment,
       "moment" -> vMoment,
+      // "globalize" -> vGlobalize,
+      // "react-widgets-globalize" -> vReactWidgetsGlobalize,
+      // "cldrjs" -> vCldrjs,
+      // // "cldr" -> vCldr,
+      // "cldr-data" -> vCldrData,
       "swagger-ui-dist" -> vSwaggerUI,
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
@@ -226,6 +247,7 @@ object BldDependencies {
 
   val bridgeScorerDevNpmDeps = Seq(
       "webpack" -> vWebPack,
+      "jquery" -> vJQuery,
 //      "source-map-loader" -> vSourceMapLoader,
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
@@ -235,10 +257,11 @@ object BldDependencies {
 
   val bridgeScorerClientApiDevNpmDeps = Seq(
       "webpack" -> vWebPack,
+      "jquery" -> vJQuery,
 //      "source-map-loader" -> vSourceMapLoader,
 //      "concat-with-sourcemaps" -> vConcatWithSourcemaps,
       "terser" -> vTerser,
-      "ajv" -> vAjv
+      "ajv" -> vAjv,
   )
 
   def bridgeScorerNpmAssets(client: ProjectReference) = {

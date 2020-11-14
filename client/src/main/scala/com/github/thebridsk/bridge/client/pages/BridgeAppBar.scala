@@ -7,7 +7,7 @@ import com.github.thebridsk.materialui.MuiAppBar
 import com.github.thebridsk.materialui.Position
 import com.github.thebridsk.materialui.MuiToolbar
 import com.github.thebridsk.materialui.MuiIconButton
-import com.github.thebridsk.materialui.icons.MuiIcons
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.ColorVariant
 import com.github.thebridsk.materialui.TextVariant
@@ -15,23 +15,15 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import japgolly.scalajs.react.vdom.HtmlStyles
 import com.github.thebridsk.materialui.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.bridge.client.routes.AppRouter.About
-import com.github.thebridsk.bridge.clientcommon.react.AppButtonLinkNewWindow
 import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
-import com.github.thebridsk.bridge.client.routes.AppRouter.Home
-import org.scalajs.dom.experimental.URL
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.routes.AppRouter.LogView
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.clientcommon.logger.Init
-import com.github.thebridsk.materialui.MuiButton
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
@@ -39,10 +31,8 @@ import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
-import com.github.thebridsk.bridge.clientcommon.logger.Alerter
-import scala.util.Failure
-import com.github.thebridsk.bridge.client.pages.info.InfoPage
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
+import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
 /**
   * A simple AppBar for the Bridge client.
@@ -77,7 +67,8 @@ object BridgeAppBar {
       helpurl: String,
       routeCtl: BridgeRouter[_],
       showHomeButton: Boolean,
-      showRightButtons: Boolean
+      showRightButtons: Boolean,
+      showAPI: Boolean = false
   )
 
   def apply(
@@ -87,10 +78,11 @@ object BridgeAppBar {
       helpurl: String,
       routeCtl: BridgeRouter[_],
       showHomeButton: Boolean = true,
-      showRightButtons: Boolean = true
+      showRightButtons: Boolean = true,
+      showAPI: Boolean = false
   )(
       mainMenu: CtorType.ChildArg*
-  ) =
+  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(
       Props(
         mainMenu,
@@ -100,7 +92,8 @@ object BridgeAppBar {
         helpurl,
         routeCtl,
         showHomeButton,
-        showRightButtons
+        showRightButtons,
+        showAPI
       )
     )
 
@@ -109,31 +102,31 @@ object BridgeAppBar {
 object BridgeAppBarInternal {
   import BridgeAppBar._
 
-  val logger = Logger("bridge.BridgeAppBar")
+  val logger: Logger = Logger("bridge.BridgeAppBar")
 
   /**
     * Internal state for rendering the component.
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause State to leak.
-    *
     */
   case class State(
       anchorMoreEl: js.UndefOr[Element] = js.undefined
   ) {
 
-    def openMoreMenu(n: Node) = copy(anchorMoreEl = n.asInstanceOf[Element])
-    def closeMoreMenu() = copy(anchorMoreEl = js.undefined)
+    def openMoreMenu(n: Node): State =
+      copy(anchorMoreEl = n.asInstanceOf[Element])
+    def closeMoreMenu(): State = copy(anchorMoreEl = js.undefined)
   }
 
-  val apiPageURL = {
+  val apiPageURL: String = {
     val window = document.defaultView
     val curUrl = window.location.href
     if (curUrl.contains("fastopt")) "/public/index-api-fastopt.html"
     else "/public/index-api.html"
   }
 
-  def getApiPageUrl( page: String ) = {
+  def getApiPageUrl(page: String): String = {
     val u = s"${apiPageURL}#${page}"
 //    logger.fine(s"Going to URL ${u}")
     u
@@ -144,27 +137,25 @@ object BridgeAppBarInternal {
     *
     * I'd like this class to be private, but the instantiation of component
     * will cause Backend to leak.
-    *
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMoreClick(event: ReactEvent) =
-      event.extract(_.currentTarget)(
-        currentTarget =>
-          scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
+    def handleMoreClick(event: ReactEvent): Unit =
+      event.extract(_.currentTarget)(currentTarget =>
+        scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
       )
-    def handleMoreCloseClick(event: ReactEvent) =
+    def handleMoreCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMoreMenu()).runNow()
-    def handleMoreClose( /* event: js.Object, reason: String */ ) = {
+    def handleMoreClose( /* event: js.Object, reason: String */ ): Unit = {
       logger.fine("MoreClose called")
       scope.modState(s => s.closeMoreMenu()).runNow()
     }
 
-    def gotoPage(uri: String) = {
+    def gotoPage(uri: String): Unit = {
       GotoPage.inNewWindow(uri)
     }
 
-    def handleHelpGotoPageClick(uri: String)(event: ReactEvent) = {
+    def handleHelpGotoPageClick(uri: String)(event: ReactEvent): Unit = {
       logger.fine(s"""Going to page ${uri}""")
 //      handleMoreClose()
 
@@ -185,13 +176,13 @@ object BridgeAppBarInternal {
       }
     }
 
-    def serverUrlClick(event: ReactEvent) = {
+    def serverUrlClick(event: ReactEvent): Unit = {
       logger.fine("Requesting to show server URL popup")
       ServerURLPopup.setShowServerURLPopup(true)
     }
 
     // data-theme="dark"
-    def toggleLightDark(event: ReactEvent) = {
+    def toggleLightDark(event: ReactEvent): Unit = {
       logger.fine("toggle light dark")
       val ntheme = ColorThemeStorage.getColorTheme() match {
         case Some(curtheme) =>
@@ -202,27 +193,28 @@ object BridgeAppBarInternal {
       ColorThemeStorage.setColorTheme(ntheme)
     }
 
-    def isFullscreenEnabledI = {
+    def isFullscreenEnabledI: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
-      logger.fine(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
-      val e = doc.fullscreenEnabled
+      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
+      val e = doc.myFullscreenEnabled
       if (!e) {
-        logger.fine("fullscreenEnabled = false")
+        logger.info("fullscreenEnabled = false")
       }
       e
     }
 
-    def isFullscreen = {
+    def isFullscreen: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
-      logger.fine(s"browser fullscreenEnabled: ${doc.fullscreenEnabled}")
+      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
       if (isFullscreenEnabledI) {
-        val r = doc.fullscreenElement != null
+        val fe = doc.myFullscreenElement
+        val r = !js.isUndefined(fe) && fe != null
         logger.fine(s"browser isfullscreen: $r")
         if (r) {
-          val elem = doc.fullscreenElement
-          logger.fine(s"browser fullscreen element is ${elem.nodeName}")
+          val elem = doc.myFullscreenElement
+          logger.info(s"browser fullscreen element is ${elem.nodeName}")
         }
         r
       } else {
@@ -230,8 +222,7 @@ object BridgeAppBarInternal {
       }
     }
 
-    def toggleFullscreen( event: ReactEvent ): Unit = {
-      import scala.concurrent.ExecutionContext.Implicits.global
+    def toggleFullscreen(event: ReactEvent): Unit = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val body = document.documentElement
       val doc = document
@@ -239,18 +230,20 @@ object BridgeAppBarInternal {
         val isfullscreen = isFullscreen
         if (isfullscreen) {
           logger.fine(s"browser exiting fullscreen")
-          doc.exitFullscreen()
+          doc.myExitFullscreen()
         } else {
           logger.fine(s"browser requesting fullscreen on body")
           body.requestFullscreen()
         }
-        scalajs.js.timers.setTimeout(500) { scope.withEffectsImpure.forceUpdate }
+        scalajs.js.timers.setTimeout(500) {
+          scope.withEffectsImpure.forceUpdate
+        }
       } else {
         logger.info(s"fullscreen is disabled")
       }
     }
 
-    def render(props: Props, state: State) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
       def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
@@ -276,7 +269,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.Help()
+            icons.Help()
           ),
           MuiIconButton(
             id = "ServerURL",
@@ -285,7 +278,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.Place()
+            icons.Place()
           ),
           MuiIconButton(
             id = "LightDark",
@@ -304,9 +297,9 @@ object BridgeAppBarInternal {
             classes = buttonStyle
           )(
             if (isfullscreen) {
-              MuiIcons.FullscreenExit()
+              icons.FullscreenExit()
             } else {
-              MuiIcons.Fullscreen()
+              icons.Fullscreen()
             }
           ),
           MuiIconButton(
@@ -316,7 +309,7 @@ object BridgeAppBarInternal {
             color = ColorVariant.inherit,
             classes = buttonStyle
           )(
-            MuiIcons.MoreVert()
+            icons.MoreVert()
           )
         )
       } else {
@@ -348,7 +341,8 @@ object BridgeAppBarInternal {
         List(
           <.div(
             baseStyles.appBarTitle,
-            <.div( baseStyles.appBarTitleWhenFullscreen ).when(isfullscreen && Values.isIpad),
+            <.div(baseStyles.appBarTitleWhenFullscreen)
+              .when(isfullscreen && Values.isIpad),
             !props.mainMenu.isEmpty ?= MuiIconButton(
               id = "MainMenu",
               onClick = props.handleMainClick,
@@ -356,7 +350,7 @@ object BridgeAppBarInternal {
               color = ColorVariant.inherit,
               classes = buttonStyle
             )(
-              MuiIcons.Menu()
+              icons.Menu()
             ),
             if (props.showHomeButton) {
               MuiIconButton(
@@ -366,7 +360,7 @@ object BridgeAppBarInternal {
                 color = ColorVariant.inherit,
                 classes = buttonStyle
               )(
-                MuiIcons.Home()
+                icons.Home()
               )
             } else {
               TagMod.empty
@@ -393,13 +387,97 @@ object BridgeAppBarInternal {
 
       val toolbarContent = toolbarFront ::: toolbarContentTail
 
+      val moremenu =
+        List[CtorType.ChildArg](
+          MuiMenuItem(
+            id = "About",
+            onClick = gotoAboutPage _
+          )(
+            "About"
+          ),
+          MuiMenuItem(
+            id = "Info",
+            onClick = gotoInfoPage _
+          )(
+            "Info"
+          ),
+          MuiMenuItem(
+            id = "Log",
+            onClick = callbackPage(LogView) _
+          )(
+            "Show Logs"
+          ),
+          MuiMenuItem(
+            id = "StartLog",
+            onClick = startLog _
+          )(
+            "Start Logging"
+          ),
+          MuiMenuItem(
+            id = "StopLog",
+            onClick = stopLog _
+          )(
+            "Stop Logging"
+          )
+        ) :::
+          (if (props.showAPI) {
+             List[CtorType.ChildArg](
+               MuiMenuItem(
+                 id = "SwaggerDocs",
+                 onClick = handleHelpGotoPageClick("/v1/docs") _
+               )(
+                 "Swagger Docs"
+               ),
+               MuiMenuItem(
+                 id = "SwaggerDocs2",
+                 onClick = handleHelpGotoPageClick("/public/apidocs.html") _
+               )(
+                 "Swagger API Docs"
+               ),
+               MuiMenuItem(
+                 id = "GraphQL",
+                 onClick = handleHelpGotoPageClick(
+                   getApiPageUrl("graphql")
+                 ) _ // callbackPage(GraphQLAppPage) _
+               )(
+                 "GraphQL"
+               ),
+               MuiMenuItem(
+                 id = "GraphiQL",
+                 onClick = handleHelpGotoPageClick(
+                   getApiPageUrl("graphiql")
+                 ) _ // callbackPage(GraphiQLView) _
+               )(
+                 "GraphiQL"
+               ),
+               MuiMenuItem(
+                 id = "Voyager",
+                 onClick = handleHelpGotoPageClick(
+                   getApiPageUrl("voyager")
+                 ) _ // callbackPage(VoyagerView) _
+               )(
+                 "Voyager"
+               ),
+               MuiMenuItem(
+                 id = "Color",
+                 onClick = handleHelpGotoPageClick(
+                   getApiPageUrl("color")
+                 ) _ // callbackPage(ColorView) _
+               )(
+                 "Color"
+               )
+             )
+           } else {
+             Nil
+           })
+
       val bar = <.div(
         (
           (
             MuiAppBar(
               position = Position.static,
               classes = js.Dictionary("root" -> "muiAppBar")
-              )(
+            )(
               MuiToolbar(
                 classes = js.Dictionary("root" -> "muiToolbar")
               )(
@@ -412,72 +490,7 @@ object BridgeAppBarInternal {
                 onClickAway = handleMoreClose _,
                 onItemClick = handleMoreCloseClick _
               )(
-                MuiMenuItem(
-                  id = "About",
-                  onClick = gotoAboutPage _
-                )(
-                  "About"
-                ),
-                MuiMenuItem(
-                  id = "SwaggerDocs",
-                  onClick = handleHelpGotoPageClick("/v1/docs") _
-                )(
-                  "Swagger Docs"
-                ),
-                MuiMenuItem(
-                  id = "SwaggerDocs2",
-                  onClick = handleHelpGotoPageClick("/public/apidocs.html") _
-                )(
-                  "Swagger API Docs"
-                ),
-                MuiMenuItem(
-                  id = "Info",
-                  onClick = gotoInfoPage _
-                )(
-                  "Info"
-                ),
-                MuiMenuItem(
-                  id = "GraphQL",
-                  onClick = handleHelpGotoPageClick(getApiPageUrl("graphql")) _  // callbackPage(GraphQLAppPage) _
-                )(
-                  "GraphQL"
-                ),
-                MuiMenuItem(
-                  id = "GraphiQL",
-                  onClick = handleHelpGotoPageClick(getApiPageUrl("graphiql")) _  // callbackPage(GraphiQLView) _
-                )(
-                  "GraphiQL"
-                ),
-                MuiMenuItem(
-                  id = "Voyager",
-                  onClick = handleHelpGotoPageClick(getApiPageUrl("voyager")) _  // callbackPage(VoyagerView) _
-                )(
-                  "Voyager"
-                ),
-                MuiMenuItem(
-                  id = "Color",
-                  onClick = handleHelpGotoPageClick(getApiPageUrl("color")) _  // callbackPage(ColorView) _
-                )(
-                  "Color"
-                ),
-                MuiMenuItem(
-                  id = "Log",
-                  onClick = callbackPage(LogView) _
-                )(
-                  "Show Logs"
-                ),
-                MuiMenuItem(
-                  id = "StartLog",
-                  onClick = startLog _
-                )(
-                  "Start Logging"
-                ),
-                MuiMenuItem(
-                  id = "StopLog",
-                  onClick = stopLog _
-                )(
-                  "Stop Logging"
-                )
+                moremenu: _*
               ) :: Nil
           ).map(_.vdomElement) :::
             props.mainMenu.toList
@@ -487,20 +500,22 @@ object BridgeAppBarInternal {
       bar
     }
 
+    val fullscreenCB = scope.forceUpdate
+
     private var mounted = false
 
-    val didMount = Callback {
+    val didMount: Callback = Callback {
       mounted = true
-
+      Fullscreen.addListener("fullscreenchange", fullscreenCB)
     }
 
-    val willUnmount = Callback {
+    val willUnmount: Callback = Callback {
       mounted = false
-
+      Fullscreen.removeListener("fullscreenchange", fullscreenCB)
     }
   }
 
-  val component = ScalaComponent
+  private[pages] val component = ScalaComponent
     .builder[Props]("BridgeAppBar")
     .initialStateFromProps { props =>
       State()

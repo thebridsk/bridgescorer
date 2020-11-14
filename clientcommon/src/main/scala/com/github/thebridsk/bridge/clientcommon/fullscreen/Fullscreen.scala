@@ -4,8 +4,8 @@ import scala.scalajs.js
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Document
 import org.scalajs.dom.document
-
-
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.clientcommon.dispatcher.Listenable
 
 @js.native
 trait DocumentFullscreen extends js.Object {
@@ -25,43 +25,105 @@ trait DocumentElementFullscreen extends js.Object {
 }
 
 object Values {
-  val isIpad = {
+  val isIpad: Boolean = {
     val p = js.Dynamic.global.window.navigator.platform.asInstanceOf[String]
-    p == "iPad"
+    p == "MacIntel"
   }
 }
 
 object Implicits {
+  import Values._
 
-  implicit class DocumentFullscreenWrapper( val document: Document ) extends AnyVal {
-    import Values._
+  val log: Logger = Logger("bridge.Fullscreen")
 
-    def doc = document.asInstanceOf[DocumentFullscreen]
+  val isFullscreenEnabled = fullscreenEnabled
 
-    def fullscreenEnabled: Boolean = (if (isIpad) doc.webkitFullscreenEnabled else doc.fullscreenEnabled).getOrElse(false)
-    def fullscreenElement: Element = {
-      if (isFullscreenEnabled) if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
+  def fullscreenEnabled: Boolean = {
+
+    val doc = document.asInstanceOf[DocumentFullscreen]
+    if (isIpad) {
+      doc.webkitFullscreenEnabled.getOrElse {
+        val body = document.body
+        val f = js.typeOf(
+          body.asInstanceOf[js.Dynamic].requestFullscreen
+        ) == "function"
+        log.fine(
+          s"On iPad, found requestFullscreen function on body object: $f"
+        )
+        f
+      }
+    } else {
+      doc.fullscreenEnabled.getOrElse(false)
+    }
+  }
+
+  implicit class DocumentFullscreenWrapper(private val document: Document)
+      extends AnyVal {
+
+    def doc: DocumentFullscreen = document.asInstanceOf[DocumentFullscreen]
+
+    def myFullscreenEnabled: Boolean = Implicits.isFullscreenEnabled
+
+    def myFullscreenElement: Element = {
+      if (isFullscreenEnabled)
+        if (isIpad) doc.webkitFullscreenElement else doc.fullscreenElement
       else null
     }
-    def exitFullscreen(): js.Promise[Unit] = {
-      if (isFullscreenEnabled) if (isIpad) doc.webkitExitFullscreen else doc.exitFullscreen
+    def myExitFullscreen(): js.Promise[Unit] = {
+      if (isFullscreenEnabled)
+        if (isIpad) doc.webkitExitFullscreen() else doc.exitFullscreen()
       else js.Promise.reject("fullscreen not enabled")
     }
 
-    def isFullscreen = fullscreenElement != null
+    def myIsFullscreen: Boolean = {
+      val fe = myFullscreenElement
+      !js.isUndefined(fe) && fe != null
+    }
   }
 
-  implicit class ElementFullscreenWrapper( val element: Element ) extends AnyVal {
+  implicit class ElementFullscreenWrapper(private val element: Element)
+      extends AnyVal {
     import Values._
 
-    def elem = element.asInstanceOf[DocumentElementFullscreen]
+    def elem: DocumentElementFullscreen =
+      element.asInstanceOf[DocumentElementFullscreen]
 
     def requestFullscreen(): js.Promise[Unit] = {
-      if (isFullscreenEnabled) if (isIpad) elem.webkitRequestFullscreen() else elem.requestFullscreen()
+      if (isFullscreenEnabled)
+        if (isIpad) elem.webkitRequestFullscreen() else elem.requestFullscreen()
       else js.Promise.reject("fullscreen not enabled")
     }
 
   }
 
-  val isFullscreenEnabled = document.fullscreenEnabled
+}
+
+object Fullscreen extends Listenable {
+  import Implicits._
+  var fullscreenElement: js.UndefOr[Element] = js.undefined
+
+  def init(): Unit = {
+    setFullscreenElement(
+      if (document.myFullscreenEnabled) document.myFullscreenElement
+      else js.undefined
+    )
+  }
+
+  init()
+
+  def setFullscreenElement(e: js.UndefOr[Element]): Unit = {
+    fullscreenElement = e
+  }
+
+  val onFullScreenChange: js.Function1[js.Any, Unit] = { (x) =>
+    notify("fullscreenchange")
+  }
+
+  document.addEventListener("fullscreenchange", onFullScreenChange, false);
+  document.addEventListener(
+    "webkitfullscreenchange",
+    onFullScreenChange,
+    false
+  );
+  document.addEventListener("mozfullscreenchange", onFullScreenChange, false);
 }

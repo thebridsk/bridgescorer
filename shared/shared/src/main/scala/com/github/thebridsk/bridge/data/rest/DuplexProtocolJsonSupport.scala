@@ -3,26 +3,27 @@ package com.github.thebridsk.bridge.data.rest
 import play.api.libs.json._
 
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol._
-import com.github.thebridsk.bridge.data.websocket.Protocol._
-import scala.reflect.ClassTag
 
 trait ToBrowserDuplexProtocolJsonSupport {
   import ToBrowserProtocolJsonSupport.toBrowserMessageFormat
 
-  implicit val responseFormat = Json.format[Response]
-  implicit val unsolicitedFormat = Json.format[Unsolicited]
+  implicit val responseFormat: OFormat[Response] = Json.format[Response]
+  implicit val unsolicitedFormat: OFormat[Unsolicited] =
+    Json.format[Unsolicited]
 
 }
 
 trait ToServerDuplexProtocolJsonSupport {
   import ToServerProtocolJsonSupport._
 
-  implicit val sendFormat = Json.format[Send]
-  implicit val requestFormat = Json.format[Request]
+  implicit val sendFormat: OFormat[Send] = Json.format[Send]
+  implicit val requestFormat: OFormat[Request] = Json.format[Request]
 
-  implicit val errorResponseFormat = Json.format[ErrorResponse]
-  implicit val logEntryV2Format = Json.format[LogEntryV2]
-  implicit val logEntrySFormat = Json.format[LogEntryS]
+  implicit val errorResponseFormat: OFormat[ErrorResponse] =
+    Json.format[ErrorResponse]
+  implicit val logEntryV2Format: OFormat[LogEntryV2] = Json.format[LogEntryV2]
+  implicit val logEntrySFormat: OFormat[LogEntryS] = Json.format[LogEntryS]
+  implicit val completeFormat: OFormat[Complete] = Json.format[Complete]
 }
 
 trait DuplexProtocolJsonSupportImpl
@@ -82,12 +83,16 @@ class DuplexMessageFormat extends SealedFormat[DuplexMessage] {
       case x: ErrorResponse => Json.toJson[ErrorResponse](x)
       case x: LogEntryV2    => Json.toJson[LogEntryV2](x)
       case x: LogEntryS     => Json.toJson[LogEntryS](x)
+
+      case x: Complete => Json.toJson[Complete](x)
+      case x: Fail     => Json.toJson[Complete](Complete("Internal server error"))
     }
   }
 }
 
 trait DuplexProtocolJsonSupport {
-  implicit val duplexMessageFormat = new DuplexMessageFormat
+  implicit val duplexMessageFormat: DuplexMessageFormat =
+    new DuplexMessageFormat
 }
 object DuplexProtocolJsonSupport extends DuplexProtocolJsonSupport
 //object Test {

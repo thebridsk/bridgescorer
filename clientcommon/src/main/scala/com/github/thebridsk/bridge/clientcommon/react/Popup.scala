@@ -1,67 +1,67 @@
 package com.github.thebridsk.bridge.clientcommon.react
 
-import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
 
 /**
- * A skeleton Popup.
- *
- * To use, just code the following:
- *
- * <pre><code>
- * Popup( Popup.Props( ... ) )
- * </code></pre>
- *
- * @author werewolf
- */
+  * A skeleton Popup.
+  *
+  * To use, just code the following:
+  *
+  * <pre><code>
+  * Popup( Popup.Props( ... ) )
+  * </code></pre>
+  *
+  * @author werewolf
+  */
 object Popup {
   import PopupInternal._
 
-  case class Props( display: Boolean, content: TagMod, id: Option[String] )
+  case class Props(display: Boolean, content: TagMod, id: Option[String])
 
-  def apply( display: Boolean, content: TagMod, id: Option[String] = None ) = component(Props(display,content,id))
+  def apply(display: Boolean, content: TagMod, id: Option[String] = None) =
+    component(
+      Props(display, content, id)
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
 object PopupInternal {
   import Popup._
 
-  val logger = Logger("bridge.Popup")
+  val logger: Logger = Logger("bridge.Popup")
 
   /**
-   * Internal state for rendering the Popup.
-   *
-   * I'd like this class to be private, but the instantiation of Popup
-   * will cause State to leak.
-   *
-   */
+    * Internal state for rendering the Popup.
+    *
+    * I'd like this class to be private, but the instantiation of Popup
+    * will cause State to leak.
+    */
   case class State()
 
   /**
-   * Internal state for rendering the Popup.
-   *
-   * I'd like this class to be private, but the instantiation of Popup
-   * will cause Backend to leak.
-   *
-   */
+    * Internal state for rendering the Popup.
+    *
+    * I'd like this class to be private, but the instantiation of Popup
+    * will cause Backend to leak.
+    */
   class Backend(scope: BackendScope[Props, State]) {
-    def render( props: Props, state: State ) = {
+    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
       val disp = ^.display.none.when(!props.display)
       <.div(
         props.id.whenDefined { i =>
           logger.info(s"""Popup.render setting id to $i""")
-           ^.id:=i
+          ^.id := i
         },
         <.div(
-          ^.id:="overlay",
+          ^.id := "overlay",
           baseStyles.divPopupOverlay,
-          disp,
+          disp
         ),
         <.div(
-          ^.id:="popup",
+          ^.id := "popup",
           baseStyles.divPopup,
           disp,
           <.div(
@@ -72,10 +72,10 @@ object PopupInternal {
     }
   }
 
-  val component = ScalaComponent.builder[Props]("PopupComponent")
-                            .initialStateFromProps { props => State() }
-                            .backend(new Backend(_))
-                            .renderBackend
-                            .build
+  private[react] val component = ScalaComponent
+    .builder[Props]("PopupComponent")
+    .initialStateFromProps { props => State() }
+    .backend(new Backend(_))
+    .renderBackend
+    .build
 }
-

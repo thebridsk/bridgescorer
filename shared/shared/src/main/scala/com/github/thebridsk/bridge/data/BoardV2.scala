@@ -1,9 +1,7 @@
 package com.github.thebridsk.bridge.data
 
-import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 
@@ -28,7 +26,7 @@ case class BoardV2 private (
       required = true,
       implementation = classOf[String]
     )
-    id: Id.DuplicateBoard,
+    id: Board.Id,
     @Schema(
       description = "True if NS is vulnerable on the board",
       required = true
@@ -69,13 +67,13 @@ case class BoardV2 private (
     )
     updated: Timestamp
 ) {
-  def equalsIgnoreModifyTime(other: BoardV2) =
+  def equalsIgnoreModifyTime(other: BoardV2): Boolean =
     id == other.id &&
       nsVul == other.nsVul &&
       ewVul == other.ewVul &&
       dealer == other.dealer && equalsInHands(other)
 
-  def equalsInHands(other: BoardV2, throwit: Boolean = false) = {
+  def equalsInHands(other: BoardV2, throwit: Boolean = false): Boolean = {
     if (hands.length == other.hands.length) {
       hands.find { t1 =>
         // this function must return true if t1 is NOT in other.team
@@ -101,7 +99,7 @@ case class BoardV2 private (
     }
   }
 
-  def setId(newId: Id.DuplicateBoard, forCreate: Boolean) = {
+  def setId(newId: Board.Id, forCreate: Boolean): BoardV2 = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -110,29 +108,32 @@ case class BoardV2 private (
     )
   }
 
-  def playedHands() = hands.filter(dh => dh.wasPlayed)
+  def playedHands: List[DuplicateHandV2] = hands.filter(dh => dh.wasPlayed)
 
-  def timesPlayed() = hands.filter(dh => dh.wasPlayed).size
+  def timesPlayed: Int = hands.filter(dh => dh.wasPlayed).size
 
-  def handPlayedByTeam(team: Id.Team) = hands.collectFirst {
-    case hand: DuplicateHandV2 if hand.isTeam(team) => hand
-  }
+  def handPlayedByTeam(team: Team.Id): Option[DuplicateHandV2] =
+    hands.collectFirst {
+      case hand: DuplicateHandV2 if hand.isTeam(team) => hand
+    }
 
-  def wasPlayedByTeam(team: Id.Team) = !handPlayedByTeam(team).isEmpty
+  def wasPlayedByTeam(team: Team.Id): Boolean = !handPlayedByTeam(team).isEmpty
 
-  def handTeamPlayNS(team: Id.Team) = hands.collectFirst {
-    case hand: DuplicateHandV2 if hand.isNSTeam(team) => hand
-  }
+  def handTeamPlayNS(team: Team.Id): Option[DuplicateHandV2] =
+    hands.collectFirst {
+      case hand: DuplicateHandV2 if hand.isNSTeam(team) => hand
+    }
 
-  def didTeamPlayNS(team: Id.Team) = !handTeamPlayNS(team).isEmpty
+  def didTeamPlayNS(team: Team.Id): Boolean = !handTeamPlayNS(team).isEmpty
 
-  def handTeamPlayEW(team: Id.Team) = hands.collectFirst {
-    case hand: DuplicateHandV2 if hand.isEWTeam(team) => hand
-  }
+  def handTeamPlayEW(team: Team.Id): Option[DuplicateHandV2] =
+    hands.collectFirst {
+      case hand: DuplicateHandV2 if hand.isEWTeam(team) => hand
+    }
 
-  def didTeamPlayEW(team: Id.Team) = !handTeamPlayEW(team).isEmpty
+  def didTeamPlayEW(team: Team.Id): Boolean = !handTeamPlayEW(team).isEmpty
 
-  def teamScore(team: Id.Team) =
+  def teamScore(team: Team.Id): Float =
     handPlayedByTeam(team) match {
       case Some(teamHand) =>
         def getNSTeam(hand: DuplicateHandV2) = hand.nsTeam
@@ -151,23 +152,23 @@ case class BoardV2 private (
     }
 
   private[this] def teamScorePrivate(
-      team: Id.Team,
+      team: Team.Id,
       score: Int,
       getScoreFromHand: (DuplicateHandV2) => Int,
-      getTeam: (DuplicateHandV2) => Id.Team
+      getTeam: (DuplicateHandV2) => Team.Id
   ) = {
     hands
       .filter(hand => getTeam(hand) != team)
       .map(hand => {
         val otherscore = getScoreFromHand(hand)
         if (score == otherscore) 0.5f
-        else if (score > otherscore) 1
-        else 0
+        else if (score > otherscore) 1.0f
+        else 0.0f
       })
       .reduce(_ + _)
   }
 
-  def copyForCreate(id: Id.DuplicateBoard) = {
+  def copyForCreate(id: Board.Id): BoardV2 = {
     val time = SystemTime.currentTimeMillis()
     val xhands = hands.map(e => e.copyForCreate(e.id))
     copy(
@@ -182,8 +183,8 @@ case class BoardV2 private (
     val nb = hands.map { b =>
       if (b.id == hand.id) (true, hand) else (false, b)
     }
-    val nb1 = nb.foldLeft((false, List[DuplicateHandV2]()))(
-      (ag, b) => (ag._1 || b._1, b._2 :: ag._2)
+    val nb1 = nb.foldLeft((false, List[DuplicateHandV2]()))((ag, b) =>
+      (ag._1 || b._1, b._2 :: ag._2)
     )
     val nb2 = if (nb1._1) nb1._2 else hand :: nb1._2
     copy(
@@ -191,70 +192,72 @@ case class BoardV2 private (
       updated = SystemTime.currentTimeMillis()
     )
   }
-  def updateHand(handId: Id.DuplicateHand, hand: Hand): BoardV2 =
+  def updateHand(handId: Team.Id, hand: Hand): BoardV2 =
     getHand(handId) match {
       case Some(dh) => updateHand(dh.updateHand(hand))
       case None =>
         throw new IndexOutOfBoundsException("Hand " + handId + " not found")
     }
 
-  def setHands(nhands: List[DuplicateHandV2]) = {
+  def setHands(nhands: List[DuplicateHandV2]): BoardV2 = {
     copy(hands = nhands, updated = SystemTime.currentTimeMillis())
   }
 
-  def deleteHand(handId: Id.DuplicateHand) = {
+  def deleteHand(handId: Team.Id): BoardV2 = {
     val nb = hands.filter(h => h.id != handId)
     copy(hands = nb, updated = SystemTime.currentTimeMillis())
 
   }
 
   @Schema(hidden = true)
-  def getHand(handId: Id.DuplicateHand) = {
+  def getHand(handId: Team.Id): Option[DuplicateHandV2] = {
     hands.find(h => h.id == handId)
   }
 
   @Schema(hidden = true)
-  def getBoardInSet() =
-    BoardInSet(Id.boardIdToBoardNumber(id).toInt, nsVul, ewVul, dealer)
+  def getBoardInSet: BoardInSet =
+    BoardInSet(id.toInt, nsVul, ewVul, dealer)
 
   @Schema(hidden = true)
-  def convertToCurrentVersion() =
+  def convertToCurrentVersion: BoardV2 =
     BoardV2(
       id,
       nsVul,
       ewVul,
       dealer,
-      hands.map(h => h.convertToCurrentVersion()),
+      hands.map(h => h.convertToCurrentVersion),
       created,
       updated
     )
 
 }
 
-object BoardV2 {
+trait IdBoard
+
+object BoardV2 extends HasId[IdBoard]("B") {
   def create(
-      id: Id.DuplicateBoard,
+      id: Board.Id,
       nsVul: Boolean,
       ewVul: Boolean,
       dealer: String,
       hands: List[DuplicateHandV2]
-  ) = {
+  ): BoardV2 = {
     val time = SystemTime.currentTimeMillis()
     BoardV2(id, nsVul, ewVul, dealer, hands, time, time)
   }
 
-  def sort(l: DuplicateHandV2, r: DuplicateHandV2) =
-    Id.idComparer(l.id, r.id) < 0
+  def sort(l: DuplicateHandV2, r: DuplicateHandV2): Boolean =
+    l.id < r.id
 
   def apply(
-      id: Id.DuplicateBoard,
+      id: Board.Id,
       nsVul: Boolean,
       ewVul: Boolean,
       dealer: String,
       hands: List[DuplicateHandV2],
       created: Timestamp,
       updated: Timestamp
-  ) = {
+  ): BoardV2 = {
     new BoardV2(
       id,
       nsVul,

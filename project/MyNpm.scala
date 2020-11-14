@@ -18,7 +18,7 @@ object MyNpm {
 //      val npmDirectory = (npmUpdate).value       // this does a compile of project that uses npm
       val npmDirectory = (crossTarget in npmUpdate).value   // this just gets the npm base dir for project
       val log = streams.value.log
-      log.debug("npmDirectory is "+npmDirectory)
+      log.info("npmDirectory is "+npmDirectory)
 
       try {
         Npm.run( "outdated" )(npmDirectory, log)

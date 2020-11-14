@@ -7,7 +7,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import scala.reflect.io.File
 
 object ResourceFinder {
-  val logger = Logger(getClass.getName)
+  val logger: Logger = Logger(getClass.getName)
 
   /**
     * Validate if the component, version, and suffix contains the client code.
@@ -15,7 +15,7 @@ object ResourceFinder {
     *
     *   META-INF/resources/webjars/<component>/<version>[/<suffix>]
     *
-    * @param component bridgescorer or bridgescorer-server
+    * @param component bridgescorer or bridgescorer-fullserver
     * @param version the version string
     * @param suffix a suffix
     * @return an optional FileFinder.  None is return if this is not valid.
@@ -26,7 +26,12 @@ object ResourceFinder {
       suffix: Option[String]
   ): Option[(FileFinder, String)] = {
     val tryServerVersion =
-      new FileFinder("com.github.thebridsk.bridge.server", component, Some(version), suffix)
+      new FileFinder(
+        "com.github.thebridsk.bridge.server",
+        component,
+        Some(version),
+        suffix
+      )
     tryServerVersion.getResource(
       "/bridgescorer-client-opt.js.gz",
       "/bridgescorer-client-opt.js",
@@ -44,7 +49,7 @@ object ResourceFinder {
     *
     *   META-INF/resources/webjars/<component>/<version>[/<suffix>]
     *
-    * @param component bridgescorer or bridgescorer-server
+    * @param component bridgescorer or bridgescorer-fullserver
     * @param version the version string
     * @param suffix a suffix
     * @return an optional FileFinder.  None is return if this is not valid.
@@ -55,7 +60,12 @@ object ResourceFinder {
       suffix: Option[String]
   ): Option[(FileFinder, String)] = {
     val tryServerVersion =
-      new FileFinder("com.github.thebridsk.bridge.server", component, Some(version), suffix)
+      new FileFinder(
+        "com.github.thebridsk.bridge.server",
+        component,
+        Some(version),
+        suffix
+      )
     tryServerVersion.getResource(
       "/index.html"
     ) match {
@@ -65,7 +75,7 @@ object ResourceFinder {
   }
 
   private val patternVersion = """(.*?)-[0-9a-fA-F]+""".r
-  def baseVersion(ver: String) = {
+  def baseVersion(ver: String): Option[String] = {
     ver match {
       case patternVersion(version) => Some(version)
       case _                       => None
@@ -135,39 +145,62 @@ object ResourceFinder {
                   else ac
                 }
               }
-            resultDir.map(f => logger.info(s"Using resource ${f.baseName}")).getOrElse(logger.info(s"Did not find resources for component ${component}, suffix ${suffix}"))
+            resultDir
+              .map(f => logger.info(s"Using resource ${f.baseName}"))
+              .getOrElse(
+                logger.info(
+                  s"Did not find resources for component ${component}, suffix ${suffix}"
+                )
+              )
             resultDir
         }
     }
   }
 
-  def htmlResources = {
-    // must look for bridgescorer-server resources also to find client code
+  def htmlResources: FileFinder = {
+    // must look for bridgescorer-fullserver resources also to find client code
 
-    searchOnVersion("bridgescorer-server", None, validateServerVersion) match {
+    searchOnVersion(
+      "bridgescorer-fullserver",
+      None,
+      validateServerVersion
+    ) match {
       case Some(f) =>
         logger.info(s"Found client at ${f.baseName}")
         f
       case None =>
         searchOnVersion(
-          "bridgescorer",
-          Some("lib/bridgescorer-server"),
+          "bridgescorekeeper",
+          Some("lib/bridgescorer-fullserver"),
           validateServerVersion
         ) match {
           case Some(f) =>
             logger.info(s"Found client at ${f.baseName}")
             f
           case None =>
-            logger.warning("Unable to find client code")
-            throw new IllegalStateException("Unable to find client code")
+            val curDir = File(".").toCanonical.toAbsolute
+            val dirName = curDir.name
+            logger.warning(s"Unable to find client code, running in ${curDir}")
+            if (dirName == "server") {
+              new FileFinder(
+                "com.github.thebridsk.bridge.server",
+                "bridgescorer-fullserver"
+              )
+            } else {
+              throw new IllegalStateException("Unable to find client code")
+            }
         }
     }
 
   }
 
-  def helpResources = {
+  def helpResources: FileFinder = {
 
-    searchOnVersion("bridgescorer", Some("help"), validateServerVersionWithHelp) match {
+    searchOnVersion(
+      "bridgescorekeeper",
+      Some("help"),
+      validateServerVersionWithHelp
+    ) match {
       case Some(f) =>
         logger.info(s"Found help at ${f.baseName}")
         f

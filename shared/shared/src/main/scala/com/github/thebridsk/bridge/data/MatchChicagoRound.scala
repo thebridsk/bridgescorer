@@ -1,9 +1,6 @@
 package com.github.thebridsk.bridge.data
 
-import scala.annotation.meta._
-
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
-import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 
@@ -56,7 +53,7 @@ case class Round(
     updated: Timestamp
 ) {
 
-  def setId(newId: String, forCreate: Boolean) = {
+  def setId(newId: String, forCreate: Boolean): Round = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -65,7 +62,7 @@ case class Round(
     )
   }
 
-  def copyForCreate(id: String) = {
+  def copyForCreate(id: String): Round = {
     val time = SystemTime.currentTimeMillis()
     val xhands = hands.map { e =>
       e.copyForCreate(e.id)
@@ -74,9 +71,9 @@ case class Round(
 
   }
 
-  def getHand(id: String) = hands.find(h => h.id == id)
+  def getHand(id: String): Option[Hand] = hands.find(h => h.id == id)
 
-  def addHand(h: Hand) = {
+  def addHand(h: Hand): Round = {
     if (h.id.toInt == hands.length) {
       copy(hands = hands ::: List(h), updated = SystemTime.currentTimeMillis())
     } else {
@@ -86,7 +83,7 @@ case class Round(
     }
   }
 
-  def setHands(hs: Map[String, Hand]) = {
+  def setHands(hs: Map[String, Hand]): Round = {
     val newh = hs.values.toList.sortBy(h => h.id.toInt)
     copy(hands = newh)
   }
@@ -96,13 +93,12 @@ case class Round(
     * @param h
     * @throws IllegalArgumentException if hand does not exist already.
     */
-  def updateHand(h: Hand) = {
+  def updateHand(h: Hand): Round = {
     var found = false
-    val newh = hands.map(
-      hh =>
-        if (hh.id == h.id) {
-          found = true; h
-        } else hh
+    val newh = hands.map(hh =>
+      if (hh.id == h.id) {
+        found = true; h
+      } else hh
     )
     if (found) {
       copy(hands = newh)
@@ -113,7 +109,7 @@ case class Round(
     }
   }
 
-  def deleteHand(hid: String) = {
+  def deleteHand(hid: String): Round = {
     val last = hands.length - 1
     if (hid.toInt == last) {
       copy(hands = hands.take(last), updated = SystemTime.currentTimeMillis())
@@ -124,20 +120,23 @@ case class Round(
     }
   }
 
-  def partnerOf(p: String) = p match {
-    case `north` => south
-    case `south` => north
-    case `east`  => west
-    case `west`  => east
-    case _       => null
-  }
+  def partnerOf(p: String): String =
+    p match {
+      case `north` => south
+      case `south` => north
+      case `east`  => west
+      case `west`  => east
+      case _       => null
+    }
 
-  def modifyPlayersNoTime(map: Map[String, String]) = {
+  def modifyPlayersNoTime(map: Map[String, String]): Option[Round] = {
     val n = map.get(north).getOrElse(north)
     val s = map.get(south).getOrElse(south)
     val e = map.get(east).getOrElse(east)
     val w = map.get(west).getOrElse(west)
-    if (n.equals(north) && s.equals(south) && e.equals(east) && w.equals(west)) {
+    if (
+      n.equals(north) && s.equals(south) && e.equals(east) && w.equals(west)
+    ) {
       None
     } else {
       Some(copy(north = n, south = s, east = e, west = w))
@@ -145,7 +144,7 @@ case class Round(
 
   }
 
-  def modifyPlayers(map: Map[String, String]) = {
+  def modifyPlayers(map: Map[String, String]): Round = {
     val n = map.get(north).getOrElse(north)
     val s = map.get(south).getOrElse(south)
     val e = map.get(east).getOrElse(east)
@@ -159,7 +158,7 @@ case class Round(
     )
   }
 
-  def players() = north :: south :: east :: west :: Nil
+  def players: List[String] = north :: south :: east :: west :: Nil
 }
 
 object Round {
@@ -171,7 +170,7 @@ object Round {
       west: String,
       dealerFirstRound: String,
       hands: List[Hand]
-  ) =
+  ): Round =
     new Round(id, north, south, east, west, dealerFirstRound, hands, 0, 0)
       .copyForCreate(id)
 

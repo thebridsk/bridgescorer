@@ -4,7 +4,6 @@ import com.github.thebridsk.bridge.data.bridge.DuplicateBridge
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.DuplicateScore
 
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Schema
 
@@ -31,7 +30,7 @@ case class DuplicateHandV2 private (
       description = "The table id of where the hand is played",
       required = true
     )
-    table: String,
+    table: Table.Id,
     @Schema(
       description = "The round the hand is played in",
       required = true,
@@ -39,20 +38,20 @@ case class DuplicateHandV2 private (
     )
     round: Int,
     @Schema(description = "The board id", required = true)
-    board: Id.DuplicateBoard,
+    board: Board.Id,
     @Schema(
       description =
         "The team id of the team playing NS.  This is also the id of the DuplicateHand",
       required = true
     )
-    nsTeam: Id.Team,
+    nsTeam: Team.Id,
     @Schema(
       description = "true if player 1 of the NS team is the north player",
       required = true
     )
     nIsPlayer1: Boolean,
     @Schema(description = "The team id of the team playing EW", required = true)
-    ewTeam: Id.Team,
+    ewTeam: Team.Id,
     @Schema(
       description = "true if player 1 of the EW team is the east player",
       required = true
@@ -72,7 +71,7 @@ case class DuplicateHandV2 private (
     updated: Timestamp
 ) {
 
-  def equalsIgnoreModifyTime(other: DuplicateHandV2) =
+  def equalsIgnoreModifyTime(other: DuplicateHandV2): Boolean =
     table == other.table &&
       round == other.round &&
       board == other.board &&
@@ -84,9 +83,9 @@ case class DuplicateHandV2 private (
 
   def hand: Option[Hand] = played.headOption
 
-  def wasPlayed = !played.isEmpty
+  def wasPlayed: Boolean = !played.isEmpty
 
-  def handEquals(other: DuplicateHandV2) = {
+  def handEquals(other: DuplicateHandV2): Boolean = {
     hand match {
       case Some(h) =>
         other.hand match {
@@ -105,7 +104,7 @@ case class DuplicateHandV2 private (
     }
   }
 
-  def setId(newId: Id.DuplicateHand, forCreate: Boolean) = {
+  def setId(newId: Team.Id, forCreate: Boolean): DuplicateHandV2 = {
     val time = SystemTime.currentTimeMillis()
     copy(
       nsTeam = newId,
@@ -114,19 +113,20 @@ case class DuplicateHandV2 private (
     )
   }
 
-  def isNSTeam(team: Id.Team) = team == nsTeam
-  def isEWTeam(team: Id.Team) = team == ewTeam
+  def isNSTeam(team: Team.Id): Boolean = team == nsTeam
+  def isEWTeam(team: Team.Id): Boolean = team == ewTeam
 
-  def isTeam(team: Id.Team) = isNSTeam(team) || isEWTeam(team)
+  def isTeam(team: Team.Id): Boolean = isNSTeam(team) || isEWTeam(team)
 
-  def score = hand match {
-    case Some(h) => DuplicateBridge.ScoreHand(h).score
-    case _       => DuplicateScore(0, 0)
-  }
+  def score: DuplicateScore =
+    hand match {
+      case Some(h) => DuplicateBridge.ScoreHand(h).score
+      case _       => DuplicateScore(0, 0)
+    }
 
-  def id: Id.DuplicateHand = nsTeam
+  def id: Team.Id = nsTeam
 
-  def copyForCreate(id: Id.DuplicateHand) = {
+  def copyForCreate(id: Team.Id): DuplicateHandV2 = {
     val time = SystemTime.currentTimeMillis()
     copy(
       nsTeam = id,
@@ -142,18 +142,18 @@ case class DuplicateHandV2 private (
       case _       => List()
     }
 
-  def updateHand(newhand: Hand) =
+  def updateHand(newhand: Hand): DuplicateHandV2 =
     copy(played = List(newhand), updated = SystemTime.currentTimeMillis())
 
   @Schema(hidden = true)
-  def setPlayer1North(flag: Boolean) =
+  def setPlayer1North(flag: Boolean): DuplicateHandV2 =
     copy(nIsPlayer1 = flag, updated = SystemTime.currentTimeMillis())
   @Schema(hidden = true)
-  def setPlayer1East(flag: Boolean) =
+  def setPlayer1East(flag: Boolean): DuplicateHandV2 =
     copy(eIsPlayer1 = flag, updated = SystemTime.currentTimeMillis())
 
   @Schema(hidden = true)
-  def convertToCurrentVersion() = {
+  def convertToCurrentVersion: DuplicateHandV2 = {
     DuplicateHandV2(
       hand.toList,
       table,
@@ -172,12 +172,12 @@ case class DuplicateHandV2 private (
 object DuplicateHandV2 {
   def create(
       hand: Option[Hand],
-      table: String,
+      table: Table.Id,
       round: Int,
-      board: Id.DuplicateBoard,
-      nsTeam: Id.Team,
-      ewTeam: Id.Team
-  ) = {
+      board: Board.Id,
+      nsTeam: Team.Id,
+      ewTeam: Team.Id
+  ): DuplicateHandV2 = {
     val time = SystemTime.currentTimeMillis()
     val nh = hand.toList
     DuplicateHandV2(
@@ -196,12 +196,12 @@ object DuplicateHandV2 {
 
   def create(
       hand: Hand,
-      table: String,
+      table: Table.Id,
       round: Int,
-      board: Id.DuplicateBoard,
-      nsTeam: Id.Team,
-      ewTeam: Id.Team
-  ) = {
+      board: Board.Id,
+      nsTeam: Team.Id,
+      ewTeam: Team.Id
+  ): DuplicateHandV2 = {
     val time = SystemTime.currentTimeMillis()
     DuplicateHandV2(
       List(hand),
@@ -218,12 +218,12 @@ object DuplicateHandV2 {
   }
 
   def create(
-      table: String,
+      table: Table.Id,
       round: Int,
-      board: Id.DuplicateBoard,
-      nsTeam: Id.Team,
-      ewTeam: Id.Team
-  ) = {
+      board: Board.Id,
+      nsTeam: Team.Id,
+      ewTeam: Team.Id
+  ): DuplicateHandV2 = {
     val time = SystemTime.currentTimeMillis()
     DuplicateHandV2(
       List(),
@@ -239,20 +239,20 @@ object DuplicateHandV2 {
     )
   }
 
-  def sort(l: Hand, r: Hand) = l.id < r.id
+  def sort(l: Hand, r: Hand): Boolean = l.id < r.id
 
   def apply(
       played: List[Hand],
-      table: String,
+      table: Table.Id,
       round: Int,
-      board: Id.DuplicateBoard,
-      nsTeam: Id.Team,
+      board: Board.Id,
+      nsTeam: Team.Id,
       nIsPlayer1: Boolean,
-      ewTeam: Id.Team,
+      ewTeam: Team.Id,
       eIsPlayer1: Boolean,
       created: Timestamp,
       updated: Timestamp
-  ) = {
+  ): DuplicateHandV2 = {
     new DuplicateHandV2(
       played.sortWith(sort),
       table,

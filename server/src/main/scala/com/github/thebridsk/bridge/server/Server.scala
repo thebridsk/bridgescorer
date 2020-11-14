@@ -1,81 +1,37 @@
 package com.github.thebridsk.bridge.server
 
-import akka.actor.{Actor, ActorSystem, Props}
-import akka.io.IO
-import akka.pattern.ask
-import akka.util.Timeout
 import scala.concurrent.duration._
-import scala.language.postfixOps
 import com.github.thebridsk.utilities.main.Main
-import java.util.logging.Level
-import scala.concurrent.Future
-import akka.actor.ActorRef
-import akka.io.Tcp
-import com.github.thebridsk.bridge.server.backend.BridgeService
-import com.github.thebridsk.bridge.server.service.MyService
-import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.Http.ServerBinding
-import akka.stream.ActorMaterializer
-import scala.util.Success
-import scala.util.Failure
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.client.RequestBuilding
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse}
-import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.stream.scaladsl.{Flow, Sink, Source}
-import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.server.util.SystemTimeJVM
-import akka.event.Logging
-import akka.http.scaladsl.ConnectionContext
-import javax.net.ssl.SSLContext
-import akka.http.scaladsl.HttpExt
-import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
-import scala.reflect.io.Directory
 import scala.reflect.io.Path
 import java.io.File
-import java.security.KeyStore
-import javax.net.ssl.KeyManagerFactory
-import java.security.SecureRandom
-import com.github.thebridsk.bridge.server.rest.ServerPort
-import akka.http.scaladsl.model.StatusCodes
-import java.io.FileInputStream
 import org.rogach.scallop._
-import scala.concurrent.Promise
-import java.util.concurrent.TimeoutException
-import scala.util.Try
-import scala.util.Success
-import java.net.InetSocketAddress
-import java.net.InetAddress
-import akka.http.scaladsl.model.Uri
-import akka.http.scaladsl.model.Uri.Query
 import com.github.thebridsk.bridge.server.version.VersionServer
 import com.github.thebridsk.bridge.data.version.VersionShared
 import java.net.URLClassLoader
 import com.github.thebridsk.bridge.datastore.DataStoreCommands
 import scala.annotation.tailrec
-import java.util.logging.ConsoleHandler
+import com.github.thebridsk.utilities.logging.ConsoleHandler
+import java.util.{logging => jul}
 import com.github.thebridsk.bridge.server.util.MemoryMonitor
+import com.github.thebridsk.bridge.sslkey.SSLKeyCommands
 
 /**
   * This is the main program for the REST server for our application.
   */
 object Server extends Main {
 
-  override def init() = {
+  override def init(): Int = {
     SystemTimeJVM()
     0
   }
 
-  override def setup() = {
+  override def setup(): Int = {
     memoryfile.foreach(f => MemoryMonitor.start(f.toString()))
     0
   }
 
-  override def cleanup() = {
+  override def cleanup(): Unit = {
     MemoryMonitor.stop()
   }
 
@@ -84,7 +40,7 @@ object Server extends Main {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cmdName = {
+  val cmdName: String = {
     ((getClass.getClassLoader match {
       case loader: URLClassLoader =>
         // This doesn't work anymore.  In Java 9 with the modules classloader, the URLClassLoader is not used as
@@ -117,7 +73,7 @@ object Server extends Main {
     }
   }
 
-  val serverVersion =
+  val serverVersion: String =
     s"""BridgeScorer Server version ${VersionServer.version}
        |Build date ${VersionServer.builtAtString} UTC
        |Scala ${VersionServer.scalaVersion}, SBT ${VersionServer.sbtVersion}
@@ -138,7 +94,7 @@ object Server extends Main {
 
   shortSubcommandsHelp(true)
 
-  val memoryfile = opt[Path](
+  val memoryfile: ScallopOption[Path] = opt[Path](
     "memoryfile",
     noshort = true,
     descr =
@@ -154,6 +110,7 @@ object Server extends Main {
   addSubcommand(CollectLogs)
 
   addSubcommand(DataStoreCommands)
+  addSubcommand(SSLKeyCommands)
 
   footer(s"""
             |To get help on subcommands, use the command:
@@ -166,15 +123,16 @@ object Server extends Main {
     1
   }
 
-  lazy val isConsoleLoggingToInfo = {
+  lazy val isConsoleLoggingToInfo: Boolean = {
 
-    import java.util.logging.{Logger => JLogger}
     @tailrec
-    def findConsoleHandler(log: JLogger): Boolean = {
-      val handlers = log.getHandlers.filter(h => h.isInstanceOf[ConsoleHandler])
+    def findConsoleHandler(log: jul.Logger): Boolean = {
+      val handlers = log.getHandlers.filter(h =>
+        h.isInstanceOf[ConsoleHandler] || h.isInstanceOf[jul.ConsoleHandler]
+      )
       if (handlers.length != 0) {
         val infohandler =
-          handlers.find(h => h.getLevel.intValue() <= Level.INFO.intValue())
+          handlers.find(h => h.getLevel.intValue() <= jul.Level.INFO.intValue())
         infohandler.isDefined
       } else {
         val parent = log.getParent
@@ -186,7 +144,7 @@ object Server extends Main {
     findConsoleHandler(logger.logger)
   }
 
-  def output(s: String) = {
+  def output(s: String): Unit = {
     logger.info(s)
     if (!isConsoleLoggingToInfo) println(s)
   }

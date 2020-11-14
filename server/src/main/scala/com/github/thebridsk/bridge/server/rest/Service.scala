@@ -1,25 +1,14 @@
 package com.github.thebridsk.bridge.server.rest
 
-import akka.event.Logging
-import akka.event.Logging._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.stream.Materializer
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import scala.reflect.runtime.universe._
-import akka.actor.ActorRefFactory
-import akka.event.Logging._
-import com.github.thebridsk.utilities.logging.Logging
 import java.util.logging.Level
 import akka.http.scaladsl.server.MalformedRequestContentRejection
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.server.MethodRejection
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import com.github.thebridsk.bridge.server.backend.MonitorWebservice
-import java.util.Date
-import client.LogA
 import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.model.headers.CacheDirectives._
 import akka.http.scaladsl.model.DateTime
@@ -32,6 +21,9 @@ import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.server.backend.DuplicateMonitorWebservice
 import com.github.thebridsk.bridge.server.backend.ChicagoMonitorWebservice
 import com.github.thebridsk.bridge.server.backend.RubberMonitorWebservice
+import java.time.Instant
+import java.time.ZoneId
+import akka.http.scaladsl.server.Route
 
 //import akka.event.LoggingAdapter
 
@@ -70,6 +62,7 @@ trait Service extends ImportExport {
     classOf[RestNestedBoard],
     classOf[RestNestedHand],
     classOf[RestNestedTeam],
+    classOf[RestNestedPicture],
     classOf[RestSuggestion],
     classOf[RestNames],
     classOf[RestBoardSet],
@@ -85,86 +78,70 @@ trait Service extends ImportExport {
   object restMovement extends RestMovement {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   object restBoardSet extends RestBoardSet {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   object restChicago extends RestChicago {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   object restRubber extends RestRubber {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
-  val restDuplicate = new RestDuplicate {
+  val restDuplicate: RestDuplicate = new RestDuplicate {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
-  val restDuplicateResult = new RestDuplicateResult {
+  val restDuplicateResult: RestDuplicateResult = new RestDuplicateResult {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
-  val restDuplicateSummary = new RestDuplicateSummary {
+  val restDuplicateSummary: RestDuplicateSummary = new RestDuplicateSummary {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
-  val restDuplicatePlaces = new RestDuplicatePlaces {
+  val restDuplicatePlaces: RestDuplicatePlaces = new RestDuplicatePlaces {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
-  val restSuggestion = new RestSuggestion {
+  val restSuggestion: RestSuggestion = new RestSuggestion {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
     implicit override lazy val restService = hasActorSystem.restService
   }
   object restNames extends RestNames {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
   }
   object duplicateMonitor
-      extends DuplicateMonitorWebservice(totallyMissingResourceHandler)
+      extends DuplicateMonitorWebservice(totallyMissingResourceHandler, this)
   object chicagoMonitor
-      extends ChicagoMonitorWebservice(totallyMissingResourceHandler)
+      extends ChicagoMonitorWebservice(totallyMissingResourceHandler, this)
   object rubberMonitor
-      extends RubberMonitorWebservice(totallyMissingResourceHandler)
+      extends RubberMonitorWebservice(totallyMissingResourceHandler, this)
 
   object restLoggerConfig extends RestLoggerConfig {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
-    implicit override lazy val materializer: ActorMaterializer =
-      hasActorSystem.materializer
-    implicit override lazy val restService = hasActorSystem.restService
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
     val ports = hasActorSystem.ports
   }
 
@@ -173,7 +150,7 @@ trait Service extends ImportExport {
   /**
     * Handler for converting rejections into HttpResponse
     */
-  def totallyMissingResourceHandler =
+  def totallyMissingResourceHandler: RejectionHandler =
     RejectionHandler
       .newBuilder()
       .handle {
@@ -200,7 +177,7 @@ trait Service extends ImportExport {
       }
       .result()
 
-  def rejectionHandler =
+  def rejectionHandler: RejectionHandler =
     RejectionHandler
       .newBuilder()
       .handleAll[MethodRejection] { rejections =>
@@ -219,7 +196,7 @@ trait Service extends ImportExport {
       }
       .result()
 
-  val routeRest =
+  val routeRest: Route =
     respondWithHeaders(
       `Cache-Control`(`no-cache`, `no-store`, `must-revalidate`),
       RawHeader("Pragma", "no-cache"),
@@ -247,16 +224,18 @@ trait Service extends ImportExport {
 
 object Service {
 
-  val log = Logger[Service]
-  val clientlog = Logger[client.LogA]
+  val log: Logger = Logger[Service]()
+  val clientlog: Logger = Logger[client.LogA]()
 
-  private val format = new java.text.SimpleDateFormat("HH:mm:ss.SSS")
+  private val format = java.time.format.DateTimeFormatter
+    .ofPattern("HH:mm:ss.SSS")
+    .withZone(ZoneId.systemDefault())
 
   def logStringFromBrowser(ips: String, msg: String): Unit = {
     clientlog.info(s"ClientLog($ips) $msg")
   }
 
-  def formatMsg(msg: String, args: String*) = {
+  def formatMsg(msg: String, args: String*): String = {
     if (args.length == 0) msg
     else {
       val b = new java.lang.StringBuilder()
@@ -267,7 +246,7 @@ object Service {
     }
   }
 
-  def toLevel(level: String) = {
+  def toLevel(level: String): Level = {
     level match {
       case "E" => Level.SEVERE
       case "W" => Level.WARNING
@@ -288,8 +267,7 @@ object Service {
       src: String,
       e: DuplexProtocol.LogEntryV2
   ): Unit = {
-    val format = new java.text.SimpleDateFormat("HH:mm:ss.SSS")
-    val ts = format.format(new Date(e.timestamp.toLong))
+    val ts = format.format(Instant.ofEpochMilli(e.timestamp.toLong))
     val level = e.level
     val position = e.position
     val url = e.url

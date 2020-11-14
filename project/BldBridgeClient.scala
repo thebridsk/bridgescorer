@@ -19,11 +19,13 @@ import BldVersion._
 
 object BldBridgeClient {
 
-  val clientUnitTests = "com.github.thebridsk.bridge.client.test.MyTest" ::
+  val clientUnitTests =
+    // "com.github.thebridsk.bridge.client.test.TestRouter" ::
+    "com.github.thebridsk.bridge.client.test.MyTest" ::
     "com.github.thebridsk.bridge.client.test.TestDuplicateStore" ::
     "com.github.thebridsk.bridge.client.test.TestLogFilter" ::
     "com.github.thebridsk.bridge.client.test.TestSerialize" ::
-    "com.github.thebridsk.bridge.client.test.TestColor" ::
+    "com.github.thebridsk.bridge.client.test.TestFairRotation" ::
     Nil
 
   lazy val `bridgescorer-client` = project
@@ -47,8 +49,9 @@ object BldBridgeClient {
       webpackCliVersion := vWebPackCli,
       version in startWebpackDevServer := vWebpackDevServer,
       version in installJsdom := vJsDom,
+      requireJsDomEnv in Test := true,
       scalaJSUseMainModuleInitializer := true,
-      mainClass := Some("com.github.thebridsk.bridge.client.Bridge"),
+      mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.client.Bridge"),
 
 
       // This gets rid of the jetty check which is required for the sbt runtime
@@ -67,41 +70,31 @@ object BldBridgeClient {
         Glob((crossTarget in npmUpdate in Test).value, "node_modules") / **
       ),
 
-//    test in assembly := {},
+      // scalaJSLinkerConfig in fastOptJS ~= (_.withSourceMap(false)),
 
-//    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oU"),
-
-//    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); true}),
-      // no tests, npm stuff not working properly with tests
-      //   https://github.com/scalacenter/scalajs-bundler/issues/83
-//    testOptions in Test += Tests.Filter(s => { println("TestOption: "+s); false}),
+      // testOptions in Test += Tests.Filter(s => { println("Using Test: "+s); true}),
       testOptions in Test += Tests.Filter(s => {
-//      if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
+        // if (s == "com.github.thebridsk.bridge.client.test.AllUnitTests") {
         if (clientUnitTests.contains(s)) {
-          println("Using Test:    " + s)
+          println(s"Using Test:    $s, looking for $clientUnitTests")
           true
         } else {
-          println("Ignoring Test: " + s);
+          println(s"Ignoring Test: $s, looking for $clientUnitTests");
           false
         }
       }),
-// Indicate that unit tests will access the DOM
-      version in webpack := vWebPack,
-      version in installJsdom := vJsDom,
-      requireJsDomEnv in Test := true,
 
       // this is for SBT 1.0
       // 11/18/17, 12/4/17 currently does not work, looks like JSDOM is not loaded
       // see https://github.com/scalacenter/scalajs-bundler/issues/181
       // error is navigator undefined
-//    jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv,
+      // jsEnv in Test := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
 
-// Compile tests to JS using fast-optimisation
-//    scalaJSStage in Test := FastOptStage,
-      if (useFullOpt) {
-        scalaJSStage in Test := FullOptStage
+      // Compile tests to JS using fast-optimisation
+      if (buildProduction) {
+        scalaJSStage := FullOptStage
       } else {
-        scalaJSStage in Test := FastOptStage
+        scalaJSStage := FastOptStage
       },
       libraryDependencies ++= bridgeScorerDeps.value,
       libraryDependencies ++= bridgeScorerClientDeps.value,
@@ -113,28 +106,13 @@ object BldBridgeClient {
       npmDevDependencies in Test ++= bridgeScorerDevNpmDeps,
       // Use a custom config file to export the JS dependencies to the global namespace,
       // as expected by the scalajs-react facade
-      // webpackConfigFile := Some(baseDirectory.value / "webpack.config.js"),
-      // webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
-      // webpackBundlingMode := BundlingMode.LibraryAndApplication(),
+      webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.prod.config.js"),
+      webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.dev.config.js"),
+
+      webpackEmitSourceMaps in fullOptJS := false,
+
       webpackBundlingMode := BundlingMode.LibraryOnly("bridgeLib"),
-      // webpackBundlingMode in fastOptJS := BundlingMode.LibraryOnly("bridgeLib"),
-      // webpackBundlingMode in fullOptJS := BundlingMode.LibraryAndApplication(),
-      // React.JS itself
-      // Note the JS filename. Can be react.js, react.min.js, react-with-addons.js, or react-with-addons.min.js.
-      // Test requires react-with-addons
-//    jsDependencies ++= bridgeScorerJsDeps,
 
-//    unmanagedResources in Compile += (baseDirectory in ThisBuild).value / "BridgeScorer" / "nodejs" / "build" / "bridge" / "bridgedep.js",
-//    jsDependencies in Compile += ProvidedJS / "bridgedep.js",
-//    jsDependencies += ProvidedJS / "bridge/bridgedep.js",
-
-//    crossTarget in (Compile,npmUpdate) := crossTarget.value / "scalajs-bundler" / "main" / "js" / "js",
-//    crossTarget in (Test,npmUpdate) := crossTarget.value / "scalajs-bundler" / "test" / "js" / "js",
-      skip in packageJSDependencies := false,
-//    artifactPath in (Compile, fullOptJS) :=             (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-opt.js",
-//    artifactPath in (Compile, fastOptJS) :=             (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-fastopt.js",
-//    artifactPath in (Compile, packageJSDependencies) := (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "bridgescorer-js-jsdeps.js",
-//    artifactPath in (Compile, packageScalaJSLauncher) := (baseDirectory in ThisBuild).value / "client" / "target" / "js" / "js" / "scalajs-launcher.js",
       assemblyMergeStrategy in assembly := {
         case "JS_DEPENDENCIES" => MergeStrategy.concat
         case x =>

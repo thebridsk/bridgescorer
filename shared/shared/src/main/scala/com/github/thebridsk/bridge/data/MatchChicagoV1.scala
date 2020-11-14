@@ -1,9 +1,6 @@
 package com.github.thebridsk.bridge.data
 
-import scala.annotation.meta._
-
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
-import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
@@ -12,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema
   */
 @Schema(description = "A chicago match, version 1 (old version)")
 case class MatchChicagoV1(
-    id: String,
+    id: MatchChicago.Id,
     player1: String,
     player2: String,
     player3: String,
@@ -21,13 +18,13 @@ case class MatchChicagoV1(
     gamesPerRound: Int,
     created: Timestamp,
     updated: Timestamp
-) extends VersionedInstance[MatchChicago, MatchChicagoV1, String] {
+) extends VersionedInstance[MatchChicago, MatchChicagoV1, MatchChicago.Id] {
 
   def setId(
-      newId: String,
+      newId: MatchChicago.Id,
       forCreate: Boolean,
       dontUpdateTime: Boolean = false
-  ) = {
+  ): MatchChicagoV1 = {
     if (dontUpdateTime) {
       copy(id = newId)
     } else {
@@ -40,7 +37,7 @@ case class MatchChicagoV1(
     }
   }
 
-  def copyForCreate(id: Id.MatchDuplicate) = {
+  def copyForCreate(id: MatchChicago.Id): MatchChicagoV1 = {
     val time = SystemTime.currentTimeMillis()
     val xrounds = rounds.map { e =>
       e.copyForCreate(e.id)
@@ -49,7 +46,7 @@ case class MatchChicagoV1(
 
   }
 
-  def addRound(r: Round) = {
+  def addRound(r: Round): MatchChicagoV1 = {
     val n = copy(
       rounds = (r.copyForCreate(r.id) :: (rounds.reverse)).reverse,
       updated = SystemTime.currentTimeMillis()
@@ -67,7 +64,7 @@ case class MatchChicagoV1(
 
   }
 
-  def modifyRound(r: Round) = {
+  def modifyRound(r: Round): MatchChicagoV1 = {
     if (rounds.isEmpty) addRound(r)
     else {
       var mod = false
@@ -93,7 +90,7 @@ case class MatchChicagoV1(
       nplayer2: String,
       nplayer3: String,
       nplayer4: String
-  ) = {
+  ): MatchChicagoV1 = {
     val map = Map(
       player1 -> nplayer1,
       player2 -> nplayer2,
@@ -113,13 +110,13 @@ case class MatchChicagoV1(
     )
   }
 
-  def setGamesPerRound(ngamesPerRound: Int) =
+  def setGamesPerRound(ngamesPerRound: Int): MatchChicagoV1 =
     copy(
       gamesPerRound = ngamesPerRound,
       updated = SystemTime.currentTimeMillis()
     )
 
-  def addHandToLastRound(h: Hand) = {
+  def addHandToLastRound(h: Hand): MatchChicagoV1 = {
     val revrounds = rounds.reverse
     val last = revrounds.head
     val revbefore = revrounds.tail
@@ -135,7 +132,7 @@ case class MatchChicagoV1(
     * @param ih - the hand, if the hand doesn't exist, then it will addHandToLastRound. values are 0, 1, ...
     * @param h - the new hand
     */
-  def modifyHand(ir: Int, ih: Int, h: Hand) = {
+  def modifyHand(ir: Int, ih: Int, h: Hand): MatchChicagoV1 = {
     val rs = rounds.toArray
     val round = rs(ir)
     val hs = round.hands.toArray
@@ -153,11 +150,11 @@ case class MatchChicagoV1(
     * Set the Id of this match
     * @param id the new ID of the match
     */
-  def setId(id: String) = {
+  def setId(id: MatchChicago.Id): MatchChicagoV1 = {
     copy(id = id, updated = SystemTime.currentTimeMillis())
   }
 
-  def convertToCurrentVersion() = {
+  def convertToCurrentVersion: (Boolean, MatchChicago) = {
     (
       false,
       MatchChicago(
@@ -168,17 +165,17 @@ case class MatchChicagoV1(
         false,
         created,
         updated
-      ).convertToCurrentVersion()._2
+      ).convertToCurrentVersion._2
     )
   }
 
-  def readyForWrite() = this
+  def readyForWrite: MatchChicagoV1 = this
 
 }
 
 object MatchChicagoV1 {
   def apply(
-      id: String,
+      id: MatchChicago.Id,
       player1: String,
       player2: String,
       player3: String,

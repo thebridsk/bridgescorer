@@ -1,9 +1,7 @@
 package com.github.thebridsk.bridge.data.duplicate.stats
 
 import java.io.PrintStream
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.Hand
 
 /**
   * @param contract
@@ -18,7 +16,7 @@ case class ContractStat(
     handsPlayed: Int = 0
 ) {
 
-  def add(other: ContractStat) = {
+  def add(other: ContractStat): ContractStat = {
     if (contract != other.contract)
       throw new Exception("contract is not the same")
     val np = handsPlayed + other.handsPlayed
@@ -30,7 +28,7 @@ case class ContractStat(
     copy(histogram = h, handsPlayed = np)
   }
 
-  def csvHeader(min: Int = -13, max: Int = 6) = {
+  def csvHeader(min: Int = -13, max: Int = 6): String = {
     val r = (min to max).map { i =>
       if (i < 0) s"Down ${-i}"
       else if (i == 0) "Made"
@@ -39,7 +37,7 @@ case class ContractStat(
     s"""Contract,type,handsPlayed,${r.mkString(",")}"""
   }
 
-  def toCsv(min: Int = -13, max: Int = 6, percent: Boolean = false) = {
+  def toCsv(min: Int = -13, max: Int = 6, percent: Boolean = false): String = {
     val h = histogram.map(cs => (cs.tricks -> cs.counter)).toMap
     val r = (min to max).map { i =>
       val c = h.get(i).getOrElse(0)
@@ -50,15 +48,17 @@ case class ContractStat(
     s""""${contract},${contractType},${handsPlayed},${r.mkString(",")}"""
   }
 
-  def toCsvPercent(min: Int = -13, max: Int = 6) = {
+  def toCsvPercent(min: Int = -13, max: Int = 6): String = {
     toCsv(min, max, true)
   }
 
-  def normalize = copy(histogram = histogram.sortBy(x => x.tricks))
+  def normalize: ContractStat =
+    copy(histogram = histogram.sortBy(x => x.tricks))
 
-  def parseContract = ContractStats.parseContract(contract)
+  def parseContract: ContractStats.Contract =
+    ContractStats.parseContract(contract)
 
-  def isTotal = contract.startsWith("T")
+  def isTotal: Boolean = contract.startsWith("T")
 }
 
 case class ContractStats(
@@ -76,7 +76,7 @@ object ContractStats {
     */
   case class GameStat(contract: String, contractType: String, result: Int)
 
-  def csvHeader(min: Int = -13, max: Int = 6) =
+  def csvHeader(min: Int = -13, max: Int = 6): String =
     ContractStat("", ContractTypePassed.value).csvHeader(min, max)
 
   case class Contract(
@@ -86,9 +86,9 @@ object ContractStats {
       doubled: String
   ) {
 
-    def isTotal = total == "T"
+    def isTotal: Boolean = total == "T"
 
-    def isPassedOut = suit == "P"
+    def isPassedOut: Boolean = suit == "P"
 
   }
 
@@ -108,7 +108,7 @@ object ContractStats {
     *        "**" - redoubled
     * If the contract is not valid, then ("","","", c ) is returned.
     */
-  def parseContract(c: String) = {
+  def parseContract(c: String): Contract = {
     c match {
       case "PassedOut" => Contract("", "0", "P", "")
       case patternContract(a, t, s, d) =>
@@ -118,7 +118,7 @@ object ContractStats {
     }
   }
 
-  def compare(l: ContractStat, r: ContractStat) = {
+  def compare(l: ContractStat, r: ContractStat): Boolean = {
     val lc = l.parseContract
     val rc = r.parseContract
     if (lc.total != rc.total) lc.total < rc.total
@@ -127,11 +127,11 @@ object ContractStats {
     else lc.doubled < rc.doubled
   }
 
-  def statsToCsv(stats: ContractStats, percent: Boolean = false)(
-      implicit out: PrintStream
-  ) = {
+  def statsToCsv(stats: ContractStats, percent: Boolean = false)(implicit
+      out: PrintStream
+  ): Unit = {
     val tocsv: (ContractStat, Int, Int) => String =
-      if (percent)(ds, min, max) => ds.toCsvPercent(min, max)
+      if (percent) (ds, min, max) => ds.toCsvPercent(min, max)
       else (ds, min, max) => ds.toCsv(min, max)
     val sts = stats.data
     out.println(ContractStats.csvHeader(stats.min, stats.max))
@@ -141,14 +141,16 @@ object ContractStats {
     out.flush()
   }
 
-  def statsToCsvPercent(stats: ContractStats)(implicit out: PrintStream) = {
+  def statsToCsvPercent(
+      stats: ContractStats
+  )(implicit out: PrintStream): Unit = {
     statsToCsv(stats, true)
   }
 
   def stats(
-      dups: Map[Id.MatchDuplicate, MatchDuplicate],
+      dups: Map[MatchDuplicate.Id, MatchDuplicate],
       aggregateDouble: Boolean = true
-  ) = {
+  ): ContractStats = {
     val results = dups.values.flatMap { dup =>
       dup.allPlayedHands.flatMap { dh =>
         if (dh.played.head.contractTricks == 0) {

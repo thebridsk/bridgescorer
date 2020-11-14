@@ -13,6 +13,28 @@ object Hugo {
     log.info(s"In Directory ${docsDir}")
     log.info(s"Starting ${cmd.mkString(" ")}")
 
+    val addenvp = Map(
+      "HUGO_BRIDGESCORERVERSIONLONG" -> longversion,
+      "HUGO_BRIDGESCORERVERSION" -> shortversion
+    )
+    val proc = myproc.start(docsDir, addenvp, cmd: _* )
+    val rc = proc.waitFor()
+    if (rc == 0) {
+      log.debug( "Success: "+cmd.mkString(" ") )
+    } else {
+      log.error( s"Error ${rc}: "+cmd.mkString(" ") )
+      throw new Exception(s"Error ${rc}: "+cmd.mkString(" "))
+    }
+  }
+
+  def runServer( log: Logger, docsDir: JFile, longversion: String, shortversion: String ): Unit = {
+
+    val myproc = new MyProcess(Some(log))
+    val cmd = List("hugo", "-D", "server" )
+
+    log.info(s"In Directory ${docsDir}")
+    log.info(s"Starting ${cmd.mkString(" ")}")
+
     val addenvp = Map("HUGO_BRIDGESCORERVERSIONLONG" -> longversion, "HUGO_BRIDGESCORERVERSION" -> shortversion)
     val proc = myproc.start(docsDir, addenvp, cmd: _* )
     val rc = proc.waitFor()

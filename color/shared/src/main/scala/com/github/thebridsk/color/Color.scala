@@ -1,5 +1,7 @@
 package com.github.thebridsk.color
 
+import scala.util.matching.Regex
+
 trait Color {
   def toAttrValue: String
 
@@ -17,75 +19,83 @@ object ColorInternal {
   val pHex = "[0-9a-fA-F]"
   val pFloat = """[-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?"""
   val pInt = """\d+"""
-  val patternRGB = s""" *rgba?\\( *(${pInt}) *, *(${pInt}) *, *(${pInt}) *(?:, *(${pFloat})(%?) *)?\\) *""".r
-  val patternRGBs = s""" *rgba?\\( *(${pInt}) +(${pInt}) +(${pInt}) *(?:/ *(${pFloat})(%?) *)?\\) *""".r
+  val patternRGB: Regex =
+    s""" *rgba?\\( *(${pInt}) *, *(${pInt}) *, *(${pInt}) *(?:, *(${pFloat})(%?) *)?\\) *""".r
+  val patternRGBs: Regex =
+    s""" *rgba?\\( *(${pInt}) +(${pInt}) +(${pInt}) *(?:/ *(${pFloat})(%?) *)?\\) *""".r
 
-  val patternRGBp = s"""rgba?\\( *(${pFloat})% *, *(${pFloat})% *, *(${pFloat})% *(?:, *(${pFloat})(%?) *)?\\) *""".r
-  val patternRGBps = s"""rgba?\\( *(${pFloat})% +(${pFloat})% +(${pFloat})% *(?:/ *(${pFloat})(%?) *)?\\) *""".r
+  val patternRGBp: Regex =
+    s"""rgba?\\( *(${pFloat})% *, *(${pFloat})% *, *(${pFloat})% *(?:, *(${pFloat})(%?) *)?\\) *""".r
+  val patternRGBps: Regex =
+    s"""rgba?\\( *(${pFloat})% +(${pFloat})% +(${pFloat})% *(?:/ *(${pFloat})(%?) *)?\\) *""".r
 
-  val patternLongHex = s"""#(${pHex}${pHex})(${pHex}${pHex})(${pHex}${pHex})(${pHex}${pHex})?""".r
-  val patternShortHex = s"""#(${pHex})(${pHex})(${pHex})(${pHex})?""".r
+  val patternLongHex: Regex =
+    s"""#(${pHex}${pHex})(${pHex}${pHex})(${pHex}${pHex})(${pHex}${pHex})?""".r
+  val patternShortHex: Regex = s"""#(${pHex})(${pHex})(${pHex})(${pHex})?""".r
 
   // deg grad rad turn    https://drafts.csswg.org/css-values-3/#angle-value
 
-  val patternHSL = s"""hsla?\\( *(${pFloat})(deg|grad|rad|turn)? *, *(${pFloat})% *, *(${pFloat})% *(?:, *(${pFloat})(%?) *)?\\) *""".r
-  val patternHSLs = s"""hsla?\\( *(${pFloat})(deg|grad|rad|turn)? +(${pFloat})% +(${pFloat})% *(?:/ *(${pFloat})(%?) *)?\\) *""".r
+  val patternHSL: Regex =
+    s"""hsla?\\( *(${pFloat})(deg|grad|rad|turn)? *, *(${pFloat})% *, *(${pFloat})% *(?:, *(${pFloat})(%?) *)?\\) *""".r
+  val patternHSLs: Regex =
+    s"""hsla?\\( *(${pFloat})(deg|grad|rad|turn)? +(${pFloat})% +(${pFloat})% *(?:/ *(${pFloat})(%?) *)?\\) *""".r
 
-  def processA( a: String, p: String ) = {
+  def processA(a: String, p: String): Double = {
     if (a == null) 100
-    else if (p == null || p == "") a.toDouble*100
+    else if (p == null || p == "") a.toDouble * 100
     else a.toDouble
   }
 
-  def processAngle( h: String, d: String ) = {
+  def processAngle(h: String, d: String): Double = {
     val hue = h.toDouble
     d match {
       case "deg" | "" | null => hue
-      case "grad" => hue/100*90
-      case "rad" => hue/Math.PI*180
-      case "turn" => hue*360
-      case _ => hue     // can't happen
+      case "grad"            => hue / 100 * 90
+      case "rad"             => hue / Math.PI * 180
+      case "turn"            => hue * 360
+      case _                 => hue // can't happen
     }
   }
 
-  def hex( v: String ) = {
-    Integer.parseInt( v, 16 )
+  def hex(v: String): Int = {
+    Integer.parseInt(v, 16)
   }
 
-  def processHexA( v: String ) = {
+  def processHexA(v: String): Double = {
     if (v == null) 100
-    else hex(v)/2.55
+    else hex(v) / 2.55
   }
 
   /**
-   * returns a string that represents the alpha value in rgb and hsl functions.
-   * @param a the alpha value as a percent
-   */
-  def aToString( a: Double ) = {
+    * returns a string that represents the alpha value in rgb and hsl functions.
+    * @param a the alpha value as a percent
+    */
+  def aToString(a: Double): String = {
     if (a == 100.0) ""
     else f",$a%.2f%%"
   }
 
   /**
-   * returns a string that represents the alpha value in rgb and hsl functions.
-   * @param a the alpha value as a percent
-   */
-  def aToStringForSpace( a: Double ) = {
+    * returns a string that represents the alpha value in rgb and hsl functions.
+    * @param a the alpha value as a percent
+    */
+  def aToStringForSpace(a: Double): String = {
     if (a == 100.0) ""
     else f"/$a%.2f%%"
   }
 
   /**
-   * returns a string that represents the alpha value in rgb and hsl functions.
-   * @param a the alpha value as a percent
-   */
-  def aToHex( a: Double ) = {
+    * returns a string that represents the alpha value in rgb and hsl functions.
+    * @param a the alpha value as a percent
+    */
+  def aToHex(a: Double): String = {
     if (a == 100.0) ""
     else {
-      val b = Math.round( a/100*255 )
-      val c = if (b < 0) 0
-      else if (b>255) 255
-      else b
+      val b = Math.round(a / 100 * 255)
+      val c =
+        if (b < 0) 0
+        else if (b > 255) 255
+        else b
       f"${c}%2X"
     }
   }
@@ -95,50 +105,58 @@ trait ColorObj {
   import ColorInternal._
 
   /**
-   * Converts a CSS color string to a Color object.  If named colors are set,
-   * then the color name must be valid.  To create a named color without checking for validity, use the #named method
-   * Support CSS Color level 3 https://drafts.csswg.org/css-color-3/
-   * Some support for CSS Color Module Level 4 https://drafts.csswg.org/css-color/#colorunits
-   *
-   * Supported formats for string:
-   *   currentColor
-   *   transparent
-   *   <a color name>
-   *   rgb( r g b )          r g b as either integers 0-255 or float% [0,100]
-   *   rgb( r g b / a )      a as float [0,1] or float% [0,100]
-   *   rgb( r, g, b )
-   *   rgb( r, g, b, a )
-   *   rgba( r g b )
-   *   rgba( r g b / a )
-   *   rgba( r, g, b )
-   *   rgba( r, g, b, a )
-   *   #rgb                   r g b a are hex digits.
-   *   #rgba
-   *   #rrggbb
-   *   #rrggbbaa
-   *   hsl( h s l )           h as float with deg, grad, rad, turn
-   *   hsl( h s l / a )       s l as float% [0,100]
-   *   hsl( h, s, l )         a as float [0,1] or float% [0,100]
-   *   hsl( h, s, l, a )
-   *   hsla( h s l )
-   *   hsla( h s l / a )
-   *   hsla( h, s, l )
-   *   hsla( h, s, l, a )
-   *
-   * @param v the CSS color string.
-   * @return the appropriate Color object.
-   * @throws IllegalArgumentException if unable to parse v
-   */
-  def apply( v: String ): Color = {
+    * Converts a CSS color string to a Color object.  If named colors are set,
+    * then the color name must be valid.  To create a named color without checking for validity, use the #named method
+    * Support CSS Color level 3 https://drafts.csswg.org/css-color-3/
+    * Some support for CSS Color Module Level 4 https://drafts.csswg.org/css-color/#colorunits
+    *
+    * Supported formats for string:
+    *   currentColor
+    *   transparent
+    *   <a color name>
+    *   rgb( r g b )          r g b as either integers 0-255 or float% [0,100]
+    *   rgb( r g b / a )      a as float [0,1] or float% [0,100]
+    *   rgb( r, g, b )
+    *   rgb( r, g, b, a )
+    *   rgba( r g b )
+    *   rgba( r g b / a )
+    *   rgba( r, g, b )
+    *   rgba( r, g, b, a )
+    *   #rgb                   r g b a are hex digits.
+    *   #rgba
+    *   #rrggbb
+    *   #rrggbbaa
+    *   hsl( h s l )           h as float with deg, grad, rad, turn
+    *   hsl( h s l / a )       s l as float% [0,100]
+    *   hsl( h, s, l )         a as float [0,1] or float% [0,100]
+    *   hsl( h, s, l, a )
+    *   hsla( h s l )
+    *   hsla( h s l / a )
+    *   hsla( h, s, l )
+    *   hsla( h, s, l, a )
+    *
+    * @param v the CSS color string.
+    * @return the appropriate Color object.
+    * @throws IllegalArgumentException if unable to parse v
+    */
+  def apply(v: String): Color = {
     v match {
-      case patternRGB(r,g,b,a,p) => rgb(r.toInt,g.toInt,b.toInt,processA(a,p))
-      case patternRGBs(r,g,b,a,p) => rgb(r.toInt,g.toInt,b.toInt,processA(a,p))
-      case patternRGBp(r,g,b,a,p) => rgbPercent(r.toDouble,g.toDouble,b.toDouble,processA(a,p))
-      case patternRGBps(r,g,b,a,p) => rgbPercent(r.toDouble,g.toDouble,b.toDouble,processA(a,p))
-      case patternHSL(h,d,s,l,a,p) => hsl( processAngle(h,d), s.toDouble, l.toDouble, processA(a,p) )
-      case patternHSLs(h,d,s,l,a,p) => hsl( processAngle(h,d), s.toDouble, l.toDouble, processA(a,p) )
-      case patternLongHex(r,g,b,a) => rgb( hex(r), hex(g), hex(b), processHexA(a) )
-      case patternShortHex(r,g,b,a) => rgb( hex(r+r), hex(g+g), hex(b+b), processHexA(a) )
+      case patternRGB(r, g, b, a, p) =>
+        rgb(r.toInt, g.toInt, b.toInt, processA(a, p))
+      case patternRGBs(r, g, b, a, p) =>
+        rgb(r.toInt, g.toInt, b.toInt, processA(a, p))
+      case patternRGBp(r, g, b, a, p) =>
+        rgbPercent(r.toDouble, g.toDouble, b.toDouble, processA(a, p))
+      case patternRGBps(r, g, b, a, p) =>
+        rgbPercent(r.toDouble, g.toDouble, b.toDouble, processA(a, p))
+      case patternHSL(h, d, s, l, a, p) =>
+        hsl(processAngle(h, d), s.toDouble, l.toDouble, processA(a, p))
+      case patternHSLs(h, d, s, l, a, p) =>
+        hsl(processAngle(h, d), s.toDouble, l.toDouble, processA(a, p))
+      case patternLongHex(r, g, b, a) =>
+        rgb(hex(r), hex(g), hex(b), processHexA(a))
+      case patternShortHex(r, g, b, a) =>
+        rgb(hex(r + r), hex(g + g), hex(b + b), processHexA(a))
       case n: String if NamedColor.isNameValid(n) => named(n)
       case _ =>
         throw new IllegalArgumentException(s"Unknown color value: $v")
@@ -146,110 +164,115 @@ trait ColorObj {
   }
 
   /**
-   * returns a Color object using RGB to construct it.
-   *
-   * @param r  The red, in the range [0,255]
-   * @param g  The green, in the range [0,255]
-   * @param b  The blue, in the range [0,255]
-   * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
-   */
-  def rgb( r: Int, g: Int, b: Int, a: Double = 100 ) = {
-    new RGBColor(r,g,b,a)
+    * returns a Color object using RGB to construct it.
+    *
+    * @param r  The red, in the range [0,255]
+    * @param g  The green, in the range [0,255]
+    * @param b  The blue, in the range [0,255]
+    * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
+    */
+  def rgb(r: Int, g: Int, b: Int, a: Double = 100): RGBColor = {
+    new RGBColor(r, g, b, a)
   }
 
   /**
-   * returns a Color object using RGB to construct it.
-   *
-   * @param r  The red as a percent, in the range [0,100]
-   * @param g  The green as a percent, in the range [0,100]
-   * @param b  The blue as a percent, in the range [0,100]
-   * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
-   */
-  def rgbPercent( r: Double, g: Double, b: Double, a: Double = 100 ) = {
-    new RGBPercentColor(r,g,b,a)
+    * returns a Color object using RGB to construct it.
+    *
+    * @param r  The red as a percent, in the range [0,100]
+    * @param g  The green as a percent, in the range [0,100]
+    * @param b  The blue as a percent, in the range [0,100]
+    * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
+    */
+  def rgbPercent(
+      r: Double,
+      g: Double,
+      b: Double,
+      a: Double = 100
+  ): RGBPercentColor = {
+    new RGBPercentColor(r, g, b, a)
   }
 
   /**
-   * returns a Color object using HSL to construct it.
-   *
-   * @param hue  The hue, contained in the set [0, 360].  If not in range, modulo 360 is used.
-   *           0 is red, 60 is yellow, 120 is green, 180 is cyan, 240 is blue, 300 is magenta
-   * @param saturation  The saturation as a percent, contained in the set [0, 100].  If not in range, 0 or 100 is used.
-   *           0 is gray (lack of color). 100 is full color.
-   * @param lightness  The lightness as a percent, contained in the set [0, 100].  If not in range, 0 or 100 is used.
-   *           0 is black, 100 is white.
-   * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
-   */
-  def hsl( h: Double, s: Double, l: Double, a: Double = 100 ) = {
-    new HSLColor(h,s,l,a)
+    * returns a Color object using HSL to construct it.
+    *
+    * @param hue  The hue, contained in the set [0, 360].  If not in range, modulo 360 is used.
+    *           0 is red, 60 is yellow, 120 is green, 180 is cyan, 240 is blue, 300 is magenta
+    * @param saturation  The saturation as a percent, contained in the set [0, 100].  If not in range, 0 or 100 is used.
+    *           0 is gray (lack of color). 100 is full color.
+    * @param lightness  The lightness as a percent, contained in the set [0, 100].  If not in range, 0 or 100 is used.
+    *           0 is black, 100 is white.
+    * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
+    */
+  def hsl(h: Double, s: Double, l: Double, a: Double = 100): HSLColor = {
+    new HSLColor(h, s, l, a)
   }
 
-
-/**
- * Support a named color.  Also the pseudo colors transparent, currentColor.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
- *
- * @param s the name, the name is not validated.
- */
-  def named( s: String ) = NamedColor(s)
+  /**
+    * Support a named color.  Also the pseudo colors transparent, currentColor.
+    *
+    * See https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
+    *
+    * @param s the name, the name is not validated.
+    */
+  def named(s: String): NamedColor = NamedColor(s)
 
   /**
-   * @param gray 0 is black, 100 is white
-   * @param alpha the alpha channel value as a percent, 0 is transparent, 100 is opaque
-   */
-  def grayscale( v: Double, a: Double = 100 ) = rgbPercent( v, v, v, a )
+    * @param gray 0 is black, 100 is white
+    * @param alpha the alpha channel value as a percent, 0 is transparent, 100 is opaque
+    */
+  def grayscale(v: Double, a: Double = 100): RGBPercentColor =
+    rgbPercent(v, v, v, a)
 
-  val CurrentColor = NamedColor("currentColor")
-  val Transparent = NamedColor("transparent")
+  val CurrentColor: NamedColor = NamedColor("currentColor")
+  val Transparent: NamedColor = NamedColor("transparent")
 
-  val Black = Color("black")
-  val Silver = Color("silver")
-  val Gray = Color("gray")
-  val White = Color("white")
-  val Maroon = Color("maroon")
-  val Red = Color("red")
-  val Purple = Color("purple")
-  val Fuchsia = Color("fuchsia")
-  val Green = Color("green")
-  val Lime = Color("lime")
-  val Olive = Color("olive")
-  val Yellow = Color("yellow")
-  val Navy = Color("navy")
-  val Blue = Color("blue")
-  val Teal = Color("teal")
-  val Aqua = Color("aqua")
-  val Orange = Color("orange")
-  val Cyan = Color("cyan")        // same as aqua
-  val Magenta = Color("magenta")  // same as fuchsia
-  val Grey = Color("grey")        // same as grey
+  val Black: Color = Color("black")
+  val Silver: Color = Color("silver")
+  val Gray: Color = Color("gray")
+  val White: Color = Color("white")
+  val Maroon: Color = Color("maroon")
+  val Red: Color = Color("red")
+  val Purple: Color = Color("purple")
+  val Fuchsia: Color = Color("fuchsia")
+  val Green: Color = Color("green")
+  val Lime: Color = Color("lime")
+  val Olive: Color = Color("olive")
+  val Yellow: Color = Color("yellow")
+  val Navy: Color = Color("navy")
+  val Blue: Color = Color("blue")
+  val Teal: Color = Color("teal")
+  val Aqua: Color = Color("aqua")
+  val Orange: Color = Color("orange")
+  val Cyan: Color = Color("cyan") // same as aqua
+  val Magenta: Color = Color("magenta") // same as fuchsia
+  val Grey: Color = Color("grey") // same as grey
 
-  val all = Seq(
-      Black,
-      Silver,
-      Gray,
-      White,
-      Maroon,
-      Red,
-      Purple,
-      Fuchsia,
-      Green,
-      Lime,
-      Olive,
-      Yellow,
-      Navy,
-      Blue,
-      Teal,
-      Aqua,
-      Orange,
-      Cyan,
-      Magenta,
-      Grey
-      )
+  val all: Seq[Color] = Seq(
+    Black,
+    Silver,
+    Gray,
+    White,
+    Maroon,
+    Red,
+    Purple,
+    Fuchsia,
+    Green,
+    Lime,
+    Olive,
+    Yellow,
+    Navy,
+    Blue,
+    Teal,
+    Aqua,
+    Orange,
+    Cyan,
+    Magenta,
+    Grey
+  )
 
   /**
-   * @return all the known named colors.
-   */
+    * @return all the known named colors.
+    */
   def allNamedColors: Iterable[String] = NamedColor.namedColors.keys
 
 }
@@ -257,60 +280,72 @@ trait ColorObj {
 object Color extends ColorObj
 
 /**
- * Support a named color.  Also the pseudo colors transparent, currentColor.
- *
- * See https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
- *
- * @param name
- */
-case class NamedColor( name: String ) extends Color {
+  * Support a named color.  Also the pseudo colors transparent, currentColor.
+  *
+  * See https://developer.mozilla.org/en-US/docs/Web/CSS/color_value
+  *
+  * @param name
+  */
+case class NamedColor(name: String) extends Color {
 
   def toAttrValue = name
 
-  def toRGBColor = NamedColor.toRGB(name)
+  def toRGBColor: RGBColor = NamedColor.toRGB(name)
 
   def toRGBPercentColor = toRGBColor.toRGBPercentColor
 
   def toHSLColor = toRGBColor.toHSLColor
 
-  def toNamedColor = this
+  def toNamedColor: NamedColor = this
 }
 
 object NamedColor {
 
-  def toRGB( name: String ): RGBColor = {
+  def toRGB(name: String): RGBColor = {
     namedColors.get(name.toLowerCase) match {
-      case Some( v ) => Color(v).asInstanceOf[RGBColor]
-      case None => throw new IllegalArgumentException(s"Name not a valid named color: ${name}")
+      case Some(v) => Color(v).asInstanceOf[RGBColor]
+      case None =>
+        throw new IllegalArgumentException(
+          s"Name not a valid named color: ${name}"
+        )
     }
   }
 
-  def toNamed( color: Color ): NamedColor = {
+  def toNamed(color: Color): NamedColor = {
     if (color.isInstanceOf[NamedColor]) color.asInstanceOf[NamedColor]
     else {
       val rgb = color.toRGBColor
       if (rgb.a == 100) {
         val attr = f"#${rgb.r}%02x${rgb.g}%02x${rgb.b}%02x"
-        val entry = namedColors.find { case (k,v) => v == attr }
+        val entry = namedColors.find { case (k, v) => v == attr }
         entry match {
-          case Some((k,v)) => new NamedColor(k)
-          case None => throw new IllegalArgumentException(s"Unable to convert to a named color: ${attr}")
+          case Some((k, v)) => new NamedColor(k)
+          case None =>
+            throw new IllegalArgumentException(
+              s"Unable to convert to a named color: ${attr}"
+            )
         }
       } else if (rgb.a == 0) {
-        if (rgb.r==0&&rgb.g==0&&rgb.b==0) new NamedColor("transparent")
-        else throw new IllegalArgumentException(f"Unable to convert to a named color: rgb(${rgb.r} ${rgb.b} ${rgb.g} / ${rgb.a}%.2f%%)")
+        if (rgb.r == 0 && rgb.g == 0 && rgb.b == 0)
+          new NamedColor("transparent")
+        else
+          throw new IllegalArgumentException(
+            f"Unable to convert to a named color: rgb(${rgb.r} ${rgb.b} ${rgb.g} / ${rgb.a}%.2f%%)"
+          )
       } else {
-        throw new IllegalArgumentException(s"Unable to convert to a named color alpha must be 100")
+        throw new IllegalArgumentException(
+          s"Unable to convert to a named color alpha must be 100"
+        )
       }
     }
   }
 
-  def isNameValid( name: String ) = {
+  def isNameValid(name: String): Boolean = {
     val n = name.toLowerCase
     namedColors.contains(n) || n == "transparent" || n == "currentcolor"
   }
 
-  val namedColors = Map(
+  val namedColors: Map[String, String] = Map(
     // CSS Level 1
     "black" -> "#000000",
     "silver" -> "#c0c0c0",
@@ -463,129 +498,143 @@ object NamedColor {
     "yellowgreen" -> "#9acd32",
     // CSS Color Module Level 4
     "rebeccapurple" -> "#663399",
-
     // transparent keyword
     "transparent" -> "#00000000"
   )
 }
 
 /**
- * returns a Color object using RGB to construct it.
- *
- * @constructor
- * @param r  The red, in the range [0,255]
- * @param g  The green, in the range [0,255]
- * @param b  The blue, in the range [0,255]
- * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
- */
-case class RGBColor( r: Int, g: Int, b: Int, a: Double = 100 ) extends Color {
-  def toAttrValue = f"""rgb($r,$g,$b${ColorInternal.aToString(a)})"""
+  * returns a Color object using RGB to construct it.
+  *
+  * @constructor
+  * @param r  The red, in the range [0,255]
+  * @param g  The green, in the range [0,255]
+  * @param b  The blue, in the range [0,255]
+  * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
+  */
+case class RGBColor(r: Int, g: Int, b: Int, a: Double = 100) extends Color {
+  def toAttrValue: String = f"""rgb($r,$g,$b${ColorInternal.aToString(a)})"""
 
-  def toAttrValueHex = f"""#$r%02X$g%02X$b%02X${ColorInternal.aToHex(a)}"""
+  def toAttrValueHex: String =
+    f"""#$r%02X$g%02X$b%02X${ColorInternal.aToHex(a)}"""
 
-  def toRGBColor = this
+  def toRGBColor: RGBColor = this
 
-  def toRGBPercentColor = {
-    val rr = r/2.55
-    val gg = g/2.55
-    val bb = b/2.55
-    new RGBPercentColor(rr,gg,bb,a)
+  def toRGBPercentColor: RGBPercentColor = {
+    val rr = r / 2.55
+    val gg = g / 2.55
+    val bb = b / 2.55
+    new RGBPercentColor(rr, gg, bb, a)
   }
 
-  def toHSLColor = {
-    val rr = r/255.0
-    val gg = g/255.0
-    val bb = b/255.0
+  def toHSLColor: HSLColor = {
+    val rr = r / 255.0
+    val gg = g / 255.0
+    val bb = b / 255.0
     HSLColor.rgbToHSLColor(rr, gg, bb, a)
   }
 
-  def toNamedColor = NamedColor.toNamed(this)
+  def toNamedColor: NamedColor = NamedColor.toNamed(this)
 }
 
 /**
- * returns a Color object using RGB to construct it.
- *
- * @param r  The red as a percent, in the range [0,100]
- * @param g  The green as a percent, in the range [0,100]
- * @param b  The blue as a percent, in the range [0,100]
- * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
- */
-case class RGBPercentColor( r: Double, g: Double, b: Double, a: Double = 100 ) extends Color {
-  def toAttrValue = f"""rgb($r%.2f%%,$g%.2f%%,$b%.2f%%${ColorInternal.aToString(a)})"""
+  * returns a Color object using RGB to construct it.
+  *
+  * @param r  The red as a percent, in the range [0,100]
+  * @param g  The green as a percent, in the range [0,100]
+  * @param b  The blue as a percent, in the range [0,100]
+  * @param a  The alpha as a percent.  0 - transparent and 100 full opacity
+  */
+case class RGBPercentColor(r: Double, g: Double, b: Double, a: Double = 100)
+    extends Color {
+  def toAttrValue: String =
+    f"""rgb($r%.2f%%,$g%.2f%%,$b%.2f%%${ColorInternal.aToString(a)})"""
 
-  def toRGBPercentColor = this
+  def toRGBPercentColor: RGBPercentColor = this
 
-  def toRGBColor = {
-    val rr = r*2.55
-    val gg = g*2.55
-    val bb = b*2.55
-    def round( v: Double ) = Math.round(v).toInt
-    new RGBColor(round(rr),round(gg),round(bb),a)
+  def toRGBColor: RGBColor = {
+    val rr = r * 2.55
+    val gg = g * 2.55
+    val bb = b * 2.55
+    def round(v: Double) = Math.round(v).toInt
+    new RGBColor(round(rr), round(gg), round(bb), a)
   }
 
-  def toHSLColor = {
-    val rr = r/100
-    val gg = g/100
-    val bb = b/100
+  def toHSLColor: HSLColor = {
+    val rr = r / 100
+    val gg = g / 100
+    val bb = b / 100
     HSLColor.rgbToHSLColor(rr, gg, bb, a)
   }
 
-  def toNamedColor = NamedColor.toNamed(this)
+  def toNamedColor: NamedColor = NamedColor.toNamed(this)
 }
 
 /**
- * Converts an HSL color value to Color object. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- *
- * @constructor
- * @param hue  The hue, contained in the set [0, 360].  If not in range, modulo 360 is used.
- *           0 is red, 60 is yellow, 120 is green, 180 is cyan, 240 is blue, 300 is magenta
- * @param saturation  The saturation, contained in the set [0, 100].  If not in range, 0 or 100 is used.
- *           0 is gray (lack of color). 100 is full color.
- * @param lightness  The lightness, contained in the set [0, 100].  If not in range, 0 or 100 is used.
- *           0 is black, 100 is white.
- * @param a  The alpha.  0 - transparent and 100 full opacity
- */
-case class HSLColor( hue: Double, saturation: Double, lightness: Double, a: Double = 100 ) extends Color {
+  * Converts an HSL color value to Color object. Conversion formula
+  * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+  *
+  * @constructor
+  * @param hue  The hue, contained in the set [0, 360].  If not in range, modulo 360 is used.
+  *           0 is red, 60 is yellow, 120 is green, 180 is cyan, 240 is blue, 300 is magenta
+  * @param saturation  The saturation, contained in the set [0, 100].  If not in range, 0 or 100 is used.
+  *           0 is gray (lack of color). 100 is full color.
+  * @param lightness  The lightness, contained in the set [0, 100].  If not in range, 0 or 100 is used.
+  *           0 is black, 100 is white.
+  * @param a  The alpha.  0 - transparent and 100 full opacity
+  */
+case class HSLColor(
+    hue: Double,
+    saturation: Double,
+    lightness: Double,
+    a: Double = 100
+) extends Color {
 
   import HSLColor._
 
-  def toAttrValue = f"""hsl($hue%.2f,$saturation%.2f%%,$lightness%.2f%%${ColorInternal.aToString(a)})"""
+  def toAttrValue: String =
+    f"""hsl($hue%.2f,$saturation%.2f%%,$lightness%.2f%%${ColorInternal
+      .aToString(a)})"""
 
-  def toRGBPercentColor = {
-    val (r,g,b) = toRGB(hue,saturation,lightness)
-    new RGBPercentColor( r*100.0, g*100.0, b*100.0, a )
+  def toRGBPercentColor: RGBPercentColor = {
+    val (r, g, b) = toRGB(hue, saturation, lightness)
+    new RGBPercentColor(r * 100.0, g * 100.0, b * 100.0, a)
   }
 
-  def toRGBColor =  {
-    val (r,g,b) = toRGB(hue,saturation,lightness)
-    new RGBColor( Math.round(r*255).toInt, Math.round(g*255).toInt, Math.round(b*255).toInt, a )
+  def toRGBColor: RGBColor = {
+    val (r, g, b) = toRGB(hue, saturation, lightness)
+    new RGBColor(
+      Math.round(r * 255).toInt,
+      Math.round(g * 255).toInt,
+      Math.round(b * 255).toInt,
+      a
+    )
   }
 
-  def toHSLColor = this
+  def toHSLColor: HSLColor = this
 
-  def toNamedColor = NamedColor.toNamed(this)
+  def toNamedColor: NamedColor = NamedColor.toNamed(this)
 }
 
 object HSLColor {
 
-  def toRange( v: Double, min: Double, max: Double ) = {
-    Math.max( min, Math.min( v, max ) )
+  def toRange(v: Double, min: Double, max: Double): Double = {
+    Math.max(min, Math.min(v, max))
   }
 
-  def modulo( v: Double, m: Double ) = {
-    val r = v%m;
-    if (r<0) r+m
+  def modulo(v: Double, m: Double): Double = {
+    val r = v % m;
+    if (r < 0) r + m
     else r
   }
 
   /**
-   * @param rr the red - [0,1]
-   * @param gg the green - [0,1]
-   * @param bb the blue - [0,1]
-   * @param a the alpha - [0,100]
-   */
-  def rgbToHSLColor( rr: Double, gg: Double, bb: Double, a: Double ) = {
+    * @param rr the red - [0,1]
+    * @param gg the green - [0,1]
+    * @param bb the blue - [0,1]
+    * @param a the alpha - [0,100]
+    */
+  def rgbToHSLColor(rr: Double, gg: Double, bb: Double, a: Double): HSLColor = {
 
     val max = Math.max(rr, Math.max(gg, bb))
     val min = Math.min(rr, Math.min(gg, bb))
@@ -594,58 +643,59 @@ object HSLColor {
     val hp = if (c == 0) {
       0.0
     } else if (max == rr) {
-      (gg-bb)/c
+      (gg - bb) / c
     } else if (max == gg) {
-      (bb-rr)/c+2
+      (bb - rr) / c + 2
     } else if (max == bb) {
-      (rr-gg)/c+4
+      (rr - gg) / c + 4
     } else {
       0.0
     }
-    val hpre = 60*hp
-    val h = if (hpre<0) hpre+360 else hpre
+    val hpre = 60 * hp
+    val h = if (hpre < 0) hpre + 360 else hpre
 
-    val l = (max+min)/2
+    val l = (max + min) / 2
 
-    val spre = if (l == 1) 0
-    else c/( 1 - Math.abs(2*l-1) )
+    val spre =
+      if (l == 1) 0
+      else c / (1 - Math.abs(2 * l - 1))
 
     val s = if (spre.isNaN()) 0 else spre
 
-    new HSLColor(h,s*100,l*100,a)
+    new HSLColor(h, s * 100, l * 100, a)
   }
 
   /**
-   * @param hue  The hue, contained in the set [0, 360].  If not in range, modulo 360 is used.
-   *           0 is red, 60 is yellow, 120 is green, 180 is cyan, 240 is blue, 300 is magenta
-   * @param saturation  The saturation, contained in the set [0, 100].  If not in range, 0 or 100 is used.
-   *           0 is gray (lack of color). 100 is full color.
-   * @param lightness  The lightness, contained in the set [0, 100].  If not in range, 0 or 100 is used.
-   *           0 is black, 100 is white.
-   * @return tuple3 of doubles.  All values between [0,1].  Values are for red, green, blue
-   */
-  private def toRGB( hue: Double, saturation: Double, lightness: Double) = {
-    val h = modulo(hue,360)
-    val s = toRange(saturation,0,100)/100
-    val l = toRange(lightness,0,100)/100
+    * @param hue  The hue, contained in the set [0, 360].  If not in range, modulo 360 is used.
+    *           0 is red, 60 is yellow, 120 is green, 180 is cyan, 240 is blue, 300 is magenta
+    * @param saturation  The saturation, contained in the set [0, 100].  If not in range, 0 or 100 is used.
+    *           0 is gray (lack of color). 100 is full color.
+    * @param lightness  The lightness, contained in the set [0, 100].  If not in range, 0 or 100 is used.
+    *           0 is black, 100 is white.
+    * @return tuple3 of doubles.  All values between [0,1].  Values are for red, green, blue
+    */
+  private def toRGB(hue: Double, saturation: Double, lightness: Double) = {
+    val h = modulo(hue, 360)
+    val s = toRange(saturation, 0, 100) / 100
+    val l = toRange(lightness, 0, 100) / 100
 
-    val c = (1 - Math.abs(2*l-1))*s
+    val c = (1 - Math.abs(2 * l - 1)) * s
 //    val mh = h%360
 //    val pmh = if (mh<0) mh+360 else mh
-    val hp = h/60
-    val x = c*( 1 - Math.abs((hp%2) - 1))
-    val (r1,g1,b1) = hp match {
-      case hx if hx < 1 => (c,x,0.0)
-      case hx if hx < 2 => (x,c,0.0)
-      case hx if hx < 3 => (0.0,c,x)
-      case hx if hx < 4 => (0.0,x,c)
-      case hx if hx < 5 => (x,0.0,c)
-      case hx if hx < 6 => (c,0.0,x)
+    val hp = h / 60
+    val x = c * (1 - Math.abs((hp % 2) - 1))
+    val (r1, g1, b1) = hp match {
+      case hx if hx < 1 => (c, x, 0.0)
+      case hx if hx < 2 => (x, c, 0.0)
+      case hx if hx < 3 => (0.0, c, x)
+      case hx if hx < 4 => (0.0, x, c)
+      case hx if hx < 5 => (x, 0.0, c)
+      case hx if hx < 6 => (c, 0.0, x)
       case hx =>
-        (0.0,0.0,0.0)
+        (0.0, 0.0, 0.0)
     }
-    val m = l - c/2
-    ( (r1+m), (g1+m), (b1+m) )
+    val m = l - c / 2
+    ((r1 + m), (g1 + m), (b1 + m))
   }
 
 }

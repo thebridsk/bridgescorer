@@ -17,6 +17,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import com.github.thebridsk.bridge.data.rest.JsonSupport
+import scala.util.Using
 
 trait YamlSupport extends JsonSupport {
 
@@ -26,13 +27,14 @@ trait YamlSupport extends JsonSupport {
   }
 
   def fromYaml[T](config: String)(implicit reads: Reads[T]): T = {
-    val jsvalue = try {
-      mapper.readValue(config, classOf[JsValue])
-    } catch {
-      // IOException, JsonParseException, JsonMappingException
-      case x: Exception =>
-        throw new JsonException("Error reading data", x)
-    }
+    val jsvalue =
+      try {
+        mapper.readValue(config, classOf[JsValue])
+      } catch {
+        // IOException, JsonParseException, JsonMappingException
+        case x: Exception =>
+          throw new JsonException("Error reading data", x)
+      }
     convertJson[T](jsvalue)
   }
 
@@ -45,13 +47,14 @@ trait YamlSupport extends JsonSupport {
   }
 
   def readYaml[T](reader: Reader)(implicit reads: Reads[T]): T = {
-    val jsvalue = try {
-      mapper.readValue(reader, classOf[JsValue])
-    } catch {
-      // IOException, JsonParseException, JsonMappingException
-      case x: Exception =>
-        throw new JsonException("Error reading data", x)
-    }
+    val jsvalue =
+      try {
+        mapper.readValue(reader, classOf[JsValue])
+      } catch {
+        // IOException, JsonParseException, JsonMappingException
+        case x: Exception =>
+          throw new JsonException("Error reading data", x)
+      }
     convertJson[T](jsvalue)
   }
 
@@ -72,8 +75,7 @@ trait YamlSupport extends JsonSupport {
   }
 
   def writeYaml[T](outfile: File, t: T)(implicit writes: Writes[T]): Unit = {
-    import resource._
-    for (os <- managed(new FileOutputStream(outfile))) {
+    Using.resource(new FileOutputStream(outfile)) { os =>
       writeYaml(os, t)
     }
   }

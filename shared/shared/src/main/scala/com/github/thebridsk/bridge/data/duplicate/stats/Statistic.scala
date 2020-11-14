@@ -6,7 +6,7 @@ class Statistic(name: String) {
   private var vmax: Double = Double.MinValue
   private var vmin: Double = Double.MaxValue
 
-  override def toString() = {
+  override def toString(): String = {
     f"""Stat(${name}: ${total}%.2f/${number}, ave=${ave}%.2f, min=${vmin}%.2f, max=${vmax}%.2f)"""
   }
 
@@ -21,13 +21,12 @@ class Statistic(name: String) {
 
   def max = vmax
   def min = vmin
-  def ave = if (number == 0) 0.0 else total / number
+  def ave: Double = if (number == 0) 0.0 else total / number
   def n = number
 
   /**
     * Returns the specified value v in the range [min,max]
     * into the range [sizemin,sizemax].
-    *
     */
   def scale(v: Double, sizemin: Int, sizemax: Int): Int = {
     if (max == min) sizemax
@@ -37,7 +36,7 @@ class Statistic(name: String) {
   /**
     * Returns true if v is between vmin and vmax
     */
-  def inRange( v: Double ): Boolean = {
+  def inRange(v: Double): Boolean = {
     v >= vmin && v <= vmax
   }
 

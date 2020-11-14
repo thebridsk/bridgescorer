@@ -6,7 +6,9 @@ import java.net.HttpURLConnection
 import java.io.InputStream
 import sbt.Logger
 import java.nio.file.Files
-
+import java.io.IOException
+import java.net.SocketTimeoutException
+import scala.io.Source
 
 class BridgeServer( val assemblyJar: String, val port: String = "8082") {
   import BridgeServer._
@@ -62,7 +64,7 @@ class BridgeServer( val assemblyJar: String, val port: String = "8082") {
   def stopServer( log: Logger ) = {
     thread.foreach { t => {
       if (t.isAlive()) {
-        val url = new URL("http://localhost:"+port+"/v1/shutdown?doit=yes")
+        val url = new URL(s"${getBaseUrl}/v1/shutdown?doit=yes")
         val conn = url.openConnection().asInstanceOf[HttpURLConnection]
         conn.setRequestMethod("POST")
         conn.connect()
@@ -81,9 +83,11 @@ class BridgeServer( val assemblyJar: String, val port: String = "8082") {
     } }
   }
 
+  def getBaseUrl() = s"http://localhost:$port"
+
   def getTestDefine() = {
     if (startedServer) {
-      "-DUseBridgeScorerURL=http://localhost:"+port::Nil
+      s"-DUseBridgeScorerURL=${getBaseUrl}"::Nil
     } else {
       Nil
     }
@@ -91,21 +95,64 @@ class BridgeServer( val assemblyJar: String, val port: String = "8082") {
 
   def runWithServer[A]( log: Logger, serverLogfile: String = "serverInTests.%u.log" )( f: => A ) = {
     startServer(log,serverLogfile)
+    waitForServer(log)
     try {
       f
     } finally {
       stopServer(log)
     }
   }
+
+  def get(
+      url: String,
+      connectTimeout: Int = 5000,
+      readTimeout: Int = 5000,
+      requestMethod: String = "GET") =
+  {
+    import java.net.{URL, HttpURLConnection}
+    val connection = (new URL(url)).openConnection.asInstanceOf[HttpURLConnection]
+    connection.disconnect()
+    connection.setConnectTimeout(connectTimeout)
+    connection.setReadTimeout(readTimeout)
+    connection.setRequestMethod(requestMethod)
+    val inputStream = connection.getInputStream
+    val content = try {
+      Source.fromInputStream(inputStream).mkString
+    } finally {
+      inputStream.close
+    }
+    content
+
+  }
+
+  def waitForServer( log: Logger ): Unit = {
+
+    var lastError: Option[Exception] = None
+    var i = 3
+    while (i>0) {
+      Thread.sleep(3000L)
+      try {
+        get( getBaseUrl())
+        log.debug("Server is up and running")
+        return
+      } catch {
+        case x: IOException =>
+          log.info(s"Server not running: $x")
+          lastError = Some(x)
+        case x: SocketTimeoutException =>
+          log.info(s"Server not running: $x")
+          lastError = Some(x)
+      }
+    }
+    throw new Exception(s"Server did not start: ${lastError.get}")
+  }
 }
 
 
 object BridgeServer {
 
-  def runjava( log: Logger, cmd: List[String], workingDirectory: Option[File] ): Unit = {
-    log.info( "Running java "+cmd.mkString(" ") )
-    val rc = Fork.java( ForkOptions().withWorkingDirectory( workingDirectory), cmd )
-    if (rc != 0) throw new Error("Failed running java "+cmd.mkString(" "))
+  def runjava( logger: Logger, cmd: List[String], workingDirectory: Option[File], envVars: Option[Map[String,String]] = None ): Unit = {
+    new MyProcess(Some(logger)).java( cmd, workingDirectory, envVars )
   }
 
   /**

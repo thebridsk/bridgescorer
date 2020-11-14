@@ -1,15 +1,14 @@
-
 package com.github.thebridsk.bridge.clientcommon.pages
 
 import org.scalajs.dom.document
-import org.scalajs.dom.raw.StorageEvent
 import com.github.thebridsk.utilities.logging.Logger
 
 object ColorThemeStorage {
 
-  val log = Logger("bridge.ColorThemeStorage")
+  val log: Logger = Logger("bridge.ColorThemeStorage")
 
-  val key = "color-theme"
+  // these values are synchronized with the colortheme.js file
+  val key = "thebridsk:bridge:color-theme"
   val bodyAttribute = "data-theme"
 
   val window = document.defaultView
@@ -25,19 +24,21 @@ object ColorThemeStorage {
   //   }
   // }
 
-  def applyTheme( theme: String ) = {
+  def applyTheme(theme: String): Unit = {
     log.info(s"ColorThemeStorage.applyTheme: ${theme}")
-    document.body.setAttribute(bodyAttribute,theme)
+    document.body.setAttribute(bodyAttribute, theme)
   }
 
   def getColorTheme(): Option[String] = {
     val nkeys = storage.length
-    val theme = (0 until nkeys).find( i => storage.key(i) == key).map( i => storage.getItem(key) )
+    val theme = (0 until nkeys)
+      .find(i => storage.key(i) == key)
+      .map(i => storage.getItem(key))
     log.info(s"ColorThemeStorage.getColorTheme: ${theme}")
     theme
   }
 
-  def initTheme() = {
+  def initTheme(): Unit = {
     log.info(s"ColorThemeStorage.initTheme")
     // window.onstorage = handler
     getColorTheme() match {
@@ -46,18 +47,18 @@ object ColorThemeStorage {
       case None =>
         getColorThemeFromBody() match {
           case Some(theme) => setColorTheme(theme)
-          case None =>
+          case None        =>
         }
     }
   }
 
-  def setColorTheme( theme: String ) = {
+  def setColorTheme(theme: String): Unit = {
     log.info(s"ColorThemeStorage.setColorTheme: ${theme}")
     applyTheme(theme)
-    storage.setItem(key,theme)
+    storage.setItem(key, theme)
   }
 
-  def getColorThemeFromBody() = {
+  def getColorThemeFromBody(): Option[String] = {
     val body = document.body
     val theme = if (body.hasAttribute(bodyAttribute)) {
       Some(body.getAttribute(bodyAttribute))

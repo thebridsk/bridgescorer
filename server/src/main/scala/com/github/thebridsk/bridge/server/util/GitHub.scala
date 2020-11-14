@@ -5,11 +5,15 @@ import java.net.URL
 import java.io.File
 import play.api.libs.json._
 import java.util.Date
-import java.text.SimpleDateFormat
-import java.util.TimeZone
 import java.text.ParseException
 import java.io.OutputStreamWriter
 import java.io.FileOutputStream
+import scala.util.Using
+import java.time.format.DateTimeFormatter
+import java.time.ZoneId
+import java.time.Instant
+import java.time.ZonedDateTime
+import scala.util.matching.Regex
 
 /**
   * @constructor
@@ -250,10 +254,9 @@ class GitHub(
         val (f, dsha) = e
         if (dsha == sha) {
           val shafile = new File(f.toString() + extSha)
-          import resource._
-          for (shaf <- managed(
-                 new OutputStreamWriter(new FileOutputStream(shafile), "UTF8")
-               )) {
+          Using.resource(
+            new OutputStreamWriter(new FileOutputStream(shafile), "UTF8")
+          ) { shaf =>
             shaf.write(shafilecontent)
             shaf.flush()
           }
@@ -311,14 +314,16 @@ class GitHub(
 
 object GitHub {
 
-  val log = Logger[GitHub]
+  val log: Logger = Logger[GitHub]()
 
-  val shaPattern = """([0-9a-zA-Z]+) ([* ])([^\n\r]*)""".r
+  val shaPattern: Regex = """([0-9a-zA-Z]+) ([* ])([^\n\r]*)""".r
 
-  def formatDate(date: Date) = {
-    val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz")
+  val dateFormat: DateTimeFormatter = DateTimeFormatter
+    .ofPattern("yyyy-MM-dd HH:mm:ss zzz")
+    .withZone(ZoneId.systemDefault())
+  def formatDate(date: Date): String = {
 
-    dateFormat.format(date)
+    dateFormat.format(Instant.ofEpochMilli(date.getTime()))
   }
 
   case class Asset(
@@ -327,7 +332,7 @@ object GitHub {
       updated_at: Date,
       browser_download_url: URL
   ) {
-    def forTrace() = {
+    def forTrace(): String = {
       s"""$name updated ${formatDate(updated_at)} ${browser_download_url}"""
     }
   }
@@ -336,7 +341,7 @@ object GitHub {
       login: String,
       url: URL
   ) {
-    def forTrace() = {
+    def forTrace(): String = {
       s"""$login ${url}"""
     }
   }
@@ -351,10 +356,10 @@ object GitHub {
       tarball_url: URL,
       body: Option[String]
   ) {
-    def getVersion() = {
+    def getVersion(): Version = {
       Version(if (tag_name.startsWith("v")) tag_name.substring(1) else tag_name)
     }
-    def forTrace() = {
+    def forTrace(): String = {
       s"""Release ${tag_name} published ${formatDate(published_at)} by ${author
         .forTrace()}""" +
         body.map(b => s"\n${b}").getOrElse("") +
@@ -372,14 +377,19 @@ object GitHub {
   implicit object dateReads extends Reads[Date] {
 
     // "2018-01-17T00:47:37Z"
-    val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"))
+    val dateFormat: DateTimeFormatter = DateTimeFormatter
+      .ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+      .withZone(ZoneId.of("UTC"))
 
     def reads(json: JsValue): JsResult[Date] = {
       json match {
         case JsString(date) =>
           try {
-            JsSuccess(dateFormat.parse(date))
+            JsSuccess(
+              new Date(
+                ZonedDateTime.parse(date, dateFormat).toInstant().toEpochMilli()
+              )
+            )
           } catch {
             case x: ParseException =>
               JsError(
@@ -436,7 +446,7 @@ object GitHub {
 //  "html_url": "https://github.com/thebridsk/bridgescorer/releases/tag/v1.0.2",
 //  "id": 9273387,
 //  "tag_name": "v1.0.2",
-//  "target_commitish": "master",
+//  "target_commitish": "main
 //  "name": null,
 //  "draft": false,
 //  "author": {

@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.data.rubber
 
 import com.github.thebridsk.bridge.data.MatchRubber
-import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
@@ -14,12 +13,12 @@ class GameScoring(
     val nsVul: Boolean,
     val ewVul: Boolean
 ) {
-  val (nsAbove, nsBelow, ewAbove, ewBelow, scoredHands) = calculate()
+  val (nsAbove, nsBelow, ewAbove, ewBelow, scoredHands) = calculate
 
-  val nsWon = nsBelow >= 100
-  val ewWon = ewBelow >= 100
+  val nsWon: Boolean = nsBelow >= 100
+  val ewWon: Boolean = ewBelow >= 100
 
-  val done = nsWon || ewWon
+  val done: Boolean = nsWon || ewWon
 
   /**
     * Add another hand to the game.
@@ -27,7 +26,7 @@ class GameScoring(
     * returns the new GameScoring object
     * throws GameDone if the game is already done
     */
-  def add(h: RubberHand) = {
+  def add(h: RubberHand): GameScoring = {
     if (done) throw new GameDone()
     new GameScoring((h :: hands.reverse).reverse, nsVul, ewVul)
   }
@@ -39,18 +38,17 @@ class GameScoring(
     *            ewAbove: Int
     *            ewBelow: Int
     *            scoredHands: List[com.github.thebridsk.bridge.data.bridge.RubberBridge.ScoreHand]  // same index as hands
-    *
     */
-  private def calculate() = {
+  private def calculate = {
     val sh = hands.map { h =>
       ScoreHand(h)
     }
     val (nsA, nsB, ewA, ewB) = sh
       .map { h =>
-        h.getScores()
+        h.getScores
       }
-      .foldLeft((0, 0, 0, 0))(
-        (a, v) => (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
+      .foldLeft((0, 0, 0, 0))((a, v) =>
+        (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
       )
     (nsA, nsB, ewA, ewB, sh)
   }
@@ -66,7 +64,7 @@ class GameScoring(
       scoredHands.foldLeft(
         (Nil: List[Int], Nil: List[Int], Nil: List[Int], Nil: List[Int])
       )((a, v) => {
-        val sc = v.getScores()
+        val sc = v.getScores
         (
           if (sc._1 != 0) sc._1 :: a._1 else a._1,
           if (sc._2 != 0) sc._2 :: a._2 else a._2,
@@ -81,18 +79,18 @@ class GameScoring(
 class RubberScoring(val rubber: MatchRubber) {
   val (games, nsGamesWon, ewGamesWon) = calculate()
 
-  val nsVul = nsGamesWon > 0
-  val ewVul = ewGamesWon > 0
+  val nsVul: Boolean = nsGamesWon > 0
+  val ewVul: Boolean = ewGamesWon > 0
 
-  val done = nsGamesWon == 2 || ewGamesWon == 2
+  val done: Boolean = nsGamesWon == 2 || ewGamesWon == 2
 
   val (nsBelow, ewBelow, nsAbove, ewAbove) = {
     games
       .map { g =>
         (g.nsBelow, g.ewBelow, g.nsAbove, g.ewAbove)
       }
-      .foldLeft((0, 0, 0, 0))(
-        (a, v) => (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
+      .foldLeft((0, 0, 0, 0))((a, v) =>
+        (a._1 + v._1, a._2 + v._2, a._3 + v._3, a._4 + v._4)
       )
   }
 
@@ -128,13 +126,13 @@ class RubberScoring(val rubber: MatchRubber) {
     }
   }
 
-  val nsTotal = nsBelow + nsAbove + nsBonus
-  val ewTotal = ewBelow + ewAbove + ewBonus
+  val nsTotal: Int = nsBelow + nsAbove + nsBonus
+  val ewTotal: Int = ewBelow + ewAbove + ewBonus
 
-  val nsWon = nsTotal > ewTotal
-  val ewWon = ewTotal > nsTotal
+  val nsWon: Boolean = nsTotal > ewTotal
+  val ewWon: Boolean = ewTotal > nsTotal
 
-  val isTie = !nsWon && !ewWon
+  val isTie: Boolean = !nsWon && !ewWon
 
   private def calculate() = {
     var gs: List[GameScoring] = Nil
@@ -174,7 +172,7 @@ class RubberScoring(val rubber: MatchRubber) {
     *    ewAbove: List[Int]
     *    ewBelow: List[List[Int]]
     */
-  def totals = {
+  def totals: (List[Int], List[List[Int]], List[Int], List[List[Int]]) = {
     val x = games.foldLeft(
       (
         Nil: List[Int],
@@ -198,7 +196,7 @@ class RubberScoring(val rubber: MatchRubber) {
   def setFirstDealer(pos: String) =
     new RubberScoring(rubber.setFirstDealer(pos))
 
-  def getDealerForHand(id: String) = {
+  def getDealerForHand(id: String): PlayerPosition = {
     var dealer = PlayerPosition(rubber.dealerFirstHand)
     var hands = rubber.hands
     while (hands.headOption.isDefined && hands.head.id != id) {

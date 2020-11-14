@@ -13,10 +13,13 @@ import scala.util.Success
 import scala.util.Failure
 import com.github.thebridsk.utilities.logging.Logger
 
-class MultiPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]](
+class MultiPersistentSupport[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     val persistentStores: List[PersistentSupport[VId, VType]]
-)(
-    implicit
+)(implicit
     support: StoreSupport[VId, VType],
     execute: ExecutionContext
 ) extends PersistentSupport[VId, VType] {
@@ -133,7 +136,9 @@ class MultiPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]]
         ps.putToPersistent(id, v)
       }
       .getOrElse {
-        log.warning(s"No persistent stores defined for $resourceURI/$id")
+        log.warning(
+          s"No persistent stores defined for $resourceURI/${support.idSupport.toString(id)}"
+        )
         internalError.toFuture
       }
   }
@@ -153,13 +158,15 @@ class MultiPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]]
         ps.deleteFromPersistent(id, cacheValue)
       }
       .getOrElse {
-        log.warning(s"No persistent stores defined for $resourceURI/$id")
+        log.warning(
+          s"No persistent stores defined for $resourceURI/${support.idSupport.toString(id)}"
+        )
         internalError.toFuture
       }
   }
 
-  def retryAfterDeleteMsg(id: VId) =
-    s"Resource $resourceURI/$id not found, retry"
+  def retryAfterDeleteMsg(id: VId): String =
+    s"Resource $resourceURI/${support.idSupport.toString(id)} not found, retry"
 
   /**
     * The response to put in the cache after deleting a value.  This is to ensure that the delete completes before the next operation starts.
@@ -174,7 +181,10 @@ class MultiPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]]
     * @param cachedValue the value in the cache at the start of the operation
     * @return true means read it again.  false means value is ok
     */
-  override def readCheckForDelete(id: VId, cachedValue: Result[VType]) =
+  override def readCheckForDelete(
+      id: VId,
+      cachedValue: Result[VType]
+  ): Boolean =
     cachedValue match {
       case Left((statuscode, RestMessage(msg)))
           if statuscode == StatusCodes.RetryWith && msg == retryAfterDeleteMsg(
@@ -188,22 +198,25 @@ class MultiPersistentSupport[VId, VType <: VersionedInstance[VType, VType, VId]]
 
 object MultiPersistentSupport {
 
-  val log = Logger[MultiPersistentSupport[_, _]]
+  val log: Logger = Logger[MultiPersistentSupport[_, _]]()
 
   /**
     * Create a persistent support object that is backed by a file persistent support and java resource persistent support.
     * The file persistent support is the primary, and all created resources are written to the file persistent support.
     * @param directory the directory for the file persistent support
     * @param resourcedirectory the resource directory for the java resource persistent.  Must end in '/'
-    * @param masterfile the master file for the java resource persistent suppport.
+    * @param mainfile the main file for the java resource persistent suppport.
     */
-  def createFileAndResource[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def createFileAndResource[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       directory: Directory,
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): MultiPersistentSupport[VId, VType] = {
@@ -211,7 +224,7 @@ object MultiPersistentSupport {
       new FilePersistentSupport[VId, VType](directory),
       new JavaResourcePersistentSupport[VId, VType](
         resourcedirectory,
-        masterfile,
+        mainfile,
         loader
       )
     )
@@ -222,18 +235,19 @@ object MultiPersistentSupport {
     * The file persistent support is the primary, and all created resources are written to the file persistent support.
     * @param directory the directory for the file persistent support
     * @param resourcedirectory the resource directory for the java resource persistent.  Must end in '/'
-    * @param masterfile the master file for the java resource persistent suppport.
+    * @param mainfile the main file for the java resource persistent suppport.
     */
-  def createInMemoryAndResource[VId, VType <: VersionedInstance[
+  def createInMemoryAndResource[VId <: Comparable[
+    VId
+  ], VType <: VersionedInstance[
     VType,
     VType,
     VId
   ]](
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): MultiPersistentSupport[VId, VType] = {
@@ -241,16 +255,19 @@ object MultiPersistentSupport {
       new InMemoryPersistent[VId, VType](),
       new JavaResourcePersistentSupport[VId, VType](
         resourcedirectory,
-        masterfile,
+        mainfile,
         loader
       )
     )
   }
 
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       persistents: PersistentSupport[VId, VType]*
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): MultiPersistentSupport[VId, VType] = {
@@ -259,15 +276,18 @@ object MultiPersistentSupport {
 
 }
 
-class MultiStore[VId, VType <: VersionedInstance[VType, VType, VId]](
+class MultiStore[VId <: Comparable[VId], VType <: VersionedInstance[
+  VType,
+  VType,
+  VId
+]](
     name: String,
     val persistentStores: MultiPersistentSupport[VId, VType],
     cacheInitialCapacity: Int = 5,
     cacheMaxCapacity: Int = 100,
     cacheTimeToLive: Duration = 10.minutes,
     cacheTimeToIdle: Duration = 9.minutes
-)(
-    implicit
+)(implicit
     cachesupport: StoreSupport[VId, VType],
     execute: ExecutionContext
 ) extends Store[VId, VType](
@@ -286,27 +306,30 @@ object MultiStore {
     * The file persistent support is the primary, and all created resources are written to the file persistent support.
     * @param directory the directory for the file persistent support
     * @param resourcedirectory the resource directory for the java resource persistent.  Must end in '/'
-    * @param masterfile the master file for the java resource persistent suppport.
+    * @param mainfile the main file for the java resource persistent suppport.
     */
-  def createFileAndResource[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def createFileAndResource[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       name: String,
       directory: Directory,
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader,
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
       cacheTimeToLive: Duration = 10.minutes,
       cacheTimeToIdle: Duration = 9.minutes
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): MultiStore[VId, VType] = {
     val p = MultiPersistentSupport.createFileAndResource(
       directory,
       resourcedirectory,
-      masterfile,
+      mainfile,
       loader
     )
     new MultiStore[VId, VType](
@@ -324,29 +347,30 @@ object MultiStore {
     * The file persistent support is the primary, and all created resources are written to the file persistent support.
     * @param directory the directory for the file persistent support
     * @param resourcedirectory the resource directory for the java resource persistent.  Must end in '/'
-    * @param masterfile the master file for the java resource persistent suppport.
+    * @param mainfile the main file for the java resource persistent suppport.
     */
-  def createInMemoryAndResource[VId, VType <: VersionedInstance[
+  def createInMemoryAndResource[VId <: Comparable[
+    VId
+  ], VType <: VersionedInstance[
     VType,
     VType,
     VId
   ]](
       name: String,
       resourcedirectory: String,
-      masterfile: String,
+      mainfile: String,
       loader: ClassLoader,
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
       cacheTimeToLive: Duration = Duration.Inf,
       cacheTimeToIdle: Duration = Duration.Inf
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): MultiStore[VId, VType] = {
     val p = MultiPersistentSupport.createInMemoryAndResource(
       resourcedirectory,
-      masterfile,
+      mainfile,
       loader
     )
     new MultiStore[VId, VType](
@@ -359,15 +383,18 @@ object MultiStore {
     )
   }
 
-  def apply[VId, VType <: VersionedInstance[VType, VType, VId]](
+  def apply[VId <: Comparable[VId], VType <: VersionedInstance[
+    VType,
+    VType,
+    VId
+  ]](
       name: String,
       persistents: List[PersistentSupport[VId, VType]],
       cacheInitialCapacity: Int = 5,
       cacheMaxCapacity: Int = 100,
       cacheTimeToLive: Duration = 10.minutes,
       cacheTimeToIdle: Duration = 9.minutes
-  )(
-      implicit
+  )(implicit
       cachesupport: StoreSupport[VId, VType],
       execute: ExecutionContext
   ): MultiStore[VId, VType] = {

@@ -9,6 +9,8 @@ import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import sbtbuildinfo.BuildInfoPlugin
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
 
+import scalafix.sbt.ScalafixPlugin.autoImport._
+
 import BldVersion._
 import MyReleaseVersion._
 import XTimestamp._
@@ -31,22 +33,18 @@ object BldCommonSettings {
     .getOrElse("chrome")
 
   lazy val skipGenerateImage = sys.props
-    .get("skipGenerateImage")
-    .orElse(sys.env.get("skipGenerateImage"))
+    .get("SkipGenerateImage")
+    .orElse(sys.env.get("SkipGenerateImage"))
     .map(s => s.toBoolean)
     .getOrElse(false)
 
-  lazy val onlyBuildDebug = sys.props
-    .get("OnlyBuildDebug")
-    .orElse(sys.env.get("OnlyBuildDebug"))
+  lazy val buildProduction = sys.props
+    .get("BuildProduction")
+    .orElse(sys.env.get("BuildProduction"))
     .map(s => s.toBoolean)
     .getOrElse(false)
 
-  lazy val useFullOpt = sys.props
-    .get("UseFullOpt")
-    .orElse(sys.env.get("UseFullOpt"))
-    .map(s => s.toBoolean)
-    .getOrElse(false)
+  lazy val testProductionPage = s"""-DTestProductionPage=${if (buildProduction) "1" else "0"}"""
 
   lazy val serverTestToRun =
     sys.props.get("ServerTestToRun").orElse(sys.env.get("ServerTestToRun"))
@@ -67,16 +65,16 @@ object BldCommonSettings {
     .isDefined
 
   val buildForHelpOnly = sys.props
-    .get("BUILDFORHELPONLY")
-    .orElse(sys.env.get("BUILDFORHELPONLY"))
+    .get("BuildForHelpOnly")
+    .orElse(sys.env.get("BuildForHelpOnly"))
     .isDefined
 
   val testCaseToRun =
     sys.props.get("TESTCASETORUN").orElse(sys.env.get("TESTCASETORUN"))
 
-  val testToRunNotTravis = "com.github.thebridsk.bridge.server.test.AllSuites"
-  val testToRunBuildForHelpOnly = "com.github.thebridsk.bridge.server.test.selenium.DuplicateTestPages"
-  val testToRunInTravis = "com.github.thebridsk.bridge.server.test.TravisAllSuites"
+  val testToRunNotTravis = "com.github.thebridsk.bridge.fullserver.test.AllSuites"
+  val testToRunBuildForHelpOnly = "com.github.thebridsk.bridge.fullserver.test.selenium.DuplicateTestPages"
+  val testToRunInTravis = "com.github.thebridsk.bridge.fullserver.test.TravisAllSuites"
 
   val testToRun = {
     val tst = serverTestToRun.getOrElse(
@@ -99,9 +97,9 @@ object BldCommonSettings {
     tst
   }
 
-  // these run out of bridgescorer-server project
-  val moretestToRun = "com.github.thebridsk.bridge.server.test.selenium.IntegrationTests"
-  val travisMoretestToRun = "com.github.thebridsk.bridge.server.test.selenium.TravisIntegrationTests"
+  // these run out of bridgescorer-fullserver project
+  val moretestToRun = "com.github.thebridsk.bridge.fullserver.test.selenium.IntegrationTests"
+  val travisMoretestToRun = "com.github.thebridsk.bridge.fullserver.test.selenium.TravisIntegrationTests"
   val testdataDir = "../testdata"
 
   // these run out of bridgescorer project
@@ -109,16 +107,22 @@ object BldCommonSettings {
     "com.github.thebridsk.bridge.test.selenium.integrationtest.IntegrationTests"
   val itravisMoretestToRun =
     "com.github.thebridsk.bridge.test.selenium.integrationtest.TravisIntegrationTests"
-  val itestdataDir = "./testdata"
+  val itestdataDir = "../testdata"
+
+  val ssltestToRun =
+    "com.github.thebridsk.bridge.test.AllSSLTests"
 
 
   lazy val bridgescorerAllProjects = ScopeFilter(
-    inAggregates(BldBridge.bridgescorer, includeRoot = true)
+    inAggregates(BldBridge.bridgescorer, includeRoot = false)
   )
 
   lazy val utilitiesAllProjects = ScopeFilter(
     inAggregates(utilities, includeRoot = false)
   )
+
+  lazy val allProjects = bridgescorerAllProjects || utilitiesAllProjects ||
+      ScopeFilter( projects = inProjects(utilities) || inProjects(BldBridge.bridgescorer) )
 
   lazy val bridgescorerAllCompileAndTestConfigurations = ScopeFilter(
     inAggregates(BldBridge.bridgescorer, includeRoot = false),
@@ -155,6 +159,8 @@ object BldCommonSettings {
 
   val travis = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
 
+  val travis1p = taskKey[Unit]("The build that is run in Travis CI, the parallel parts") in Distribution
+
   val travis1 = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
 
   val travis2 = taskKey[Unit]("The build that is run in Travis CI.") in Distribution
@@ -170,6 +176,8 @@ object BldCommonSettings {
   val myclean = taskKey[Unit]("clean") in Distribution
 
   val mytest = taskKey[Unit]("build and test it") in Distribution
+
+  val mydistnoclean = taskKey[Unit]("Make a build for distribution, no clean") in Distribution
 
   val mydist = taskKey[Unit]("Make a build for distribution") in Distribution
 
@@ -193,15 +201,25 @@ object BldCommonSettings {
 
   val skipGenerateImageSetting = settingKey[Boolean]("if true images generation is skipped if they already exist")
 
-  val hugo = taskKey[Unit]("Run Hugo")
+  val hugo = taskKey[Seq[(java.io.File, String)]]("Run Hugo")
+  val hugoserver = taskKey[Unit]("Run Hugo Server")
   val hugosetup = taskKey[Unit]("Setup to run Hugo")
-  val hugoWithTest = taskKey[Unit]("Run Hugo")
+  val hugoWithTest = taskKey[Seq[(java.io.File, String)]]("Run Hugo")
   val hugosetupWithTest = taskKey[Unit]("Setup to run Hugo")
-  val helptask = taskKey[Seq[(java.io.File, String)]]("Identifies help resources")
+
+  val generateDemo = taskKey[Unit]("Generate demo gh-pages in target/demo")
+  val publishDemo = taskKey[Unit]("Publish demo gh-pages in target/demo")
+
+  val generateSwagger = taskKey[Unit]("Generate swagger.yaml")
+
+  case class SSLKeys( keystore: File, keystorepass: String, serveralias: String, keypass: String, truststore: File )
+  val generatesslkeys = taskKey[SSLKeys]("Generate SSL keys for testing HTTPS connections")
+  val onlyssltests = taskKey[Unit]("Only run SSL tests, does not create jars")
+  val ssltests = taskKey[Unit]("Run SSL tests")
 
   val server = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help")
-  val serverssl = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with example.com.p12 cert")
-  val serverhttps2 = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with example.com.p12 cert, http2 support")
+  val serverssl = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with examplebridgescorekeeper.p12 cert")
+  val serverhttps2 = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, using https with examplebridgescorekeeper.p12 cert, http2 support")
   val serverhttp2 = taskKey[Unit]("Run server with default store and logging to server/logs directory, no help, http2 support")
   val serverhelp = taskKey[Unit]("Run server with default store and logging to server/logs directory, with help")
   val servertemp = taskKey[Unit]("Run server with temp store and logging to server/logs directory")
@@ -232,15 +250,27 @@ object BldCommonSettings {
     _.settings(versionSetting).settings(
       scalaVersion := verScalaVersion,
       crossScalaVersions := verCrossScalaVersions,
-      scalacOptions := Seq(
+      scalacOptions := List(
         "-unchecked",
         "-deprecation",
         "-encoding",
         "utf8",
         "-feature",
+        "-Wunused:imports",   // required by `RemoveUnused` rule
 //        "-Xlog-implicits",
-      ),
-      testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDG"),
+      ) ::: {
+        if (semanticdbEnabled.value) List("-Yrangepos")  // required by SemanticDB compiler plugin
+        else List()
+      },
+      // semanticdbEnabled := false,
+      semanticdbVersion := {
+        val v = scalafixSemanticdb.revision
+        // println(s"semanticdbVersion=$v")
+        v
+      },
+
+      // useCoursier := false,
+      testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDFIK"),
       testClass in Test := (Def.inputTaskDyn {
         import complete.DefaultParsers._
         val args: Seq[String] = spaceDelimited("<arg>").parsed
@@ -265,10 +295,10 @@ object BldCommonSettings {
         if (atests.isEmpty) {
           (Def.task {
             val log = streams.value.log
-            log.error("Test class must be specified")
+            log.error(s"Test class must be specified, test src dir is ${testdir}, args were ${args}")
           })
         } else {
-          val ra = s""" org.scalatest.tools.Runner -oD ${(atests.map( t => s"-s ${t.replace('/','.')}"):::options).mkString(" ")}"""
+          val ra = s""" org.scalatest.tools.Runner -oDFIK ${(atests.map( t => s"-s ${t.replace('/','.')}"):::options).mkString(" ")}"""
           // println(s"testClass running=${ra}")
           (Def.taskDyn {
             (runMain in Test).toTask( ra )

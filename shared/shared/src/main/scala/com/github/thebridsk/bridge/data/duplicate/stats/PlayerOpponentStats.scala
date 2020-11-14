@@ -1,10 +1,8 @@
 package com.github.thebridsk.bridge.data.duplicate.stats
 
-import com.github.thebridsk.bridge.data.Id
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
-import com.github.thebridsk.bridge.data.bridge.BoardScore
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.bridge.TeamBoardScore
 
@@ -38,14 +36,14 @@ case class PlayerOpponentStat(
       opponent: String,
       totalMP: Int,
       wonMP: Int
-  ) {
+  ) = {
     this(player, opponent, 0, 0, 0, totalMP, wonMP)
   }
 
   /**
     * Add in another opponents stats.  The stats SHOULD have the same primary player.
     */
-  def add(other: PlayerOpponentStat) = {
+  def add(other: PlayerOpponentStat): PlayerOpponentStat = {
     PlayerOpponentStat(
       player,
       s"$opponent ${other.opponent}",
@@ -62,7 +60,7 @@ case class PlayerOpponentStat(
     *
     * assert opponent == other.opponent
     */
-  def sum(other: PlayerOpponentStat) = {
+  def sum(other: PlayerOpponentStat): PlayerOpponentStat = {
     PlayerOpponentStat(
       player,
       opponent,
@@ -76,7 +74,6 @@ case class PlayerOpponentStat(
 }
 
 /**
-  *
   * @constructor
   * @param player the primary player, PP, name for these stats
   * @param opponents the stats for a given opponent
@@ -92,7 +89,7 @@ case class PlayerOpponentsStat(
     * assert player == other.player
     * sum only when opponents[i].opponent == other.opponents[j].opponent
     */
-  def sum(other: PlayerOpponentsStat) = {
+  def sum(other: PlayerOpponentsStat): PlayerOpponentsStat = {
     val thisOpponents = opponents.map(op => op.opponent)
     val otherOpponents = other.opponents.map(op => op.opponent)
     val allOpponents = (thisOpponents ::: otherOpponents).distinct
@@ -109,20 +106,21 @@ case class PlayerOpponentsStat(
     )
   }
 
-  def getPlayer(name: String) = opponents.find(pos => pos.opponent == name)
+  def getPlayer(name: String): Option[PlayerOpponentStat] =
+    opponents.find(pos => pos.opponent == name)
 
-  def playerTotal() = {
+  def playerTotal: PlayerOpponentStat = {
     opponents.foldLeft(PlayerOpponentStat(player, "", 0, 0, 0, 0, 0)) {
       (ac, v) =>
         ac.add(v)
     }
   }
 
-  def sort() = {
+  def sort: PlayerOpponentsStat = {
     copy(opponents = opponents.sortWith((l, r) => l.opponent < r.opponent))
   }
 
-  override def toString() = {
+  override def toString(): String = {
     player + ": " + playerTotal.copy(opponent = "") +
       opponents.mkString("\n  ", "\n  ", "")
   }
@@ -132,15 +130,15 @@ case class PlayersOpponentsStats(
     players: List[PlayerOpponentsStat]
 ) {
 
-  def getPlayer(name: String) = players.find(pos => pos.player == name)
+  def getPlayer(name: String): Option[PlayerOpponentsStat] =
+    players.find(pos => pos.player == name)
 
-  def sort() =
+  def sort: PlayersOpponentsStats =
     copy(
-      players =
-        players.sortWith((l, r) => l.player < r.player).map(s => s.sort())
+      players = players.sortWith((l, r) => l.player < r.player).map(s => s.sort)
     )
 
-  def sum(other: PlayersOpponentsStats) = {
+  def sum(other: PlayersOpponentsStats): PlayersOpponentsStats = {
     val thisPlayers = players.map(op => op.player)
     val otherPlayers = other.players.map(op => op.player)
     val allPlayers = (thisPlayers ::: otherPlayers).distinct
@@ -156,7 +154,7 @@ case class PlayersOpponentsStats(
     )
   }
 
-  def addStat(stat: PlayerOpponentsStat) = {
+  def addStat(stat: PlayerOpponentsStat): PlayersOpponentsStats = {
     var added = false;
     val pl = players.map { pos =>
       if (pos.player == stat.player) {
@@ -172,11 +170,11 @@ case class PlayersOpponentsStats(
     )
   }
 
-  def getPlayers() = {
+  def getPlayers: List[String] = {
     players.map(s => s.player)
   }
 
-  override def toString() = {
+  override def toString(): String = {
     players.mkString("\n")
   }
 }
@@ -185,10 +183,10 @@ object PlayersOpponentsStats {
 
   def getBothStat(
       totalMatchPoints: Int,
-      teamscores: Map[Id.Team, TeamBoardScore],
+      teamscores: Map[Team.Id, TeamBoardScore],
       team1: Team,
       team2: Team
-  ) = {
+  ): List[PlayerOpponentsStat] = {
     getStat(totalMatchPoints, teamscores, team1, team2) ::: getStat(
       totalMatchPoints,
       teamscores,
@@ -199,10 +197,10 @@ object PlayersOpponentsStats {
 
   def getStat(
       totalMatchPoints: Int,
-      teamscores: Map[Id.Team, TeamBoardScore],
+      teamscores: Map[Team.Id, TeamBoardScore],
       team1: Team,
       team2: Team
-  ) = {
+  ): List[PlayerOpponentsStat] = {
     PlayerOpponentsStat(
       team1.player1,
       new PlayerOpponentStat(
@@ -239,10 +237,10 @@ object PlayersOpponentsStats {
   }
 
   def getBothTeamStat(
-      teamscores: Map[Id.Team, Double],
+      teamscores: Map[Team.Id, Double],
       team1: Team,
       team2: Team
-  ) = {
+  ): List[PlayerOpponentsStat] = {
     getTeamStat(teamscores, team1, team2) ::: getTeamStat(
       teamscores,
       team2,
@@ -251,10 +249,10 @@ object PlayersOpponentsStats {
   }
 
   def getTeamStat(
-      teamscores: Map[Id.Team, Double],
+      teamscores: Map[Team.Id, Double],
       team1: Team,
       team2: Team
-  ) = {
+  ): List[PlayerOpponentsStat] = {
 
     val t1s = teamscores.get(team1.id).get
     val t2s = teamscores.get(team2.id).get
@@ -265,7 +263,15 @@ object PlayersOpponentsStats {
     PlayerOpponentsStat(
       team1.player1,
 //                                              played,beat,tied
-      new PlayerOpponentStat(team1.player1, team2.player1, 1, t1won, tied, 0, 0) ::
+      new PlayerOpponentStat(
+        team1.player1,
+        team2.player1,
+        1,
+        t1won,
+        tied,
+        0,
+        0
+      ) ::
         new PlayerOpponentStat(
           team1.player1,
           team2.player2,
@@ -303,7 +309,7 @@ object PlayersOpponentsStats {
   }
 
   def stats(
-      dups: Map[Id.MatchDuplicate, MatchDuplicate]
+      dups: Map[MatchDuplicate.Id, MatchDuplicate]
   ): PlayersOpponentsStats = {
     val ss = dups.values
       .flatMap { md =>

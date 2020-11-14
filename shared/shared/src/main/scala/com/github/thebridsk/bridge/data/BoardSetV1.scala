@@ -31,7 +31,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
   *   ]
   * }
   * </code></pre>
-  *
   */
 @Schema(
   name = "BoardSet",
@@ -40,7 +39,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema
 )
 case class BoardSetV1(
     @Schema(description = "The name of the boardset", required = true)
-    name: String,
+    name: BoardSet.Id,
     @Schema(
       description = "A short description of the boardset",
       required = true
@@ -57,26 +56,77 @@ case class BoardSetV1(
         required = true
       )
     )
-    boards: List[BoardInSet]
-) extends VersionedInstance[BoardSetV1, BoardSetV1, String] {
+    boards: List[BoardInSet],
+    @Schema(
+      description = "true if boardset can be deleted, default is false",
+      required = false
+    )
+    deletable: Option[Boolean] = None,
+    @Schema(
+      description =
+        "true if boardset definition can be reset to the default, default is false",
+      required = false
+    )
+    resetToDefault: Option[Boolean] = None,
+    @Schema(
+      description = "the creation time, default: unknown",
+      required = false
+    )
+    creationTime: Option[SystemTime.Timestamp] = None,
+    @Schema(
+      description = "the last time the boardset was updated, default: unknown",
+      required = false
+    )
+    updateTime: Option[SystemTime.Timestamp] = None
+) extends VersionedInstance[BoardSetV1, BoardSetV1, BoardSet.Id] {
 
   def id = name
 
-  def setId(
-      newId: String,
-      forCreate: Boolean,
-      dontUpdateTime: Boolean = false
-  ) = {
-    copy(name = newId)
+  @Schema(hidden = true)
+  private def optional(flag: Boolean, fun: BoardSet => BoardSet) = {
+    if (flag) fun(this)
+    else this
   }
 
-  def convertToCurrentVersion() = (true, this)
+  def setId(
+      newId: BoardSet.Id,
+      forCreate: Boolean,
+      dontUpdateTime: Boolean = false
+  ): BoardSet = {
+    val time = SystemTime.currentTimeMillis()
+    copy(name = newId)
+      .optional(
+        forCreate,
+        _.copy(creationTime = Some(time), updateTime = Some(time))
+      )
+      .optional(!dontUpdateTime, _.copy(updateTime = Some(time)))
+  }
 
-  def readyForWrite() = this
+  def convertToCurrentVersion: (Boolean, BoardSetV1) = (true, this)
+
+  def readyForWrite: BoardSetV1 = this
 
   @Schema(hidden = true)
-  def created: SystemTime.Timestamp = 0
+  def created: SystemTime.Timestamp = creationTime.getOrElse(0)
 
+  @Schema(hidden = true)
+  def updated: SystemTime.Timestamp = updateTime.getOrElse(0)
+
+  @Schema(hidden = true)
+  def isDeletable: Boolean = deletable.getOrElse(false)
+
+  @Schema(hidden = true)
+  def isResetToDefault: Boolean = resetToDefault.getOrElse(false)
+
+}
+
+trait IdBoardSet
+
+object BoardSetV1 extends HasId[IdBoardSet]("", true) {
+
+  def default: Id = BoardSet.id("ArmonkBoards")
+
+  def standard: Id = BoardSet.id("StandardBoards")
 }
 
 @Schema(

@@ -19,12 +19,248 @@ import scalajsbundler.sbtplugin.WebScalaJSBundlerPlugin.autoImport._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
+import scalafix.sbt.ScalafixPlugin.autoImport._
+
 import BldDependencies._
 import BldCommonSettings._
 import BldVersion._
 import MyReleaseVersion._
 
 object BldBridge {
+
+  def actionAppHelp( state: State ) = {
+    println(
+      """
+        |BridgeScoreKeeper sbt help
+        |
+        |Tasks on root project
+        |  setOptimize            turn on scalac optimization in all projects
+        |  setSemanticDB          turn on setSemanticDB for scalafix
+        |  server                 run server with HTTP without help pages
+        |  serverhelp             run server with HTTP with help pages
+        |  updateCheck            check for updates in project and plugins
+        |  checkForUpdates        check for dependency updates, does not check sbt plugins
+        |  distribution:alltests  runs all tests
+        |  standalonetests        run test cases using assembled jars, does not build jars
+        |  distribution:travis    run build that is run in Travis-CI
+        |  distribution:travis1   run build that is run in step 1 in Travis-CI
+        |  distribution:travis2   run build that is run in step 2 in Travis-CI
+        |  myrelease-with-defaults do a release using defaults
+        |  bridgescalafix         run scalafix on all projects with semanticDB, runs bridgescorer-fullserver/test
+        |Note, the following will fail:
+        |  release with-defaults  does a release bumping the patch version
+        |  release release-version 1.0.99 next-version 1.2.0-SNAPSHOT    set the release version and next version for release process
+        |
+        |Tasks on bridgescorekeeper project, with help pages
+        |  serverlogs         run server with logs to stdout
+        |  serverssl          run server with HTTPS
+        |  test:serverhttps2  run server with HTTPS and HTTP 2
+        |  allassembly        build big jar and test jar
+        |  webassembly        build web files
+        |
+        |Tasks on bridgescorer-fullserver project, without help pages
+        |  serverlogs         run server with logs to stdout
+        |  serverssl          run server with HTTPS
+        |  test:serverhttps2  run server with HTTPS and HTTP 2
+        |  test:test          run selenium tests
+        |
+        |Tasks on bridgescorer-client and bridgescorer-clientapi
+        |  fastOptJS::webpack   build the bundle
+        |  fullOptJS::webpack   build the bundle
+        |
+        |Tasks on bridgescorer-server project, without app or help
+        |  generatesslkeys    generate test ssl keys for https port
+        |
+        |Tasks on help project
+        |  hugo               run hugo to generate help pages
+        |  hugoserver         run hugo server on help docs
+        |
+        |Tasks on demo project
+        |  generateDemo       generates the demo website at demo/target/demo
+        |  publishDemo        publishes the demo website to thebridsk/bridgescorerdemo
+        |                     this command is normally not needed, a release will publis
+        |                     the website
+        |
+        |Tasks in any project
+        |  test:testClass <clsname>...  run tests on specified class(es), wildcard * matches any number of characters
+        |  scalafix           run scalafix, for help run scalafix --help
+        |  scalafmt           run scalafmt
+        |
+        |Environment Variables that affect build
+        |  UseBrowser <browser>        the browser to use in selenium tests, default is "chrome"
+        |  SkipGenerateImage <bool>    skip generating images in help pages, default is false
+        |  BuildProduction <bool>      build using full optimization
+        |  ServerTestToRun <clsname>   test to run in fullserver when running test task
+        |  TRAVIS_BUILD_NUMBER <n>     running in Travis-CI
+        |  BuildForHelpOnly            if defined only tests that generate help images are run
+        |  ReleaseFromBranch <branch>  current branch when release is executed, default "main"
+        |  UseLogFilePrefix  <path>    prefix to use for logging when running tests
+        |
+        |Environment Variables when using server in tests
+        |  UseBridgeScorerURL              Override URL of server, default: http://localhost:8081
+        |  UseBridgeScorerScheme           Override schema of servr URL, default: http
+        |  UseBridgeScorerHost             Override host of server URL, default: localhost
+        |  UseBridgeScorerPort             Override port of server URL, default: 8081
+        |  UseWebsocketLogging             use websockets for client logging
+        |  OptRemoteLogger <file>          the remote logger configuration to use
+        |  OptBrowserRemoteLogging <name>  the name of the configuration to use for browsers
+        |  OptIPadRemoteLogging <name>     the name of the configuration to use for iPads
+        |
+        |Notes:
+        |  To test the build that runs in Travis-CI first set the environment variable TRAVIS_BUILD_NUMBER to a number,
+        |  then invoke "sbt distribution:travis1" or "sbt distribution:travis2"
+        |
+        |  To make a release, checkout the main branch, be sure the submodules are at the correct commit and that
+        |  commit has been pushed to GitHub.  Then invoke "sbt release".  The release process will create a branch
+        |  called "release" from the HEAD, then modifies version.sbt, and commits this, tags it with the version number
+        |  and runs "distribution:disttest".  If the build succeeds then version.sbt is updated to the next snapshot
+        |  version, and committed.  The "release" branch and the version tag should be pushed to GitHub, and a Pull Request
+        |  should be made from the "release" branch to the "main" branch.  The commit with the version tag will be
+        |  built by Travis-CI and the bridgescorekeeper jar file is added as an artifact to the release in GitHub.
+        |
+        |Scalafix
+        |  To run scalafix on all projects, run
+        |
+        |     setSemanticDB
+        |     project bridgescorer
+        |     scalafix
+        |     test:scalafix
+        |     project {utilities}utilities
+        |     setSemanticDB
+        |     scalafix
+        |     test:scalafix
+        |
+        |  Note: running bridgescorekeeper/test:scalafix will cause bridgescorer-fullserver/test to execute
+        |
+        |Scalafmt
+        |  To run scalafmt on all projects, run
+        |
+        |     project bridgescorer
+        |     scalafmt
+        |     test:scalafmt
+        |     project {utilities}utilities
+        |     scalafmt
+        |     test:scalafmt
+        |
+        |""".stripMargin
+    )
+    state
+  }
+
+  val apphelp = Command.command(
+    "apphelp",
+    "show help for app tasks",
+    "show help for app tasks"
+  )(actionAppHelp _) // "shows help for sbt tasks for BridgeScoreKeeper"
+
+  val setSemanticDB = Command.command(
+    "setSemanticDB",
+    "turn on setSemanticDB",
+    "turn on setSemanticDB"
+  ) { state: State =>
+    val extracted = Project extract state
+    import extracted._
+    println("Turning on SemanticDB")
+    appendWithoutSession(
+      semanticdbEnabled in ThisBuild := true,
+      // structure.allProjectRefs.map{ p =>
+      //   semanticdbEnabled in p := true
+      // },
+      state
+    )
+  }
+
+  def init = inThisBuild(
+    List(
+      scalaVersion := verScalaVersion,
+      scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(verScalaVersion),
+      semanticdbEnabled := false,
+      semanticdbVersion := scalafixSemanticdb.revision,
+
+      Global / excludeLintKeys ++= Set(
+        scalafixScalaBinaryVersion,
+        cleanKeepGlobs in BldBridgeClient.`bridgescorer-client`,
+        cleanKeepGlobs in BldBridgeClientApi.`bridgescorer-clientapi`,
+      )
+    )
+
+  )
+
+  val setOptimize = Command.command(
+    "setOptimize",
+    "turn on scalac optimization for all projects",
+    "turn on scalac optimization for all projects"
+  )( turnOnOptimize _)
+
+  def turnOnOptimize( state: State ) = {
+    val extracted = Project extract state
+    import extracted._
+    println("Turning on optimization in all projects")
+    appendWithoutSession(
+      structure.allProjectRefs.map{ p =>
+        scalacOptions in p ++= Seq(
+          "-opt:l:method",
+          // "-opt:l:inline",
+          // "-opt-inline-from:**"
+        )
+      },
+      state
+    )
+  }
+
+  implicit class WrapState( val state: State ) extends AnyVal {
+    def runAggregated[T]( key: TaskKey[T] ) = {
+      releaseStepTaskAggregated(key)(state)
+    }
+    def run[T]( key: TaskKey[T] ) = {
+      releaseStepTask(key)(state)
+    }
+    def runWithInput[T](key: InputKey[T], input: String = "") = {
+      releaseStepInputTask(key,input)
+    }
+    def run( command: String ) = {
+      releaseStepCommandAndRemaining(command)(state)
+    }
+    def run(command: Command, input: String = "") = {
+      releaseStepCommand(command, input)(state)
+    }
+  }
+
+  val updateCheck = Command.command(
+    "updateCheck",
+    "Check for updates",
+    "Check for updates"
+  ) { state =>
+    state
+      .run(checkForUpdates)
+      .run("reload plugins")
+      .run(dependencyUpdates)
+      .run("reload return")
+    // state
+      .run( "project {utilities}utilities" )
+      .run( "reload plugins")
+      .run( dependencyUpdates )
+//      .run("reload return")
+    state
+  }
+
+  val bridge_scalafix = Command.command(
+    "bridgescalafix",
+    "Run scalafix on all projects",
+    "Run scalafix on all projects, will run setSemanticDB, will run bridgescorer-fullserver/test"
+  ) { state =>
+    state
+      .run(setSemanticDB)
+      .run("scalafix")
+      .run( "project {utilities}utilities" )
+      .run(setSemanticDB)
+      .run("scalafix")
+    state
+  }
+
+  lazy val releaseOptimize = ReleaseStep(
+    action = turnOnOptimize
+  )
 
   lazy val releaseCheck = { st: State =>
     Project.extract(st).runTask(publishdir, st) match {
@@ -63,20 +299,21 @@ object BldBridge {
       BldBridgeClient.`bridgescorer-client`,
       BldBridgeClientApi.`bridgescorer-clientapi`,
       BldBridgeServer.`bridgescorer-server`,
-      BldBridgeRotation.rotationJVM
+      BldBridgeFullServer.`bridgescorer-fullserver`,
+      BldBridgeRotation.rotationJVM,
+      BldBrowserPages.browserpages,
+      BldColor.colorJS,
+      BldColor.colorJVM,
+      BldBridgeScoreKeeper.bridgescorekeeper,
+      BldBridgeDemo.demo
     )
-    .configure( commonSettings, buildInfo("com.github.thebridsk.bridge.bridgescorer.version", "VersionBridgeScorer"))
-    .dependsOn(BldBridgeServer.`bridgescorer-server` % "test->test;compile->compile")
-    .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
-    .enablePlugins(WebScalaJSBundlerPlugin)
-    .settings(
-      inConfig(Test)(baseAssemblySettings): _*
-    )
+    .configure(commonSettings)
     .settings(
       name := "bridgescorer",
       publish := {},
       publishLocal := {},
-      resolvers += Resolver.bintrayRepo("scalaz", "releases"),
+      scalaVersion := verScalaVersion,
+
       aggregate in assembly := false,
       aggregate in webassembly := false,
       aggregate in integrationtests in Distribution := false,
@@ -92,345 +329,128 @@ object BldBridge {
       aggregate in mypublishcopy in Distribution := false,
       aggregate in server := false,
       aggregate in serverlogs := false,
-//    mainClass in Compile := Some("com.github.thebridsk.bridge.server.Server"),
-      mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
-      mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
-      server := { (server in BldBridgeServer.`bridgescorer-server`).value },
-      serverhelp := {
-        (run in Compile).toTask(""" --logfile "server/logs/serverhelp.sbt.%d.%u.log" start --cache 0s --store server/store""").value
-      },
-      serverlogs := {
-        (run in Compile).toTask(""" --logconsolelevel=ALL start --cache 0s --store server/store""").value
-      },
-      Compile / run / fork := true,
-      testOptions in Test := Seq(),
-      test in assembly := {}, // test in (`bridgescorer-server`, Test),
-      test in (Test, assembly) := {}, // { val x = assembly.value },
-      assemblyJarName in (assembly) := s"${name.value}-server-assembly-${version.value
-        .replaceAll("[\\/]", "_")}.jar", // s"${name.value}-server-assembly-${version.value}.jar",
-      assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value
-        .replaceAll("[\\/]", "_")}.jar",
-      assembly := {
-        val log = streams.value.log
-        val x = (assembly).value
-        val sha = Sha256.generate(x)
-        log.info(s"SHA-256: ${sha}")
-        x
-      },
-      assembly in Test := {
-        val log = streams.value.log
-        val x = (assembly in Test).value
-        val sha = Sha256.generate(x)
-        log.info(s"SHA-256: ${sha}")
-        x
-      },
-      helptask := {
-        val depend = (hugoWithTest in BldBridgeHelp.help).value
-        val rootdir = (target in BldBridgeHelp.help).value
-        val helpdir = new File(rootdir, "help")
-        val prefix = rootdir.toString.length + 1
-        helpdir.allPaths.pair(f => Some(f.toString.substring(prefix)))
+      aggregate in testClass := false,
 
-      },
-      npmAssets := {
-        helptask.value
-      },
-      scalaJSProjects := Seq(),
-      pipelineStages in Assets := (if (onlyBuildDebug) Seq()
-                                   else
-                                     Seq(scalaJSProd)) ++ Seq(scalaJSDev, gzip),
-      assemblyMergeStrategy in assembly := {
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorer",
-            xs @ _*
-            )
-            if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
-          MergeStrategy.discard
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorer-server",
-            xs @ _*
-            )
-            if (!xs.isEmpty && patternFastopt.findFirstIn(xs.last).isDefined) =>
-          MergeStrategy.discard
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorer-server",
-            ver,
-            dir,
-            xs @ _*
-            )
-            if (!xs.isEmpty && patternSourceDir.pattern
-              .matcher(dir)
-              .matches && (xs.last endsWith ".scala")) =>
-          MergeStrategy.discard
-        case PathList("META-INF", "maven", xs @ _*)
-            if (!xs.isEmpty && (xs.last endsWith ".properties")) =>
-          MergeStrategy.first
-        case PathList("JS_DEPENDENCIES") =>
-          MergeStrategy.rename
-        case PathList("module-info.class") =>
-          MergeStrategy.rename
-//      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorer",
-            version,
-            "lib",
-            "bridgescorer-server",
-            rest @ _*
-            ) =>
-          MergeStrategy.discard
-        case x =>
-          val oldStrategy = (assemblyMergeStrategy in assembly).value
-          oldStrategy(x)
-      },
-      assemblyMergeStrategy in (Test, assembly) := {
-        case PathList("META-INF", "maven", xs @ _*)
-            if (!xs.isEmpty && (xs.last endsWith ".properties")) =>
-          MergeStrategy.first
-        case PathList("JS_DEPENDENCIES")   => MergeStrategy.rename
-        case PathList("module-info.class") => MergeStrategy.rename
-//      case PathList("akka", "http", xs @ _*) => MergeStrategy.first
-        case PathList(
-            "META-INF",
-            "resources",
-            "webjars",
-            "bridgescorer",
-            version,
-            "lib",
-            "bridgescorer-server",
-            rest @ _*
-            ) =>
-          MergeStrategy.discard
-        case x =>
-          val oldStrategy = (assemblyMergeStrategy in assembly).value
-          oldStrategy(x)
-      },
-      assemblyExcludedJars in (Test, assembly) := {
-        val log = streams.value.log
-        val ccp = (fullClasspath in (Compile, assembly)).value.map {
-          _.data.getName
-        }
-        log.info("fullClasspath in (Compile,assembly): " + ccp)
-        val cp = (fullClasspath in (Test, assembly)).value
-        log.info("fullClasspath in (Test,assembly): " + ccp)
-        cp filter { x =>
-          val rc = ccp.contains(x.data.getName)
-          log.info(
-            "  " + (if (rc) "Excluding " else "Using     ") + x.data.getName
-          )
-          rc
-        }
-      },
-      mainClass in Test := Some("org.scalatest.tools.Runner"),
-      allassembly := {
-        val x = assembly.value
-        val y = (assembly in Test).value
-      },
-      // want to run bridgescorer-server/*:assembly::assembledMappings
-      webassembly := { val x = (assembledMappings in assembly).value },
-      dependencyUpdates := {
-        val x = dependencyUpdates.value
-        val z = dependencyUpdates.all(utilitiesAllProjects).value
-      },
-      clean := {
-        val c = clean.value
-        val ch = (clean in BldBridgeHelp.help).value
-      },
-      prereqintegrationtests := {
-        val x = (assembly in Compile).value
-        val y = (assembly in Test).value
-      },
-      integrationtests := Def
-        .sequential(prereqintegrationtests in Distribution, fvt in Distribution)
-        .value,
-      fvt := {
-        val log = streams.value.log
-        def getclasspath() = {
-          val (projjar,testjar) = BridgeServer.findBridgeJars(
-                                    (crossTarget in Compile).value,
-                                    (assemblyJarName in assembly).value,
-                                    (assemblyJarName in (Test, assembly)).value
-                                  )
-          val cp = projjar + java.io.File.pathSeparator + testjar
-          log.info("Classpath is " + cp)
-          cp
-        }
-        val args =
-          "-Xmx4096M" ::
-          "-DUseProductionPage=1" ::
-          "-DToMonitorFile=logs/atestTcpMonitorTimeWait.csv" ::
-          "-DUseLogFilePrefix=logs/atest" ::
-          "-DDefaultWebDriver=" + useBrowser ::
-          "-cp" :: getclasspath() ::
-          "org.scalatest.tools.Runner" ::
-          "-oD" ::
-          "-s" ::
-          testToRun ::
-          Nil
-        val inDir = baseDirectory.value
-        log.info(s"""Running in directory ${inDir}: java ${args
-          .mkString(" ")}""")
-        val rc =
-          Fork.java(ForkOptions().withWorkingDirectory(Some(inDir)), args)
-        if (rc != 0) throw new RuntimeException("integration tests failed")
-      },
-      moretests := Def
-        .sequential(prereqintegrationtests in Distribution, svt in Distribution)
-        .value,
-      svt := {
-        val log = streams.value.log
-        val (assemblyJar, testJar) = {
-          val cp = BridgeServer.findBridgeJars(
-                                  (crossTarget in Compile).value,
-                                  (assemblyJarName in assembly).value,
-                                  (assemblyJarName in (Test, assembly)).value
-                                 )
-          log.info("Jars are " + cp)
-          cp
-        }
-        val cp = assemblyJar + java.io.File.pathSeparator + testJar
+      server := { (server in BldBridgeFullServer.`bridgescorer-fullserver`).value },
+      serverhelp := { (serverhelp in BldBridgeScoreKeeper.bridgescorekeeper).value },
+      serverlogs := { (serverlogs in BldBridgeScoreKeeper.bridgescorekeeper).value },
 
-        val server = new BridgeServer(assemblyJar)
-        server.runWithServer(
-          log,
-          baseDirectory.value + "/logs/itestServerInTest.%u.log"
-        ) {
-          val jvmargs = server.getTestDefine() :::
-            "-Xmx4096M" ::
-            "-DUseProductionPage=1" ::
-            "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
-            "-DUseLogFilePrefix=logs/itest" ::
-            "-DTestDataDirectory=" + itestdataDir ::
-            "-DDefaultWebDriver=" + useBrowser ::
-            "-cp" :: cp ::
-            "org.scalatest.tools.Runner" ::
-            "-oD" ::
-            "-s" ::
-            imoretestToRun ::
-            Nil
-          val inDir = baseDirectory.value
-          log.info(s"""Running in directory ${inDir}: java ${jvmargs
-            .mkString(" ")}""")
-          BridgeServer.runjava(log, jvmargs, Some(baseDirectory.value))
-        }
-      },
-      nsvt := {
-        val log = streams.value.log
-        import complete.DefaultParsers._
-        val args: Seq[String] = spaceDelimited("<n>").parsed
-
-        val n = if (args.isEmpty) 1
-                else if (args.length == 1) {
-                  try {
-                    args(0).toInt
-                  } catch {
-                    case _: NumberFormatException =>
-                      throw new Error(s"Must specify an integer: ${args}")
-                    case x: Exception =>
-                      throw new Error(s"Unexpected exception parsing ${args}", x)
-                  }
-                } else {
-                  throw new Error(s"Too many arguments specified: ${args}")
-                }
-        val ntimes = if (n<1) 1 else n
-
-        val (assemblyJar, testJar) = {
-          val cp = BridgeServer.findBridgeJars(
-                                  (crossTarget in Compile).value,
-                                  (assemblyJarName in assembly).value,
-                                  (assemblyJarName in (Test, assembly)).value
-                                 )
-          log.info("Jars are " + cp)
-          cp
-        }
-        val cp = assemblyJar + java.io.File.pathSeparator + testJar
-
-        val server = new BridgeServer(assemblyJar)
-        server.runWithServer(
-          log,
-          baseDirectory.value + "/logs/itestServerInTest.%u.log"
-        ) {
-          val jvmargs = server.getTestDefine() :::
-            "-Xmx4096M" ::
-            "-DUseProductionPage=1" ::
-            "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
-            "-DUseLogFilePrefix=logs/itest" ::
-            "-DTestDataDirectory=" + itestdataDir ::
-            "-DDefaultWebDriver=" + useBrowser ::
-            "-cp" :: cp ::
-            "org.scalatest.tools.Runner" ::
-            "-oD" ::
-            "-s" ::
-            imoretestToRun ::
-            Nil
-          val inDir = baseDirectory.value
-          log.info(s"""Running ${ntimes} times in directory ${inDir}: java ${jvmargs
-            .mkString(" ")}""")
-          for (i <- 1 to ntimes) BridgeServer.runjava(log, jvmargs, Some(baseDirectory.value))
-        }
-      },
-
-      travismoretests := Def
+      commands ++= Seq( apphelp, setOptimize, updateCheck, releaseWithDefaults, setSemanticDB, bridge_scalafix )
+    ).
+    settings(
+      checkForUpdates := Def
         .sequential(
-          prereqintegrationtests in Distribution,
-          travissvt in Distribution
+          MyNpm.checkForNpmUpdates in Compile in BldBridgeClient.`bridgescorer-client`,
+          MyNpm.checkForNpmUpdates in Test in BldBridgeClient.`bridgescorer-client`,
+          MyNpm.checkForNpmUpdates in Compile in BldBridgeClientApi.`bridgescorer-clientapi`,
+          // MyNpm.checkForNpmUpdates in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
+          dependencyUpdates.all(allProjects),
+          dependencyUpdates,
+          dependencyUpdates in utilities
         )
         .value,
-      travissvt := {
-        val log = streams.value.log
-        val (assemblyJar, testJar) = {
-          val cp = BridgeServer.findBridgeJars(
-                                  (crossTarget in Compile).value,
-                                  (assemblyJarName in assembly).value,
-                                  (assemblyJarName in (Test, assembly)).value
-                                 )
-          log.info("Jars are " + cp)
-          cp
-        }
-        val cp = assemblyJar + java.io.File.pathSeparator + testJar
-
-        val server = new BridgeServer(assemblyJar)
-        server.runWithServer(
-          log,
-          baseDirectory.value + "/logs/itestServerInTest.%u.log"
-        ) {
-          val jvmargs = server.getTestDefine() :::
-            "-Xmx4096M" ::
-            "-DUseProductionPage=1" ::
-            "-DToMonitorFile=logs/itestTcpMonitorTimeWait.csv" ::
-            "-DUseLogFilePrefix=logs/itest" ::
-            "-DTestDataDirectory=" + itestdataDir ::
-            "-DMatchToTest=10" ::
-            "-DDefaultWebDriver=" + useBrowser ::
-            "-cp" :: cp ::
-            "org.scalatest.tools.Runner" ::
-            "-oD" ::
-            "-s" ::
-            itravisMoretestToRun ::
-            Nil
-          val inDir = baseDirectory.value
-          log.info(s"""Running in directory ${inDir}: java ${jvmargs
-            .mkString(" ")}""")
-          BridgeServer.runjava(log, jvmargs, Some(baseDirectory.value))
-        }
+      alltests := Def
+        .sequential(
+          mydist in Distribution in utilities,
+          mydistnoclean,
+          disttests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
+          generateDemo in BldBridgeDemo.demo,
+          test in Test in BldBridgeDemo.demo,
+        )
+        .value,
+      travis := Def
+        .sequential(
+          travis1,
+          travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
+          generateDemo in BldBridgeDemo.demo,
+          test in Test in BldBridgeDemo.demo,
+        )
+        .value,
+      travis1p := {
+          // val x1 = (travis in Distribution in utilities).value
+          val x2 = (test in Test in BldBridgeRotation.rotationJVM).value
+          val x3 = (test in Test in BldBridgeRotation.rotationJS).value
+          val x4 = (test in Test in BldColor.colorJVM).value
+          val x5 = (test in Test in BldBridgeShared.sharedJVM).value
+          val x6 = (test in Test in BldBridgeShared.sharedJS).value
+          val x7 = (test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`).value
+          val x8 = (test in Test in BldBridgeClient.`bridgescorer-client`).value
+          // val x9 = (test in Test in BldBridgeClientApi.`bridgescorer-clientapi`).value
+          val x10 = (test in Test in BldBridgeServer.`bridgescorer-server`).value
+          val x11 = (test in Test in BldBridgeFullServer.`bridgescorer-fullserver`).value
       },
-      standalonetests := Def
-        .sequential(fvt in Distribution, svt in Distribution)
+      travis1 := Def
+        .sequential(
+          travis in Distribution in utilities,
+          travis1p,
+        ).value,
+      travis2 := Def
+        .sequential(
+          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
+          generateSwagger in BldBridgeFullServer.`bridgescorer-fullserver`,
+          prereqintegrationtests in BldBridgeScoreKeeper.bridgescorekeeper,
+          generateDemo in BldBridgeDemo.demo,
+          test in Test in BldBridgeDemo.demo,
+          travismoretests in Distribution in BldBridgeScoreKeeper.bridgescorekeeper,
+        )
         .value,
-      disttests := Def
-        .sequential(integrationtests in Distribution, moretests in Distribution)
+      mydistnoclean := {
+          // val x1 = (mydist in Distribution in utilities).value
+          val x2 = (test in Test in BldBrowserPages.browserpages).value
+          val x3 = (fastOptJS in Compile in BldBridgeClient.`bridgescorer-client`).value
+          val x4 = (fullOptJS in Compile in BldBridgeClient.`bridgescorer-client`).value
+          val x5 = travis1p.value
+        },
+      mydist := Def
+        .sequential(
+          myclean,
+          alltests,
+          mypublish in Distribution,
+        )
         .value,
+      myclean := {
+        val x = clean.all(allProjects).value
+      },
+
+      mytest := Def
+        .sequential(
+          allassembly in BldBridgeScoreKeeper.bridgescorekeeper,
+          test in Test in BldColor.colorJVM,
+          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
+          test in Test in BldBridgeClient.`bridgescorer-client`,
+          // test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
+          test in Test in BldBridgeServer.`bridgescorer-server`,
+          test in Test in BldBridgeFullServer.`bridgescorer-fullserver`,
+          test in Test in BldBridgeScoreKeeper.bridgescorekeeper,
+        )
+        .value,
+      releaseUseGlobalVersion := false,
+//
+// need to update release tag and comment
+//
+      releaseTagName := getTagFromVersion( git.baseVersion.value ),
+      releaseTagComment := s"Releasing ${git.baseVersion.value}",
+      releaseCommitMessage := s"Setting version to ${git.baseVersion.value}",
+      releaseNextCommitMessage := s"Setting version to ${git.baseVersion.value}",
+
+      // This release process will only work if the command "release with-defaults" or
+      // "myrelease-with-defaults" is used.
+      releaseProcess := Seq[ReleaseStep](
+        checkSnapshotDependencies,
+        gitMakeReleaseBranch,
+        inquireVersions,
+        setReleaseVersion,
+        commitReleaseVersion,
+        tagRelease,
+        recalculateVersion,
+        releaseOptimize,
+        publishRelease,  // runs a clean build and test
+        setNextVersion,
+        commitNextVersion,
+        gitPushReleaseBranch,
+        gitPushReleaseTag
+      ),
+
       publishdir := {
         // returns an Option[File]
 
@@ -493,9 +513,9 @@ object BldBridge {
 
             log.info("Publishing to " + distdir)
 
-            val targetdir = (crossTarget in Compile).value
-            val assemblyjar = (assemblyJarName in assembly).value
-            val testjar = (assemblyJarName in (Test, assembly)).value
+            val targetdir = (crossTarget in BldBridgeScoreKeeper.bridgescorekeeper in Compile).value
+            val assemblyjar = (assemblyJarName in BldBridgeScoreKeeper.bridgescorekeeper in assembly).value
+            val testjar = (assemblyJarName in BldBridgeScoreKeeper.bridgescorekeeper in (Test, assembly)).value
 
             val sourceassemblyjar = new File(targetdir, assemblyjar)
             val targetassemblyjar = new File(distdir, assemblyjar)
@@ -531,146 +551,8 @@ object BldBridge {
         }
 
       },
-      mypublish := Def
-        .sequential(
-          disttests in Distribution,
-          mypublishcopy in Distribution
-        )
-        .value
-    ).
-    settings(
-      checkForUpdates := Def
-        .sequential(
-          MyNpm.checkForNpmUpdates in Compile in BldBridgeClient.`bridgescorer-client`,
-          MyNpm.checkForNpmUpdates in Test in BldBridgeClient.`bridgescorer-client`,
-          MyNpm.checkForNpmUpdates in Compile in BldBridgeClientApi.`bridgescorer-clientapi`,
-//          MyNpm.checkForNpmUpdates in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          //  MyNpm.checkForNpmUpdates.all(bridgescorerAllProjects),
-          dependencyUpdates.all(bridgescorerAllProjects),
-          dependencyUpdates
-        )
-        .value,
-      alltests := Def
-        .sequential(
-          mydist in Distribution in utilities,
-          test in Test in BldBrowserPages.browserpages,
-//                       fastOptJS in Compile in `bridgescorer-client`,
-//                       fullOptJS in Compile in `bridgescorer-client`,
-//                       fastOptJS in Test in `bridgescorer-client`,
-//                       packageJSDependencies in Compile in `bridgescorer-client`,
-          test in Test in BldBridgeRotation.rotationJVM,
-          test in Test in BldBridgeRotation.rotationJS,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-//                       hugo in help,
-          disttests in Distribution
-        )
-        .value,
-      travis := Def
-        .sequential(
-          travis in Distribution in utilities,
-//                       fastOptJS in Compile in `bridgescorer-client`,
-//                       fullOptJS in Compile in `bridgescorer-client`,
-//                       fastOptJS in Test in `bridgescorer-client`,
-//                       packageJSDependencies in Compile in `bridgescorer-client`,
-          test in Test in BldBridgeRotation.rotationJVM,
-          test in Test in BldBridgeRotation.rotationJS,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-//                       hugo in help,
-          travismoretests in Distribution
-        )
-        .value,
-      travis1 := Def
-        .sequential(
-          travis in Distribution in utilities,
-//                       fastOptJS in Compile in `bridgescorer-client`,
-//                       fullOptJS in Compile in `bridgescorer-client`,
-//                       fastOptJS in Test in `bridgescorer-client`,
-//                       packageJSDependencies in Compile in `bridgescorer-client`,
-          test in Test in BldBridgeRotation.rotationJVM,
-          test in Test in BldBridgeRotation.rotationJS,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`
-        )
-        .value,
-      travis2 := Def
-        .sequential(
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-          travismoretests in Distribution
-        )
-        .value,
-      mydist := Def
-        .sequential(
-          clean.all(bridgescorerAllProjects),
-          mydist in Distribution in utilities,
-          fastOptJS in Compile in BldBridgeClient.`bridgescorer-client`,
-          fullOptJS in Compile in BldBridgeClient.`bridgescorer-client`,
-//                       packageJSDependencies in Compile in `bridgescorer-client`,
-//                       assembly in `bridgescorer-client`,
-//                       assembly in Test in `bridgescorer-client`,
-          test in Test in BldBridgeRotation.rotationJVM,
-          test in Test in BldBridgeRotation.rotationJS,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-//                       hugo in help,
-          mypublish in Distribution
-        )
-        .value,
-      myclean := Def
-        .sequential(
-          clean.all(bridgescorerAllProjects)
-        )
-        .value,
-      mytest := Def
-        .sequential(
-//                       fastOptJS in Compile in `bridgescorer-client`,
-//                       fullOptJS in Compile in `bridgescorer-client`,
-          allassembly,
-//                       packageJSDependencies in Compile in `bridgescorer-client`,
-          test in Test in BldColor.colorJVM,
-          test in Test in BldBridgeClientCommon.`bridgescorer-clientcommon`,
-          test in Test in BldBridgeClient.`bridgescorer-client`,
-//          test in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
-          test in Test in BldBridgeServer.`bridgescorer-server`,
-          test in Test
-        )
-        .value,
-      releaseUseGlobalVersion := false,
-//
-// need to update release tag and comment
-//
-      releaseTagName := "v" + git.baseVersion.value,
-      releaseTagComment := s"Releasing ${git.baseVersion.value}",
-      releaseCommitMessage := s"Setting version to ${git.baseVersion.value}",
-      releaseProcess := Seq[ReleaseStep](
-        checkSnapshotDependencies, // : ReleaseStep
-        gitMakeReleaseBranch,
-        inquireVersions, // : ReleaseStep
-      //  runTest,                                // : ReleaseStep
-        setReleaseVersion, // : ReleaseStep
-        commitReleaseVersion, // : ReleaseStep, performs the initial git checks
-        tagRelease, // : ReleaseStep
-        recalculateVersion, // : ReleaseStep
-        publishRelease, // : ReleaseStep, custom
-        setNextVersion, // : ReleaseStep
-        commitNextVersion // : ReleaseStep
-      //  gitMergeReleaseMaster,
-      //  recalculateVersion,                     // : ReleaseStep
-      //  pushChanges                             // : ReleaseStep, also checks that an upstream branch is properly configured
-      )
+      mypublish := (mypublishcopy in Distribution).value
+
     )
     .enablePlugins(GitVersioning, GitBranchPrompt)
 

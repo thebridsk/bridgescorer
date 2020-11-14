@@ -1,24 +1,20 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
-import japgolly.scalajs.react.vdom._
-import org.scalajs.dom
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.language.implicitConversions
+import scala.scalajs.js.UndefOr
 
 class ItemEdge(val value: js.Any) extends AnyVal
 object ItemEdge {
   val start = new ItemEdge("start")
   val end = new ItemEdge("end")
   val False = new ItemEdge(false)
-  val values = List(start,end,False)
+  val values: List[ItemEdge] = List(start, end, False)
 
   implicit def toJsAny(cv: ItemEdge): js.Any = cv.value
 }
-
-
 @js.native
 protected trait IconButtonPropsPrivate extends js.Any {
   @JSName("color")
@@ -39,21 +35,22 @@ trait IconButtonProps extends ButtonBaseProps with IconButtonPropsPrivate {
 
 }
 object IconButtonProps extends PropsFactory[IconButtonProps] {
-  import js._
 
-  implicit class WrapButtonProps(val p: IconButtonProps) extends AnyVal {
+  implicit class WrapButtonProps(private val p: IconButtonProps)
+      extends AnyVal {
 
-    def color = p.colorInternal.map(s => new ColorVariant(s))
+    def color: UndefOr[ColorVariant] =
+      p.colorInternal.map(s => new ColorVariant(s))
 
-    def edge = p.edgeInternal.map( s => new ItemEdge(s))
+    def edge: UndefOr[ItemEdge] = p.edgeInternal.map(s => new ItemEdge(s))
 
 //    def color_= (v: js.UndefOr[ColorVariant]) = { p.colorInternal = v.map(pp => pp.value) }
 
-    def size = p.sizeInternal.map(s => new ItemSize(s))
+    def size: UndefOr[ItemSize] = p.sizeInternal.map(s => new ItemSize(s))
 
 //    def size_= (v: js.UndefOr[ItemSize]) = { p.sizeInternal = v.map(pp => pp.value) }
 
-    def variant = p.variantInternal.map(s => new Variant(s))
+    def variant: UndefOr[Variant] = p.variantInternal.map(s => new Variant(s))
 
 //    def variant_= (v: js.UndefOr[Variant]) = { p.variantInternal = v.map(pp => pp.value) }
 
@@ -107,7 +104,8 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
       size: js.UndefOr[ItemSize] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+      buttonRef: js.UndefOr[js.Object] =
+        js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -159,11 +157,14 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
 }
 
 object MuiIconButton extends ComponentFactory[IconButtonProps] {
-  @js.native @JSImport("@material-ui/core/IconButton", JSImport.Default) private object IconButton
-      extends js.Any
+  @js.native @JSImport(
+    "@material-ui/core/IconButton",
+    JSImport.Default
+  ) private object IconButton extends js.Any
 
-  protected val f =
-    JsComponent[IconButtonProps, Children.Varargs, Null](IconButton)
+  protected val f = JsComponent[IconButtonProps, Children.Varargs, Null](
+    IconButton
+  ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   /**
     * @param classes Override or extend the styles applied to the component.
@@ -211,7 +212,8 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
       size: js.UndefOr[ItemSize] = js.undefined,
       // from ButtonBase
       action: js.UndefOr[js.Object => Unit] = js.undefined,
-      buttonRef: js.UndefOr[js.Object] = js.undefined, // js.object or js.Function0[ref]
+      buttonRef: js.UndefOr[js.Object] =
+        js.undefined, // js.object or js.Function0[ref]
       centerRipple: js.UndefOr[Boolean] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
@@ -231,7 +233,7 @@ object MuiIconButton extends ComponentFactory[IconButtonProps] {
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
-  ) = {
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: IconButtonProps = IconButtonProps(
       color = color,
       edge = edge,

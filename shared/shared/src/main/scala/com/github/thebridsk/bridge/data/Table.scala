@@ -2,13 +2,12 @@ package com.github.thebridsk.bridge.data
 
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
-import scala.annotation.meta._
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "A table for a duplicate match")
 case class Table(
     @Schema(description = "The ID of the table", required = true)
-    id: String,
+    id: Table.Id,
     @Schema(description = "The name of the table", required = true)
     name: String,
     @Schema(
@@ -25,10 +24,10 @@ case class Table(
     updated: Timestamp
 ) {
 
-  def equalsIgnoreModifyTime(other: Table) =
+  def equalsIgnoreModifyTime(other: Table): Boolean =
     this == other.copy(created = created, updated = updated)
 
-  def setId(newId: String, forCreate: Boolean) = {
+  def setId(newId: Table.Id, forCreate: Boolean): Table = {
     val time = SystemTime.currentTimeMillis()
     copy(
       id = newId,
@@ -39,6 +38,9 @@ case class Table(
 
 }
 
-object Table {
-  def create(id: Id.Table, name: String) = new Table(id, name, 0, 0)
+trait IdTable
+
+object Table extends HasId[IdTable]("") {
+  def create(id: Table.Id, name: String) = new Table(id, name, 0, 0)
+
 }
