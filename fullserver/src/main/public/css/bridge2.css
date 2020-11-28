@@ -1,0 +1,37 @@
+
+.selectPosition {
+  display: table;
+  table-layout: auto;
+}
+
+.selectPosition > div {
+  display: table-row;
+}
+
+.selectPosition > div > div {
+  display: table-cell;
+  padding: 2px;
+}
+
+.enterNames {
+  padding: 4px;
+  max-width: 350px;
+}
+
+#TestPage {
+  display: block;
+
+}
+
+.baseDefaultButton {
+  border-radius: 20px;
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
+  border-style: outset;
+  border-width: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  font-size: x-large;
+}

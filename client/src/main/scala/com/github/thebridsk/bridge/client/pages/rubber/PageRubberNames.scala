@@ -14,7 +14,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.bridge.store.RubberStore
-import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
+import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.RubberMatchNamesView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
@@ -183,7 +183,7 @@ object PageRubberNamesInternal {
             <.tr(
               <.td(
                 ^.colSpan := 3,
-                ComboboxOrInput(
+                Combobox.create(
                   cb,
                   noNull(name),
                   names,
@@ -318,7 +318,7 @@ object PageRubberNamesInternal {
 
     val namesCallback: Callback = scope.modState(s => {
       val names = NamesStore.getNames
-      s.copy(gotNames = true, names = names)
+      s.copy(gotNames = true, names = names.toList)
     })
 
     val didMount: Callback = CallbackTo {

@@ -13,7 +13,7 @@ import com.github.thebridsk.bridge.data.bridge.West
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
+import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.react.RadioButton
@@ -112,7 +112,7 @@ object ViewPlayersVeryFirstRound {
         <.div(
           getButton(playerPosition, name, tabDealer),
           <.div(
-            ComboboxOrInput(
+            Combobox.create(
               callback = cb,
               defaultvalue = noNull(name),
               data = names,
@@ -182,7 +182,7 @@ object ViewPlayersVeryFirstRound {
                       <.div(
                         "Sitting out",
                         <.br,
-                        ComboboxOrInput(
+                        Combobox.create(
                           callback = setExtra,
                           defaultvalue = noNull(state.extra.getOrElse("")),
                           data = names,
@@ -357,7 +357,7 @@ object ViewPlayersVeryFirstRound {
 
     val namesCallback: Callback = scope.modState(s => {
       val names = NamesStore.getNames
-      s.copy(gotNames = true, names = names)
+      s.copy(gotNames = true, names = names.toList)
     })
 
     val didMount: Callback = CallbackTo {

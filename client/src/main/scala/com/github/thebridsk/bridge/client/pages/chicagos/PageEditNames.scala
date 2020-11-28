@@ -5,7 +5,7 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
+import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
@@ -104,7 +104,7 @@ object PageEditNamesInternal {
       <.tr(
         <.td(player),
         <.td(
-          ComboboxOrInput(
+          Combobox.create(
             p => backend.setPlayer(player)(p),
             noNull(st.getName(player)),
             names,
@@ -232,7 +232,7 @@ object PageEditNamesInternal {
     val namesCallback: Callback = scope.modState { s =>
       val sug = NamesStore.getNames
       logger.fine(s"""Got names ${sug}""")
-      s.copy(nameSuggestions = Some(sug))
+      s.copy(nameSuggestions = Some(sug.toList))
     }
 
     val didMount: Callback = scope.props >>= { props =>

@@ -64,6 +64,18 @@ case class TableManeuvers(
     }
   }
 
+  /**
+    * A valid duplicate position indicates that the player is currently
+    * at the position or in partner position.
+    *
+    * @param player
+    * @param l
+    * @return true if valid
+    */
+  def isPlayerValidDuplicate(player: String, l: PlayerPosition): Boolean = {
+    find(l) == player || partnerOf(l) == player
+  }
+
   def partnerOfPosition(l: PlayerPosition): PlayerPosition =
     l match {
       case North => South

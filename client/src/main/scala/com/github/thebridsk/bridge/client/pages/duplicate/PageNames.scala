@@ -9,15 +9,15 @@ import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.NamesView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
-
 import scala.scalajs.js
+import com.github.thebridsk.bridge.client.components.EnterName
+
 
 /**
   * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -108,32 +108,20 @@ object PageNamesInternal {
       <.tr(
         <.td(team.id.toNumber),
         <.td(
-          ComboboxOrInput(
-            p => backend.setPlayer(team.id, 1)(p),
-            noNull(team.player1),
-            names,
-            "startsWith",
-            -1,
-            "I_" + team.id.id + "_1",
-            msgEmptyList = "No suggested names",
-            msgEmptyFilter = "No names matched",
+          EnterName(
             id = "I_" + team.id.id + "_1",
-            busy = busy
+            name = team.player1,
+            tabIndex = -1,
+            onChange = backend.setPlayer(team.id, 1)
           )
         ),
         <.td(
-          ComboboxOrInput(
-            p => backend.setPlayer(team.id, 2)(p),
-            noNull(team.player2),
-            names,
-            "startsWith",
-            -1,
-            "I_" + team.id.id + "_2",
-            msgEmptyList = "No suggested names",
-            msgEmptyFilter = "No names matched",
+          EnterName(
             id = "I_" + team.id.id + "_2",
-            busy = busy
-          )
+            name = team.player2,
+            tabIndex = -1,
+            onChange = backend.setPlayer(team.id, 2)
+          ),
         )
       )
     })
@@ -285,7 +273,7 @@ object PageNamesInternal {
     val namesCallback: Callback = scope.modState { s =>
       val sug = NamesStore.getNames
       logger.fine(s"""Got names ${sug}""")
-      s.copy(nameSuggestions = Some(sug))
+      s.copy(nameSuggestions = Some(sug.toList))
     }
 
     val didMount: Callback = scope.props >>= { props =>

@@ -3,6 +3,7 @@ package com.github.thebridsk.bridge.clientcommon.react
 import scala.scalajs.js
 import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 @js.native
 trait ComboboxComponentMessagesProperty extends js.Object {
@@ -145,4 +146,50 @@ object Combobox {
 
     component(props)
   }
+
+  def create(
+      callback: String => Callback,
+      defaultvalue: String = null,
+      data: js.UndefOr[js.Array[String]] = js.undefined,
+      filter: String = null,
+      tabIndex: Int = -1,
+      name: String = null,
+      caseSensitive: Boolean = false,
+      msgOpen: String = null,
+      msgEmptyList: String = null,
+      msgEmptyFilter: String = null,
+      busy: Boolean = false,
+      id: String = null,
+      containerClassName: String = null
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+
+    def comboboxCB(data: js.Any): Unit = {
+      val s = data.toString()
+      logger.fine(s"Combobox.comboboxCB data=$s")
+      callback(s).runNow()
+    }
+
+    def jv[T](value: js.UndefOr[T]): Option[T] =
+      if (js.isUndefined(value)) None else Some(value.get)
+
+    Combobox(
+      None,
+      Some(comboboxCB _),
+      jv(data),
+      Option(filter),
+      if (tabIndex < 0) None else Some(tabIndex),
+      Option(name),
+      Option(caseSensitive),
+      Option(msgOpen),
+      Option(msgEmptyList),
+      Option(msgEmptyFilter),
+      Option(busy),
+      Option(defaultvalue),
+      Option(id),
+      Option(containerClassName).orElse(
+        Some(BaseStyles.baseStyles.comboboxLightDarkClass)
+      )
+    )
+  }
+
 }

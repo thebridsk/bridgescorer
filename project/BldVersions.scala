@@ -43,11 +43,11 @@ object BldVersion {
   lazy val vWebJarsFlux = "3.1.3"      // https://www.npmjs.com/package/flux
   lazy val vReactWidgetsMoment = "4.0.30"  // https://www.npmjs.com/package/react-widgets-moment
   lazy val vMoment = "2.29.1"          // https://www.npmjs.com/package/moment
-  // lazy val vGlobalize = "1.6.0"               // https://www.npmjs.com/package/globalize
-  // lazy val vReactWidgetsGlobalize = "5.0.22"  // https://www.npmjs.com/package/react-widgets-globalize
-  // lazy val vCldrjs = "0.5.4"                  // https://www.npmjs.com/package/cldrjs
-  // lazy val vCldr = "5.7.0"                    // https://www.npmjs.com/package/cldr
-  // lazy val vCldrData = "36.0.0"               // https://www.npmjs.com/package/cldr-data
+  lazy val vGlobalize = "1.6.0"               // https://www.npmjs.com/package/globalize
+  lazy val vReactWidgetsGlobalize = "5.0.22"  // https://www.npmjs.com/package/react-widgets-globalize
+  lazy val vCldrjs = "0.5.4"                  // https://www.npmjs.com/package/cldrjs
+  lazy val vCldr = "5.7.0"                    // https://www.npmjs.com/package/cldr
+  lazy val vCldrData = "36.0.0"               // https://www.npmjs.com/package/cldr-data
 
   lazy val vJQuery = "3.5.1"         // https://www.npmjs.com/package/jquery
 

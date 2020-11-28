@@ -197,14 +197,14 @@ object Button {
   import AppButtonInternal._
   import AppButton._
 
-  def apply(style: TagMod, id: String, text: String, attrs: TagMod*) =
+  def apply(style: TagMod, id: String, text: TagMod, attrs: TagMod*) =
     component(
       Props(id, text, Some(style), attrs: _*)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   def withKey(
       key: String
-  )(style: TagMod, id: String, text: String, attrs: TagMod*) =
+  )(style: TagMod, id: String, text: TagMod, attrs: TagMod*) =
     component.withKey(key)(
       Props(id, text, Some(style), attrs: _*)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent

@@ -19,6 +19,7 @@ import com.github.thebridsk.bridge.client.pages.ThankYouPage
 import com.github.thebridsk.bridge.client.pages.AboutPage
 import org.scalajs.dom.raw.File
 import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.client.pages.TestPage
 
 object AppRouter {
 
@@ -28,6 +29,7 @@ object AppRouter {
 
   case object Home extends AppPage
   case object About extends AppPage
+  case object TestP extends AppPage
   case object ImportsList extends AppPage
   case object Export extends AppPage
   case object Info extends AppPage
@@ -130,6 +132,7 @@ class AppRouter(modules: Module*) {
         ShowChicagoHand ::
         ShowRubberHand ::
         LogView ::
+        TestP ::
         Nil
 
     root ::: modulepages
@@ -308,6 +311,9 @@ class AppRouter(modules: Module*) {
         )
         | staticRoute("#log", LogView) ~> renderR((routerCtl) =>
           logit(LogPage(routerCtl))
+        )
+        | staticRoute("#test", TestP) ~> renderR((routerCtl) =>
+          logit(TestPage(routerCtl))
         )
         | moduleRoutes())
         .notFound(p =>

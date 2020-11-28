@@ -41,7 +41,7 @@ object Pixels {
     r
   }
 
-  val patternRadius: Regex = """(\d+)px""".r
+  val patternRadius: Regex = """(\d+(?:\.\d+)?)px""".r
   def getPixels(
       name: String,
       value: String,
@@ -51,9 +51,10 @@ object Pixels {
     value match {
       case patternRadius(r) =>
         log.fine(s"""On element with id ${id} found ${name} of ${r}px""")
-        r.toInt
+        val f = r.toDouble
+        f.ceil.toInt
       case x =>
-        log.fine(s"""On element with id ${id} found ${name} of ${x}, using 0""")
+        log.fine(s"""On element with id ${id} found ${name} of ${x}, using ${default}""")
         default
     }
   }
@@ -79,7 +80,7 @@ object Pixels {
     pl + pr + ml + mr
   }
 
-  def getWidthWithBoarder(id: String): Int = {
+  def getWidthWithBorder(id: String): Int = {
     val (elem, computed) = getElementAndComputedProperties(id)
     val ml = getPixels("borderLeft", computed.borderLeft, id)
     val mr = getPixels("borderRight", computed.borderRight, id)

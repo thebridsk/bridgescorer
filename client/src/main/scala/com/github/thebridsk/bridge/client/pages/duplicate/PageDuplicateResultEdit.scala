@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.BoardResults
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateResult
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
+import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.data.Team
 import DuplicateStyles._
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
@@ -444,7 +444,7 @@ object PageDuplicateResultEditInternal {
 
     val namesCallback: Callback = scope.modState(s => {
       val sug = NamesStore.getNames
-      s.copy(nameSuggestions = Some(sug))
+      s.copy(nameSuggestions = Some(sug.toList))
     })
 
     val didMount: Callback = scope.props >>= { (p) =>
@@ -517,7 +517,7 @@ object PageDuplicateResultEditInternal {
         <.td(id.toNumber),
         <.td(
           <.div(
-            ComboboxOrInput(
+            Combobox.create(
               backend.setPlayer(iws, id, 1),
               noNull(player1),
               names,
@@ -532,7 +532,7 @@ object PageDuplicateResultEditInternal {
         ),
         <.td(
           <.div(
-            ComboboxOrInput(
+            Combobox.create(
               backend.setPlayer(iws, id, 2),
               noNull(player2),
               names,
