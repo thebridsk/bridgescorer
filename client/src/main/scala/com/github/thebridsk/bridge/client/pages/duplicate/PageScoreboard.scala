@@ -235,7 +235,7 @@ object PageScoreboardInternal {
               if (state.deletePopup) {
                 Some(
                   <.span(
-                    s"Are you sure you want to delete duplicate match ${score.id}"
+                    s"Are you sure you want to delete duplicate match ${score.id.id}"
                   )
                 )
               } else {

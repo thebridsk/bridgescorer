@@ -75,15 +75,18 @@ object BldBridgeHelp {
 
       hugoWithTest := (Def.taskDyn {
         val log = streams.value.log
-        log.info( "Running hugoWithTest" )
+        val skip = skipGenerateImageSetting.value
+        log.debug( s"Determining what to run: skipGeneratingImagesSetting=$skip" )
         val bd = new File(baseDirectory.value, "docs" )
-        if (skipGenerateImageSetting.value && Hugo.gotGeneratedImages(log,bd)) {
+        if (skip && Hugo.gotGeneratedImages(log,bd)) {
+          log.info( "Running hugo" )
           Def.task {
             val h = hugo.value
             h
           }
         } else {
           val hugoTest = hugoWithTest.taskValue
+          log.info( "Running hugoWithTest" )
           Def.task {
             val h = hugoTest.value
             h

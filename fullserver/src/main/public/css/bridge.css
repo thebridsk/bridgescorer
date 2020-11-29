@@ -309,9 +309,8 @@ label.baseRadioButton > span:nth-child(2) > span
 }
 
 .baseNormal {
-  color: var(--color-fg);
   background-color: var(--color-default-button);
-  /* background-color: var(--color-bg); */
+  color: var(--color-fg-default-button);
 }
 
 .baseRequired {

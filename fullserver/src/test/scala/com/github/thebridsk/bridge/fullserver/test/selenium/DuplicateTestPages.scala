@@ -2846,6 +2846,7 @@ class DuplicateTestPages
         suggestions
       }.head
       val firsttext = firstsug.text
+      Thread.sleep(500)
       firstsug.click
       eventually {
         es.getScorekeeper mustBe firsttext

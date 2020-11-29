@@ -900,6 +900,7 @@ class RubberTest
       listitems.head
     }
     val text = first.text
+    Thread.sleep(500)
     first.click
     eventually(textField("North").value mustBe text)
 

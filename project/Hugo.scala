@@ -52,9 +52,13 @@ object Hugo {
     val iter = gendir.deepFiles
     while (iter.hasNext) {
       val f = iter.next()
-      if (f.extension == "png") return true
+      if (f.extension == "png") {
+        log.debug( s"Hugo.gotGeneratedImages: found image $f")
+        return true
+      }
     }
 
+    log.debug( s"Hugo.gotGeneratedImages: did not find any images in $gendir")
     false
   }
 }

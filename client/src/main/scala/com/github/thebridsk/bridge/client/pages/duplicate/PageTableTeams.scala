@@ -1058,10 +1058,13 @@ object PageTableTeamsInternal {
     ): (Callback, Boolean, TagMod, Option[String], Option[String]) = {
       val validSelection =
         state.scorekeeperName.isDefined && state.scorekeeperPosition.isDefined
-      val valid = validSelection && state.players.isPlayerValidDuplicate(state.scorekeeperName.get, state.scorekeeperPosition.get)
-      val (div, helppage, errormsg) = {
-        if (state.names.isAllValid) renderSelectScorekeeper(props, state, valid)
-        else renderEnterScorekeeper(props, state, valid)
+      val (valid, (div, helppage, errormsg)) = {
+        if (state.names.isAllValid) {
+          val valid = validSelection && state.players.isPlayerValidDuplicate(state.scorekeeperName.get, state.scorekeeperPosition.get)
+          (valid, renderSelectScorekeeper(props, state, valid))
+        } else {
+          (validSelection, renderEnterScorekeeper(props, state, validSelection))
+        }
       }
 
       (setScorekeeper, valid, div, helppage, errormsg)
