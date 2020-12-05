@@ -26,7 +26,6 @@ import com.github.thebridsk.bridge.client.pages.rubber.RubberModule.PlayRubber
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateModule.PlayDuplicate
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.SummaryView
 import com.github.thebridsk.bridge.client.Bridge
-import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.bridge.client.routes.AppRouter.ShowDuplicateHand
 import com.github.thebridsk.bridge.client.routes.AppRouter.ShowChicagoHand
 import com.github.thebridsk.bridge.client.routes.AppRouter.ShowRubberHand
@@ -34,6 +33,9 @@ import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import japgolly.scalajs.react.internal.Effect
+import com.github.thebridsk.materialui.AnchorOrigin
+import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
+import com.github.thebridsk.materialui.AnchorOriginVerticalValue
 
 /**
   * A simple AppBar for the Bridge client.
@@ -286,7 +288,8 @@ object RootBridgeAppBarInternal {
             anchorEl = state.anchorMainTestHandEl,
             onClickAway = handleMainTestHandClose _,
             onItemClick = handleMainTestHandCloseClick _,
-            placement = PopperPlacement.rightStart
+            anchorOrigin = AnchorOrigin( AnchorOriginHorizontalValue.right, AnchorOriginVerticalValue.top)
+            // placement = PopperPlacement.rightStart
           )(
             MuiMenuItem(
               onClick = callbackPage(ShowDuplicateHand) _

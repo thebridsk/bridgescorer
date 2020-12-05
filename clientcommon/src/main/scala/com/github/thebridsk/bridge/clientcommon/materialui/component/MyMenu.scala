@@ -3,11 +3,10 @@ package com.github.thebridsk.materialui.component
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.materialui.MuiPopper
-import com.github.thebridsk.materialui.MuiClickAwayListener
-import com.github.thebridsk.materialui.MuiPaper
-import com.github.thebridsk.materialui.PopperPlacement
 import com.github.thebridsk.materialui.AnchorElement
+import com.github.thebridsk.materialui.MuiMenu
+import com.github.thebridsk.materialui.AnchorOrigin
+import com.github.thebridsk.materialui.AnchorReference
 
 /**
   * A skeleton component.
@@ -24,7 +23,8 @@ object MyMenu {
   import MyMenuInternal._
 
   case class Props(
-      placement: js.UndefOr[PopperPlacement],
+      // placement: js.UndefOr[PopperPlacement],
+      anchorOrigin: js.UndefOr[AnchorOrigin],
       anchorEl: js.UndefOr[AnchorElement],
       onClickAway: js.UndefOr[() => Unit],
       onItemClick: js.UndefOr[ReactEvent => Unit],
@@ -33,7 +33,8 @@ object MyMenu {
   )
 
   def apply(
-      placement: js.UndefOr[PopperPlacement] = js.undefined,
+      // placement: js.UndefOr[PopperPlacement] = js.undefined,
+      anchorOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       anchorEl: js.UndefOr[AnchorElement] = js.undefined,
       onClickAway: js.UndefOr[() => Unit] = js.undefined,
       onItemClick: js.UndefOr[ReactEvent => Unit] = js.undefined
@@ -42,7 +43,7 @@ object MyMenu {
       children: CtorType.ChildArg*
   ) =
     component(
-      Props(placement, anchorEl, onClickAway, onItemClick, children)
+      Props(anchorOrigin, anchorEl, onClickAway, onItemClick, children)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
@@ -68,42 +69,16 @@ object MyMenuInternal {
 
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
-//      val additionalProps = js.Dictionary[js.Any]()
-//      var foundClasses = false
-//      props.additionalProps.foreach { ap =>
-//        ap.foreach{ e =>
-//          val (key,value) = e
-//          if (key == "class") {
-//            val clss = value.asInstanceOf[String]
-//            if (clss.indexOf("popupMenu")<0) additionalProps.update(key, value+" popupMenu")
-//            else additionalProps.update(key, value)
-//          } else {
-//            additionalProps.update(key, value)
-//          }
-//        }
-//      }
-
-      <.div(
-        ^.cls := "popupMenu",
-        MuiPopper(
-          placement = props.placement,
-          open = props.anchorEl.isDefined,
-          anchorEl = props.anchorEl,
-//              additionalProps = props.additionalProps,
-          disablePortal = true
-        )(
-          MuiPaper(
-            onClick = props.onItemClick
-          )(
-            MuiClickAwayListener(
-              onClickAway = props.onClickAway
-            )(
-              <.div(
-                props.children: _*
-              )
-            )
-          )
-        )
+      MuiMenu(
+        anchorEl = props.anchorEl,
+        anchorReference = AnchorReference.anchorEl,
+        anchorOrigin = props.anchorOrigin,
+        onClose = props.onClickAway,
+        open = props.anchorEl.isDefined,
+        // keepMounted = true,
+        disablePortal = true
+      )(
+        props.children: _*
       )
     }
 

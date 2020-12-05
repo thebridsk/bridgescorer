@@ -34,9 +34,9 @@ import js._
 @js.native
 protected trait AnchorOriginPrivate extends js.Object {
   @JSName("horizontal")
-  val horizontalInternal: js.UndefOr[JsNumber | String] = js.native
+  val horizontalInternal: js.UndefOr[String] = js.native
   @JSName("vertical")
-  val verticalInternal: js.UndefOr[JsNumber | String] = js.native
+  val verticalInternal: js.UndefOr[String] = js.native
 }
 
 @js.native
@@ -49,15 +49,10 @@ object AnchorOrigin {
 
   implicit class WrapAnchorOrigin(private val p: AnchorOrigin) extends AnyVal {
 
-    def horizontal: UndefOr[JsNumber | AnchorOriginHorizontalValue] =
+    def horizontal: UndefOr[AnchorOriginHorizontalValue] =
       p.horizontalInternal.map { v =>
-        val r: JsNumber | AnchorOriginHorizontalValue =
-          if (js.typeOf(v.asInstanceOf[js.Any]) == "string") {
-            val s: String = v.asInstanceOf[String]
-            new AnchorOriginHorizontalValue(s)
-          } else {
-            v.asInstanceOf[JsNumber | AnchorOriginHorizontalValue]
-          }
+        val r: AnchorOriginHorizontalValue =
+            new AnchorOriginHorizontalValue(v.asInstanceOf[String])
         r
       }
 
@@ -69,15 +64,10 @@ object AnchorOrigin {
 //      p.horizontalInternal = v.value
 //    }
 
-    def vertical: UndefOr[JsNumber | AnchorOriginVerticalValue] =
+    def vertical: UndefOr[AnchorOriginVerticalValue] =
       p.verticalInternal.map { v =>
-        val r: JsNumber | AnchorOriginVerticalValue =
-          if (js.typeOf(v.asInstanceOf[js.Any]) == "string") {
-            val s: String = v.asInstanceOf[String]
-            new AnchorOriginVerticalValue(s)
-          } else {
-            v.asInstanceOf[JsNumber | AnchorOriginVerticalValue]
-          }
+        val r: AnchorOriginVerticalValue =
+            new AnchorOriginVerticalValue(v.asInstanceOf[String])
         r
       }
 
@@ -92,15 +82,15 @@ object AnchorOrigin {
   }
 
   def apply(
-      horizontal: js.UndefOr[JsNumber | AnchorOriginHorizontalValue],
-      vertical: js.UndefOr[JsNumber | AnchorOriginVerticalValue]
+      horizontal: js.UndefOr[AnchorOriginHorizontalValue],
+      vertical: js.UndefOr[AnchorOriginVerticalValue]
   ): AnchorOrigin = {
     val p = new js.Object().asInstanceOf[AnchorOrigin]
 
     horizontal.foreach(v =>
-      p.updateDynamic("horizontal")(v.asInstanceOf[js.Any])
+      p.updateDynamic("horizontal")(v.value)
     )
-    vertical.foreach(v => p.updateDynamic("vertical")(v.asInstanceOf[js.Any]))
+    vertical.foreach(v => p.updateDynamic("vertical")(v.value))
 
     p
   }
@@ -128,6 +118,9 @@ object AnchorPosition {
 class AnchorReference(val value: String) extends AnyVal
 object AnchorReference {
   def apply(v: String) = new AnchorReference(v)
+
+  def anchorPosition = AnchorReference("anchorPosition")
+  def anchorEl = AnchorReference("anchorEl")
 }
 
 @js.native
@@ -374,8 +367,9 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 
     action.foreach(p.updateDynamic("action")(_))
     anchorEl.foreach(v => p.updateDynamic("anchorEl")(v.asInstanceOf[js.Any]))
+    anchorOrigin.foreach(p.updateDynamic("anchorOrigin")(_))
     anchorPosition.foreach(p.updateDynamic("anchorPosition")(_))
-    anchorReference.foreach(v => p.updateDynamic("anchorEl")(v.value))
+    anchorReference.foreach(v => p.updateDynamic("anchorReference")(v.value))
     elevation.foreach(p.updateDynamic("elevation")(_))
     getContentAnchorEl.foreach(p.updateDynamic("getContentAnchorEl")(_))
     marginThreshold.foreach(p.updateDynamic("marginThreshold")(_))
