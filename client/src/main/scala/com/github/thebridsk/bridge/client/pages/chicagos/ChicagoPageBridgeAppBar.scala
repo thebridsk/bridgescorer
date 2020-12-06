@@ -1,7 +1,6 @@
 package com.github.thebridsk.bridge.client.pages.chicagos
 
 import com.github.thebridsk.bridge.client.pages.BridgeAppBar
-import com.github.thebridsk.bridge.client.pages.ServerURLPopup
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.materialui.MuiTypography
@@ -53,11 +52,8 @@ object ChicagoPageBridgeAppBar {
       routeCtl: BridgeRouter[ChicagoPage]
   )(
       mainMenuItems: CtorType.ChildArg*
-  ): TagMod = {
-    TagMod(
-      ServerURLPopup(),
-      component(Props(mainMenuItems, title, helpurl, routeCtl))
-    )
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(Props(mainMenuItems, title, helpurl, routeCtl))
   }
 }
 

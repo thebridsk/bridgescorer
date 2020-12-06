@@ -23,7 +23,6 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.Duplic
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.AllTableView
 import com.github.thebridsk.bridge.client.pages.BridgeAppBar
 import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
-import com.github.thebridsk.bridge.client.pages.ServerURLPopup
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.materialui.AnchorOrigin
@@ -72,11 +71,8 @@ object DuplicatePageBridgeAppBar {
       routeCtl: BridgeRouter[DuplicatePage]
   )(
       mainMenuItems: CtorType.ChildArg*
-  ): TagMod = {
-    TagMod(
-      ServerURLPopup(),
-      component(Props(id, tableIds, mainMenuItems, title, helpurl, routeCtl))
-    )
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(Props(id, tableIds, mainMenuItems, title, helpurl, routeCtl))
   }
 }
 

@@ -37,24 +37,73 @@ import com.github.thebridsk.materialui.AnchorOriginVerticalValue
 import com.github.thebridsk.bridge.clientcommon.logger.Info
 
 /**
-  * AppBar for all the root pages.
-  *
-  * It can be used for all pages but the home page.
+  * The AppBar for all root pages.
   *
   * The AppBar has in the banner from left to right:
   *
-  * <ol>
-  * <li>Page Menu button
-  * <li>Home button
-  * <li>title
-  * <li>Help button
-  * </ol>
+  * 1. Left Buttons
+  *   - Main Menu button
+  *   - Home button
+  * 2. Title
+  * 3. Logo
+  * 4. Right Buttons
+  *   - Help button
+  *   - Show Server URL
+  *   - Dark mode selector
+  *   - Fullscreen
+  *   - More menu
+  *
+  * The more menu contains:
+  * - About and info pages
+  * - Debug logging pages
+  * - Swagger doc pages
+  * - GraphQL pages
+  *
+  * The Title is made up of two parts, the app title and the page title.
+  * If both are given, they will be separated by a {{{" - "}}}.
+  * A Main Menu is provided by this component.
+  * The Home button is displayed if a page title is given.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * RootBridgeAppBar( RootBridgeAppBar.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * case class Props(
+  *     title: Seq[VdomNode],
+  *     helpurl: Option[String],
+  *     routeCtl: BridgeRouter[AppPage],
+  * )
+  *
+  * case class State(
+  *     anchorMainEl: js.UndefOr[Element] = js.undefined,
+  * }
+  *
+  * class Backend(scope: BackendScope[Props, State]) {
+  *
+  *   def handleMainClick(event: ReactEvent): Unit = {
+  *     event.stopPropagation()
+  *     event.extract(_.currentTarget)(currentTarget =>
+  *       scope.modState(s => s.copy(anchorMainEl = currentTarget)).runNow()
+  *     )
+  *   }
+  *   def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
+  *     scope.modState(s => s.copy(anchorMainEl = js.undefined)).runNow()
+  *   }
+  *
+  *   def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+  *     RootBridgeAppBar(
+  *        title = props.title
+  *        helpurl = props.helpurl.getOrElse("../help/introduction.html"),
+  *        routeCtl = props.routeCtl,
+  *     )(
+  *     )
+  *   }
+  * }
+  * }}}
+  *
+  * Note that if an item is clicked on the menu, the menu will not automatically close.
+  * The onClick handler on the menu item must close the menu.
+  *
+  * @see See [[apply]] for the description of the arguments to instantiate the component.
   *
   * @author werewolf
   */
@@ -73,13 +122,16 @@ object RootBridgeAppBar {
   /**
     * Instantiate the component.
     *
-    * @param title
-    * @param helpurl
-    * @param routeCtl
-    * @param showRightButtons
-    * @param showMainMenu
-    * @param showAPI
-    * @return
+    * @param title - The page title.  Specify js.undefined for the Home page.
+    * @param helpurl          - the URL that the help button will display.
+    * The URL is relative to the page URL.
+    * @param routeCtl         - the page router.
+    * @param showRightButtons - show the buttons on the right of the appbar, default is true.
+    * @param showMainMenu     - show the main menu, default is true.
+    * @param showAPI          - show the swagger and graphql docs in the more menue, default is false.
+    * @return the unmounted react component
+    *
+    * @see [[RootBridgeAppBar]] for usage.
     */
   def apply(
       title: Seq[VdomNode],
@@ -88,12 +140,9 @@ object RootBridgeAppBar {
       showRightButtons: Boolean = true,
       showMainMenu: Boolean = true,
       showAPI: Boolean = false
-  )(): TagMod = {
-    TagMod(
-      ServerURLPopup(),
-      component(
-        Props(title, helpurl, routeCtl, showRightButtons, showMainMenu, showAPI)
-      )
+  )() = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(
+      Props(title, helpurl, routeCtl, showRightButtons, showMainMenu, showAPI)
     )
   }
 
@@ -110,7 +159,7 @@ object RootBridgeAppBar {
     case class State(
         userSelect: Boolean = false,
         anchorMainEl: js.UndefOr[Element] = js.undefined,
-        anchorMainTestHandEl: js.UndefOr[Element] = js.undefined
+        anchorMainTestHandEl: js.UndefOr[Element] = js.undefined,
     ) {
 
       def openMainMenu(n: Node): State =
@@ -121,6 +170,7 @@ object RootBridgeAppBar {
         copy(anchorMainTestHandEl = n.asInstanceOf[Element])
       def closeMainTestHandMenu(): State =
         copy(anchorMainTestHandEl = js.undefined)
+
     }
 
     private val metaViewportScaling = "width=device-width"

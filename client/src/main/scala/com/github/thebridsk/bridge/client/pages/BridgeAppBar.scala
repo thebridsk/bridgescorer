@@ -42,11 +42,12 @@ import com.github.thebridsk.materialui.AnchorOriginVerticalValue
   *
   * The AppBar has in the banner from left to right:
   *
-  * 1. Main Menu button
-  * 2. Home button
-  * 3. Title
-  * 4. Logo
-  * 5. Buttons
+  * 1. Left Buttons
+  *   - Main Menu button
+  *   - Home button
+  * 2. Title
+  * 3. Logo
+  * 4. Right Buttons
   *   - Help button
   *   - Show Server URL
   *   - Dark mode selector
@@ -58,6 +59,10 @@ import com.github.thebridsk.materialui.AnchorOriginVerticalValue
   * - Debug logging pages
   * - Swagger doc pages
   * - GraphQL pages
+  *
+  * The Main Menu button is only displayed if there is an main menu item.
+  * The Home button is optionally displayed.
+  * Provide popup for Server URLs.
   *
   * To use, just code the following:
   *
@@ -187,12 +192,19 @@ object BridgeAppBar {
     val logger: Logger = Logger("bridge.BridgeAppBar")
 
     case class State(
-        anchorMoreEl: js.UndefOr[Element] = js.undefined
+        anchorMoreEl: js.UndefOr[Element] = js.undefined,
+        showServerURL: Boolean = false
     ) {
 
       def openMoreMenu(n: Node): State =
         copy(anchorMoreEl = n.asInstanceOf[Element])
       def closeMoreMenu(): State = copy(anchorMoreEl = js.undefined)
+
+      def setShowServerURLPopup(f: Boolean): State = {
+        copy(showServerURL = f)
+      }
+
+      def isShowServerURLPopup = showServerURL
     }
 
     val apiPageURL: String = {
@@ -249,8 +261,7 @@ object BridgeAppBar {
       }
 
       def serverUrlClick(event: ReactEvent): Unit = {
-        logger.fine("Requesting to show server URL popup")
-        ServerURLPopup.setShowServerURLPopup(true)
+        scope.modState(_.setShowServerURLPopup(true)).runNow()
       }
 
       // data-theme="dark"
@@ -439,6 +450,8 @@ object BridgeAppBar {
         }
       }
 
+      val dismissServerUrl: Callback = scope.modState(_.setShowServerURLPopup(false))
+
       def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
         def gotoAboutPage(e: ReactEvent) = props.routeCtl.toAbout
@@ -547,6 +560,7 @@ object BridgeAppBar {
         val bar = <.div(
           (
             (
+              ServerURLPopup(state.showServerURL, dismissServerUrl)::
               MuiAppBar(
                 position = Position.static,
                 classes = js.Dictionary("root" -> "muiAppBar")

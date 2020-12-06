@@ -8,102 +8,100 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
 
 /**
-  * A skeleton component.
+  * A popup component that shows the server URLs.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * ServerURLPopup( ServerURLPopup.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * case class State(
+  *   showServerURL: Boolean = false
+  * )
+  *
+  * val dismissCB = scope.modState(_.copy(showServerURL = false))
+  *
+  * ServerURLPopup( state.showServerURL, dismissCB )
+  * }}}
+  *
+  * @see See [[apply]] for the description of the arguments to instantiate the component.
   *
   * @author werewolf
   */
 object ServerURLPopup {
-  import ServerURLPopupInternal._
+  import Internal._
 
-  case class Props()
+  case class Props(
+    showURL: Boolean,
+    dismissCB: Callback
+  )
 
-  def apply() =
-    component(Props()) // scalafix:ok ExplicitResultTypes; ReactComponent
-
+  /**
+    * Instantiate the ServerURLPopup component.
+    *
+    * @param showURL - show the popup
+    * @param dismissCB - callback to dismiss the popup.
+    * @return the unmounted react component
+    *
+    * @see [[ServerURLPopup]] for usage.
+    */
+  def apply(
+    showURL: Boolean,
+    dismissCB: Callback
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(Props(showURL, dismissCB))
+  }
   private var showURL = false
 
-  def setShowServerURLPopup(f: Boolean): Unit = {
-    showURL = f
-    scalajs.js.timers.setTimeout(1) {
-      ServerURLStore.notifyChange()
-    }
-  }
+  protected object Internal {
 
-  def isShowServerURLPopup = showURL
+    private val logger = Logger("bridge.ServerURLPopup")
 
-}
+    case class State()
 
-object ServerURLPopupInternal {
-  import ServerURLPopup._
+    class Backend(scope: BackendScope[Props, State]) {
 
-  private val logger = Logger("bridge.ServerURLPopup")
+      val cancel: Option[Callback] = None
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause State to leak.
-    */
-  case class State()
-
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
-
-    val ok: Option[Callback] = Some(Callback {
-      setShowServerURLPopup(false)
-      scope.withEffectsImpure.forceUpdate
-    })
-    val cancel: Option[Callback] = None
-
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; ReactComponent
-      val content: Option[TagMod] = if (isShowServerURLPopup) {
-        implicit val ec = ExecutionContext.global
-        Some(
-          <.div(
-            <.h1("Server URL"),
-            <.ul(ServerURLStore.getURLItems)
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; ReactComponent
+        val ok: Option[Callback] = Some(props.dismissCB)
+        val content: Option[TagMod] = if (props.showURL) {
+          implicit val ec = ExecutionContext.global
+          Some(
+            <.div(
+              <.h1("Server URL"),
+              <.ul(ServerURLStore.getURLItems)
+            )
           )
-        )
-      } else {
-        None
+        } else {
+          None
+        }
+        PopupOkCancel(content, ok, cancel, Some("ServerURLPopupDiv"))
       }
-      PopupOkCancel(content, ok, cancel, Some("ServerURLPopupDiv"))
+
+      private var mounted = false
+
+      val urlStoreListener = scope.forceUpdate
+
+      val didMount: Callback = Callback {
+        mounted = true
+        ServerURLStore.addChangeListener(urlStoreListener)
+        ServerURLStore.updateURLs()
+      }
+
+      val willUnmount: Callback = Callback {
+        mounted = false
+        ServerURLStore.removeChangeListener(urlStoreListener)
+      }
+
     }
 
-    private var mounted = false
-
-    val urlStoreListener = scope.forceUpdate
-
-    val didMount: Callback = Callback {
-      mounted = true
-      ServerURLStore.addChangeListener(urlStoreListener)
-      ServerURLStore.updateURLs()
-    }
-
-    val willUnmount: Callback = Callback {
-      mounted = false
-      ServerURLStore.removeChangeListener(urlStoreListener)
-    }
-
+    private[pages] val component = ScalaComponent
+      .builder[Props]("ServerURLPopup")
+      .initialStateFromProps { props => State() }
+      .backend(new Backend(_))
+      .renderBackend
+      .componentDidMount(scope => scope.backend.didMount)
+      .componentWillUnmount(scope => scope.backend.willUnmount)
+      .build
   }
 
-  private[pages] val component = ScalaComponent
-    .builder[Props]("ServerURLPopup")
-    .initialStateFromProps { props => State() }
-    .backend(new Backend(_))
-    .renderBackend
-    .componentDidMount(scope => scope.backend.didMount)
-    .componentWillUnmount(scope => scope.backend.willUnmount)
-    .build
 }
