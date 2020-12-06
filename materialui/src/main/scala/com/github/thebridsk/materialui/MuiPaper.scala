@@ -11,7 +11,6 @@ trait PaperProps extends AdditionalProps with StandardProps {
   val component: js.UndefOr[String] = js.native
   val elevation: js.UndefOr[Double] = js.native
   val square: js.UndefOr[Boolean] = js.native
-  val onClick: js.UndefOr[ReactEvent => Unit] = js.native
 }
 object PaperProps extends PropsFactory[PaperProps] {
 
@@ -28,6 +27,7 @@ object PaperProps extends PropsFactory[PaperProps] {
     * @param square If true, rounded corners are disabled.
     *                Default: false
     * @param className css class name to add to element
+    * @param onClick the click handler
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: PaperProps](
@@ -40,12 +40,11 @@ object PaperProps extends PropsFactory[PaperProps] {
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
-    val p = get(props, additionalProps)
+    val p = get(props, additionalProps, onClick)
     classes.foreach(p.updateDynamic("classes")(_))
     component.foreach(p.updateDynamic("component")(_))
     elevation.foreach(p.updateDynamic("elevation")(_))
     square.foreach(p.updateDynamic("square")(_))
-    onClick.map(p.updateDynamic("onClick")(_))
     className.map(p.updateDynamic("className")(_))
     p
   }
@@ -74,6 +73,7 @@ object MuiPaper extends ComponentFactory[PaperProps] {
     * @param square If true, rounded corners are disabled.
     *                Default: false
     * @param className css class name to add to element
+    * @param onClick the click handler
     * @param additionalProps a dictionary of additional properties
     */
   def apply(

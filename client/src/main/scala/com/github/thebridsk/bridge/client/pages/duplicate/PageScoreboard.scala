@@ -530,6 +530,7 @@ object PageScoreboardInternal {
       val prevProps = cdu.prevProps
       if (prevProps.game != props.game) {
         Controller.monitor(props.game.dupid)
+        cdu.setState(State())
       }
     }
 

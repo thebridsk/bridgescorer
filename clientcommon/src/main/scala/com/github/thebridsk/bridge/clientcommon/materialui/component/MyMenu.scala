@@ -13,13 +13,37 @@ import com.github.thebridsk.materialui.MenuVariant
 import com.github.thebridsk.utilities.logging.Logger
 
 /**
-  * A skeleton component.
+  * A menu component.
+  *
+  * This component is functionally the same as the MuiMenu component,
+  * but it allows the popup menu to be attached to the element in any way possible.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * SkeletonComponent( SkeletonComponent.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * case class State {
+  *   anchorEl: js.UndefOr[AnchorElement] = js.undefined
+  * }
+  * def onClose(): Unit = {
+  *   scope.modState(_.copy(anchorEl = js.undefined))
+  * }
+  * MyMenu(
+  *   onClose = onClose _,
+  *   anchorOrigin = AnchorOrigin(
+  *     AnchorOriginHorizontalValue.left,
+  *     AnchorOriginVerticalValue.bottom
+  *   ),
+  *   transformOrigin = AnchorOrigin(
+  *     AnchorOriginHorizontalValue.left,
+  *     AnchorOriginVerticalValue.top
+  *   )
+  * )(
+  *   MuiMenuItem(...),
+  *   ...
+  * )
+  * }}}
+  *
+  * @see [[apply]] for a description of the properties to the component.
   *
   * @author werewolf
   */
@@ -34,6 +58,18 @@ object MyMenu {
       children: Seq[CtorType.ChildArg]
   )
 
+  /**
+    * Instantiate the component
+    *
+    * @param onClose - callback that gets called when the menu closes.
+    * @param anchorOrigin - the point on the anchor element where the menu is attached.
+    * @param transformOrigin - the point on the menu element where the menu is attacted.
+    * @param anchorEl - the anchor element.  if js.undefined, then the menu is not displayed.
+    * @param children - the menu items.
+    * @return the unmounted react component
+    *
+    * @see [[MyMenu]] for usage information.
+    */
   def apply(
       onClose: js.UndefOr[() => Unit],
       anchorOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
@@ -51,26 +87,19 @@ object MyMenu {
 
     val log = Logger("bridge.MyMenu")
 
-    /**
-      * Internal state for rendering the component.
-      *
-      * I'd like this class to be private, but the instantiation of component
-      * will cause State to leak.
-      */
     case class State()
 
-    /**
-      * Internal state for rendering the component.
-      *
-      * I'd like this class to be private, but the instantiation of component
-      * will cause Backend to leak.
-      */
     class Backend(scope: BackendScope[Props, State]) {
 
       def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
         def popoverClose() = {
           log.fine("Close called from popover")
+          props.onClose.foreach(f => f())
+        }
+
+        def popoverClick(event: ReactEvent) = {
+          log.fine("Click called from popover")
           props.onClose.foreach(f => f())
         }
 
@@ -86,17 +115,18 @@ object MyMenu {
           disablePortal = true,
           open = props.anchorEl.isDefined,
           onClose = popoverClose _,
+          onClick = popoverClick _,
           transformOrigin = props.transformOrigin,
         )(
-            MuiClickAwayListener(
-              onClickAway = clickawayClose _
+          MuiClickAwayListener(
+            onClickAway = clickawayClose _
+          )(
+            MuiMenuList(
+              variant = MenuVariant.menu
             )(
-              MuiMenuList(
-                variant = MenuVariant.menu
-              )(
-                props.children: _*
-              )
+              props.children: _*
             )
+          )
         )
 
       }

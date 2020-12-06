@@ -123,8 +123,10 @@ object DuplicatePageBridgeAppBarInternal {
       def handleGotoHome(e: ReactEvent) = props.routeCtl.toHome
       def handleGotoAbout(e: ReactEvent) = props.routeCtl.toAbout
 
-      def callbackPage(page: DuplicatePage)(e: ReactEvent) =
+      def callbackPage(page: DuplicatePage)(e: ReactEvent) = {
+        // handleMainClose()
         props.routeCtl.set(page).runNow()
+      }
 
       def tableMenuItem(
           dupid: MatchDuplicate.Id,

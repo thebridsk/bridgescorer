@@ -80,6 +80,7 @@ object ListItemProps extends PropsFactory[ListItemProps] {
     *                  Default: false
     * @param id the value of the id attribute
     * @param className css class name to add to element
+    * @param onClick the click handler
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ListItemProps](
@@ -98,9 +99,10 @@ object ListItemProps extends PropsFactory[ListItemProps] {
       selected: js.UndefOr[Boolean] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
+      onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
-    val p = get(props, additionalProps)
+    val p = get(props, additionalProps, onClick)
 
     alignItems.foreach(v => p.updateDynamic("alignItems")(v.value))
     autoFocus.foreach(p.updateDynamic("autoFocus")(_))
@@ -160,6 +162,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
     * @param id the id attribute value of the element
     * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
+    * @param onClick the click handler
     * @param children
     */
   def apply(
@@ -177,6 +180,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
       selected: js.UndefOr[Boolean] = js.undefined,
       id: js.UndefOr[String] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
+      onClick: js.UndefOr[(ReactEvent) => Unit] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
@@ -196,6 +200,7 @@ object MuiListItem extends ComponentFactory[ListItemProps] {
       selected = selected,
       id = id,
       className = className,
+      onClick = onClick,
       additionalProps = additionalProps
     )
     val x = f(p) _
