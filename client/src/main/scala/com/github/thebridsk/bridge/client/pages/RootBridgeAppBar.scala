@@ -25,20 +25,19 @@ import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.{
 import com.github.thebridsk.bridge.client.pages.rubber.RubberModule.PlayRubber
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateModule.PlayDuplicate
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.SummaryView
-import com.github.thebridsk.bridge.client.Bridge
 import com.github.thebridsk.bridge.client.routes.AppRouter.ShowDuplicateHand
 import com.github.thebridsk.bridge.client.routes.AppRouter.ShowChicagoHand
 import com.github.thebridsk.bridge.client.routes.AppRouter.ShowRubberHand
-import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import japgolly.scalajs.react.internal.Effect
 import com.github.thebridsk.materialui.AnchorOrigin
 import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
 import com.github.thebridsk.materialui.AnchorOriginVerticalValue
+import com.github.thebridsk.bridge.clientcommon.logger.Info
 
 /**
-  * A simple AppBar for the Bridge client.
+  * AppBar for all the root pages.
   *
   * It can be used for all pages but the home page.
   *
@@ -60,7 +59,7 @@ import com.github.thebridsk.materialui.AnchorOriginVerticalValue
   * @author werewolf
   */
 object RootBridgeAppBar {
-  import RootBridgeAppBarInternal._
+  import Internal._
 
   case class Props(
       title: Seq[VdomNode],
@@ -71,6 +70,17 @@ object RootBridgeAppBar {
       showAPI: Boolean = false
   )
 
+  /**
+    * Instantiate the component.
+    *
+    * @param title
+    * @param helpurl
+    * @param routeCtl
+    * @param showRightButtons
+    * @param showMainMenu
+    * @param showAPI
+    * @return
+    */
   def apply(
       title: Seq[VdomNode],
       helpurl: Option[String],
@@ -86,270 +96,301 @@ object RootBridgeAppBar {
       )
     )
   }
-}
 
-object RootBridgeAppBarInternal {
-  import RootBridgeAppBar._
+  protected object Internal {
 
-  val logger: Logger = Logger("bridge.RootBridgeAppBar")
+    val logger: Logger = Logger("bridge.RootBridgeAppBar")
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause State to leak.
-    */
-  case class State(
-      userSelect: Boolean = false,
-      anchorMainEl: js.UndefOr[Element] = js.undefined,
-      anchorMainTestHandEl: js.UndefOr[Element] = js.undefined
-  ) {
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause State to leak.
+      */
+    case class State(
+        userSelect: Boolean = false,
+        anchorMainEl: js.UndefOr[Element] = js.undefined,
+        anchorMainTestHandEl: js.UndefOr[Element] = js.undefined
+    ) {
 
-    def openMainMenu(n: Node): State =
-      copy(anchorMainEl = n.asInstanceOf[Element])
-    def closeMainMenu(): State = copy(anchorMainEl = js.undefined)
+      def openMainMenu(n: Node): State =
+        copy(anchorMainEl = n.asInstanceOf[Element])
+      def closeMainMenu(): State = copy(anchorMainEl = js.undefined)
 
-    def openMainTestHandMenu(n: Node): State =
-      copy(anchorMainTestHandEl = n.asInstanceOf[Element])
-    def closeMainTestHandMenu(): State =
-      copy(anchorMainTestHandEl = js.undefined)
-  }
-
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
-
-    def handleMainClick(event: ReactEvent): Unit =
-      event.extract(_.currentTarget)(currentTarget =>
-        scope.modState(s => s.openMainMenu(currentTarget)).runNow()
-      )
-    def handleMainCloseClick(event: ReactEvent): Unit =
-      scope.modState(s => s.closeMainMenu()).runNow()
-    def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
-      logger.fine("MainClose called")
-      scope
-        .modState { s =>
-          s.closeMainMenu()
-        }
-        .runNow()
+      def openMainTestHandMenu(n: Node): State =
+        copy(anchorMainTestHandEl = n.asInstanceOf[Element])
+      def closeMainTestHandMenu(): State =
+        copy(anchorMainTestHandEl = js.undefined)
     }
 
-    def handleTestHandClick(event: ReactEvent): Unit = {
-      event.extract { e =>
-//        e.preventDefault()
-        e.currentTarget
-      }(currentTarget =>
-        scope.modState(s => s.openMainTestHandMenu(currentTarget)).runNow()
+    private val metaViewportScaling = "width=device-width"
+    private val metaViewportNoScaling = "width=device-width, user-scalable=no, initial-scale=1"
+
+    /**
+      * <meta
+      *   id="metaViewport"
+      *   name="viewport"
+      *   content="width=device-width, user-scalable=no, initial-scale=1"
+      * >
+      */
+    private def getViewport = {
+      Info.getElement("metaViewport")
+    }
+
+    def isScaling: Boolean = {
+      getViewport.getAttribute("content") == metaViewportScaling
+    }
+
+    def setScaling(flag: Boolean): Unit = {
+      getViewport.setAttribute(
+        "content",
+        if (flag) metaViewportScaling
+        else metaViewportNoScaling
       )
     }
-    def handleMainTestHandClose(
-        /* event: js.Object, reason: String */
-    ): Unit = scope.modState(s => s.closeMainTestHandMenu()).runNow()
-    def handleMainTestHandCloseClick(event: ReactEvent): Unit =
-      scope.modState(s => s.closeMainTestHandMenu()).runNow()
 
-    def gotoPage(uri: String): Unit = {
-      GotoPage.inSameWindow(uri)
-    }
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause Backend to leak.
+      */
+    class Backend(scope: BackendScope[Props, State]) {
 
-    def handleGotoPageClick(uri: String)(event: ReactEvent): Unit = {
-      logger.info(s"""Going to page ${uri}""")
-      handleMainClose()
-      gotoPage(uri)
-    }
-
-    val toggleUserSelect: ReactEvent => Effect.Id[Unit] = {
-      (event: ReactEvent) =>
-        scope.withEffectsImpure.modState { s =>
-          val newstate = s.copy(userSelect = !s.userSelect)
-          val style = Bridge.getElement("allowSelect")
-          if (newstate.userSelect) {
-            style.innerHTML = """
-                                |* {
-                                |  user-select: text;
-                                |}
-                                |""".stripMargin
-          } else {
-            style.innerHTML = ""
-          }
-          newstate
-        }
-    }
-
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-
-      def callbackPage(page: AppPage)(e: ReactEvent) = {
-        logger.info(s"""Goto page $page""")
+      def handleScaling(flag: Boolean)(event: ReactEvent): Unit = {
+        setScaling(flag)
         handleMainClose()
-        props.routeCtl.set(page).runNow()
       }
 
-      val maintitle: Seq[VdomNode] =
-        List(
-          MuiTypography(
-            variant = TextVariant.h6,
-            color = TextColor.inherit
-          )(
-            <.span(
-              "Bridge ScoreKeeper"
+      def handleMainClick(event: ReactEvent): Unit = {
+        event.stopPropagation()
+        event.extract(_.currentTarget)(currentTarget =>
+          scope.modState(s => s.openMainMenu(currentTarget)).runNow()
+        )
+      }
+      def handleMainCloseClick(event: ReactEvent): Unit =
+        scope.modState(s => s.closeMainMenu()).runNow()
+      def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
+        logger.fine("MainClose called")
+        scope
+          .modState { s =>
+            s.closeMainMenu()
+          }
+          .runNow()
+      }
+
+      def handleTestHandClick(event: ReactEvent): Unit = {
+        event.stopPropagation()
+        event.extract { e =>
+          e.currentTarget
+        }(currentTarget =>
+          scope.modState(s => s.openMainTestHandMenu(currentTarget)).runNow()
+        )
+      }
+      def handleMainTestHandClose(
+          /* event: js.Object, reason: String */
+      ): Unit = scope.modState(s => s.closeMainTestHandMenu()).runNow()
+      def handleMainTestHandCloseClick(event: ReactEvent): Unit =
+        scope.modState(s => s.closeMainTestHandMenu()).runNow()
+
+      def gotoPage(uri: String): Unit = {
+        GotoPage.inSameWindow(uri)
+      }
+
+      def handleGotoPageClick(uri: String)(event: ReactEvent): Unit = {
+        logger.info(s"""Going to page ${uri}""")
+        handleMainClose()
+        gotoPage(uri)
+      }
+
+      val toggleUserSelect: ReactEvent => Effect.Id[Unit] = {
+        (event: ReactEvent) =>
+          scope.withEffectsImpure.modState { s =>
+            val newstate = s.copy(userSelect = !s.userSelect)
+            val style = Info.getElement("allowSelect")
+            if (newstate.userSelect) {
+              style.innerHTML = """
+                                  |* {
+                                  |  user-select: text;
+                                  |}
+                                  |""".stripMargin
+            } else {
+              style.innerHTML = ""
+            }
+            newstate
+          }
+      }
+
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+
+        def callbackPage(page: AppPage)(e: ReactEvent) = {
+          logger.info(s"""Goto page $page""")
+          handleMainClose()
+          props.routeCtl.set(page).runNow()
+        }
+
+        val maintitle: Seq[VdomNode] =
+          List(
+            MuiTypography(
+              variant = TextVariant.h6,
+              color = TextColor.inherit
+            )(
+              <.span(
+                "Bridge ScoreKeeper"
+              )
             )
           )
-        )
 
-      val mainMenu: List[CtorType.ChildArg] = if (props.showMainMenu) {
-        List(
-          // main menu
-          MyMenu(
-            anchorEl = state.anchorMainEl,
-            onClickAway = handleMainClose _
-//                onItemClick = handleMainCloseClick _,
-          )(
-            MuiMenuItem(
-              id = "Duplicate",
-              onClick = callbackPage(PlayDuplicate(SummaryView)) _
-            )(
-              "Duplicate"
-            ),
-            MuiMenuItem(
-              id = "Chicago",
-              onClick = callbackPage(PlayChicago2(ChicagoListView)) _
-            )(
-              "Chicago"
-            ),
-            MuiMenuItem(
-              id = "Rubber",
-              onClick = callbackPage(PlayRubber(RubberListView)) _
-            )(
-              "Rubber"
-            ),
-            MuiMenuItem(
-              onClick = handleTestHandClick _,
-              classes = js.Dictionary("root" -> "mainMenuItem")
-            )(
-              "Test Hands",
-              icons.ChevronRight(
-                classes = js.Dictionary("root" -> "mainMenuItemIcon")
+        val mainMenu: List[CtorType.ChildArg] = if (props.showMainMenu) {
+          List(
+            // main menu
+            MyMenu(
+              anchorEl = state.anchorMainEl,
+              onClose = handleMainClose _,
+              anchorOrigin = AnchorOrigin(
+                AnchorOriginHorizontalValue.left,
+                AnchorOriginVerticalValue.bottom
+              ),
+              transformOrigin = AnchorOrigin(
+                AnchorOriginHorizontalValue.left,
+                AnchorOriginVerticalValue.top
               )
-            ), {
-              val path = GotoPage.currentURL
-              val (newp, color, check) =
-                if (path.indexOf("indexNoScale") >= 0) {
-                  ("""index.html""", SvgColor.disabled, false)
-                } else {
-                  ("""indexNoScale.html""", SvgColor.inherit, true)
-                }
-              val newpath = if (path.endsWith(".gz")) {
-                s"""${newp}.gz"""
-              } else {
-                newp
-              }
+            )(
               MuiMenuItem(
-                id = "NoScaling",
-                onClick = handleGotoPageClick(newp) _,
+                id = "Duplicate",
+                onClick = callbackPage(PlayDuplicate(SummaryView)) _
+              )(
+                "Duplicate"
+              ),
+              MuiMenuItem(
+                id = "Chicago",
+                onClick = callbackPage(PlayChicago2(ChicagoListView)) _
+              )(
+                "Chicago"
+              ),
+              MuiMenuItem(
+                id = "Rubber",
+                onClick = callbackPage(PlayRubber(RubberListView)) _
+              )(
+                "Rubber"
+              ),
+              MuiMenuItem(
+                onClick = handleTestHandClick _,
                 classes = js.Dictionary("root" -> "mainMenuItem")
               )(
-                "Scaling ",
-//                      icons.Check(
-//                          color=color,
-//                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
-//                      )
-                if (check) {
-                  icons.CheckBox()
-                } else {
-                  icons.CheckBoxOutlineBlank()
+                "Test Hands",
+                icons.ChevronRight(
+                  classes = js.Dictionary("root" -> "mainMenuItemIcon")
+                )
+              ),
+              {
+                val check = isScaling
+                MuiMenuItem(
+                  id = "Scaling",
+                  onClick = handleScaling(!check) _,
+                  classes = js.Dictionary("root" -> "mainMenuItem")
+                )(
+                  "Scaling ",
+                  if (check) {
+                    icons.CheckBox()
+                  } else {
+                    icons.CheckBoxOutlineBlank()
+                  }
+                )
+              },
+              MuiMenuItem(
+                id = "UserSelect",
+                onClick = toggleUserSelect,
+                classes = js.Dictionary("root" -> "mainMenuItem")
+              )(
+                "Allow Select", {
+  //                      val color = if (state.userSelect) SvgColor.inherit else SvgColor.disabled
+  //                      icons.Check(
+  //                          color=color,
+  //                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
+  //                      )
+                  if (state.userSelect) {
+                    icons.CheckBox()
+                  } else {
+                    icons.CheckBoxOutlineBlank()
+                  }
                 }
               )
-            },
-            MuiMenuItem(
-              id = "UserSelect",
-              onClick = toggleUserSelect,
-              classes = js.Dictionary("root" -> "mainMenuItem")
-            )(
-              "Allow Select", {
-//                      val color = if (state.userSelect) SvgColor.inherit else SvgColor.disabled
-//                      icons.Check(
-//                          color=color,
-//                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
-//                      )
-                if (state.userSelect) {
-                  icons.CheckBox()
-                } else {
-                  icons.CheckBoxOutlineBlank()
-                }
-              }
-            )
-          ),
-          // test hand menu
-          MyMenu(
-            anchorEl = state.anchorMainTestHandEl,
-            onClickAway = handleMainTestHandClose _,
-            onItemClick = handleMainTestHandCloseClick _,
-            anchorOrigin = AnchorOrigin( AnchorOriginHorizontalValue.right, AnchorOriginVerticalValue.top)
-            // placement = PopperPlacement.rightStart
-          )(
-            MuiMenuItem(
-              onClick = callbackPage(ShowDuplicateHand) _
-            )(
-              "Duplicate"
             ),
-            MuiMenuItem(
-              onClick = callbackPage(ShowChicagoHand) _
+            // test hand menu
+            MyMenu(
+              anchorEl = state.anchorMainTestHandEl,
+              onClose = handleMainTestHandClose _,
+              anchorOrigin = AnchorOrigin(
+                AnchorOriginHorizontalValue.right,
+                AnchorOriginVerticalValue.top
+              ),
+              transformOrigin = AnchorOrigin(
+                AnchorOriginHorizontalValue.left,
+                AnchorOriginVerticalValue.top
+              )
             )(
-              "Chicago"
-            ),
-            MuiMenuItem(
-              onClick = callbackPage(ShowRubberHand) _
-            )(
-              "Rubber"
+              MuiMenuItem(
+                onClick = callbackPage(ShowDuplicateHand) _
+              )(
+                "Duplicate"
+              ),
+              MuiMenuItem(
+                onClick = callbackPage(ShowChicagoHand) _
+              )(
+                "Chicago"
+              ),
+              MuiMenuItem(
+                onClick = callbackPage(ShowRubberHand) _
+              )(
+                "Rubber"
+              )
             )
           )
+        } else {
+          List()
+        }
+
+        <.div(
+          baseStyles.divAppBar,
+          BridgeAppBar(
+            handleMainClick = handleMainClick _,
+            maintitle = maintitle,
+            title = props.title,
+            helpurl = props.helpurl.getOrElse("../help/introduction.html"),
+            routeCtl = props.routeCtl,
+            showHomeButton = !props.title.isEmpty,
+            showRightButtons = props.showRightButtons,
+            showAPI = props.showAPI
+          )(
+            mainMenu: _*
+          )
         )
-      } else {
-        List()
       }
 
-      <.div(
-        baseStyles.divAppBar,
-        BridgeAppBar(
-          handleMainClick = handleMainClick _,
-          maintitle = maintitle,
-          title = props.title,
-          helpurl = props.helpurl.getOrElse("../help/introduction.html"),
-          routeCtl = props.routeCtl,
-          showHomeButton = !props.title.isEmpty,
-          showRightButtons = props.showRightButtons,
-          showAPI = props.showAPI
-        )(
-          mainMenu: _*
-        )
-      )
+      private var mounted = false
+
+      val didMount: Callback = Callback {
+        mounted = true
+
+      }
+
+      val willUnmount: Callback = Callback {
+        mounted = false
+
+      }
     }
 
-    private var mounted = false
-
-    val didMount: Callback = Callback {
-      mounted = true
-
-    }
-
-    val willUnmount: Callback = Callback {
-      mounted = false
-
-    }
+    private[pages] val component = ScalaComponent
+      .builder[Props]("RootBridgeAppBar")
+      .initialStateFromProps { props =>
+        State()
+      }
+      .backend(new Backend(_))
+      .renderBackend
+      .componentDidMount(scope => scope.backend.didMount)
+      .componentWillUnmount(scope => scope.backend.willUnmount)
+      .build
   }
 
-  private[pages] val component = ScalaComponent
-    .builder[Props]("RootBridgeAppBar")
-    .initialStateFromProps { props =>
-      State()
-    }
-    .backend(new Backend(_))
-    .renderBackend
-    .componentDidMount(scope => scope.backend.didMount)
-    .componentWillUnmount(scope => scope.backend.willUnmount)
-    .build
 }

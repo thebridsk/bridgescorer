@@ -36,6 +36,9 @@ import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
+import com.github.thebridsk.materialui.AnchorOrigin
+import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
+import com.github.thebridsk.materialui.AnchorOriginVerticalValue
 
 /**
   * A simple AppBar for the Bridge client.
@@ -124,10 +127,12 @@ object BridgeAppBarInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMoreClick(event: ReactEvent): Unit =
+    def handleMoreClick(event: ReactEvent): Unit = {
+      event.stopPropagation()
       event.extract(_.currentTarget)(currentTarget =>
         scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
       )
+    }
     def handleMoreCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMoreMenu()).runNow()
     def handleMoreClose( /* event: js.Object, reason: String */ ): Unit = {
@@ -384,8 +389,15 @@ object BridgeAppBarInternal {
               // more menu
               MyMenu(
                 anchorEl = state.anchorMoreEl,
-                onClickAway = handleMoreClose _,
-                onItemClick = handleMoreCloseClick _
+                onClose = handleMoreClose _,
+                anchorOrigin = AnchorOrigin(
+                  AnchorOriginHorizontalValue.right,
+                  AnchorOriginVerticalValue.bottom
+                ),
+                transformOrigin = AnchorOrigin(
+                  AnchorOriginHorizontalValue.right,
+                  AnchorOriginVerticalValue.top
+                )
               )(
                 MuiMenuItem(
                   id = "About",

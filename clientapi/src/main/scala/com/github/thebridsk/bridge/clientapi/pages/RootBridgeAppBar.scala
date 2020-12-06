@@ -16,9 +16,11 @@ import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import japgolly.scalajs.react.vdom.VdomNode
 import com.github.thebridsk.bridge.clientcommon.logger.Info
-import com.github.thebridsk.materialui.icons.SvgColor
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import japgolly.scalajs.react.internal.Effect
+import com.github.thebridsk.materialui.AnchorOrigin
+import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
+import com.github.thebridsk.materialui.AnchorOriginVerticalValue
 
 /**
   * A simple AppBar for the Bridge client.
@@ -90,6 +92,32 @@ object RootBridgeAppBarInternal {
       copy(anchorMainTestHandEl = js.undefined)
   }
 
+  private val metaViewportScaling = "width=device-width"
+  private val metaViewportNoScaling = "width=device-width, user-scalable=no, initial-scale=1"
+
+  /**
+    * <meta
+    *   id="metaViewport"
+    *   name="viewport"
+    *   content="width=device-width, user-scalable=no, initial-scale=1"
+    * >
+    */
+  private def getViewport = {
+    Info.getElement("metaViewport")
+  }
+
+  def isScaling: Boolean = {
+    getViewport.getAttribute("content") == metaViewportScaling
+  }
+
+  def setScaling(flag: Boolean): Unit = {
+    getViewport.setAttribute(
+      "content",
+      if (flag) metaViewportScaling
+      else metaViewportNoScaling
+    )
+  }
+
   /**
     * Internal state for rendering the component.
     *
@@ -98,10 +126,17 @@ object RootBridgeAppBarInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMainClick(event: ReactEvent): Unit =
+    def handleScaling(flag: Boolean)(event: ReactEvent): Unit = {
+      setScaling(flag)
+      handleMainClose()
+    }
+
+    def handleMainClick(event: ReactEvent): Unit = {
+      event.stopPropagation()
       event.extract(_.currentTarget)(currentTarget =>
         scope.modState(s => s.openMainMenu(currentTarget)).runNow()
       )
+    }
     def handleMainCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMainMenu()).runNow()
     def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
@@ -170,32 +205,24 @@ object RootBridgeAppBarInternal {
           // main menu
           MyMenu(
             anchorEl = state.anchorMainEl,
-            onClickAway = handleMainClose _
-//                onItemClick = handleMainCloseClick _,
+            onClose = handleMainClose _,
+            anchorOrigin = AnchorOrigin(
+              AnchorOriginHorizontalValue.left,
+              AnchorOriginVerticalValue.bottom
+            ),
+            transformOrigin = AnchorOrigin(
+              AnchorOriginHorizontalValue.left,
+              AnchorOriginVerticalValue.top
+            )
           )(
             {
-              val path = GotoPage.currentURL
-              val (newp, color, check) =
-                if (path.indexOf("indexNoScale") >= 0) {
-                  ("""index.html""", SvgColor.disabled, false)
-                } else {
-                  ("""indexNoScale.html""", SvgColor.inherit, true)
-                }
-              val newpath = if (path.endsWith(".gz")) {
-                s"""${newp}.gz"""
-              } else {
-                newp
-              }
+              val check = isScaling
               MuiMenuItem(
-                id = "NoScaling",
-                onClick = handleGotoPageClick(newp) _,
+                id = "Scaling",
+                onClick = handleScaling(!check) _,
                 classes = js.Dictionary("root" -> "mainMenuItem")
               )(
                 "Scaling ",
-//                      icons.Check(
-//                          color=color,
-//                          classes = js.Dictionary("root" -> "mainMenuItemIcon")
-//                      )
                 if (check) {
                   icons.CheckBox()
                 } else {

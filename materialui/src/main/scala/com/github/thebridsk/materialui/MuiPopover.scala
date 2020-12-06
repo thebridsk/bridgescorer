@@ -87,9 +87,7 @@ object AnchorOrigin {
   ): AnchorOrigin = {
     val p = new js.Object().asInstanceOf[AnchorOrigin]
 
-    horizontal.foreach(v =>
-      p.updateDynamic("horizontal")(v.value)
-    )
+    horizontal.foreach(v => p.updateDynamic("horizontal")(v.value))
     vertical.foreach(v => p.updateDynamic("vertical")(v.value))
 
     p
@@ -151,7 +149,7 @@ trait PopoverProps extends ModalProps with PopoverPropsPrivate {
   val onExited: js.UndefOr[() => Unit] = js.native
   val onExiting: js.UndefOr[() => Unit] = js.native
   val paperProps: js.UndefOr[PaperProps] = js.native
-  val transformOrigin: js.UndefOr[js.Object] = js.native
+  val transformOrigin: js.UndefOr[AnchorOrigin] = js.native
   val transitionComponent: js.UndefOr[js.Object] = js.native
   val transitionProps: js.UndefOr[js.Object] = js.native
 //  val transitionDuration: js.UndefOr[JsNumber | TransitionDuration] = js.native
@@ -314,7 +312,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
       onExited: js.UndefOr[() => Unit] = js.undefined,
       onExiting: js.UndefOr[() => Unit] = js.undefined,
       paperProps: js.UndefOr[PaperProps] = js.undefined,
-      transformOrigin: js.UndefOr[js.Object] = js.undefined,
+      transformOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       transitionComponent: js.UndefOr[js.Object] = js.undefined,
       transitionDuration: js.UndefOr[JsNumber | TransitionDuration] =
         js.undefined,
@@ -477,7 +475,7 @@ object MuiPopover extends ComponentFactory[PopoverProps] {
       onExited: js.UndefOr[() => Unit] = js.undefined,
       onExiting: js.UndefOr[() => Unit] = js.undefined,
       paperProps: js.UndefOr[PaperProps] = js.undefined,
-      transformOrigin: js.UndefOr[js.Object] = js.undefined,
+      transformOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       transitionComponent: js.UndefOr[js.Object] = js.undefined,
       transitionDuration: js.UndefOr[JsNumber | TransitionDuration] =
         js.undefined,
