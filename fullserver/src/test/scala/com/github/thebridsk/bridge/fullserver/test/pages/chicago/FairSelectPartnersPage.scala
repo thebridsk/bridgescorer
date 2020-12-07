@@ -83,7 +83,7 @@ class FairSelectPartnersPage(
           .oneOf(urlFor(chiid, roundid), demoUrlFor(chiid, roundid)))
 
         find(
-          xpath("""//div[@id='BridgeApp']/div[1]/div[1]/div[3]/div[1]/h1""")
+          xpath("""//div[@id='quintet']/div[1]/h1""")
         ).text mustBe "Fair Rotation"
 
         val allButtons = buttonOK :: buttonReset :: buttonCancel :: Nil

@@ -73,7 +73,7 @@ object PageTableInternal {
               color = TextColor.inherit
             )(
               <.span(
-                s"Table ${props.page.tableid}"
+                s"Table ${props.page.tableid.toNumber}"
               )
             )
           ),

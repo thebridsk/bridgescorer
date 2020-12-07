@@ -871,7 +871,7 @@ object PageTableTeamsInternal {
                       <.div(
                         dupStyles.divTableNamesPage,
                         <.p(
-                          "Round " + props.page.round + " not found on Table " + props.page.tableid.toNumber
+                          s"Round ${props.page.round} not found on Table ${props.page.tableid.toNumber}"
                         ),
                         <.p(
                           Button(
@@ -891,7 +891,7 @@ object PageTableTeamsInternal {
                   header(props, "../help/duplicate/enterscorekeepername.html"),
                   <.div(
                     dupStyles.divTableNamesPage,
-                    <.p("Table " + props.page.tableid.toNumber + " not found"),
+                    <.p(s"Table ${props.page.tableid.toNumber} not found"),
                     <.p(
                       Button(
                         baseStyles.footerButton,
