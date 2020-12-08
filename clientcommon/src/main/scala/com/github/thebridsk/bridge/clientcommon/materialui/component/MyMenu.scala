@@ -43,6 +43,9 @@ import com.github.thebridsk.utilities.logging.Logger
   * )
   * }}}
   *
+  * If an onClick event opens this menu, then the handler must invoke event.stopPropogate() on the onClick event.
+  * If this is not done, then the ClickAwayListener in this component gets the click also, which immediately closes the menu.
+  *
   * @see [[apply]] for a description of the properties to the component.
   *
   * @author werewolf
