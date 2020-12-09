@@ -5,7 +5,6 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
-import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
@@ -18,6 +17,7 @@ import com.github.thebridsk.bridge.client.controller.ChicagoController
 import com.github.thebridsk.bridge.data.MatchChicago
 
 import scala.scalajs.js
+import com.github.thebridsk.bridge.client.components.EnterName
 
 /**
   * Shows the team x board table and has a totals column that shows the number of points the team has.
@@ -104,17 +104,11 @@ object PageEditNamesInternal {
       <.tr(
         <.td(player),
         <.td(
-          Combobox.create(
-            p => backend.setPlayer(player)(p),
-            noNull(st.getName(player)),
-            names,
-            "startsWith",
-            -1,
-            "I_" + row,
-            msgEmptyList = "No suggested names",
-            msgEmptyFilter = "No names matched",
+          EnterName(
             id = "I_" + row,
-            busy = busy
+            name = st.getName(player),
+            tabIndex = -1,
+            onChange = backend.setPlayer(player) _
           )
         )
       )

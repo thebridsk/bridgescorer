@@ -188,15 +188,23 @@ object RootBridgeAppBar {
     }
 
     def isScaling: Boolean = {
-      getViewport.getAttribute("content") == metaViewportScaling
+      try {
+        getViewport.getAttribute("content") == metaViewportScaling
+      } catch {
+        case x: IllegalStateException => false
+      }
     }
 
     def setScaling(flag: Boolean): Unit = {
-      getViewport.setAttribute(
-        "content",
-        if (flag) metaViewportScaling
-        else metaViewportNoScaling
-      )
+      try {
+        getViewport.setAttribute(
+          "content",
+          if (flag) metaViewportScaling
+          else metaViewportNoScaling
+        )
+      } catch {
+        case x: IllegalStateException =>
+      }
     }
 
     /**

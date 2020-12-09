@@ -12,12 +12,10 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.github.thebridsk.bridge.data.DuplicateSummaryEntry
 import com.github.thebridsk.bridge.data.SystemTime
-import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.BoardResults
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateResult
 import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
-import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.data.Team
 import DuplicateStyles._
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
@@ -33,6 +31,7 @@ import com.github.thebridsk.materialui.TextColor
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.client.components.EnterName
 
 /**
   * A skeleton component.
@@ -118,16 +117,8 @@ object PageDuplicateResultEditInternal {
       played: SystemTime.Timestamp = SystemTime.currentTimeMillis(),
       comment: Option[String] = None,
       notfinished: Boolean = false,
-      nameSuggestions: Option[List[String]] = None, // known names from server
       useIMP: Boolean = false
   ) {
-    import scala.scalajs.js.JSConverters._
-    def getSuggestions: js.Array[String] =
-      nameSuggestions.getOrElse(List()).toJSArray
-    def gettingNames = nameSuggestions.isEmpty
-
-    def updateNames(list: List[String]): State =
-      copy(nameSuggestions = Some(list))
 
     def getMDR(): MatchDuplicateResult = {
 
@@ -442,18 +433,11 @@ object PageDuplicateResultEditInternal {
       s.updateOriginal(mdr)
     }
 
-    val namesCallback: Callback = scope.modState(s => {
-      val sug = NamesStore.getNames
-      s.copy(nameSuggestions = Some(sug.toList))
-    })
-
     val didMount: Callback = scope.props >>= { (p) =>
       Callback {
         mounted = true
         logger.info("PageDuplicateResultEdit.didMount")
-        NamesStore.ensureNamesAreCached(Some(namesCallback))
         DuplicateResultStore.addChangeListener(storeCallback)
-
         Controller.monitorDuplicateResult(p.page.dupid)
       }
     }
@@ -511,37 +495,26 @@ object PageDuplicateResultEditInternal {
         state,
         tabstart
       ) = args
-      val busy = state.gettingNames
-      val names = state.getSuggestions
+
       <.tr(
         <.td(id.toNumber),
         <.td(
           <.div(
-            Combobox.create(
-              backend.setPlayer(iws, id, 1),
-              noNull(player1),
-              names,
-              "startsWith",
-              -1,
-              s"P${iws}T${id.id}P1",
-              msgEmptyList = "No suggested names",
-              msgEmptyFilter = "No names matched",
-              id = s"P${iws}T${id.id}P1"
+            EnterName(
+              id = s"P${iws}T${id.id}P1",
+              name = player1,
+              tabIndex = -1,
+              onChange = backend.setPlayer(iws, id, 1) _
             )
           )
         ),
         <.td(
           <.div(
-            Combobox.create(
-              backend.setPlayer(iws, id, 2),
-              noNull(player2),
-              names,
-              "startsWith",
-              -1,
-              s"P${iws}T${id.id}P2",
-              msgEmptyList = "No suggested names",
-              msgEmptyFilter = "No names matched",
-              id = s"P${iws}T${id.id}P2"
+            EnterName(
+              id = s"P${iws}T${id.id}P2",
+              name = player2,
+              tabIndex = -1,
+              onChange = backend.setPlayer(iws, id, 2) _
             )
           )
         ),
