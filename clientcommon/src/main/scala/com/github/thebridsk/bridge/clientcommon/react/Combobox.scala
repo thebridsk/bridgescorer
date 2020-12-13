@@ -81,11 +81,17 @@ object ComboboxComponentProperty {
     p.asInstanceOf[ComboboxComponentProperty]
   }
 }
+@js.native
+trait Combobox extends js.Object
+
 
 /**
  * A Combobox component.
  *
  * This component has an input field and a dropdown list of suggestions.
+ *
+ * This wraps the Combobox component from react-widgets,
+ * https://jquense.github.io/react-widgets/api/Combobox/
  *
  * Usage:
  *
@@ -120,9 +126,6 @@ object ComboboxComponentProperty {
  * @see See the [[apply]] or [[create]] method for a description of the parameters.
  *
  */
-@js.native
-trait Combobox extends js.Object
-
 object Combobox {
   import Internal._
 

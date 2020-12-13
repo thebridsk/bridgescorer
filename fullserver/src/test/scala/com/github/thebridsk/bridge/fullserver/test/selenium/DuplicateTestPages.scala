@@ -3074,7 +3074,7 @@ class DuplicateTestPages
     ) {
       val ldpurl = ldp.clickServerURL.validateServerURL
       val urls = ldpurl.getServerURLs
-      urls.length mustBe 1
+      urls.length must be >= 1
       ldpurl.checkForValidServerURLs
       ldpurl.clickServerURLOK.validate
     }

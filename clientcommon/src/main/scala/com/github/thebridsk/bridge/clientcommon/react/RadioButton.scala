@@ -7,18 +7,27 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.materialui._
 
 /**
-  * A skeleton component.
+  * A radio button react component.
   *
-  * To use, just code the following:
+  * Usage:
   *
-  * <pre><code>
-  * AppButton( AppButton.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * val callback: Callback = ...
+  *
+  * RadioButton(
+  *   id = "radio",
+  *   text = "label",
+  *   value = false,
+  *   toggle = callback
+  * )
+  * }}}
+  *
+  * @see See [[apply]] for a description of the parameters.
   *
   * @author werewolf
   */
 object RadioButton {
-  import RadioButtonInternal._
+  import Internal._
 
   case class Props(
       id: String,
@@ -29,11 +38,15 @@ object RadioButton {
   )
 
   /**
-    * @param id
-    * @param text
-    * @param value
-    * @param toggle
-    * @param attrs attributes that are applied to the enclosing label element.
+    * Instantiate the react component.
+    *
+    * @param id - the id attribute on the radio button input field.
+    * @param text - the label for the radio button.
+    * @param value - true indicates the button is selected.
+    * @param toggle - a callback that is called when the radio button is selected.
+    * @param className - a class to add to the root label element.
+    *
+    * @return the unmounted react component
     */
   def apply(
       id: String,
@@ -46,6 +59,18 @@ object RadioButton {
       Props(id, text, value, toggle, className)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
+  /**
+    * Instantiate the react component with a key.
+    *
+    * @param key - key to add to the component.
+    * @param id - the id attribute on the radio button input field.
+    * @param text - the label for the radio button.
+    * @param value - true indicates the button is selected.
+    * @param toggle - a callback that is called when the radio button is selected.
+    * @param className - a class to add to the root label element.
+    *
+    * @return the unmounted react component
+    */
   def withKey(key: String)(
       id: String,
       text: String,
@@ -56,64 +81,49 @@ object RadioButton {
     component.withKey(key)(
       Props(id, text, value, onclick, className)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
-}
 
-object RadioButtonInternal {
-  import RadioButton._
+  protected object Internal {
 
-  def callback(cb: Callback): js.Function1[scala.scalajs.js.Object, Unit] =
-    (event: js.Object) => cb.runNow()
+    def callback(cb: Callback): js.Function1[scala.scalajs.js.Object, Unit] =
+      (event: js.Object) => cb.runNow()
 
-  private[react] val component = ScalaComponent
-    .builder[Props]("RadioButton")
-    .stateless
-    .noBackend
-    .render_P(props => {
-      import BaseStyles._
-      // val ic = if (props.value) icons.RadioButtonChecked()
-      //          else icons.RadioButtonUnchecked()
+    private[react] val component = ScalaComponent
+      .builder[Props]("RadioButton")
+      .stateless
+      .noBackend
+      .render_P(props => {
+        import BaseStyles._
 
-      // val attrs = List[TagMod](
-      //   baseStyles.radioButton,
-      //   ^.id := props.id,
-      //   ic,
-      //   " ",
-      //   props.text,
-      //   ^.onClick --> props.toggle,
-      //   HtmlStyles.whiteSpace.nowrap,
-      //   CheckBoxInternal.dataSelected := props.value
-      // ) ::: props.attrs.toList
-
-      // <.div( attrs: _* )
-
-      MuiFormControlLabel(
-        checked = props.value,
-        control = MuiRadio(
+        MuiFormControlLabel(
           checked = props.value,
-          onChange = callback(props.toggle),
-          name = props.id,
-          id = props.id
-        )(),
-        label = <.span(props.text),
-        className =
-          s"${baseStyles.baseRadioButton}${props.className.map(c => s" $c").getOrElse("")}"
-      )()
+          control = MuiRadio(
+            checked = props.value,
+            onChange = callback(props.toggle),
+            name = props.id,
+            id = props.id
+          )(),
+          label = <.span(props.text),
+          className =
+            s"${baseStyles.baseRadioButton}${props.className.map(c => s" $c").getOrElse("")}"
+        )()
 
-      // <.label(
-      //   baseStyles.radioButton,
-      //   ^.id:=props.id,
-      //   <.input(
-      //     ^.`type`:="radio",
-      //     ^.name:=props.id,
-      //     ^.id:="Input_"+props.id,
-      //     ^.value:=props.id,
-      //     ^.checked:=props.value,
-      //     ^.onChange --> props.toggle,
-      //   ),
-      //   ic,
-      //   " "+props.text,
-      //   props.attrs.toTagMod
-      // )
-    })
-    .build
+        // <.label(
+        //   baseStyles.radioButton,
+        //   ^.id:=props.id,
+        //   <.input(
+        //     ^.`type`:="radio",
+        //     ^.name:=props.id,
+        //     ^.id:="Input_"+props.id,
+        //     ^.value:=props.id,
+        //     ^.checked:=props.value,
+        //     ^.onChange --> props.toggle,
+        //   ),
+        //   ic,
+        //   " "+props.text,
+        //   props.attrs.toTagMod
+        // )
+      })
+      .build
+  }
+
 }

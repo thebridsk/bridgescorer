@@ -148,7 +148,7 @@ object BridgeAppBar {
     * @param maintitle        - the main part of the title that is always shown.
     * @param title            - the page title.  If the empty seq, then the page title is not displayed.
     * @param helpurl          - the URL that the help button will display.
-    * The URL is relative to the page URL.
+    *                           The URL is relative to the page URL.
     * @param routeCtl         - the page router.
     * @param showHomeButton   - the home button is displayed.
     * @param showRightButtons - show the buttons on the right of the appbar.
