@@ -241,7 +241,7 @@ object MonitorTCP extends Logging {
           numberWaiting = numberWaiting - 1
           pollingThread match {
             case Some(pt) if (pt == currentThread) => pollingThread = None
-            case None                              =>
+            case _                                 =>
           }
           if (numberWaiting == 0) {
             val cur = System.currentTimeMillis()

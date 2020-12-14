@@ -129,6 +129,8 @@ object SelectScorekeeper {
 
         val (team0, team1) = props.teams match {
           case List(t1, t2) => (t1, t2)
+          case _ =>
+            throw new IllegalArgumentException("Must have exactly 2 teams in props.teams")
         }
 
         val players =
