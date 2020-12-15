@@ -28,7 +28,12 @@ if (config.module.rules.length == 1
     // instead of /\/node_modules\//
     path.join(process.cwd(), 'node_modules')
   ]
+
+  console.warn( "Modified existing rule, config.module.rules is ", config.module.rules )
 } else {
+  if (config.modules.rules.length != 0) {
+    console.warn( "Added .js rule, config.module.rules is ", config.module.rules )
+  }
   config.module.rules.push(
     {
       test: /\.js$/,
@@ -41,8 +46,6 @@ if (config.module.rules.length == 1
     }
   )
 }
-
-console.warn( "config.module.rules is ", config.module.rules )
 
 // this suppresses the warning
 //    Critical dependency: the request of a dependency is an expression

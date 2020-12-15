@@ -13,8 +13,9 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayerComparisonStats
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import org.rogach.scallop.ScallopOption
+import com.github.thebridsk.utilities.main.MainConf
 
-object ShowPassedForPlayer extends Main {
+class ShowPassedForPlayerConf extends MainConf {
 
   import com.github.thebridsk.utilities.main.Converters._
 
@@ -33,6 +34,10 @@ object ShowPassedForPlayer extends Main {
     required = true
   )
 
+}
+
+object ShowPassedForPlayer extends Main[ShowPassedForPlayerConf] {
+
   case class PassedBoard(
       id: MatchDuplicate.Id,
       team: Team.Id,
@@ -40,6 +45,8 @@ object ShowPassedForPlayer extends Main {
       played: Boolean,
       good: Boolean
   )
+
+  import config._
 
   def execute(): Int = {
 

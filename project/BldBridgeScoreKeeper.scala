@@ -107,7 +107,7 @@ object BldBridgeScoreKeeper {
       // testOptions in Test := Seq(),
 
       serverhelp := {
-        (run in Compile).toTask(""" --logfile "../server/logs/serverhelp.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs""").value
+        (run in Compile).toTask(""" --help""").value
       },
       serverssl in Test := {
         (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs --certificate ../server/key/examplebridgescorekeeper.p12 --certpassword abcdef --https 8443""").value

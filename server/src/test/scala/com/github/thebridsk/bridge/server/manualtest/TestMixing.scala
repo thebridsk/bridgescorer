@@ -1,8 +1,8 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.main.MainNoArgs
 
-object TestMixing extends Main {
+object TestMixing extends MainNoArgs {
 
   case class Entry(a: Int, b: Int, mix: Double) {
     override def toString(): String = {

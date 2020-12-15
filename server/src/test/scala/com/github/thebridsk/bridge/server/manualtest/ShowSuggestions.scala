@@ -14,24 +14,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
 import org.rogach.scallop.ScallopOption
 import scala.util.matching.Regex
+import com.github.thebridsk.utilities.main.MainConf
 
-object ShowSuggestions extends Main {
+class ShowSuggestionsConf extends MainConf {
+
+  import ShowSuggestions.cmdName
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val log: Logger = Logger(ShowSuggestions.getClass.getName)
-
-  val cmdName: String = {
-    val x = ShowSuggestions.getClass.getName
-    "scala " + x.substring(0, x.length() - 1)
-  }
-
   banner(s"""
-Show the suggested pairings
-
-Syntax:
-  ${cmdName} [options] names...
-Options:""")
+            |Show the suggested pairings
+            |
+            |Syntax:
+            |  ${cmdName} [options] names...
+            |Options:""".stripMargin)
 
   val optionStore: ScallopOption[Path] = opt[Path](
     "store",
@@ -55,11 +51,24 @@ Options:""")
     descr = "the players that are playing next game"
   )
 
+}
+
+object ShowSuggestions extends Main[ShowSuggestionsConf] {
+
+  val log: Logger = Logger(ShowSuggestions.getClass.getName)
+
+  val cmdName: String = {
+    val x = ShowSuggestions.getClass.getName
+    "scala " + x.substring(0, x.length() - 1)
+  }
+
   def namesFilter(n: List[String])(pd: PairData): Boolean = {
     n.contains(pd.player1) && n.contains(pd.player2)
   }
 
   val patternPair: Regex = """([^,]+),([^,]+)""".r
+
+  import config._
 
   def execute(): Int = {
     val storedir = optionStore().toDirectory

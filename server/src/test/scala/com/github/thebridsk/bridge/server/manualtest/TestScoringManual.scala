@@ -1,6 +1,6 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.main.MainNoArgs
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge._
@@ -8,7 +8,7 @@ import com.github.thebridsk.bridge.data.bridge.DuplicateBridge._
 /**
   * @author werewolf
   */
-object TestScoringManual extends Main {
+object TestScoringManual extends MainNoArgs {
 
   def execute(): Int = {
     showHand(Hand.create("1", 4, "N", "R", "N", true, false, true, 5))

@@ -13,22 +13,23 @@ import com.github.thebridsk.utilities.file.FileIO
 import com.github.thebridsk.bridge.data.MovementV1
 import org.rogach.scallop.ScallopOption
 import scala.util.matching.Regex
+import com.github.thebridsk.utilities.main.MainConf
 
 class CreateMovement
 
-object CreateMovement extends Main {
+class CreateMovementConf extends MainConf {
 
   import com.github.thebridsk.utilities.main.Converters._
 
-  val cmdName: String = s"scala ${classOf[CreateMovement].getName}"
+  import CreateMovement.cmdName
 
   banner(s"""
-HTTP server for scoring duplicate and chicago bridge
-
-Syntax:
-  ${cmdName} options input [output]
-  ${cmdName} --help
-Options:""")
+            |HTTP server for scoring duplicate and chicago bridge
+            |
+            |Syntax:
+            |  ${cmdName} options input [output]
+            |  ${cmdName} --help
+            |Options:""".stripMargin)
 
   val paramInput: ScallopOption[Path] = trailArg[Path](
     name = "input",
@@ -44,28 +45,36 @@ Options:""")
   )
 
   footer(s"""
-The input file has the following syntax:
+            |The input file has the following syntax:
+            |
+            |  tables <nt> boards <nb> <name> <comment>
+            |  it ir ins iew iboards
+            |  ...
+            |
+            |or
+            |
+            |  tables <nt> boards <nb> <name> <comment>
+            |  table <it>
+            |  ir
+            |  ins
+            |  iew
+            |  iboards
+            |  ...
+            |
+            |iboards := 1-2,3,4
+            |
+            |Comment lines start with '#'
+            |blank lines are used as end of stanzas.
+            |
+            |""".stripMargin)
 
-  tables <nt> boards <nb> <name> <comment>
-  it ir ins iew iboards
-  ...
+}
 
-or
+object CreateMovement extends Main[CreateMovementConf] {
 
-  tables <nt> boards <nb> <name> <comment>
-  table <it>
-  ir
-  ins
-  iew
-  iboards
-  ...
+  val cmdName: String = s"scala ${classOf[CreateMovement].getName}"
 
-iboards := 1-2,3,4
-
-Comment lines start with '#'
-blank lines are used as end of stanzas.
-
-""")
+  import config._
 
   def execute(): Int = {
 

@@ -3,8 +3,9 @@ package com.github.thebridsk.bridge.server.manualtest
 import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Path
 import org.rogach.scallop.ScallopOption
+import com.github.thebridsk.utilities.main.MainConf
 
-object CompareDuplicate extends Main {
+class CompareDuplicateConf extends MainConf {
 
   import com.github.thebridsk.utilities.main.Converters._
 
@@ -20,6 +21,11 @@ object CompareDuplicate extends Main {
     default = None,
     required = true
   )
+
+}
+object CompareDuplicate extends Main[CompareDuplicateConf] {
+
+  import config._
 
   def execute(): Int = {
 

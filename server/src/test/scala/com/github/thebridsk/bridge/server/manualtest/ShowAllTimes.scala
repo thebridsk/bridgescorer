@@ -20,8 +20,9 @@ import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.ZoneId
 import org.rogach.scallop.ScallopOption
+import com.github.thebridsk.utilities.main.MainConf
 
-object ShowAllTimes extends Main {
+class ShowAllTimesConf extends MainConf {
 
   val optionFilename: ScallopOption[String] = trailArg[String](
     "filename",
@@ -31,8 +32,14 @@ object ShowAllTimes extends Main {
     hidden = false
   )
 
+}
+
+object ShowAllTimes extends Main[ShowAllTimesConf] {
+
   val converters = new BridgeServiceFileStoreConverters(true)
   import converters._
+
+  import config._
 
   def execute(): Int = {
 

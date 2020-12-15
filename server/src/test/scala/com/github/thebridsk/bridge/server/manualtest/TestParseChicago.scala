@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.server.manualtest
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchChicagoV2
 import com.github.thebridsk.bridge.data.MatchChicagoV1
-import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.main.MainNoArgs
 
 import com.github.thebridsk.bridge.server.backend.resource.VersionedInstanceJson
 import play.api.libs.json._
@@ -13,7 +13,7 @@ import com.github.thebridsk.bridge.server.backend.resource.YamlConverter
 import com.github.thebridsk.bridge.server.backend.resource.Converter
 import com.github.thebridsk.bridge.data.MatchChicagoV3
 
-object TestParseChicago extends Main {
+object TestParseChicago extends MainNoArgs {
 
   val log = logger
 

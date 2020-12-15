@@ -1,12 +1,12 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.main.MainNoArgs
 import com.github.thebridsk.bridge.fullserver.test.selenium.Duplicate5TestPages
 import java.io.StringWriter
 import java.io.PrintWriter
 import com.github.thebridsk.utilities.logging.Logger
 
-object TestAllHands extends Main {
+object TestAllHands extends MainNoArgs {
 
   val log: Logger = Logger("TestAllHands")
 

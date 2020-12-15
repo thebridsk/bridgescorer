@@ -7,8 +7,9 @@ import com.github.thebridsk.source.SourcePosition
 import org.scalactic.source.Position
 import org.rogach.scallop.ScallopOption
 import scala.util.matching.Regex
+import com.github.thebridsk.utilities.main.MainConf
 
-object SearchForUnusedCSS extends Main {
+class SearchForUnusedCSSConf extends MainConf {
 
   import com.github.thebridsk.utilities.main.Converters._
 
@@ -27,6 +28,10 @@ object SearchForUnusedCSS extends Main {
     default = Some(Directory("../client/src/main/scala")),
     hidden = false
   )
+
+}
+
+object SearchForUnusedCSS extends Main[SearchForUnusedCSSConf] {
 
   case class Entry(
       cssClass: String,
@@ -47,6 +52,8 @@ object SearchForUnusedCSS extends Main {
       else copy(sourceUse = f :: sourceUse)
     }
   }
+
+  import config._
 
   def execute(): Int = {
 
