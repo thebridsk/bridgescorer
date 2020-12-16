@@ -536,6 +536,21 @@ label.baseRadioButton > span:nth-child(2) > span
   font-size: x-large;
 }
 
+.rootInfoPageDiv > table {
+  border-spacing: 0px;
+  font-size: larger;
+  border: 1px solid var(--color-table-border);
+  margin: 5px;
+}
+.rootInfoPageDiv > table td {
+  font-size: larger;
+  border: 1px solid var(--color-table-border);
+}
+.rootInfoPageDiv > table th {
+  font-size: larger;
+  border: 1px solid var(--color-table-border);
+}
+
 /*
  The following three styles are for creating a table
  with a logical width of 7 columns.  Where the column
@@ -1103,4 +1118,6 @@ button[disabled] {
 
 #ServerURLPopupDiv {
   display: inline;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 }

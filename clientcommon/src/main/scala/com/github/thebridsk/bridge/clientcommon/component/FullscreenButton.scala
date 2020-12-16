@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.clientcommon.materialui.component
+package com.github.thebridsk.bridge.clientcommon.component
 
 import japgolly.scalajs.react._
 import com.github.thebridsk.materialui.MuiIconButton
@@ -66,7 +66,7 @@ object FullscreenButton {
       logger.fine(s"browser isfullscreen: $r")
       if (r) {
         val elem = doc.myFullscreenElement
-        logger.info(s"browser fullscreen element is ${elem.nodeName}")
+        logger.info(s"browser fullscreen element is ${elem.map(_.nodeName).getOrElse("undefined")}")
       }
       r
     } else {
@@ -104,7 +104,7 @@ object FullscreenButton {
             doc.myExitFullscreen()
           } else {
             logger.info(s"browser requesting fullscreen on body")
-            body.requestFullscreen()
+            body.myRequestFullscreen()
           }
           scalajs.js.timers.setTimeout(500) {
             scope.withEffectsImpure.forceUpdate

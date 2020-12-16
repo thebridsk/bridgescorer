@@ -25,7 +25,12 @@ import com.github.thebridsk.utilities.logging.Logger
 object Popup {
   import Internal._
 
-  case class Props(display: Boolean, content: TagMod, id: Option[String])
+  case class Props(
+    display: Boolean,
+    content: TagMod,
+    id: Option[String],
+    clickaway: Option[Callback]
+  )
 
   /**
     * Instantiate the react component.
@@ -33,12 +38,18 @@ object Popup {
     * @param display true if the popup is displayed, false if hidden.
     * @param content the content that is displayed in the popup.
     * @param id the id attribute of the root element of the popup.
+    * @param clickaway - the optional callback for the clickaway.
     *
     * @return the unmounted react component.
     */
-  def apply(display: Boolean, content: TagMod, id: Option[String] = None) =
+  def apply(
+    display: Boolean,
+    content: TagMod,
+    id: Option[String] = None,
+    clickaway: Option[Callback] = None
+  ) =
     component(
-      Props(display, content, id)
+      Props(display, content, id, clickaway)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
   object Internal {
@@ -65,6 +76,7 @@ object Popup {
             ^.id := "popup",
             baseStyles.divPopup,
             disp,
+            props.clickaway.whenDefined( ^.onClick --> _),
             <.div(
               props.content
             )

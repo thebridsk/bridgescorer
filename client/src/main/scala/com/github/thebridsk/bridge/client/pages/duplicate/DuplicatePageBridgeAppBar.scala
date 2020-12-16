@@ -9,7 +9,7 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.materialui.component.MyMenu
+import com.github.thebridsk.bridge.clientcommon.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import japgolly.scalajs.react.vdom.VdomNode

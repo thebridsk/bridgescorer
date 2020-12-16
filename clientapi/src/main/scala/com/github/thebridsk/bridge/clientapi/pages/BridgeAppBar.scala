@@ -15,7 +15,7 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.materialui.component.MyMenu
+import com.github.thebridsk.bridge.clientcommon.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
@@ -32,12 +32,13 @@ import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
-import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 import com.github.thebridsk.materialui.AnchorOrigin
 import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
 import com.github.thebridsk.materialui.AnchorOriginVerticalValue
-import com.github.thebridsk.bridge.clientcommon.materialui.component.LightDarkButton
-import com.github.thebridsk.bridge.clientcommon.materialui.component.FullscreenButton
+import com.github.thebridsk.bridge.clientcommon.component.LightDarkButton
+import com.github.thebridsk.bridge.clientcommon.component.FullscreenButton
+import com.github.thebridsk.bridge.clientcommon.component.ServerURLButton
+import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
 /**
   * A simple AppBar for the Bridge client.
@@ -164,11 +165,6 @@ object BridgeAppBarInternal {
       }
     }
 
-    def serverUrlClick(event: ReactEvent): Unit = {
-      logger.info("Requesting to show server URL popup")
-      ServerURLPopup.setShowServerURLPopup(true)
-    }
-
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
@@ -194,15 +190,7 @@ object BridgeAppBarInternal {
           )(
             icons.Help()
           ),
-          MuiIconButton(
-            id = "ServerURL",
-            onClick = serverUrlClick _,
-            title = "Show server URLs",
-            color = ColorVariant.inherit,
-            classes = buttonStyle
-          )(
-            icons.Place()
-          ),
+          ServerURLButton(classes = buttonStyle),
           LightDarkButton(classes = buttonStyle),
           FullscreenButton(classes = buttonStyle),
           MuiIconButton(
@@ -388,9 +376,9 @@ object BridgeAppBarInternal {
       bar
     }
 
-    val fullscreenCB = scope.forceUpdate
-
     private var mounted = false
+
+    val fullscreenCB = scope.forceUpdate
 
     val didMount: Callback = Callback {
       mounted = true

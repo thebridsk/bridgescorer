@@ -1,4 +1,4 @@
-package com.github.thebridsk.materialui.component
+package com.github.thebridsk.bridge.clientcommon.component
 
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._

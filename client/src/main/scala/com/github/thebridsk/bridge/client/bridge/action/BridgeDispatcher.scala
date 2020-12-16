@@ -14,7 +14,6 @@ import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
-import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
 import com.github.thebridsk.bridge.data.DuplicatePicture
 import com.github.thebridsk.bridge.data.Board
@@ -210,8 +209,5 @@ object BridgeDispatcher extends Dispatcher {
       callback: Option[MatchRubber => Unit] = None
   ): Unit =
     dispatcher.dispatch(ActionUpdateRubberHand(rubid, handid, hand, callback))
-
-  def updateServerURL(urls: ServerURL): Unit =
-    dispatcher.dispatch(ActionUpdateServerURLs(urls))
 
 }

@@ -1,11 +1,11 @@
-package com.github.thebridsk.bridge.client.pages
+package com.github.thebridsk.bridge.clientcommon.component
 
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
+import com.github.thebridsk.bridge.clientcommon.store.ServerURLStore
 
 /**
   * A popup component that shows the server URLs.
@@ -49,7 +49,6 @@ object ServerURLPopup {
   ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(showURL, dismissCB))
   }
-  private var showURL = false
 
   protected object Internal {
 
@@ -74,7 +73,7 @@ object ServerURLPopup {
         } else {
           None
         }
-        PopupOkCancel(content, ok, cancel, Some("ServerURLPopupDiv"))
+        PopupOkCancel(content, ok, cancel, Some("ServerURLPopupDiv"), ok)
       }
 
       private var mounted = false
@@ -94,7 +93,7 @@ object ServerURLPopup {
 
     }
 
-    private[pages] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("ServerURLPopup")
       .initialStateFromProps { props => State() }
       .backend(new Backend(_))

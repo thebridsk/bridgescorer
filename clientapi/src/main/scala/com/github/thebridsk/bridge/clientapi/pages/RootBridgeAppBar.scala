@@ -10,7 +10,7 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.materialui.component.MyMenu
+import com.github.thebridsk.bridge.clientcommon.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
@@ -57,11 +57,8 @@ object RootBridgeAppBar {
       title: Seq[VdomNode],
       helpurl: Option[String],
       routeCtl: BridgeRouter[AppPage]
-  )(): TagMod = {
-    TagMod(
-      ServerURLPopup(),
-      component(Props(title, helpurl, routeCtl))
-    )
+  )() = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(Props(title, helpurl, routeCtl))
   }
 }
 

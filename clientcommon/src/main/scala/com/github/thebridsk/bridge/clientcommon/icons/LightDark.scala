@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.clientcommon.material.icons
+package com.github.thebridsk.bridge.clientcommon.icons
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.svg_<^._

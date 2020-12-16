@@ -40,7 +40,8 @@ object PopupOkCancel {
       content: Option[TagMod],
       ok: Option[Callback],
       cancel: Option[Callback],
-      id: Option[String]
+      id: Option[String],
+      clickaway: Option[Callback]
   )
 
   /**
@@ -50,6 +51,7 @@ object PopupOkCancel {
     * @param ok - the optional callback for the ok button.  If specified as None, then the ok button is not displayed.
     * @param cancel - the optional callback for the cancel button.  If specified as None, then the cancel button is not displayed.
     * @param id - the optional id of the root element of the popup.  Default is none.
+    * @param clickaway - the optional callback for the clickaway.
     *
     * @return the unmounted react component.
     */
@@ -57,9 +59,10 @@ object PopupOkCancel {
       content: Option[TagMod],
       ok: Option[Callback],
       cancel: Option[Callback] = None,
-      id: Option[String] = None
+      id: Option[String] = None,
+      clickaway: Option[Callback] = None
   ) = // scalafix:ok ExplicitResultTypes; ReactComponent
-    component(Props(content, ok, cancel, id))
+    component(Props(content, ok, cancel, id, clickaway))
 
   protected object Internal {
 
@@ -94,7 +97,8 @@ object PopupOkCancel {
               )
             )
           ),
-          props.id
+          props.id,
+          props.clickaway
         )
       }
     }

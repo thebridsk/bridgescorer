@@ -15,7 +15,7 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.materialui.component.MyMenu
+import com.github.thebridsk.bridge.clientcommon.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.client.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
@@ -30,12 +30,13 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
-import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 import com.github.thebridsk.materialui.AnchorOrigin
 import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
 import com.github.thebridsk.materialui.AnchorOriginVerticalValue
-import com.github.thebridsk.bridge.clientcommon.materialui.component.LightDarkButton
-import com.github.thebridsk.bridge.clientcommon.materialui.component.FullscreenButton
+import com.github.thebridsk.bridge.clientcommon.component.LightDarkButton
+import com.github.thebridsk.bridge.clientcommon.component.FullscreenButton
+import com.github.thebridsk.bridge.clientcommon.component.ServerURLButton
+import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
 /**
   * Base component for the AppBar for all pages.
@@ -192,19 +193,12 @@ object BridgeAppBar {
     val logger: Logger = Logger("bridge.BridgeAppBar")
 
     case class State(
-        anchorMoreEl: js.UndefOr[Element] = js.undefined,
-        showServerURL: Boolean = false
+        anchorMoreEl: js.UndefOr[Element] = js.undefined
     ) {
 
       def openMoreMenu(n: Node): State =
         copy(anchorMoreEl = n.asInstanceOf[Element])
       def closeMoreMenu(): State = copy(anchorMoreEl = js.undefined)
-
-      def setShowServerURLPopup(f: Boolean): State = {
-        copy(showServerURL = f)
-      }
-
-      def isShowServerURLPopup = showServerURL
     }
 
     val apiPageURL: String = {
@@ -258,10 +252,6 @@ object BridgeAppBar {
         scalajs.js.timers.setTimeout(1) {
           BridgeDispatcher.stopLogs()
         }
-      }
-
-      def serverUrlClick(event: ReactEvent): Unit = {
-        scope.modState(_.setShowServerURLPopup(true)).runNow()
       }
 
       val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
@@ -342,15 +332,7 @@ object BridgeAppBar {
             )(
               icons.Help()
             ),
-            MuiIconButton(
-              id = "ServerURL",
-              onClick = serverUrlClick _,
-              title = "Show server URLs",
-              color = ColorVariant.inherit,
-              classes = buttonStyle
-            )(
-              icons.Place()
-            ),
+            ServerURLButton(classes = buttonStyle),
             LightDarkButton(classes = buttonStyle),
             FullscreenButton(classes = buttonStyle),
             MuiIconButton(
@@ -367,8 +349,6 @@ object BridgeAppBar {
           List[CtorType.ChildArg]()
         }
       }
-
-      val dismissServerUrl: Callback = scope.modState(_.setShowServerURLPopup(false))
 
       def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
@@ -478,7 +458,6 @@ object BridgeAppBar {
         val bar = <.div(
           (
             (
-              ServerURLPopup(state.showServerURL, dismissServerUrl)::
               MuiAppBar(
                 position = Position.static,
                 classes = js.Dictionary("root" -> "muiAppBar")
@@ -512,9 +491,9 @@ object BridgeAppBar {
         bar
       }
 
-      val fullscreenCB = scope.forceUpdate
-
       private var mounted = false
+
+      val fullscreenCB = scope.forceUpdate
 
       val didMount: Callback = Callback {
         mounted = true

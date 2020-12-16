@@ -13,7 +13,6 @@ import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
-import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Action
 import com.github.thebridsk.bridge.data.Board
 
@@ -172,7 +171,5 @@ package object action {
       hand: RubberHand,
       callback: Option[MatchRubber => Unit] = None
   ) extends RubberBridgeAction
-
-  case class ActionUpdateServerURLs(urls: ServerURL) extends BridgeAction
 
 }

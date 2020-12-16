@@ -1,10 +1,10 @@
-package com.github.thebridsk.bridge.clientcommon.materialui.component
+package com.github.thebridsk.bridge.clientcommon.component
 
+import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
+import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiIconButton
 import com.github.thebridsk.materialui.ColorVariant
-import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.utilities.logging.Logger
 import scala.scalajs.js
 
@@ -37,7 +37,7 @@ import scala.scalajs.js
   *
   * {{{
   * val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
-  * LightDarkButton(
+  * ServerURLButton(
   *   classes = buttonStyle
   * )
   * }}}
@@ -46,7 +46,7 @@ import scala.scalajs.js
   *
   * @author werewolf
   */
-object LightDarkButton {
+object ServerURLButton {
   import Internal._
 
   case class Props(
@@ -61,7 +61,7 @@ object LightDarkButton {
     *                  identifies the class name to apply to the root element.
     * @return the unmounted react component
     *
-    * @see [[LightDarkButton]] for usage.
+    * @see [[ServerURLButton]] for usage.
     */
   def apply(
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
@@ -70,39 +70,45 @@ object LightDarkButton {
 
   protected object Internal {
 
-    val logger: Logger = Logger("bridge.LightDarkButton")
+    val logger: Logger = Logger("bridge.ServerURLButton")
 
-    case class State()
+    case class State(
+      showServerURL: Boolean = false
+    ) {
+      def setShowServerURLPopup(f: Boolean): State = {
+        copy(showServerURL = f)
+      }
+
+      def isShowServerURLPopup = showServerURL
+    }
 
     class Backend(scope: BackendScope[Props, State]) {
 
-      // data-theme="dark"
-      def toggleLightDark(event: ReactEvent): Unit = {
-        logger.fine("toggle light dark")
-        val ntheme = ColorThemeStorage.getColorTheme() match {
-          case Some(curtheme) =>
-            LightDark.nextTheme(curtheme)
-          case None =>
-            "medium"
-        }
-        ColorThemeStorage.setColorTheme(ntheme)
+      def serverUrlClick(event: ReactEvent): Unit = {
+        scope.withEffectsImpure.modState(_.setShowServerURLPopup(true))
       }
 
+      val dismissServerUrl: Callback = scope.modState(_.setShowServerURLPopup(false))
+
       def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-        MuiIconButton(
-          id = "LightDark",
-          onClick = toggleLightDark _,
-          title = "Change color mode",
-          color = ColorVariant.inherit,
-          classes = props.classes
-        )(
-          LightDark()
+        <.div(
+          ^.display.inline,
+          MuiIconButton(
+            id = "ServerURL",
+            onClick = serverUrlClick _,
+            title = "Show server URLs",
+            color = ColorVariant.inherit,
+            classes = props.classes
+          )(
+            icons.Place()
+          ),
+          ServerURLPopup(state.showServerURL, dismissServerUrl)
         )
       }
     }
 
     val component = ScalaComponent
-      .builder[Props]("LightDarkButton")
+      .builder[Props]("ServerURLButton")
       .initialStateFromProps { props => State() }
       .backend(new Backend(_))
       .renderBackend
