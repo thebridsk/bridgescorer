@@ -32,13 +32,12 @@ import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
-import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
-import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 import com.github.thebridsk.materialui.AnchorOrigin
 import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
 import com.github.thebridsk.materialui.AnchorOriginVerticalValue
+import com.github.thebridsk.bridge.clientcommon.materialui.component.LightDarkButton
 
 /**
   * A simple AppBar for the Bridge client.
@@ -170,18 +169,6 @@ object BridgeAppBarInternal {
       ServerURLPopup.setShowServerURLPopup(true)
     }
 
-    // data-theme="dark"
-    def toggleLightDark(event: ReactEvent): Unit = {
-      logger.info("toggle light dark")
-      val ntheme = ColorThemeStorage.getColorTheme() match {
-        case Some(curtheme) =>
-          LightDark.nextTheme(curtheme)
-        case None =>
-          "medium"
-      }
-      ColorThemeStorage.setColorTheme(ntheme)
-    }
-
     def isFullscreenEnabledI: Boolean = {
       import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
       val doc = document
@@ -269,15 +256,7 @@ object BridgeAppBarInternal {
           )(
             icons.Place()
           ),
-          MuiIconButton(
-            id = "LightDark",
-            onClick = toggleLightDark _,
-            title = "Change color mode",
-            color = ColorVariant.inherit,
-            classes = buttonStyle
-          )(
-            LightDark()
-          ),
+          LightDarkButton(classes = buttonStyle),
           MuiIconButton(
             id = "Fullscreen",
             onClick = toggleFullscreen _,

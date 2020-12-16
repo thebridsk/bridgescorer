@@ -933,13 +933,13 @@ body > div > div > div {
   text-shadow: 3px 3px 3px var(--color-appbar-title-shadow);
 }
 
-.lightDarkIcon1 {
+.lightDarkIconCurrent {
   fill: var(--color-bg)
 }
-.lightDarkIcon2 {
+.lightDarkIconNext {
   fill: var(--color-other-bg)
 }
-.lightDarkIcon3 {
+.lightDarkIconPrev {
   fill: var(--color-other2-bg)
 }
 

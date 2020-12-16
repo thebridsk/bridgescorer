@@ -164,9 +164,9 @@ class BaseStyles {
   val appBarTitle: TagMod = cls("appBarTitle")
   val appBarTitleWhenFullscreen: TagMod = cls("appBarTitleWhenFullscreen")
 
-  val lightDarkIcon1: TagMod = cls("lightDarkIcon1")
-  val lightDarkIcon2: TagMod = cls("lightDarkIcon2")
-  val lightDarkIcon3: TagMod = cls("lightDarkIcon3")
+  val lightDarkIconCurrent: TagMod = cls("lightDarkIconCurrent")
+  val lightDarkIconNext: TagMod = cls("lightDarkIconNext")
+  val lightDarkIconPrev: TagMod = cls("lightDarkIconPrev")
 
   val comboboxLightDarkClass = "comboboxLightDark"
   val calendarLightDarkClass = "calendarLightDark"

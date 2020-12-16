@@ -24,15 +24,16 @@ config.module.rules = config.module.rules || []
 if (config.module.rules.length == 1
   && config.module.rules[0].test.source == "\\.js$"
 ) {
+  console.warn( "Modifying existing rule, config.module.rules is ", config.module.rules )
   config.module.rules[0].exclude = [
     // instead of /\/node_modules\//
     path.join(process.cwd(), 'node_modules')
   ]
 
-  console.warn( "Modified existing rule, config.module.rules is ", config.module.rules )
+  console.warn( "Modified existing rule, new config.module.rules is ", config.module.rules )
 } else {
   if (config.modules.rules.length != 0) {
-    console.warn( "Added .js rule, config.module.rules is ", config.module.rules )
+    console.warn( "Adding .js rule, config.module.rules is ", config.module.rules )
   }
   config.module.rules.push(
     {

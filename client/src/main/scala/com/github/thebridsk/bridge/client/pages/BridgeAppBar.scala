@@ -28,14 +28,13 @@ import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
-import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
-import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 import com.github.thebridsk.materialui.AnchorOrigin
 import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
 import com.github.thebridsk.materialui.AnchorOriginVerticalValue
+import com.github.thebridsk.bridge.clientcommon.materialui.component.LightDarkButton
 
 /**
   * Base component for the AppBar for all pages.
@@ -264,18 +263,6 @@ object BridgeAppBar {
         scope.modState(_.setShowServerURLPopup(true)).runNow()
       }
 
-      // data-theme="dark"
-      def toggleLightDark(event: ReactEvent): Unit = {
-        logger.fine("toggle light dark")
-        val ntheme = ColorThemeStorage.getColorTheme() match {
-          case Some(curtheme) =>
-            LightDark.nextTheme(curtheme)
-          case None =>
-            "medium"
-        }
-        ColorThemeStorage.setColorTheme(ntheme)
-      }
-
       def isFullscreenEnabledI: Boolean = {
         import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
         val doc = document
@@ -413,15 +400,7 @@ object BridgeAppBar {
             )(
               icons.Place()
             ),
-            MuiIconButton(
-              id = "LightDark",
-              onClick = toggleLightDark _,
-              title = "Change color mode",
-              color = ColorVariant.inherit,
-              classes = buttonStyle
-            )(
-              LightDark()
-            ),
+            LightDarkButton(classes = buttonStyle),
             MuiIconButton(
               id = "Fullscreen",
               onClick = toggleFullscreen _,

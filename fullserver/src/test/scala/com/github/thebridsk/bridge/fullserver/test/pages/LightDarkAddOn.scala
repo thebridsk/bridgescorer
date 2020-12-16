@@ -122,7 +122,7 @@ object LightDarkAddOn {
         pos: Position
     ): Boolean =
       eventually {
-        val toggleLightDark = find(className("lightDarkIcon1"))
+        val toggleLightDark = find(className("lightDarkIconCurrent"))
         val fill = toggleLightDark.cssValue("fill")
         log.info(s"Checking icon for medium: ${fill}")
         withClue(s"Checking body for ${theme}, Icon bottom color is ${fill}") {

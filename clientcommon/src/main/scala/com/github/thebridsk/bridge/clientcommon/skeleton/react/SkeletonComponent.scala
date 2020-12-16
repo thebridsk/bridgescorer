@@ -51,7 +51,7 @@ object SkeletonComponent {
       }
     }
 
-    private[react] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("SkeletonComponent")
       .initialStateFromProps { props => State() }
       .backend(new Backend(_))
