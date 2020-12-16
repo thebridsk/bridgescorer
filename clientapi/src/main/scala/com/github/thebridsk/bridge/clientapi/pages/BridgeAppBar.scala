@@ -19,7 +19,6 @@ import com.github.thebridsk.materialui.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
-import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
@@ -38,6 +37,7 @@ import com.github.thebridsk.materialui.AnchorOrigin
 import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
 import com.github.thebridsk.materialui.AnchorOriginVerticalValue
 import com.github.thebridsk.bridge.clientcommon.materialui.component.LightDarkButton
+import com.github.thebridsk.bridge.clientcommon.materialui.component.FullscreenButton
 
 /**
   * A simple AppBar for the Bridge client.
@@ -169,56 +169,6 @@ object BridgeAppBarInternal {
       ServerURLPopup.setShowServerURLPopup(true)
     }
 
-    def isFullscreenEnabledI: Boolean = {
-      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
-      val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
-      val e = doc.myFullscreenEnabled
-      if (!e) {
-        logger.info("fullscreenEnabled = false")
-      }
-      e
-    }
-
-    def isFullscreen: Boolean = {
-      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
-      val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
-      if (isFullscreenEnabledI) {
-        val fe = doc.myFullscreenElement
-        val r = !js.isUndefined(fe) && fe != null
-        logger.fine(s"browser isfullscreen: $r")
-        if (r) {
-          val elem = doc.myFullscreenElement
-          logger.info(s"browser fullscreen element is ${elem.nodeName}")
-        }
-        r
-      } else {
-        false
-      }
-    }
-
-    def toggleFullscreen(event: ReactEvent): Unit = {
-      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
-      val body = document.documentElement
-      val doc = document
-      if (isFullscreenEnabled) {
-        val isfullscreen = isFullscreen
-        if (isfullscreen) {
-          logger.info(s"browser exiting fullscreen")
-          doc.myExitFullscreen()
-        } else {
-          logger.info(s"browser requesting fullscreen on body")
-          body.requestFullscreen()
-        }
-        scalajs.js.timers.setTimeout(500) {
-          scope.withEffectsImpure.forceUpdate
-        }
-      } else {
-        logger.info(s"fullscreen is disabled")
-      }
-    }
-
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
@@ -232,9 +182,6 @@ object BridgeAppBarInternal {
         props.routeCtl.toRootPage(page)
 
       val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
-
-      val fullscreenEnabled = isFullscreenEnabledI
-      val isfullscreen = isFullscreen
 
       val rightButton =
         List[CtorType.ChildArg](
@@ -257,19 +204,7 @@ object BridgeAppBarInternal {
             icons.Place()
           ),
           LightDarkButton(classes = buttonStyle),
-          MuiIconButton(
-            id = "Fullscreen",
-            onClick = toggleFullscreen _,
-            title = if (isfullscreen) "Exit fullscreen" else "Go to fullscreen",
-            color = ColorVariant.inherit,
-            classes = buttonStyle
-          )(
-            if (isfullscreen) {
-              icons.FullscreenExit()
-            } else {
-              icons.Fullscreen()
-            }
-          ),
+          FullscreenButton(classes = buttonStyle),
           MuiIconButton(
             id = "MoreMenu",
             onClick = handleMoreClick _,
@@ -307,7 +242,7 @@ object BridgeAppBarInternal {
           <.div(
             baseStyles.appBarTitle,
             <.div(baseStyles.appBarTitleWhenFullscreen)
-              .when(isfullscreen && Values.isIpad),
+              .when(FullscreenButton.isFullscreen && Values.isIpad),
             !props.mainMenu.isEmpty ?= MuiIconButton(
               id = "MainMenu",
               onClick = props.handleMainClick,

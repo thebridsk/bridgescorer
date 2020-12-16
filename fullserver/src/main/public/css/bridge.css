@@ -1100,3 +1100,7 @@ button[disabled] {
   text-decoration: line-through;
   background: repeating-linear-gradient(-45deg, var(--color-table-cell-gray), var(--color-table-cell-gray) 5px, var(--color-bg) 5px, var(--color-bg) 10px);
 }
+
+#ServerURLPopupDiv {
+  display: inline;
+}
