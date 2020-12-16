@@ -2,19 +2,47 @@ package com.github.thebridsk.color
 
 import scala.util.matching.Regex
 
+/**
+  * Color trait
+  *
+  * Methods:
+  * - [[toAttrValue]] to convert Color object to a color attribute string.
+  * - [[toHSLColor]] to convert to an HSLColor object
+  * - [[toRGBColor]] to convert to an RGBColor object
+  * - [[toRGBPercentColor]] to convert to an RGBPercentColor object
+  * - [[toNamedColor]] to convert to a NamedColor object
+  *
+  */
 trait Color {
+  /**
+    * @return the string that represents this color.
+    * The type in the string is the same as the type of this color object.
+    */
   def toAttrValue: String
 
+  /**
+    * @return the HSLColor object that represents the same color as this object.
+    */
   def toHSLColor: HSLColor
 
+  /**
+    * @return the RGBColor object that represents the same color as this object.
+    */
   def toRGBColor: RGBColor
 
+  /**
+    * @return the RGBPercentColor object that represents the same color as this object.
+    */
   def toRGBPercentColor: RGBPercentColor
 
+  /**
+    * @return the NamedColor object that represents the same color as this object.
+    * @throws IllegalArgumentException if this color does not represent a named color.
+    */
   def toNamedColor: NamedColor
 }
 
-object ColorInternal {
+private[color] object ColorInternal {
 
   val pHex = "[0-9a-fA-F]"
   val pFloat = """[-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?"""
@@ -101,7 +129,13 @@ object ColorInternal {
   }
 }
 
-trait ColorObj {
+/**
+  * Color companion object.
+  *
+  * Contains methods for creating any type of color object.
+  * Contains some predefined colors.
+  */
+object Color {
   import ColorInternal._
 
   /**
@@ -276,8 +310,6 @@ trait ColorObj {
   def allNamedColors: Iterable[String] = NamedColor.namedColors.keys
 
 }
-
-object Color extends ColorObj
 
 /**
   * Support a named color.  Also the pseudo colors transparent, currentColor.
