@@ -2762,9 +2762,11 @@ class DuplicateTestPages
 
     val hpe = hp.clickLatestNewDuplicateButton(false).asInstanceOf[HomePage]
 
-    hpe.validatePopup(true)
+    eventually {
+      hpe.validatePopup(true)
 
-    hpe.getPopUpText mustBe "Did not find an unfinished duplicate match"
+      hpe.getPopUpText mustBe "Did not find an unfinished duplicate match"
+    }
 
     hpe.clickPopUpCancel
 

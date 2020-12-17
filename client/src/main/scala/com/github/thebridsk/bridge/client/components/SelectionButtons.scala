@@ -62,7 +62,7 @@ object SelectionButtons {
             props.buttons.map { button =>
               <.div(
                 Button(
-                  rootStyles2.defaultButton,
+                  rootStyles2.clsSelectionButton,
                   button.id,
                   button.label,
                   ^.onClick --> props.onChange(button),

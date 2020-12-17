@@ -34,7 +34,7 @@ if (config.module.rules.length == 1
   ]
   console.warn( "Modified existing rule, new config.module.rules is ", config.module.rules )
 } else {
-  if (config.modules.rules.length != 0) {
+  if (config.module.rules.length != 0) {
     console.warn( "Adding .js rule, config.module.rules is ", config.module.rules )
   }
   config.module.rules.push(

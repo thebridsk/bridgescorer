@@ -214,6 +214,8 @@ object BridgeAppBar {
       u
     }
 
+    val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
+
     class Backend(scope: BackendScope[Props, State]) {
 
       def handleMoreClick(event: ReactEvent): Unit = {
@@ -254,14 +256,16 @@ object BridgeAppBar {
         }
       }
 
-      val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
-
       private def leftButtons(props: Props, state: State, isfullscreen: Boolean) = {
 
         def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
 
         <.div(
           baseStyles.appBarTitle,
+          // this is to take up space on the left side of the app bar
+          // when running in fullscreen mode on an iPad.
+          // this is done because iOS Safari adds an "X" button on the
+          // upper left of the screen.
           <.div(baseStyles.appBarTitleWhenFullscreen)
             .when(isfullscreen && Values.isIpad),
           !props.mainMenu.isEmpty ?= MuiIconButton(

@@ -119,6 +119,8 @@ object BridgeAppBarInternal {
     def closeMoreMenu(): State = copy(anchorMoreEl = js.undefined)
   }
 
+  val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
+
   /**
     * Internal state for rendering the component.
     *
@@ -177,8 +179,6 @@ object BridgeAppBarInternal {
       def callbackPage(page: AppPage)(e: ReactEvent) =
         props.routeCtl.toRootPage(page)
 
-      val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
-
       val rightButton =
         List[CtorType.ChildArg](
           MuiIconButton(
@@ -229,6 +229,10 @@ object BridgeAppBarInternal {
         List(
           <.div(
             baseStyles.appBarTitle,
+            // this is to take up space on the left side of the app bar
+            // when running in fullscreen mode on an iPad.
+            // this is done because iOS Safari adds an "X" button on the
+            // upper left of the screen.
             <.div(baseStyles.appBarTitleWhenFullscreen)
               .when(FullscreenButton.isFullscreen && Values.isIpad),
             !props.mainMenu.isEmpty ?= MuiIconButton(

@@ -178,6 +178,9 @@ class RootStyles2 {
   val defaultButton: TagMod = cls(
     "baseDefaultButton"
   )
+  val clsSelectionButton: TagMod = cls(
+    "baseFooterButton baseDefaultButton baseFontTextLarge"
+  )
 
 }
 
