@@ -1,12 +1,12 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import com.github.thebridsk.utilities.main.Main
 import scala.reflect.io.Directory
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStore
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.DifferenceWrappers
+import com.github.thebridsk.utilities.main.MainNoArgs
 
-object LoadBridgeStore extends Main {
+object LoadBridgeStore extends MainNoArgs {
 
   def execute(): Int = {
 

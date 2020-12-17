@@ -414,6 +414,7 @@ object ViewPlayersQuintetInternal {
           routeCtl = props.router
         )(),
         <.div(
+          ^.id := "quintet",
           <.div(
             baseStyles.divText100,
             <.h1(

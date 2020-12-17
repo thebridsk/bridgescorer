@@ -57,7 +57,7 @@ object MenuProps extends PropsFactory[MenuProps] {
       onExited: js.UndefOr[() => Unit] = js.undefined,
       onExiting: js.UndefOr[() => Unit] = js.undefined,
       paperProps: js.UndefOr[PaperProps] = js.undefined,
-      transformOrigin: js.UndefOr[js.Object] = js.undefined,
+      transformOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       transitionComponent: js.UndefOr[js.Object] = js.undefined,
       transitionDuration: js.UndefOr[JsNumber | TransitionDuration] =
         js.undefined,
@@ -197,7 +197,7 @@ object MuiMenu extends PropsFactory[MenuProps] {
       onExited: js.UndefOr[() => Unit] = js.undefined,
       onExiting: js.UndefOr[() => Unit] = js.undefined,
       paperProps: js.UndefOr[PaperProps] = js.undefined,
-      transformOrigin: js.UndefOr[js.Object] = js.undefined,
+      transformOrigin: js.UndefOr[AnchorOrigin] = js.undefined,
       transitionComponent: js.UndefOr[js.Object] = js.undefined,
       transitionDuration: js.UndefOr[JsNumber | TransitionDuration] =
         js.undefined,

@@ -17,6 +17,8 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicagoNames
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubber
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubberNames
+import com.github.thebridsk.bridge.data.SystemTime
+import scala.scalajs.js
 
 object NamesStore extends ChangeListenable {
   val logger: Logger = Logger("bridge.ViewPlayers")
@@ -28,9 +30,15 @@ object NamesStore extends ChangeListenable {
 //    refreshNames()
   }
 
-  private var names: List[String] = Nil
+  private val namesTimeoutForRefresh = 60*1000  // 60 seconds
+
+  private var names: js.Array[String] = js.Array()
+  private var busy: Boolean = false
+  private var lastCall: SystemTime.Timestamp = 0
 
   def getNames = names
+
+  def isBusy = busy
 
   private var dispatchToken: Option[DispatchToken] = {
     if (BridgeDemo.isDemo) {
@@ -43,7 +51,7 @@ object NamesStore extends ChangeListenable {
 
   def updateNames(addnames: String*): Unit = {
     val an = onlyValidNames(addnames.toList)
-    names = (names.filter(n => !an.contains(n)).toList ++ an).sorted
+    names = js.Array((names.filter(n => !an.contains(n)).toList ++ an).sorted:_*)
   }
 
   def namesFromTeam(team: Team): List[String] = {
@@ -94,7 +102,7 @@ object NamesStore extends ChangeListenable {
     if (BridgeDemo.isDemo) {
       val mcs = ChicagoController.getSummaryFromLocalStorage
       if (mcs.isEmpty) {
-        names = List(
+        names = js.Array(
           "Barry",
           "Bill",
           "Cathy",
@@ -113,6 +121,20 @@ object NamesStore extends ChangeListenable {
   }
 
   /**
+    * Only call the function if a call is not active and
+    * the last time occurred in the distant past.
+    *
+    * @param f
+    * @return the return of the function
+    */
+  def checkCallAgain( f: => Unit ): Unit = {
+    if (!busy) {
+      val curr = SystemTime.currentTimeMillis()
+      if (lastCall+namesTimeoutForRefresh < curr) f
+    }
+  }
+
+  /**
     * Refresh the names in the list.
     * @param cb - callback that should be called when the names have been updated
     */
@@ -125,15 +147,20 @@ object NamesStore extends ChangeListenable {
       }
     } else {
       import scala.concurrent.ExecutionContext.Implicits.global
-      RestClientNames
-        .list()
-        .recordFailure()
-        .foreach(list =>
-          Alerter.tryitWithUnit {
-            names = list.toList
-            cb.foreach { _.runNow() }
-          }
-        )
+      if (!busy) checkCallAgain {
+        busy = true
+        RestClientNames
+          .list()
+          .recordFailure()
+          .foreach(list =>
+            Alerter.tryitWithUnit {
+              names = js.Array(list.toIndexedSeq:_*)
+              busy = false
+              notifyChange()
+              cb.foreach { _.runNow() }
+            }
+          )
+      }
     }
   }
 

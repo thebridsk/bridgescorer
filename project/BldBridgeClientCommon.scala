@@ -38,6 +38,9 @@ object BldBridgeClientCommon {
             false
           }
         }),
+      scalacOptions in (Compile, doc) ++= Seq(
+        "-groups", "-implicits"
+      )
     )
 
 }

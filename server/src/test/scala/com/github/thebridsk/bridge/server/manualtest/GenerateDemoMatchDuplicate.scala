@@ -12,8 +12,9 @@ import scala.concurrent.duration.Duration
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import com.github.thebridsk.utilities.file.FileIO
 import org.rogach.scallop.ScallopOption
+import com.github.thebridsk.utilities.main.MainConf
 
-object GenerateDemoMatchDuplicate extends Main {
+class GenerateDemoMatchDuplicateConf extends MainConf {
 
   import com.github.thebridsk.utilities.main.Converters._
 
@@ -39,6 +40,11 @@ object GenerateDemoMatchDuplicate extends Main {
     descr = "Ids of matches to add to demo",
     required = true
   )
+
+}
+object GenerateDemoMatchDuplicate extends Main[GenerateDemoMatchDuplicateConf] {
+
+  import config._
 
   def execute(): Int = {
     implicit val ec = ExecutionContext.global

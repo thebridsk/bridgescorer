@@ -81,7 +81,7 @@ class MyServiceSpec
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(x) =>
-          x.value mustBe "/public/index.html"
+          x.value mustBe "/public"
         case None => fail("Did not get a location header" + headers)
       }
     }

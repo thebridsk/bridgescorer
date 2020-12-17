@@ -2,7 +2,6 @@ package com.github.thebridsk.bridge.client.pages.chicagos
 
 import scala.scalajs.js
 
-import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.client.controller.ChicagoController
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.bridge.East
@@ -13,7 +12,6 @@ import com.github.thebridsk.bridge.data.bridge.West
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
-import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
 import com.github.thebridsk.bridge.clientcommon.react.RadioButton
@@ -22,6 +20,7 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.components.EnterName
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._
@@ -60,9 +59,7 @@ object ViewPlayersVeryFirstRound {
         "",
         "",
         "",
-        None,
-        gotNames = ps.gotNames,
-        names = ps.names
+        None
       )
     )
 
@@ -96,9 +93,6 @@ object ViewPlayersVeryFirstRound {
         )
       import scala.scalajs.js.JSConverters._
 
-      val busy = !state.gotNames
-      val names = state.names.toJSArray
-
       //              "South", South, state.south, false, setSouth, 2, 6
       def putName(
           playerPos: String,
@@ -112,17 +106,11 @@ object ViewPlayersVeryFirstRound {
         <.div(
           getButton(playerPosition, name, tabDealer),
           <.div(
-            ComboboxOrInput(
-              callback = cb,
-              defaultvalue = noNull(name),
-              data = names,
-              filter = "startsWith",
+            EnterName(
+              id = s"Combo_${playerPos}",
+              name = name,
               tabIndex = tabInput,
-              name = playerPos,
-              msgEmptyList = "No suggested names",
-              msgEmptyFilter = "No names matched",
-              busy = busy,
-              id = s"Combo_${playerPos}"
+              onChange = cb
             ),
             BaseStyles.highlight(requiredName = !playerValid(name))
           )
@@ -182,16 +170,11 @@ object ViewPlayersVeryFirstRound {
                       <.div(
                         "Sitting out",
                         <.br,
-                        ComboboxOrInput(
-                          callback = setExtra,
-                          defaultvalue = noNull(state.extra.getOrElse("")),
-                          data = names,
-                          filter = "startsWith",
+                        EnterName(
+                          id = "Extra",
+                          name = state.extra.getOrElse(""),
                           tabIndex = 9,
-                          name = "Extra",
-                          msgEmptyList = "No suggested names",
-                          msgEmptyFilter = "No names matched",
-                          busy = busy
+                          onChange = setExtra _
                         ),
                         CheckBox(
                           "Quintet",
@@ -355,14 +338,8 @@ object ViewPlayersVeryFirstRound {
       props.router.set(props.page.toHandView(0))
     }
 
-    val namesCallback: Callback = scope.modState(s => {
-      val names = NamesStore.getNames
-      s.copy(gotNames = true, names = names)
-    })
-
     val didMount: Callback = CallbackTo {
       logger.info("ViewPlayersVeryFirstRound.didMount")
-      NamesStore.ensureNamesAreCached(Some(namesCallback))
     }
 
     val willUnmount: Callback = CallbackTo {

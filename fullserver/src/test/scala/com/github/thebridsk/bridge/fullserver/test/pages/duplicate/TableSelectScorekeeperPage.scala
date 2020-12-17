@@ -171,7 +171,7 @@ class TableSelectScorekeeperPage(
 
     if (elems.isEmpty) Nil
     else {
-      elems.size mustBe 2
+      elems.size mustBe 4
       elems.map(e => scorekeeperButtons.get(e.attribute("id").get).get)
     }
   }
@@ -235,6 +235,22 @@ class TableSelectScorekeeperPage(
     getButton(buttonOK).isEnabled
   }
 
+  def checkScorekeeperPosEnabled(
+      enabled: List[PlayerPosition],
+      disabled: List[PlayerPosition]
+  ): Unit = {
+    getButtons(enabled.map(toScorekeeperButton(_)):_*).foreach { v =>
+      withClue(s"checkScoreKeeperPosEnabled: button ${v._1} is disable, should be enabled") {
+        v._2.isEnabled mustBe true
+      }
+    }
+    getButtons(disabled.map(toScorekeeperButton(_)):_*).foreach { v =>
+      withClue(s"checkScoreKeeperPosEnabled: button ${v._1} is enabled, should be disabled") {
+        v._2.isEnabled mustBe false
+      }
+    }
+  }
+
   /**
     * @param north
     * @param south
@@ -262,7 +278,11 @@ class TableSelectScorekeeperPage(
     selectScorekeeper(skname.trim)
     getSelectedScorekeeper mustBe Some(skname.trim)
     getNames must (contain.allOf(north.trim, south.trim, east.trim, west.trim))
-    findPosButtons must (contain.allOf(scorekeeper, scorekeeper.partner))
+    findPosButtons must (contain.allOf(North, South, East, West))
+    checkScorekeeperPosEnabled(
+      scorekeeper::scorekeeper.partner::Nil,
+      scorekeeper.left::scorekeeper.right::Nil
+    )
     if (checkErrMsg) checkErrorMsg("Please select scorekeeper's position")
     val ss1 = clickPos(scorekeeper)
     eventually { ss1.findSelectedPos mustBe Some(scorekeeper) }

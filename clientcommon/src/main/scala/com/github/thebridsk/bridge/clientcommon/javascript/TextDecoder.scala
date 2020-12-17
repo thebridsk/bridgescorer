@@ -7,10 +7,12 @@ import scala.scalajs.js.typedarray.ArrayBufferView
 import scala.scalajs.js.typedarray.ArrayBuffer
 
 /**
+  * Wrapper for the TextDecoder javascript class.
+  *
   * See https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder/TextDecoder
   *
   * @constructor
-  * @param utfLable defaulting to "utf-8", containing the label of the encoder. Each label is associated with a specific encoding type.
+  * @param utfLabel defaulting to "utf-8", containing the label of the encoder. Each label is associated with a specific encoding type.
   * @param options Is a TextDecoderOptions dictionary with the property:
   *                   fatal
   *                      A Boolean flag indicating if the TextDecoder.decode() method must throw a DOMException
@@ -43,7 +45,7 @@ class TextDecoder(
 object TextDecoder {
 
   /**
-    * @param utfLable defaulting to "utf-8", containing the label of the encoder. Each label is associated with a specific encoding type.
+    * @param utfLabel defaulting to "utf-8", containing the label of the encoder. Each label is associated with a specific encoding type.
     * @param options Is a TextDecoderOptions dictionary with the property:
     *                   fatal
     *                      A Boolean flag indicating if the TextDecoder.decode() method must throw a DOMException

@@ -2762,9 +2762,11 @@ class DuplicateTestPages
 
     val hpe = hp.clickLatestNewDuplicateButton(false).asInstanceOf[HomePage]
 
-    hpe.validatePopup(true)
+    eventually {
+      hpe.validatePopup(true)
 
-    hpe.getPopUpText mustBe "Did not find an unfinished duplicate match"
+      hpe.getPopUpText mustBe "Did not find an unfinished duplicate match"
+    }
 
     hpe.clickPopUpCancel
 
@@ -2846,6 +2848,7 @@ class DuplicateTestPages
         suggestions
       }.head
       val firsttext = firstsug.text
+      Thread.sleep(500)
       firstsug.click
       eventually {
         es.getScorekeeper mustBe firsttext
@@ -3073,7 +3076,7 @@ class DuplicateTestPages
     ) {
       val ldpurl = ldp.clickServerURL.validateServerURL
       val urls = ldpurl.getServerURLs
-      urls.length mustBe 1
+      urls.length must be >= 1
       ldpurl.checkForValidServerURLs
       ldpurl.clickServerURLOK.validate
     }

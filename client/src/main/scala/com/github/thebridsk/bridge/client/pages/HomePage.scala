@@ -39,7 +39,7 @@ import org.scalajs.dom.raw.Element
 import com.github.thebridsk.bridge.client.routes.AppRouter
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
-import com.github.thebridsk.bridge.client.bridge.store.ServerURLStore
+import com.github.thebridsk.bridge.clientcommon.store.ServerURLStore
 import _root_.com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
 import com.github.thebridsk.bridge.data.SystemTime

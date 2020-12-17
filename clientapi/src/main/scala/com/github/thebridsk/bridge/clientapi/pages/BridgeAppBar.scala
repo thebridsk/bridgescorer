@@ -15,11 +15,10 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.materialui.component.MyMenu
+import com.github.thebridsk.bridge.clientcommon.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter.AppPage
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
-import org.scalajs.dom.document
 import japgolly.scalajs.react.vdom.VdomNode
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
@@ -32,9 +31,13 @@ import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
 import com.github.thebridsk.bridge.clientcommon.pages.TitleSuits
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
-import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
-import com.github.thebridsk.bridge.clientcommon.material.icons.LightDark
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Values
+import com.github.thebridsk.materialui.AnchorOrigin
+import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
+import com.github.thebridsk.materialui.AnchorOriginVerticalValue
+import com.github.thebridsk.bridge.clientcommon.component.LightDarkButton
+import com.github.thebridsk.bridge.clientcommon.component.FullscreenButton
+import com.github.thebridsk.bridge.clientcommon.component.ServerURLButton
 import com.github.thebridsk.bridge.clientcommon.fullscreen.Fullscreen
 
 /**
@@ -116,6 +119,8 @@ object BridgeAppBarInternal {
     def closeMoreMenu(): State = copy(anchorMoreEl = js.undefined)
   }
 
+  val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
+
   /**
     * Internal state for rendering the component.
     *
@@ -124,10 +129,12 @@ object BridgeAppBarInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMoreClick(event: ReactEvent): Unit =
+    def handleMoreClick(event: ReactEvent): Unit = {
+      event.stopPropagation()
       event.extract(_.currentTarget)(currentTarget =>
         scope.modState(s => s.openMoreMenu(currentTarget)).runNow()
       )
+    }
     def handleMoreCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMoreMenu()).runNow()
     def handleMoreClose( /* event: js.Object, reason: String */ ): Unit = {
@@ -160,73 +167,6 @@ object BridgeAppBarInternal {
       }
     }
 
-    def serverUrlClick(event: ReactEvent): Unit = {
-      logger.info("Requesting to show server URL popup")
-      ServerURLPopup.setShowServerURLPopup(true)
-    }
-
-    // data-theme="dark"
-    def toggleLightDark(event: ReactEvent): Unit = {
-      logger.info("toggle light dark")
-      val ntheme = ColorThemeStorage.getColorTheme() match {
-        case Some(curtheme) =>
-          LightDark.nextTheme(curtheme)
-        case None =>
-          "medium"
-      }
-      ColorThemeStorage.setColorTheme(ntheme)
-    }
-
-    def isFullscreenEnabledI: Boolean = {
-      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
-      val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
-      val e = doc.myFullscreenEnabled
-      if (!e) {
-        logger.info("fullscreenEnabled = false")
-      }
-      e
-    }
-
-    def isFullscreen: Boolean = {
-      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
-      val doc = document
-      logger.info(s"browser fullscreenEnabled: ${doc.myFullscreenEnabled}")
-      if (isFullscreenEnabledI) {
-        val fe = doc.myFullscreenElement
-        val r = !js.isUndefined(fe) && fe != null
-        logger.fine(s"browser isfullscreen: $r")
-        if (r) {
-          val elem = doc.myFullscreenElement
-          logger.info(s"browser fullscreen element is ${elem.nodeName}")
-        }
-        r
-      } else {
-        false
-      }
-    }
-
-    def toggleFullscreen(event: ReactEvent): Unit = {
-      import com.github.thebridsk.bridge.clientcommon.fullscreen.Implicits._
-      val body = document.documentElement
-      val doc = document
-      if (isFullscreenEnabled) {
-        val isfullscreen = isFullscreen
-        if (isfullscreen) {
-          logger.info(s"browser exiting fullscreen")
-          doc.myExitFullscreen()
-        } else {
-          logger.info(s"browser requesting fullscreen on body")
-          body.requestFullscreen()
-        }
-        scalajs.js.timers.setTimeout(500) {
-          scope.withEffectsImpure.forceUpdate
-        }
-      } else {
-        logger.info(s"fullscreen is disabled")
-      }
-    }
-
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
       def gotoHomePage(e: ReactEvent) = props.routeCtl.toHome
@@ -239,11 +179,6 @@ object BridgeAppBarInternal {
       def callbackPage(page: AppPage)(e: ReactEvent) =
         props.routeCtl.toRootPage(page)
 
-      val buttonStyle = js.Dictionary("root" -> "toolbarIcon")
-
-      val fullscreenEnabled = isFullscreenEnabledI
-      val isfullscreen = isFullscreen
-
       val rightButton =
         List[CtorType.ChildArg](
           MuiIconButton(
@@ -255,37 +190,9 @@ object BridgeAppBarInternal {
           )(
             icons.Help()
           ),
-          MuiIconButton(
-            id = "ServerURL",
-            onClick = serverUrlClick _,
-            title = "Show server URLs",
-            color = ColorVariant.inherit,
-            classes = buttonStyle
-          )(
-            icons.Place()
-          ),
-          MuiIconButton(
-            id = "LightDark",
-            onClick = toggleLightDark _,
-            title = "Change color mode",
-            color = ColorVariant.inherit,
-            classes = buttonStyle
-          )(
-            LightDark()
-          ),
-          MuiIconButton(
-            id = "Fullscreen",
-            onClick = toggleFullscreen _,
-            title = if (isfullscreen) "Exit fullscreen" else "Go to fullscreen",
-            color = ColorVariant.inherit,
-            classes = buttonStyle
-          )(
-            if (isfullscreen) {
-              icons.FullscreenExit()
-            } else {
-              icons.Fullscreen()
-            }
-          ),
+          ServerURLButton(classes = buttonStyle),
+          LightDarkButton(classes = buttonStyle),
+          FullscreenButton(classes = buttonStyle),
           MuiIconButton(
             id = "MoreMenu",
             onClick = handleMoreClick _,
@@ -322,8 +229,12 @@ object BridgeAppBarInternal {
         List(
           <.div(
             baseStyles.appBarTitle,
+            // this is to take up space on the left side of the app bar
+            // when running in fullscreen mode on an iPad.
+            // this is done because iOS Safari adds an "X" button on the
+            // upper left of the screen.
             <.div(baseStyles.appBarTitleWhenFullscreen)
-              .when(isfullscreen && Values.isIpad),
+              .when(FullscreenButton.isFullscreen && Values.isIpad),
             !props.mainMenu.isEmpty ?= MuiIconButton(
               id = "MainMenu",
               onClick = props.handleMainClick,
@@ -384,8 +295,15 @@ object BridgeAppBarInternal {
               // more menu
               MyMenu(
                 anchorEl = state.anchorMoreEl,
-                onClickAway = handleMoreClose _,
-                onItemClick = handleMoreCloseClick _
+                onClose = handleMoreClose _,
+                anchorOrigin = AnchorOrigin(
+                  AnchorOriginHorizontalValue.right,
+                  AnchorOriginVerticalValue.bottom
+                ),
+                transformOrigin = AnchorOrigin(
+                  AnchorOriginHorizontalValue.right,
+                  AnchorOriginVerticalValue.top
+                )
               )(
                 MuiMenuItem(
                   id = "About",
@@ -462,9 +380,9 @@ object BridgeAppBarInternal {
       bar
     }
 
-    val fullscreenCB = scope.forceUpdate
-
     private var mounted = false
+
+    val fullscreenCB = scope.forceUpdate
 
     val didMount: Callback = Callback {
       mounted = true

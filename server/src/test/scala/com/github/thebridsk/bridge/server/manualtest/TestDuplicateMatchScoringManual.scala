@@ -1,6 +1,6 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.main.MainNoArgs
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
@@ -13,7 +13,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.github.thebridsk.bridge.data.Team
 
-object TestDuplicateMatchScoringManual extends Main {
+object TestDuplicateMatchScoringManual extends MainNoArgs {
 
   def execute(): Int = {
     val m = TestMatchDuplicate.getPlayedMatch(MatchDuplicate.id("M1"))

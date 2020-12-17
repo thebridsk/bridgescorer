@@ -7,22 +7,18 @@ import com.github.thebridsk.bridge.server.util.HttpUtils
 import com.github.thebridsk.bridge.server.util.GitHub
 import org.rogach.scallop.ScallopOption
 import scala.util.matching.Regex
+import com.github.thebridsk.utilities.main.MainConf
 
-object Download extends Main {
-
-  val defaultAlgo = "SHA-256"
-
-  val cmdname: String = {
-    val x = Download.getClass.getName
-    "scala " + x.substring(0, x.length() - 1)
-  }
+class DownloadConf extends MainConf {
+  import Download.cmdname
+  import Download.defaultAlgo
 
   banner(s"""
-Download a file from the web, and calculate
-
-Syntax:
-  ${cmdname} options
-Options:""")
+            |Download a file from the web, and calculate
+            |
+            |Syntax:
+            |  ${cmdname} options
+            |Options:""".stripMargin)
 
   val optionProject: ScallopOption[String] = opt[String](
     "project",
@@ -47,6 +43,19 @@ Options:""")
     argName = "algo",
     default = Some(defaultAlgo)
   )
+
+}
+
+object Download extends Main[DownloadConf] {
+
+  val defaultAlgo = "SHA-256"
+
+  val cmdname: String = {
+    val x = Download.getClass.getName
+    "scala " + x.substring(0, x.length() - 1)
+  }
+
+  import config._
 
   def execute(): Int = {
     val project = optionProject()

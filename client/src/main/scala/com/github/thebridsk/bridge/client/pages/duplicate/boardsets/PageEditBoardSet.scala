@@ -29,6 +29,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BoardS
 import scala.util.Success
 import scala.util.Failure
 import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.client.components.InputIntWithError
 
 /**
   * Shows all the boards of a boardset.
@@ -88,7 +89,8 @@ object PageEditBoardSetInternal {
       boardSetId: Option[BoardSet.Id] = None,
       boardset: Option[BoardSet] = None,
       nboards: Int = 0,
-      msg: Option[TagMod] = None
+      msg: Option[TagMod] = None,
+      nboardsError: Option[TagMod] = None
   ) {
 
     def isNew = boardSetId.isEmpty
@@ -115,7 +117,7 @@ object PageEditBoardSetInternal {
       copy(boardset = Some(getBoardSet.copy(description = description)))
 
     def setNBoards(n: Int): State = {
-      if (n < nboards) {
+      (if (n < nboards) {
         val curbs = getBoardSet
         val nb = curbs.copy(boards = curbs.boards.take(n))
         copy(boardset = Some(nb), nboards = n)
@@ -129,7 +131,7 @@ object PageEditBoardSetInternal {
         )
       } else {
         this
-      }
+      }).clearNboardsErrorMsg()
     }
 
     private def set(id: Int, f: BoardInSet => BoardInSet) = {
@@ -165,6 +167,7 @@ object PageEditBoardSetInternal {
     }
 
     def isValid(): Boolean = {
+      nboards > 0 &&
       boardset.flatMap { bs =>
         if (bs.name != null && bs.name != "") {
           if (bs.short != null && bs.short != "") {
@@ -190,6 +193,10 @@ object PageEditBoardSetInternal {
     def setMsg(msg: String): State = copy(msg = Some(msg))
     def setMsg(msg: TagMod): State = copy(msg = Some(msg))
     def clearMsg(): State = copy(msg = None)
+
+    def setNboardsErrorMsg(msg: String): State = copy(nboardsError = Some(msg))
+    def setNboardsErrorMsg(msg: TagMod): State = copy(nboardsError = Some(msg))
+    def clearNboardsErrorMsg(): State = copy(nboardsError = None)
   }
 
   private[boardsets] val BoardHeader = ScalaComponent
@@ -281,22 +288,18 @@ object PageEditBoardSetInternal {
       data.inputText(text => scope.modState(_.setShort(text)))
     def descCB(data: ReactEventFromInput): Callback =
       data.inputText(text => scope.modState(_.setDescription(text)))
-    def setNboardsCB(data: ReactEventFromInput): Callback =
-      data.inputText { text =>
-        scope.modState { s =>
-          try {
-            val n = text.trim.toInt
-            if (n <= 0 || n >= 100) {
-              s.setMsg("Must enter a valid number between 1 and 99")
-            } else {
-              s.setNBoards(text.toInt)
-            }
-          } catch {
-            case x: NumberFormatException =>
-              s.setMsg("Must enter a valid number")
-          }
-        }
+
+    def setNboardsCB(n: Int): Callback = {
+      scope.modState(_.setNBoards(n))
+    }
+    def validate(n: Int): Either[String,Int] = {
+      if (n <= 0 || n >= 100) {
+        Left("Must enter a valid number between 1 and 99")
+      } else {
+        Right(n)
       }
+
+    }
 
     def setDealer(boardId: Int, dealerPos: String): Callback =
       scope.modState(s => s.setDealer(boardId, dealerPos))
@@ -417,14 +420,13 @@ object PageEditBoardSetInternal {
                     ^.value := state.getBoardSet.description
                   )
                 ),
-                <.label(
-                  "Number of boards: ",
-                  <.input(
-                    ^.`type` := "number",
-                    ^.name := "NBoards",
-                    ^.onChange ==> setNboardsCB _,
-                    ^.value := state.nboards.toString
-                  )
+                InputIntWithError(
+                  label = "Number of boards: ",
+                  name = "NBoards",
+                  value = state.nboards,
+                  onChange = setNboardsCB _,
+                  validate = validate _,
+                  notNumberError = "Enter a number between 1 and 99"
                 )
               ),
               <.div(

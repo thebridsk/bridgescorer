@@ -478,7 +478,7 @@ object PageSuggestionInternal {
 
     val namesCallback: Callback = scope.modState(s => {
       val sug = NamesStore.getNames
-      s.copy(knownPlayers = Some(sug))
+      s.copy(knownPlayers = Some(sug.toList))
     })
 
     val storeCallback = scope.forceUpdate

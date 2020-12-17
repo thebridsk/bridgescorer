@@ -6,13 +6,22 @@ import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 /**
-  * A skeleton component.
+  * A PieChart component.
+  *
+  * The slices are sized proportional to their size.
+  * The slices are colored and may have titles.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * PieChart( PieChart.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * import com.github.thebridsk.color.Color
+  *
+  * PieChart(
+  *   slices = List(1,1,1),
+  *   colors = List(Color("red"), Color("green"), Color("blue"))
+  *   size = 24
+  * )
+  * }}}
   *
   * @author werewolf
   */
@@ -21,14 +30,18 @@ object PieChart {
   import ReactColor._
 
   /**
-    * @param size the diameter of the circle
-    * @param slices the slices to carve up the circle.
+    * Properties for PieChart component.
+    *
+    * Slices, colors, sliceTitles, and sliceAttrs, if specified must all be the same size.
+    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+    *
+    * @param slices the slices to carve up the circle.  Each entry is the relative size of the slice.
     * @param colors the colors of the slices, must be the same size array as slices.
     * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
     * @param sliceTitles the title of slices, will be flyover.
-    * Must be the same size array as slices.
-    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
-    * Must be the same size array as slices.
+    * @param size the diameter of the circle in px.
+    * @param attrs attributes to add to the <svg> element
+    * @param sliceAttrs attributes to add to each slice's <path> element.
     */
   case class Props(
       slices: List[Double],
@@ -42,15 +55,21 @@ object PieChart {
 
   /**
     * A pie chart.  The full circle will be used for the chart.
-    * @param slices the slices to carve up the circle.  The sum of the entries MUST NOT be 0
+    *
+    * Slices, colors, sliceTitles, and sliceAttrs, if specified must all be the same size.
+    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+    *
+    * @param slices the slices to carve up the circle.  Each entry is the relative size of the slice.
     * @param colors the colors of the slices, must be the same size array as slices.
     * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
     * @param sliceTitles the title of slices, will be flyover.
-    * @param size the relative area of the circle, if None, then css must set the height and width
+    * @param size the diameter of the circle in px.
     * @param attrs attributes to add to the <svg> element
-    * Must be the same size array as slices.
-    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
-    * Must be the same size array as slices.
+    * @param sliceAttrs attributes to add to each slice's <path> element.
+    *
+    * @return the unmounted react component.
+    *
+    * @see See [[PieChart]] for usage.
     */
   def create(
       slices: List[Double],
@@ -68,15 +87,22 @@ object PieChart {
 
   /**
     * A pie chart.  The full circle will be used for the chart.
-    * @param size the relative area of the circle
-    * @param slices the slices to carve up the circle.  The sum of the entries MUST NOT be 0
+    *
+    * Slices, colors, sliceTitles, and sliceAttrs, if specified must all be the same size.
+    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+    *
+    * @param size the diameter of the circle in px.
+    * @param slices the slices to carve up the circle.  Each entry is the relative size of the slice.
     * @param colors the colors of the slices, must be the same size array as slices.
     * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
     * @param sliceTitles the title of slices, will be flyover.
     * @param attrs attributes to add to the <svg> element
-    * Must be the same size array as slices.
-    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
-    * Must be the same size array as slices.
+    * @param sliceAttrs attributes to add to each slice's <path> element.
+    *
+    * @return the unmounted react component.
+    *
+    * @see See [[PieChart]] for usage.
+    *
     */
   def apply(
       size: Double,
@@ -100,6 +126,14 @@ object PieChart {
     )
   }
 
+  /**
+    * A pie chart.  The full circle will be used for the chart.
+    *
+    * @param props
+    * @return the unmounted react component.
+    *
+    * @see See [[PieChart]] for usage.
+    */
   def apply(props: Props) =
     component(props) // scalafix:ok ExplicitResultTypes; ReactComponent
 

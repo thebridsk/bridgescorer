@@ -71,6 +71,7 @@ object InfoPage {
   def info: List[(String, String)] = {
     val window = document.defaultView
     val nav = window.navigator
+    val navd = js.Dynamic.global.window.navigator
     val geoloc = nav.geolocation
     val screen = window.screen
     val styleMediaDefined = js.typeOf(window.styleMedia) != "undefined"
@@ -99,7 +100,9 @@ object InfoPage {
         (if (styleMediaDefined) styleMedia.`type`; else "???")
       ),
       ("isTouchEnabled", isTouchEnabled),
-      ("closed", window.asInstanceOf[js.Dynamic].closed)
+      ("closed", window.asInstanceOf[js.Dynamic].closed),
+      ("is iPad", Values.isIpad),
+      ("maxTouchPoints", navd.maxTouchPoints)
 //      ("", "")
     ).map {
       case (key, value) =>

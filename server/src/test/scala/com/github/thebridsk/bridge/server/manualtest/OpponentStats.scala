@@ -8,8 +8,9 @@ import com.github.thebridsk.bridge.data.duplicate.stats.PlayersOpponentsStats
 import com.github.thebridsk.bridge.server.backend.resource.SyncStore
 import scala.concurrent.duration._
 import org.rogach.scallop.ScallopOption
+import com.github.thebridsk.utilities.main.MainConf
 
-object OpponentStats extends Main {
+class OpponentStatsConf extends MainConf {
 
   import com.github.thebridsk.utilities.main.Converters._
 
@@ -21,7 +22,12 @@ object OpponentStats extends Main {
     default = Some("./store")
   )
 
+}
+object OpponentStats extends Main[OpponentStatsConf] {
+
   val timeout = 120
+
+  import config._
 
   def execute(): Int = {
 

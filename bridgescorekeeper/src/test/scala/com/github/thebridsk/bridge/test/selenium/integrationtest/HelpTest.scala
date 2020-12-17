@@ -87,7 +87,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     eventually {
       hp.isMoreMenuVisible mustBe true
     }
-    hp.findElemById("url").click
+    hp.esc  // findElemById("url").click
     eventually {
       hp.isMoreMenuVisible mustBe false
     }

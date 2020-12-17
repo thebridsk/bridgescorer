@@ -203,7 +203,7 @@ object BldDependencies {
       // "globalize" -> vGlobalize,
       // "react-widgets-globalize" -> vReactWidgetsGlobalize,
       // "cldrjs" -> vCldrjs,
-      // // "cldr" -> vCldr,
+      // "cldr" -> vCldr,
       // "cldr-data" -> vCldrData,
       "@material-ui/core" -> vMaterialUIcore,
       "@material-ui/icons" -> vMaterialUIicons

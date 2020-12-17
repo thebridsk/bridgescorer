@@ -749,6 +749,7 @@ class ChicagoTest
         listitems(0)
       }
       val text = first.text
+      Thread.sleep(500)
       first.click
       eventually {
         enp.getPlayer(North) mustBe text

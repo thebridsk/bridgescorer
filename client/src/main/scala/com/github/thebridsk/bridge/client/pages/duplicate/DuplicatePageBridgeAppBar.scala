@@ -9,7 +9,7 @@ import com.github.thebridsk.materialui.TextColor
 import org.scalajs.dom.raw.Element
 import org.scalajs.dom.raw.Node
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.materialui.component.MyMenu
+import com.github.thebridsk.bridge.clientcommon.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import japgolly.scalajs.react.vdom.VdomNode
@@ -23,9 +23,11 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.Duplic
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.AllTableView
 import com.github.thebridsk.bridge.client.pages.BridgeAppBar
 import com.github.thebridsk.bridge.clientcommon.react.BeepComponent
-import com.github.thebridsk.bridge.client.pages.ServerURLPopup
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.materialui.AnchorOrigin
+import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
+import com.github.thebridsk.materialui.AnchorOriginVerticalValue
 
 /**
   * A simple AppBar for the Bridge client.
@@ -69,11 +71,8 @@ object DuplicatePageBridgeAppBar {
       routeCtl: BridgeRouter[DuplicatePage]
   )(
       mainMenuItems: CtorType.ChildArg*
-  ): TagMod = {
-    TagMod(
-      ServerURLPopup(),
-      component(Props(id, tableIds, mainMenuItems, title, helpurl, routeCtl))
-    )
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(Props(id, tableIds, mainMenuItems, title, helpurl, routeCtl))
   }
 }
 
@@ -105,10 +104,12 @@ object DuplicatePageBridgeAppBarInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
 
-    def handleMainClick(event: ReactEvent): Unit =
+    def handleMainClick(event: ReactEvent): Unit = {
+      event.stopPropagation()
       event.extract(_.currentTarget)(currentTarget =>
         scope.modState(s => s.openMainMenu(currentTarget)).runNow()
       )
+    }
     def handleMainCloseClick(event: ReactEvent): Unit =
       scope.modState(s => s.closeMainMenu()).runNow()
     def handleMainClose( /* event: js.Object, reason: String */ ): Unit = {
@@ -122,8 +123,10 @@ object DuplicatePageBridgeAppBarInternal {
       def handleGotoHome(e: ReactEvent) = props.routeCtl.toHome
       def handleGotoAbout(e: ReactEvent) = props.routeCtl.toAbout
 
-      def callbackPage(page: DuplicatePage)(e: ReactEvent) =
+      def callbackPage(page: DuplicatePage)(e: ReactEvent) = {
+        // handleMainClose()
         props.routeCtl.set(page).runNow()
+      }
 
       def tableMenuItem(
           dupid: MatchDuplicate.Id,
@@ -158,8 +161,15 @@ object DuplicatePageBridgeAppBarInternal {
           // main menu
           MyMenu(
             anchorEl = state.anchorMainEl,
-            onClickAway = handleMainClose _,
-            onItemClick = handleMainCloseClick _
+            onClose = handleMainClose _,
+            anchorOrigin = AnchorOrigin(
+              AnchorOriginHorizontalValue.left,
+              AnchorOriginVerticalValue.bottom
+            ),
+            transformOrigin = AnchorOrigin(
+              AnchorOriginHorizontalValue.left,
+              AnchorOriginVerticalValue.top
+            )
           )(
             (
               props.pageMenuItems.toList :::
@@ -204,29 +214,18 @@ object DuplicatePageBridgeAppBarInternal {
                         "Movements"
                       )
                     )
-                  ) ::: List[CtorType.ChildArg](
-                MuiMenuItem(
-                  id = "Summary",
-                  onClick = callbackPage(SummaryView) _
-                )(
-                  "Summary"
-                ),
-//                      MuiMenuItem(
-//                          id = "FastClick",
-//                          onClick = ( (e: ReactEvent) => (HomePage.fastclickToggle>>scope.forceUpdate).runNow() ),
-//                          classes = js.Dictionary("root" -> "mainMenuItem").asInstanceOf[js.Object]
-//
-//                      )(
-//                          "FastClick ",
-//                          icons.Check(
-//                              color= (if (HomePage.isFastclickOn) SvgColor.inherit else SvgColor.disabled),
-//                              classes = js.Dictionary("root" -> "mainMenuItemIcon").asInstanceOf[js.Object]
-//                          )
-//                      ),
-                BeepComponent.getMenuItem(() =>
-                  scope.withEffectsImpure.forceUpdate
+                  ) :::
+                List[CtorType.ChildArg](
+                  MuiMenuItem(
+                    id = "Summary",
+                    onClick = callbackPage(SummaryView) _
+                  )(
+                    "Summary"
+                  ),
+                  BeepComponent.getMenuItem(() =>
+                    scope.withEffectsImpure.forceUpdate
+                  )
                 )
-              )
             ): _*
           )
         )

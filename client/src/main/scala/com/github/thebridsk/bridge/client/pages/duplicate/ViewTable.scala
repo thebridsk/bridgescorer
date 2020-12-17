@@ -213,7 +213,7 @@ object ViewTableInternal {
             case None =>
               <.div(
                 dupStyles.divTableView,
-                <.p("Table " + props.page.tableid.toNumber + " not found")
+                <.p(s"Table ${props.page.tableid.toNumber} not found")
               )
           }
         case None =>

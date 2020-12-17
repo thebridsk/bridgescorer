@@ -13,7 +13,6 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import japgolly.scalajs.react.vdom.VdomNode
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.client.pages.BridgeAppBar
-import com.github.thebridsk.bridge.client.pages.ServerURLPopup
 
 /**
   * A simple AppBar for the Bridge client.
@@ -53,11 +52,8 @@ object RubberPageBridgeAppBar {
       routeCtl: BridgeRouter[RubberPage]
   )(
       mainMenuItems: CtorType.ChildArg*
-  ): TagMod = {
-    TagMod(
-      ServerURLPopup(),
-      component(Props(mainMenuItems, title, helpurl, routeCtl))
-    )
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    component(Props(mainMenuItems, title, helpurl, routeCtl))
   }
 }
 

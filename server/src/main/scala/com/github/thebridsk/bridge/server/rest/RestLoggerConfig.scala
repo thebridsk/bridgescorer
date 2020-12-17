@@ -36,7 +36,59 @@ object RestLoggerConfig {
   private val pclientid = new AtomicInteger()
 
   def nextClientId: Some[String] = Some(pclientid.incrementAndGet().toString())
+
+  def serverURL(ports: ServerPort, includeLocalhost: Boolean = false): ServerURL = {
+    import java.net.NetworkInterface
+    import scala.jdk.CollectionConverters._
+    import java.net.Inet4Address
+
+    val x = NetworkInterface.getNetworkInterfaces.asScala
+      .filter { x =>
+        x.isUp() && !x.isLoopback()
+      }
+      .flatMap { ni =>
+        ni.getInetAddresses.asScala
+      }
+      .filter { x =>
+        x.isInstanceOf[Inet4Address]
+      }
+      .map { x =>
+        getURLs(x.getHostAddress, ports).toList
+      }
+      .flatten
+      .toList
+    val local = Option.when(includeLocalhost)(getURLs("localhost", ports).toList).getOrElse(List())
+
+    ServerURL(x:::local)
+
+  }
+
+  /**
+    * Get the URLs for an interface
+    * @param interface the interface IP address for the URLs
+    * @return A list of URLs
+    */
+  def getURLs(interface: String, ports: ServerPort): Iterable[String] = {
+    val httpsURL = ports.httpsPort match {
+      case Some(port) =>
+        if (port == 443) Some("https://" + interface + "/")
+        else Some("https://" + interface + ":" + port + "/")
+      case None => None
+    }
+    val httpURL = ports.httpPort match {
+      case Some(port) =>
+        if (port == 80) Some("http://" + interface + "/")
+        else Some("http://" + interface + ":" + port + "/")
+      case None if (httpsURL.isEmpty) => Some("http://" + interface + ":8080/")
+      case None                       => None
+    }
+
+    httpURL ++ httpsURL
+  }
+
 }
+
+import RestLoggerConfig._
 
 /**
   * Rest API implementation for the logger config
@@ -230,7 +282,7 @@ trait RestLoggerConfig extends HasActorSystem {
   def xxxgetServerURL(): Unit = {}
   val getServerURL: Route = pathEndOrSingleSlash {
     get {
-      val serverurl = List(serverURL())
+      val serverurl = List(serverURL(ports))
       complete(StatusCodes.OK, serverurl)
     }
   }
@@ -323,53 +375,5 @@ trait RestLoggerConfig extends HasActorSystem {
       }
 
     }
-  }
-
-  def serverURL(): ServerURL = {
-    import java.net.NetworkInterface
-    import scala.jdk.CollectionConverters._
-    import java.net.Inet4Address
-
-    val x = NetworkInterface.getNetworkInterfaces.asScala
-      .filter { x =>
-        x.isUp() && !x.isLoopback()
-      }
-      .flatMap { ni =>
-        ni.getInetAddresses.asScala
-      }
-      .filter { x =>
-        x.isInstanceOf[Inet4Address]
-      }
-      .map { x =>
-        getURLs(x.getHostAddress).toList
-      }
-      .flatten
-      .toList
-
-    ServerURL(x)
-
-  }
-
-  /**
-    * Get the URLs for an interface
-    * @param interface the interface IP address for the URLs
-    * @return A list of URLs
-    */
-  def getURLs(interface: String): Iterable[String] = {
-    val httpsURL = ports.httpsPort match {
-      case Some(port) =>
-        if (port == 443) Some("https://" + interface + "/")
-        else Some("https://" + interface + ":" + port + "/")
-      case None => None
-    }
-    val httpURL = ports.httpPort match {
-      case Some(port) =>
-        if (port == 80) Some("http://" + interface + "/")
-        else Some("http://" + interface + ":" + port + "/")
-      case None if (httpsURL.isEmpty) => Some("http://" + interface + ":8080/")
-      case None                       => None
-    }
-
-    httpURL ++ httpsURL
   }
 }

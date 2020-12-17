@@ -8,63 +8,57 @@ import japgolly.scalajs.react._
   *
   * To use, just code the following:
   *
-  * <pre><code>
+  * {{{
   * SkeletonComponent( SkeletonComponent.Props( ... ) )
-  * </code></pre>
+  * }}}
   *
   * @author werewolf
   */
 object SkeletonComponent {
-  import SkeletonComponentInternal._
+  import Internal._
 
   case class Props()
 
+  /**
+    *
+    *
+    * @return the unmounted react component
+    *
+    * @see [[SkeletonComponent]] for usage.
+    */
   def apply() =
     component(Props()) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-}
+  protected object Internal {
 
-object SkeletonComponentInternal {
-  import SkeletonComponent._
+    case class State()
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause State to leak.
-    */
-  case class State()
+    class Backend(scope: BackendScope[Props, State]) {
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+        <.div()
+      }
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-      <.div()
+      private var mounted = false
+
+      val didMount: Callback = Callback {
+        mounted = true
+
+      }
+
+      val willUnmount: Callback = Callback {
+        mounted = false
+
+      }
     }
 
-    private var mounted = false
-
-    val didMount: Callback = Callback {
-      mounted = true
-
-    }
-
-    val willUnmount: Callback = Callback {
-      mounted = false
-
-    }
+    val component = ScalaComponent
+      .builder[Props]("SkeletonComponent")
+      .initialStateFromProps { props => State() }
+      .backend(new Backend(_))
+      .renderBackend
+      .componentDidMount(scope => scope.backend.didMount)
+      .componentWillUnmount(scope => scope.backend.willUnmount)
+      .build
   }
 
-  private[react] val component = ScalaComponent
-    .builder[Props]("SkeletonComponent")
-    .initialStateFromProps { props => State() }
-    .backend(new Backend(_))
-    .renderBackend
-    .componentDidMount(scope => scope.backend.didMount)
-    .componentWillUnmount(scope => scope.backend.willUnmount)
-    .build
 }

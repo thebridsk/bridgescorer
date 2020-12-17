@@ -52,6 +52,7 @@ import akka.http.scaladsl.model.MediaTypes
 import akka.http.scaladsl.HttpsConnectionContext
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import scala.concurrent.ExecutionContextExecutor
+import com.github.thebridsk.bridge.server.rest.RestLoggerConfig
 
 /**
   * This is the main program for the REST server for our application.
@@ -792,6 +793,11 @@ private class StartServer {
           s"ClassPath:\n${ClassPath.show("  ", getClass.getClassLoader)}"
         )
         log.info(s"System Properties:\n${ClassPath.showProperties("  ")}")
+        val urls = RestLoggerConfig.serverURL(myService.ports, true)
+        val page = myService.getRootPage.map(_.substring(1)).getOrElse("")
+        println(
+          s"The server can be found at:${urls.serverUrl.map(_ + page).mkString("\n  ","\n  ","\n")}"
+        )
       case Failure(e) =>
         log.severe(
           s"Waiting for bindings to finish failed with ${e.getMessage}"

@@ -15,7 +15,9 @@ object BaseStyles {
   import BaseStylesImplicits._
 
   val baseStyles = new BaseStyles
+  val baseStyles2 = new BaseStyles2
   val rootStyles = new RootStyles
+  val rootStyles2 = new RootStyles2
   val tableStyles = new TableStyles
 
   def cls(clsname: String): TagMod = ^.className := clsname
@@ -48,6 +50,13 @@ object BaseStyles {
     if (styles.isEmpty) baseStyles.normal
     else styles.toTagMod
   }
+}
+
+class BaseStyles2 {
+  import BaseStyles._
+
+  val clsSelectPosition: TagMod = cls("selectPosition")
+  val clsEnterNames: TagMod = cls("enterNames")
 }
 
 class BaseStyles {
@@ -155,12 +164,24 @@ class BaseStyles {
   val appBarTitle: TagMod = cls("appBarTitle")
   val appBarTitleWhenFullscreen: TagMod = cls("appBarTitleWhenFullscreen")
 
-  val lightDarkIcon1: TagMod = cls("lightDarkIcon1")
-  val lightDarkIcon2: TagMod = cls("lightDarkIcon2")
-  val lightDarkIcon3: TagMod = cls("lightDarkIcon3")
+  val lightDarkIconCurrent: TagMod = cls("lightDarkIconCurrent")
+  val lightDarkIconNext: TagMod = cls("lightDarkIconNext")
+  val lightDarkIconPrev: TagMod = cls("lightDarkIconPrev")
 
   val comboboxLightDarkClass = "comboboxLightDark"
   val calendarLightDarkClass = "calendarLightDark"
+}
+
+class RootStyles2 {
+  import BaseStyles._
+
+  val defaultButton: TagMod = cls(
+    "baseDefaultButton"
+  )
+  val clsSelectionButton: TagMod = cls(
+    "baseFooterButton baseDefaultButton baseFontTextLarge"
+  )
+
 }
 
 class RootStyles {

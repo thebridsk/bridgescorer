@@ -42,6 +42,9 @@ object BldBridgeFullServer {
       server := {
         (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs""").value
       },
+      serverhelp := {
+        (run in Compile).toTask(""" --help""").value
+      },
       serverssl := {
         (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs --certificate ../server/key/examplebridgescorekeeper.jks --certpassword abcdef --https 8443 --cacert ../server/key/examplebridgescorekeeperca.crt""").value
       },

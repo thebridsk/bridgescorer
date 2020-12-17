@@ -1,6 +1,6 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.main.MainNoArgs
 
 import java.util.{List => JList, Map => JMap}
 import scala.jdk.CollectionConverters._
@@ -45,7 +45,7 @@ class Sample(
 
 }
 
-object YamlTest extends Main {
+object YamlTest extends MainNoArgs {
 
   val test = """
 name: test

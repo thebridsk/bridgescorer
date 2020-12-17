@@ -5,77 +5,92 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
 
 /**
-  * A skeleton Popup.
+  * A Popup react component.
   *
-  * To use, just code the following:
+  * Displays a popup.  The entire page is dimmed, while the content of the popup is centered on the display.
   *
-  * <pre><code>
-  * Popup( Popup.Props( ... ) )
-  * </code></pre>
+  * Usage:
+  *
+  * {{{
+  * Popup(
+  *   display = true,
+  *   content = <.div("Hello World!")
+  * )
+  * }}}
+  *
+  * @see See [[apply]] for a description of the parameters.
   *
   * @author werewolf
   */
 object Popup {
-  import PopupInternal._
+  import Internal._
 
-  case class Props(display: Boolean, content: TagMod, id: Option[String])
+  case class Props(
+    display: Boolean,
+    content: TagMod,
+    id: Option[String],
+    clickaway: Option[Callback]
+  )
 
-  def apply(display: Boolean, content: TagMod, id: Option[String] = None) =
+  /**
+    * Instantiate the react component.
+    *
+    * @param display true if the popup is displayed, false if hidden.
+    * @param content the content that is displayed in the popup.
+    * @param id the id attribute of the root element of the popup.
+    * @param clickaway - the optional callback for the clickaway.
+    *
+    * @return the unmounted react component.
+    */
+  def apply(
+    display: Boolean,
+    content: TagMod,
+    id: Option[String] = None,
+    clickaway: Option[Callback] = None
+  ) =
     component(
-      Props(display, content, id)
+      Props(display, content, id, clickaway)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-}
+  object Internal {
 
-object PopupInternal {
-  import Popup._
+    val logger: Logger = Logger("bridge.Popup")
 
-  val logger: Logger = Logger("bridge.Popup")
+    case class State()
 
-  /**
-    * Internal state for rendering the Popup.
-    *
-    * I'd like this class to be private, but the instantiation of Popup
-    * will cause State to leak.
-    */
-  case class State()
-
-  /**
-    * Internal state for rendering the Popup.
-    *
-    * I'd like this class to be private, but the instantiation of Popup
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-      import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
-      val disp = ^.display.none.when(!props.display)
-      <.div(
-        props.id.whenDefined { i =>
-          logger.info(s"""Popup.render setting id to $i""")
-          ^.id := i
-        },
+    class Backend(scope: BackendScope[Props, State]) {
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+        import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
+        val disp = ^.display.none.when(!props.display)
         <.div(
-          ^.id := "overlay",
-          baseStyles.divPopupOverlay,
-          disp
-        ),
-        <.div(
-          ^.id := "popup",
-          baseStyles.divPopup,
-          disp,
+          props.id.whenDefined { i =>
+            logger.info(s"""Popup.render setting id to $i""")
+            ^.id := i
+          },
           <.div(
-            props.content
+            ^.id := "overlay",
+            baseStyles.divPopupOverlay,
+            disp
+          ),
+          <.div(
+            ^.id := "popup",
+            baseStyles.divPopup,
+            disp,
+            props.clickaway.whenDefined( ^.onClick --> _),
+            <.div(
+              props.content
+            )
           )
         )
-      )
+      }
     }
+
+    private[react] val component = ScalaComponent
+      .builder[Props]("PopupComponent")
+      .initialStateFromProps { props => State() }
+      .backend(new Backend(_))
+      .renderBackend
+      .build
   }
 
-  private[react] val component = ScalaComponent
-    .builder[Props]("PopupComponent")
-    .initialStateFromProps { props => State() }
-    .backend(new Backend(_))
-    .renderBackend
-    .build
 }

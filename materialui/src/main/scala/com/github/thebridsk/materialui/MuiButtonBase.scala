@@ -20,7 +20,6 @@ trait ButtonBaseProps extends AdditionalProps with StandardProps {
   val TouchRippleProps: js.UndefOr[TouchRippleProps] = js.native
   val `type`: js.UndefOr[String] = js.native
 
-  val onClick: js.UndefOr[ReactEvent => Unit] = js.native
   val style: js.UndefOr[js.Object] = js.native
 
   val id: js.UndefOr[String] = js.native
@@ -89,7 +88,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
-    val p = get(props, additionalProps)
+    val p = get(props, additionalProps, onClick)
 
     action.foreach(p.updateDynamic("action")(_))
     buttonRef.foreach(p.updateDynamic("buttonRef")(_))
@@ -104,7 +103,6 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
     onFocusVisible.foreach(p.updateDynamic("onFocusVisible")(_))
     TouchRippleProps.foreach(p.updateDynamic("TouchRippleProps")(_))
     `type`.foreach(p.updateDynamic("type")(_))
-    onClick.foreach(p.updateDynamic("onClick")(_))
     style.foreach(p.updateDynamic("style")(_))
     id.foreach(p.updateDynamic("id")(_))
     title.foreach(p.updateDynamic("title")(_))
