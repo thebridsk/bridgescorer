@@ -12,6 +12,8 @@ import japgolly.scalajs.react._
   * SkeletonComponent( SkeletonComponent.Props( ... ) )
   * }}}
   *
+  * @see See [[apply]] for a description of the arguments.
+  *
   * @author werewolf
   */
 object SkeletonComponent {
@@ -24,7 +26,7 @@ object SkeletonComponent {
     *
     * @return the unmounted react component
     *
-    * @see [[SkeletonComponent]] for usage.
+    * @see [[SkeletonComponent$]] for usage.
     */
   def apply() =
     component(Props()) // scalafix:ok ExplicitResultTypes; ReactComponent

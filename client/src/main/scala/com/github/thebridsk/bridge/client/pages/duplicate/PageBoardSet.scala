@@ -16,26 +16,43 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
-  * Shows the team x board table and has a totals column that shows the number of points the team has.
+  * A component page that shows the board set in use for a duplicate match.
   *
-  * The ScoreboardView object will identify which MatchDuplicate to look at.
+  * This shows the dealer and vulnerbility of all boards.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * PageBoardSet( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
-  * </code></pre>
+  * {{{
+  * val page = DuplicateBoardSetView(dupid)
+  *
+  * PageBoardSet(
+  *   routerCtl = router,
+  *   page = page
+  * )
+  * }}}
+  *
+  * @see See [[apply]] for a description of the arguments.
   *
   * @author werewolf
   */
 object PageBoardSet {
-  import PageBoardSetInternal._
+  import Internal._
 
   case class Props(
       routerCtl: BridgeRouter[DuplicatePage],
       page: DuplicateBoardSetView
   )
 
+  /**
+    * Instantiate the component
+    *
+    * @param routerCtl - the router
+    * @param page - a DuplicateBoardSetView that identifies the duplicate match.
+    *
+    * @return the unmounted react component
+    *
+    * @see See [[PageBoardSet$]] for usage information.
+    */
   def apply(
       routerCtl: BridgeRouter[DuplicatePage],
       page: DuplicateBoardSetView
@@ -44,109 +61,108 @@ object PageBoardSet {
       Props(routerCtl, page)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-}
+  protected object Internal {
 
-object PageBoardSetInternal {
-  import PageBoardSet._
+    val logger: Logger = Logger("bridge.PageBoardSet")
 
-  val logger: Logger = Logger("bridge.PageBoardSet")
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause State to leak.
+      */
+    case class State()
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause State to leak.
-    */
-  case class State()
-
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-      import DuplicateStyles._
-      <.div(
-        DuplicatePageBridgeAppBar(
-          id = Some(props.page.dupid),
-          tableIds = List(),
-          title = Seq[CtorType.ChildArg](
-            MuiTypography(
-              variant = TextVariant.h6,
-              color = TextColor.inherit
-            )(
-              <.span(
-                "BoardSet"
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause Backend to leak.
+      */
+    class Backend(scope: BackendScope[Props, State]) {
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+        import DuplicateStyles._
+        <.div(
+          DuplicatePageBridgeAppBar(
+            id = Some(props.page.dupid),
+            tableIds = List(),
+            title = Seq[CtorType.ChildArg](
+              MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit
+              )(
+                <.span(
+                  "BoardSet"
+                )
               )
-            )
+            ),
+            helpurl = "../help/duplicate/summary.html",
+            routeCtl = props.routerCtl
+          )(
           ),
-          helpurl = "../help/duplicate/summary.html",
-          routeCtl = props.routerCtl
-        )(
-        ),
-        DuplicateStore.getMatch() match {
-          case Some(md) if md.id == props.page.dupid =>
-            val boardset = md.getBoardSetObject()
-            <.div(
-              dupStyles.divBoardSetPage,
+          DuplicateStore.getMatch() match {
+            case Some(md) if md.id == props.page.dupid =>
+              val boardset = md.getBoardSetObject()
               <.div(
-                <.h1("Boards used for the match")
-              ),
-              ViewBoardSet(boardset, 2),
-              <.div(baseStyles.divFlexBreak),
-              <.div(
-                baseStyles.divFooter,
+                dupStyles.divBoardSetPage,
                 <.div(
-                  baseStyles.divFooterCenter,
-                  AppButton(
-                    "Game",
-                    "Completed Games Scoreboard",
-                    props.routerCtl.setOnClick(props.page.toScoreboard)
+                  <.h1("Boards used for the match")
+                ),
+                ViewBoardSet(boardset, 2),
+                <.div(baseStyles.divFlexBreak),
+                <.div(
+                  baseStyles.divFooter,
+                  <.div(
+                    baseStyles.divFooterCenter,
+                    AppButton(
+                      "Game",
+                      "Completed Games Scoreboard",
+                      props.routerCtl.setOnClick(props.page.toScoreboard)
+                    )
                   )
                 )
               )
-            )
-          case _ =>
-            HomePage.loading
-        }
-      )
-    }
+            case _ =>
+              HomePage.loading
+          }
+        )
+      }
 
-    val storeCallback = scope.forceUpdate
+      val storeCallback = scope.forceUpdate
 
-    val didMount: Callback = scope.props >>= { (p) =>
-      logger.info("PageBoardSet.didMount")
-      DuplicateStore.addChangeListener(storeCallback)
-      CallbackTo(Controller.monitor(p.page.dupid))
-    }
+      val didMount: Callback = scope.props >>= { (p) =>
+        logger.info("PageBoardSet.didMount")
+        DuplicateStore.addChangeListener(storeCallback)
+        CallbackTo(Controller.monitor(p.page.dupid))
+      }
 
-    val willUnmount: Callback = CallbackTo {
-      logger.info("PageBoardSet.willUnmount")
-      DuplicateStore.removeChangeListener(storeCallback)
-      Controller.delayStop()
-    }
-  }
-
-  def didUpdate(
-      cdu: ComponentDidUpdate[Props, State, Backend, Unit]
-  ): Callback =
-    Callback {
-      val props = cdu.currentProps
-      val prevProps = cdu.prevProps
-      if (prevProps.page != props.page) {
-        Controller.monitor(props.page.dupid)
+      val willUnmount: Callback = CallbackTo {
+        logger.info("PageBoardSet.willUnmount")
+        DuplicateStore.removeChangeListener(storeCallback)
+        Controller.delayStop()
       }
     }
 
-  private[duplicate] val component = ScalaComponent
-    .builder[Props]("PageBoardSet")
-    .initialStateFromProps { props => State() }
-    .backend(new Backend(_))
-    .renderBackend
-    .componentDidMount(scope => scope.backend.didMount)
-    .componentWillUnmount(scope => scope.backend.willUnmount)
-    .componentDidUpdate(didUpdate)
-    .build
+    def didUpdate(
+        cdu: ComponentDidUpdate[Props, State, Backend, Unit]
+    ): Callback =
+      Callback {
+        val props = cdu.currentProps
+        val prevProps = cdu.prevProps
+        if (prevProps.page != props.page) {
+          Controller.monitor(props.page.dupid)
+        }
+      }
+
+    private[duplicate] val component = ScalaComponent
+      .builder[Props]("PageBoardSet")
+      .initialStateFromProps { props => State() }
+      .backend(new Backend(_))
+      .renderBackend
+      .componentDidMount(scope => scope.backend.didMount)
+      .componentWillUnmount(scope => scope.backend.willUnmount)
+      .componentDidUpdate(didUpdate)
+      .build
+  }
+
 }
