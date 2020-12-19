@@ -1361,7 +1361,7 @@ class DuplicateTestPages
 
   it should "create a new duplicate match" in {
     import SessionDirector._
-    try {
+    captureLogsOnError {
 
       val curPage = NewDuplicatePage.current
 
@@ -1375,11 +1375,6 @@ class DuplicateTestPages
       testlog.info(s"Duplicate id is ${dupid.get}")
 
       allHands.boardsets mustBe Symbol("defined")
-
-    } catch {
-      case x: Exception =>
-        showLogs()
-        throw x
     }
   }
 
@@ -1394,21 +1389,17 @@ class DuplicateTestPages
       "Starting browsers",
       CodeBlock {
         import SessionDirector._
-        try {
+        captureLogsOnError {
           val menu = ScoreboardPage.current.clickMainMenu.validate
           eventually {
             menu.findElemById("Director")
           }
           menu.clickDirectorButton.validate
-        } catch {
-          case x: Exception =>
-            showLogs()
-            throw x
         }
       },
       CodeBlock {
         import SessionTable1._
-        try {
+        captureLogsOnError {
           ScoreboardPage
             .goto(dupid.get)
             .takeScreenshot(docsScreenshotDir, "ScoreboardFromTable")
@@ -1416,20 +1407,12 @@ class DuplicateTestPages
             .clickTableButton(1)
             .validate(rounds)
             .takeScreenshot(docsScreenshotDir, "TableRound1")
-        } catch {
-          case x: Exception =>
-            showLogs()
-            throw x
         }
       },
       CodeBlock {
         import SessionTable2._
-        try {
+        captureLogsOnError {
           TablePage.goto(dupid.get, "2", EnterNames).validate(rounds)
-        } catch {
-          case x: Exception =>
-            showLogs()
-            throw x
         }
       },
       CodeBlock {

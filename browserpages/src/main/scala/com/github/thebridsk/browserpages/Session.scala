@@ -30,6 +30,7 @@ import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
 import org.openqa.selenium.firefox.ProfilesIni
 import org.openqa.selenium.logging.LogType
+import org.openqa.selenium.logging.LogEntries
 
 class Session(name: String = "default") extends WebDriver {
   import Session._
@@ -574,17 +575,40 @@ class Session(name: String = "default") extends WebDriver {
   def switchTo(): org.openqa.selenium.WebDriver.TargetLocator =
     webDriver.switchTo()
 
-  def getLogs() = manage().logs().get(LogType.BROWSER)
+  def getBrowserLogs() = manage().logs().get(LogType.BROWSER)
 
-  def showLogs() = {
+  def showLogs(logType: String): Unit = {
+    showLogs(manage().logs().get(logType))
+  }
+
+  def showLogs(logEntries: LogEntries): Unit = {
     try {
       import scala.jdk.CollectionConverters._
-      getLogs().iterator().asScala.foreach { le =>
+      logEntries.iterator().asScala.foreach { le =>
         testlog.severe(s"Session ${name}: ${le}")
       }
     } catch {
       case x: Exception =>
         testlog.warning(s"Session ${name}: Error getting logs", x)
+    }
+
+  }
+
+  def showLogs(): Unit = {
+    val logs = manage().logs()
+    import scala.jdk.CollectionConverters._
+    logs.getAvailableLogTypes().asScala.foreach { logtype =>
+      showLogs(logtype)
+    }
+  }
+
+  def captureLogsOnError[R](f: => R): R = {
+    try {
+      f
+    } catch {
+      case x: Exception =>
+        showLogs()
+        throw x
     }
   }
 
