@@ -578,6 +578,7 @@ class Session(name: String = "default") extends WebDriver {
   def getBrowserLogs() = manage().logs().get(LogType.BROWSER)
 
   def showLogs(logType: String): Unit = {
+    testlog.info(s"Show logs for logtype: ${logType}")
     showLogs(manage().logs().get(logType))
   }
 
@@ -597,7 +598,9 @@ class Session(name: String = "default") extends WebDriver {
   def showLogs(): Unit = {
     val logs = manage().logs()
     import scala.jdk.CollectionConverters._
-    logs.getAvailableLogTypes().asScala.foreach { logtype =>
+    val ty = logs.getAvailableLogTypes().asScala
+    testlog.info(s"Available logtypes: ${ty.mkString}")
+    ty.foreach { logtype =>
       showLogs(logtype)
     }
   }
@@ -607,7 +610,11 @@ class Session(name: String = "default") extends WebDriver {
       f
     } catch {
       case x: Exception =>
-        showLogs()
+        showLogs(LogType.BROWSER)
+        showLogs(LogType.CLIENT)
+        showLogs(LogType.DRIVER)
+        showLogs(LogType.SERVER)
+
         throw x
     }
   }

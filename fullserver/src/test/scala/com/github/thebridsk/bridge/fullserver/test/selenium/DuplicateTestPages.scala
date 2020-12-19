@@ -1299,7 +1299,10 @@ class DuplicateTestPages
       },
       CodeBlock {
         import SessionDirector._
-        HomePage.goto.validate.takeScreenshot(docsScreenshotDir, "HomePage")
+        captureLogsOnError {
+          HomePage.goto.validate.takeScreenshot(docsScreenshotDir, "HomePage")
+        }
+
       }
     )
 
@@ -1308,55 +1311,64 @@ class DuplicateTestPages
   it should "go to duplicate list page" in {
     import SessionDirector._
 
-    HomePage.current.clickListDuplicateButton.validate
+    captureLogsOnError {
+      HomePage.current.clickListDuplicateButton.validate
+    }
   }
 
   it should "go to boardsets page" in {
     import SessionDirector._
 
-    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
-    eventually {
-      lp.findElemById("BoardSets")
+    captureLogsOnError {
+
+      val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+      eventually {
+        lp.findElemById("BoardSets")
+      }
+      lp.clickBoardSets.validate
+        .click(BoardSetsPage.boardsets.head)
+        .validate
+        .clickOK
+        .validate
     }
-    lp.clickBoardSets.validate
-      .click(BoardSetsPage.boardsets.head)
-      .validate
-      .clickOK
-      .validate
   }
 
   it should "go to movements page" in {
     import SessionDirector._
 
-    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
-    eventually {
-      lp.findElemById("Movements")
-    }
-    lp.withClueAndScreenShot(
-      screenshotDir,
-      "Movement",
-      "trying to click first movement"
-    ) {
-      val mp = lp.clickMovements.validate
-        .takeScreenshot(screenshotDir, "MovementBefore")
-      val mp1 = mp.click(MovementsPage.movements.head).validate
-      mp1.clickOK.validate
+    captureLogsOnError {
+
+      val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+      eventually {
+        lp.findElemById("Movements")
+      }
+      lp.withClueAndScreenShot(
+        screenshotDir,
+        "Movement",
+        "trying to click first movement"
+      ) {
+        val mp = lp.clickMovements.validate
+          .takeScreenshot(screenshotDir, "MovementBefore")
+        val mp1 = mp.click(MovementsPage.movements.head).validate
+        mp1.clickOK.validate
+      }
     }
   }
 
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
+    captureLogsOnError {
 
-    val dp = ListDuplicatePage.current
-    dp.withClueAndScreenShot(
-      screenshotDir,
-      "NewDuplicate",
-      "clicking NewDuplicate button"
-    ) {
-      dp.clickNewDuplicateButton.validate
-        .takeScreenshot(docsScreenshotDir, "NewDuplicate")
+      val dp = ListDuplicatePage.current
+      dp.withClueAndScreenShot(
+        screenshotDir,
+        "NewDuplicate",
+        "clicking NewDuplicate button"
+      ) {
+        dp.clickNewDuplicateButton.validate
+          .takeScreenshot(docsScreenshotDir, "NewDuplicate")
+      }
     }
-
   }
 
   it should "create a new duplicate match" in {
