@@ -577,9 +577,14 @@ class Session(name: String = "default") extends WebDriver {
   def getLogs() = manage().logs().get(LogType.BROWSER)
 
   def showLogs() = {
-    import scala.jdk.CollectionConverters._
-    getLogs().iterator().asScala.foreach { le =>
-      testlog.severe(s"Session ${name}: ${le}")
+    try {
+      import scala.jdk.CollectionConverters._
+      getLogs().iterator().asScala.foreach { le =>
+        testlog.severe(s"Session ${name}: ${le}")
+      }
+    } catch {
+      case x: Exception =>
+        testlog.warning(s"Session ${name}: Error getting logs", x)
     }
   }
 
