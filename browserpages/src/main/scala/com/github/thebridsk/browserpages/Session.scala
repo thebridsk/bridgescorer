@@ -42,6 +42,11 @@ class Session(name: String = "default") extends WebDriver {
     f.equalsIgnoreCase("true") || f.equals("1")
   }
 
+  val noSandbox: Boolean = {
+    val f = getPropOrEnv("ChromeNoSandbox").getOrElse("")
+    f.equalsIgnoreCase("true") || f.equals("1")
+  }
+
 //  private def firefoxOld = {
 //    val profile = new ProfilesIni();
 //
@@ -161,6 +166,9 @@ class Session(name: String = "default") extends WebDriver {
       service.start()
       val options = new ChromeOptions
       options.addArguments("disable-infobars")
+
+      if (noSandbox) options.addArguments("no-sandbox")
+
       // options.addArguments("use-gl=swiftshader")
       if (headless) {
         options.addArguments("headless")

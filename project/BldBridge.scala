@@ -95,6 +95,7 @@ object BldBridge {
         |  BuildForHelpOnly            if defined only tests that generate help images are run
         |  ReleaseFromBranch <branch>  current branch when release is executed, default "main"
         |  UseLogFilePrefix  <path>    prefix to use for logging when running tests
+        |  ChromeNoSandbox <bool>      use --no-sandbox when starting chrome, default is false
         |
         |Environment Variables when using server in tests
         |  UseBridgeScorerURL              Override URL of server, default: http://localhost:8081
