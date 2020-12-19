@@ -1361,19 +1361,26 @@ class DuplicateTestPages
 
   it should "create a new duplicate match" in {
     import SessionDirector._
+    try {
 
-    val curPage = NewDuplicatePage.current
+      val curPage = NewDuplicatePage.current
 
-    val boards = MovementsPage.getBoardsFromMovement(movement)
+      val boards = MovementsPage.getBoardsFromMovement(movement)
 
-    testlog.info(s"Boards are $boards")
+      testlog.info(s"Boards are $boards")
 
-    dupid = curPage.click(boardset, movement).validate(boards).dupid
-    dupid mustBe Symbol("defined")
+      dupid = curPage.click(boardset, movement).validate(boards).dupid
+      dupid mustBe Symbol("defined")
 
-    testlog.info(s"Duplicate id is ${dupid.get}")
+      testlog.info(s"Duplicate id is ${dupid.get}")
 
-    allHands.boardsets mustBe Symbol("defined")
+      allHands.boardsets mustBe Symbol("defined")
+
+    } catch {
+      case x: Exception =>
+        showLogs()
+        throw x
+    }
   }
 
   var rounds: List[Int] = Nil
