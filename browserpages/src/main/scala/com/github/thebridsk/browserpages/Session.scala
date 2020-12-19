@@ -29,6 +29,7 @@ import org.openqa.selenium.support.events.WebDriverEventListener
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
 import org.openqa.selenium.firefox.ProfilesIni
+import org.openqa.selenium.logging.LogType
 
 class Session(name: String = "default") extends WebDriver {
   import Session._
@@ -572,6 +573,15 @@ class Session(name: String = "default") extends WebDriver {
   def quit(): Unit = webDriver.quit()
   def switchTo(): org.openqa.selenium.WebDriver.TargetLocator =
     webDriver.switchTo()
+
+  def getLogs() = manage().logs().get(LogType.BROWSER)
+
+  def showLogs() = {
+    import scala.jdk.CollectionConverters._
+    getLogs().iterator().asScala.foreach { le =>
+      testlog.severe(s"Session ${name}: ${le}")
+    }
+  }
 
 }
 

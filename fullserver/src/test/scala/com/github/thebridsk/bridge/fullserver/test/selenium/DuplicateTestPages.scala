@@ -1387,32 +1387,56 @@ class DuplicateTestPages
       "Starting browsers",
       CodeBlock {
         import SessionDirector._
-        val menu = ScoreboardPage.current.clickMainMenu.validate
-        eventually {
-          menu.findElemById("Director")
+        try {
+          val menu = ScoreboardPage.current.clickMainMenu.validate
+          eventually {
+            menu.findElemById("Director")
+          }
+          menu.clickDirectorButton.validate
+        } catch {
+          case x: Exception =>
+            showLogs()
+            throw x
         }
-        menu.clickDirectorButton.validate
       },
       CodeBlock {
         import SessionTable1._
-        ScoreboardPage
-          .goto(dupid.get)
-          .takeScreenshot(docsScreenshotDir, "ScoreboardFromTable")
-          .validate
-          .clickTableButton(1)
-          .validate(rounds)
-          .takeScreenshot(docsScreenshotDir, "TableRound1")
+        try {
+          ScoreboardPage
+            .goto(dupid.get)
+            .takeScreenshot(docsScreenshotDir, "ScoreboardFromTable")
+            .validate
+            .clickTableButton(1)
+            .validate(rounds)
+            .takeScreenshot(docsScreenshotDir, "TableRound1")
+        } catch {
+          case x: Exception =>
+            showLogs()
+            throw x
+        }
       },
       CodeBlock {
         import SessionTable2._
-        TablePage.goto(dupid.get, "2", EnterNames).validate(rounds)
+        try {
+          TablePage.goto(dupid.get, "2", EnterNames).validate(rounds)
+        } catch {
+          case x: Exception =>
+            showLogs()
+            throw x
+        }
       },
       CodeBlock {
         import SessionComplete._
-        val home = HomePage.goto.validate
-        val h2 = home.clickToLightDark(LightDarkAddOn.DarkTheme)
-        val sb = h2.clickListDuplicateButton.validate(dupid.get)
-        sb.clickDuplicate(dupid.get).validate
+        try {
+          val home = HomePage.goto.validate
+          val h2 = home.clickToLightDark(LightDarkAddOn.DarkTheme)
+          val sb = h2.clickListDuplicateButton.validate(dupid.get)
+          sb.clickDuplicate(dupid.get).validate
+        } catch {
+          case x: Exception =>
+            showLogs()
+            throw x
+        }
       }
     )
   }
