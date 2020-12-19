@@ -73,8 +73,6 @@ class ServerConf extends MainConf {
   */
 object Server extends Main[ServerConf] {
 
-  import config._
-
   val cmdName: String = {
     ((getClass.getClassLoader match {
       case loader: URLClassLoader =>
@@ -120,6 +118,8 @@ object Server extends Main[ServerConf] {
     SystemTimeJVM()
     0
   }
+
+  import config._
 
   override def setup(): Int = {
     memoryfile.foreach(f => MemoryMonitor.start(f.toString()))
