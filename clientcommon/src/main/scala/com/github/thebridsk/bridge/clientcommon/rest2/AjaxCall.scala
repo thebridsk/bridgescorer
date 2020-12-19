@@ -140,8 +140,8 @@ object AjaxCall extends IAjaxCall {
         // ignore this, means that promise is already complete
       }
     }
-    req.open(method, url, true)
     req.responseType = "text" // responseType
+    req.open(method, url, true)
     req.timeout = timeout.toMillis.toDouble
     req.withCredentials = withCredentials
     headers.foreach(x => req.setRequestHeader(x._1, x._2))

@@ -96,6 +96,7 @@ object BldBridge {
         |  ReleaseFromBranch <branch>  current branch when release is executed, default "main"
         |  UseLogFilePrefix  <path>    prefix to use for logging when running tests
         |  ChromeNoSandbox <bool>      use --no-sandbox when starting chrome, default is false
+        |  ParallelUtilsUseSerial <bool> use serial testing if true, default is false on windows and true on Mac and linux
         |
         |Environment Variables when using server in tests
         |  UseBridgeScorerURL              Override URL of server, default: http://localhost:8081
