@@ -141,8 +141,8 @@ trait MyService
       pathPrefix("v1") {
         loggingRoute ~
           cors() {
-            logRequest("logRouteWithIp", Logging.DebugLevel) {
-              logResult("logRouteWithIp", Logging.DebugLevel) {
+            logRequest(s"logRouteWithIp from ${ip}", Logging.DebugLevel) {
+              logResult(s"logRouteWithIp from ${ip}", Logging.DebugLevel) {
 //            handleRejections(totallyMissingHandler) {
                 serverService.serverRoute
 //            }

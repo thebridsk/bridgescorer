@@ -21,199 +21,214 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
-  * A skeleton component.
+  * A component page that displays a duplicate result.
+  *
+  * A duplicate result just identifies the teams, and the points they scored.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * PageDuplicateResult( PageDuplicateResult.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * PageDuplicateResult(
+  *   routerCtl = router,
+  *   page = DuplicateResultView("E1")
+  * )
+  * }}}
+  *
+  * @see See [[apply]] for description of arguments.
   *
   * @author werewolf
   */
 object PageDuplicateResult {
-  import PageDuplicateResultInternal._
+  import Internal._
 
   case class Props(
       routerCtl: BridgeRouter[DuplicatePage],
       page: DuplicateResultView
   )
 
+  /**
+    * Instantiate the component
+    *
+    * @param routerCtl
+    * @param page the DuplicateResultView that identifies the match to display.
+    *             The Id must be for a DuplicateResult.
+    *
+    * @return the unmounted react component
+    */
   def apply(routerCtl: BridgeRouter[DuplicatePage], page: DuplicateResultView) =
     component(
       Props(routerCtl, page)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-}
+  protected object Internal {
 
-object PageDuplicateResultInternal {
-  import PageDuplicateResult._
+    val logger: Logger = Logger("bridge.PageDuplicateResult")
 
-  val logger: Logger = Logger("bridge.PageDuplicateResult")
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause State to leak.
+      */
+    case class State(currentDate: Date = new Date(), deletePopup: Boolean = false)
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause State to leak.
-    */
-  case class State(currentDate: Date = new Date(), deletePopup: Boolean = false)
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause Backend to leak.
+      */
+    class Backend(scope: BackendScope[Props, State]) {
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
+      // ignore changes to DateTimePicker
+      def setPlayedIgnore(value: Date): japgolly.scalajs.react.Callback =
+        Callback {}
 
-    // ignore changes to DateTimePicker
-    def setPlayedIgnore(value: Date): japgolly.scalajs.react.Callback =
-      Callback {}
+      val delete: Callback = scope.modState(s => s.copy(deletePopup = true))
 
-    val delete: Callback = scope.modState(s => s.copy(deletePopup = true))
+      val actionDeleteCancel: Callback =
+        scope.modState(s => s.copy(deletePopup = false))
 
-    val actionDeleteCancel: Callback =
-      scope.modState(s => s.copy(deletePopup = false))
+      val actionDeleteOk: Callback = scope.props >>= { props =>
+        Callback {
+          import scala.concurrent.ExecutionContext.Implicits.global
+          RestClientDuplicateResult
+            .delete(props.page.dupid)
+            .recordFailure()
+            .foreach { f =>
+              logger.info(s"Deleted Match duplicate result ${props.page.dupid}")
+            }
+        } >> props.routerCtl.set(SummaryView)
+      }
 
-    val actionDeleteOk: Callback = scope.props >>= { props =>
-      Callback {
-        import scala.concurrent.ExecutionContext.Implicits.global
-        RestClientDuplicateResult
-          .delete(props.page.dupid)
-          .recordFailure()
-          .foreach { f =>
-            logger.info(s"Deleted Match duplicate result ${props.page.dupid}")
-          }
-      } >> props.routerCtl.set(SummaryView)
-    }
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+        import DuplicateStyles._
 
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-      import DuplicateStyles._
-
-      <.div(
-        PopupOkCancel(
-          if (state.deletePopup) {
-            Some(
-              <.span(
-                s"Are you sure you want to delete duplicate result ${props.page.dupid}"
-              )
-            )
-          } else {
-            None
-          },
-          Some(actionDeleteOk),
-          Some(actionDeleteCancel)
-        ),
-        DuplicatePageBridgeAppBar(
-          id = None,
-          tableIds = List(),
-          title = Seq[CtorType.ChildArg](
-            MuiTypography(
-              variant = TextVariant.h6,
-              color = TextColor.inherit
-            )(
-              <.span(
-                "Duplicate Results"
-              )
-            )
-          ),
-          helpurl = "../help/duplicate/summary.html",
-          routeCtl = props.routerCtl
-        )(
-        ),
-        DuplicateResultStore.getDuplicateResult() match {
-          case Some(dre) if dre.id == props.page.dupid =>
-            val bfinished = !dre.notfinished.getOrElse(false)
-            val finished =
-              if (bfinished) "Match complete" else "Match not complete"
-            val comment = dre.comment.getOrElse("")
-            val wss = dre.getWinnerSets
-            <.div(
-              dupStyles.divDuplicateResultPage,
-              wss.zipWithIndex.map { arg =>
-                val (ws, i) = arg
-                val pbws =
-                  if (dre.isIMP) dre.placeByWinnerSetIMP(ws)
-                  else dre.placeByWinnerSet(ws)
-                ViewPlayerMatchResult(pbws, dre, i + 1, wss.length, dre.isIMP)
-              }.toTagMod,
-              <.p(
-                "Created: ",
-                DateUtils.formatDate(dre.created),
-                ", updated ",
-                DateUtils.formatDate(dre.updated)
-              ),
-              <.div(baseStyles.divFlexBreak),
-              <.div(
-                baseStyles.divFooter,
-                <.div(
-                  baseStyles.divFooterLeft,
-                  AppButton(
-                    "Summary",
-                    "Summary",
-                    props.routerCtl.setOnClick(SummaryView)
-                  )
-                ),
-                <.div(
-                  baseStyles.divFooterCenter,
-                  AppButton(
-                    "Edit",
-                    "Edit",
-                    props.routerCtl.setOnClick(
-                      DuplicateResultEditView(props.page.dupid.id)
-                    )
-                  )
-                ),
-                <.div(
-                  baseStyles.divFooterRight,
-                  AppButton("Delete", "Delete", ^.onClick --> delete)
+        <.div(
+          PopupOkCancel(
+            if (state.deletePopup) {
+              Some(
+                <.span(
+                  s"Are you sure you want to delete duplicate result ${props.page.dupid}"
                 )
               )
-            )
-          case _ =>
-            HomePage.loading
-        }
-      )
-    }
-
-    val storeCallback = scope.forceUpdate
-
-    val didMount: Callback = scope.props >>= { (p) =>
-      Callback {
-        logger.info("PageDuplicateResult.didMount")
-        DuplicateResultStore.addChangeListener(storeCallback)
-
-        Controller.monitorDuplicateResult(p.page.dupid)
+            } else {
+              None
+            },
+            Some(actionDeleteOk),
+            Some(actionDeleteCancel)
+          ),
+          DuplicatePageBridgeAppBar(
+            id = None,
+            tableIds = List(),
+            title = Seq[CtorType.ChildArg](
+              MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit
+              )(
+                <.span(
+                  "Duplicate Results"
+                )
+              )
+            ),
+            helpurl = "../help/duplicate/summary.html",
+            routeCtl = props.routerCtl
+          )(
+          ),
+          DuplicateResultStore.getDuplicateResult() match {
+            case Some(dre) if dre.id == props.page.dupid =>
+              val bfinished = !dre.notfinished.getOrElse(false)
+              val finished =
+                if (bfinished) "Match complete" else "Match not complete"
+              val comment = dre.comment.getOrElse("")
+              val wss = dre.getWinnerSets
+              <.div(
+                dupStyles.divDuplicateResultPage,
+                wss.zipWithIndex.map { arg =>
+                  val (ws, i) = arg
+                  val pbws =
+                    if (dre.isIMP) dre.placeByWinnerSetIMP(ws)
+                    else dre.placeByWinnerSet(ws)
+                  ViewPlayerMatchResult(pbws, dre, i + 1, wss.length, dre.isIMP)
+                }.toTagMod,
+                <.p(
+                  "Created: ",
+                  DateUtils.formatDate(dre.created),
+                  ", updated ",
+                  DateUtils.formatDate(dre.updated)
+                ),
+                <.div(baseStyles.divFlexBreak),
+                <.div(
+                  baseStyles.divFooter,
+                  <.div(
+                    baseStyles.divFooterLeft,
+                    AppButton(
+                      "Summary",
+                      "Summary",
+                      props.routerCtl.setOnClick(SummaryView)
+                    )
+                  ),
+                  <.div(
+                    baseStyles.divFooterCenter,
+                    AppButton(
+                      "Edit",
+                      "Edit",
+                      props.routerCtl.setOnClick(
+                        DuplicateResultEditView(props.page.dupid.id)
+                      )
+                    )
+                  ),
+                  <.div(
+                    baseStyles.divFooterRight,
+                    AppButton("Delete", "Delete", ^.onClick --> delete)
+                  )
+                )
+              )
+            case _ =>
+              HomePage.loading
+          }
+        )
       }
+
+      val storeCallback = scope.forceUpdate
+
+      val didMount: Callback = scope.props >>= { (p) =>
+        Callback {
+          logger.info("PageDuplicateResult.didMount")
+          DuplicateResultStore.addChangeListener(storeCallback)
+
+          Controller.monitorDuplicateResult(p.page.dupid)
+        }
+      }
+
+      val willUnmount: japgolly.scalajs.react.Callback = Callback {
+        logger.info("PageDuplicateResult.willUnmount")
+        DuplicateResultStore.removeChangeListener(storeCallback)
+        Controller.stopMonitoringDuplicateResult()
+      }
+
     }
 
-    val willUnmount: japgolly.scalajs.react.Callback = Callback {
-      logger.info("PageDuplicateResult.willUnmount")
-      DuplicateResultStore.removeChangeListener(storeCallback)
-      Controller.stopMonitoringDuplicateResult()
-    }
+    def didUpdate(
+        cdu: ComponentDidUpdate[Props, State, Backend, Unit]
+    ): japgolly.scalajs.react.Callback =
+      Callback {
+        val props = cdu.currentProps
+        val prevProps = cdu.prevProps
+        if (prevProps.page != props.page) {
+          Controller.monitorDuplicateResult(props.page.dupid)
+        }
+      }
 
+    private[duplicate] val component = ScalaComponent
+      .builder[Props]("PageDuplicateResult")
+      .initialStateFromProps { props => State() }
+      .backend(new Backend(_))
+      .renderBackend
+      .componentDidMount(scope => scope.backend.didMount)
+      .componentWillUnmount(scope => scope.backend.willUnmount)
+      .componentDidUpdate(didUpdate)
+      .build
   }
 
-  def didUpdate(
-      cdu: ComponentDidUpdate[Props, State, Backend, Unit]
-  ): japgolly.scalajs.react.Callback =
-    Callback {
-      val props = cdu.currentProps
-      val prevProps = cdu.prevProps
-      if (prevProps.page != props.page) {
-        Controller.monitorDuplicateResult(props.page.dupid)
-      }
-    }
-
-  private[duplicate] val component = ScalaComponent
-    .builder[Props]("PageDuplicateResult")
-    .initialStateFromProps { props => State() }
-    .backend(new Backend(_))
-    .renderBackend
-    .componentDidMount(scope => scope.backend.didMount)
-    .componentWillUnmount(scope => scope.backend.willUnmount)
-    .componentDidUpdate(didUpdate)
-    .build
 }
