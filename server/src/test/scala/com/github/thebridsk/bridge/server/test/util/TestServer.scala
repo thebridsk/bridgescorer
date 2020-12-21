@@ -21,6 +21,7 @@ object TestServer {
 
   val testlog: Logger = Logger(TestServer.getClass.getName)
 
+  val startTestServer: Boolean = getBooleanProp("StartTestServer", false)
   val useTestServerURL: Option[String] = getProp("UseBridgeScorerURL")
   val useTestServerScheme: Option[String] = getProp("UseBridgeScorerScheme")
   val useTestServerHost: Option[String] = getProp("UseBridgeScorerHost")
@@ -100,10 +101,12 @@ object TestServer {
   }
 
   val startingServer: Boolean =
-    useTestServerHost.isEmpty && useTestServerPort.isEmpty && useTestServerURL.isEmpty
+    startTestServer || (
+      useTestServerHost.isEmpty && useTestServerPort.isEmpty && useTestServerURL.isEmpty
+    )
 
   val scheme: String = useTestServerScheme.getOrElse("http")
-  val interface = "localhost" // the interface to start the server on
+  val interface = useTestServerHost.getOrElse("localhost") // the interface to start the server on
   val hostname: String =
     useTestServerHost.getOrElse(interface) // the hostname for URLs
   val port: Int = useTestServerPort match {
