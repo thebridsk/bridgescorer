@@ -27,7 +27,6 @@ import org.openqa.selenium.support.events.EventFiringWebDriver
 import org.openqa.selenium.support.events.WebDriverEventListener
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
-import org.openqa.selenium.firefox.ProfilesIni
 import org.openqa.selenium.logging.LogType
 import org.openqa.selenium.logging.LogEntries
 import java.net.URL
@@ -84,35 +83,39 @@ class Session(name: String = "default") extends WebDriver {
     testlog.info(s"seleniumTesting profile size is ${l}")
   }
 
-  private def firefoxOptions = {
+  private def firefoxOptions(headless: Boolean = false) = {
 
-    val profile = new ProfilesIni();
+    // val profile = new ProfilesIni();
 
-    val fp = profile.getProfile("seleniumTesting");
-    assert(fp != null)
-    showFirefoxProfile(fp)
+    // val fp = profile.getProfile("seleniumTesting");
+    // assert(fp != null)
+    // showFirefoxProfile(fp)
 //    val fp = new FirefoxProfile();
 
     // need to start firefox as if by the following:
     //   firefox -new-instance -no-remote -P "seleniumTesting"
     val options = new FirefoxOptions()
-      .setProfile(fp)
-      .
+      // .setProfile(fp)
       // the following line gets rid of firefox starting on page "about:blank&utm_content=firstrun"
-      addPreference("browser.startup.homepage_override.mstone", "ignore")
+      .addPreference("browser.startup.homepage_override.mstone", "ignore")
       .addPreference("startup.homepage_welcome_url", "about:blank")
       .addPreference("startup.homepage_welcome_url.additional", "about:blank")
       .addPreference("browser.startup.homepage", "about:blank")
 
 //      options.addArguments( "-new-instance")
 
-    options.setLogLevel(FirefoxDriverLogLevel.TRACE)
+    options.setHeadless(headless)
+
+    options.setLogLevel(
+      if (debug) FirefoxDriverLogLevel.TRACE
+      else FirefoxDriverLogLevel.FATAL
+    )
 
     options
   }
 
-  private def firefox = {
-    val options = firefoxOptions
+  private def firefox(headless: Boolean = false) = {
+    val options = firefoxOptions(headless)
     new FirefoxDriver(options)
   }
 
@@ -327,7 +330,10 @@ class Session(name: String = "default") extends WebDriver {
                 safari // Safari.webDriver
               case "firefox" =>
                 testlog.fine("Using firefox")
-                firefox // Firefox.webDriver
+                firefox(false) // Firefox.webDriver
+              case "firefoxheadless" =>
+                testlog.fine("Using firefox")
+                firefox(true) // Firefox.webDriver
               case "edge" =>
                 testlog.fine("Using edge")
                 edge
@@ -347,7 +353,10 @@ class Session(name: String = "default") extends WebDriver {
                         safariOptions // Safari.webDriver
                       case "firefox" =>
                         testlog.fine("Using firefox")
-                        firefoxOptions // Firefox.webDriver
+                        firefoxOptions(false) // Firefox.webDriver
+                      case "firefoxheadless" =>
+                        testlog.fine("Using firefox headless")
+                        firefoxOptions(true) // Firefox.webDriver
                       case "edge" =>
                         testlog.fine("Using edge")
                         edgeOptions

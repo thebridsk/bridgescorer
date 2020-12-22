@@ -94,7 +94,10 @@ class MyServiceSpec
       status mustBe PermanentRedirect
       header("Location") match {
         case Some(x) =>
-          x.value mustBe "/public/index.html"
+          val redirectUrl =
+            if (TestServer.testProductionPage) "/public/index.html"
+            else "/public/index-fastopt.html"
+          x.value mustBe redirectUrl
         case None => fail("Did not get a location header" + headers)
       }
     }
