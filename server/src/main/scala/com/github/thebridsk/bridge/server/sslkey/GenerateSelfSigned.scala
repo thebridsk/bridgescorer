@@ -174,6 +174,14 @@ Options:""")
     } // empty means no bad entries were found
   )(listArgConverter(s => s))
 
+  val optionAddMachineIP: ScallopOption[Boolean] = toggle(
+    name = "addmachineip",
+    noshort = true,
+    descrNo = "Don't add the machine IP address, default",
+    descrYes = "add the machine IP address",
+    default = Some(false)
+  )
+
   def executeSubcommand(): Int = {
 
     try {
@@ -215,6 +223,10 @@ Options:""")
 
       val trust = ca.trustRootCA(optionTruststore(), optionTrustPW())
 
+      val machineip =
+        if (optionAddMachineIP()) GenerateServerCert.getMachineIPs()
+        else List()
+
       val serv = server
         .generateServerCSR()
         .generateServerCert(
@@ -222,7 +234,7 @@ Options:""")
           rootcaKeypass = ca.keypass,
           rootcaKeyStore = ca.keystore,
           rootcaKeystorePass = ca.storepass,
-          ip = optionIP()
+          ip = optionIP():::machineip
         )
         .importServerCert(ca.alias, ca.cert.toString)
         .exportServerCert()

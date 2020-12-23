@@ -129,7 +129,8 @@ object BldBridgeServer {
               s""" --truststore $trustprefix"""+
               """ -v"""+
               """ --nginx"""+
-              """ --clean"""
+              """ --clean"""+
+              """ --addmachineip"""
             ).value
             info
           }

@@ -200,6 +200,26 @@ Options:""")
   mutuallyExclusive(optionAddIP, optionIP, optionAddMachineIP)
   mutuallyExclusive(optionAddIP, optionAddMachineIP, optionDname)
 
+  def getMachineIPs(): List[String] = {
+    import scala.jdk.CollectionConverters._
+    val machineip = NetworkInterface
+      .getNetworkInterfaces()
+      .asScala
+      .filter { ni =>
+        !ni.isLoopback() && ni.getInetAddresses().hasMoreElements()
+      }
+      .flatMap { ni =>
+        ni.getInetAddresses().asScala.flatMap { ia =>
+          if (ia.isInstanceOf[Inet4Address]) ia.getHostAddress() :: Nil
+          else Nil
+        }
+      }
+      .toList
+      .distinct
+    log.info(s"Found machine IPs: ${machineip.mkString(" ")}")
+    machineip
+  }
+
   def executeSubcommand(): Int = {
 
     try {
@@ -282,22 +302,7 @@ Options:""")
 
       val (generateCert, ips) = {
         if (optionAddMachineIP()) {
-          import scala.jdk.CollectionConverters._
-          val machineip = NetworkInterface
-            .getNetworkInterfaces()
-            .asScala
-            .filter { ni =>
-              !ni.isLoopback() && ni.getInetAddresses().hasMoreElements()
-            }
-            .flatMap { ni =>
-              ni.getInetAddresses().asScala.flatMap { ia =>
-                if (ia.isInstanceOf[Inet4Address]) ia.getHostAddress() :: Nil
-                else Nil
-              }
-            }
-            .toList
-            .distinct
-          log.info(s"Found machine IPs: ${machineip.mkString(" ")}")
+          val machineip = getMachineIPs()
           val original = getSANFromCertificate(server)
           val newlist =
             (original ::: machineip).filter(_ != "127.0.0.1").distinct
