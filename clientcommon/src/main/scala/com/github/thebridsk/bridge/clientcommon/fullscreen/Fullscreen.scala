@@ -16,12 +16,19 @@ trait DocumentFullscreen extends js.Object {
   val webkitFullScreenEnabled: js.UndefOr[Boolean] = js.native
   val webkitFullScreenElement: js.UndefOr[Element] = js.native
   def webkitExitFullscreen(): js.Promise[Unit] = js.native
+
+  // for iPad
+  val webkitFullscreenEnabled: js.UndefOr[Boolean] = js.native
+  val webkitFullscreenElement: js.UndefOr[Element] = js.native
+  // def webkitExitFullscreen(): js.Promise[Unit] = js.native
 }
 
 @js.native
 trait DocumentElementFullscreen extends js.Object {
   def requestFullscreen(): js.Promise[Unit] = js.native
   def webkitRequestFullScreen(): js.Promise[Unit] = js.native
+  // for iPad
+  def webkitRequestFullscreen(): js.Promise[Unit] = js.native
 }
 
 object Values {
@@ -41,13 +48,14 @@ object Implicits {
 
   val log: Logger = Logger("bridge.Fullscreen")
 
-  private lazy val (webkitFullscreenEnabled, fullscreenEnabled) = {
+  private lazy val (webkitFullscreenEnabled, fullscreenEnabled, ipadFullscreenEnabled) = {
     val doc = document.asInstanceOf[DocumentFullscreen]
     (doc.webkitFullScreenEnabled.getOrElse(false),
-     doc.fullscreenEnabled.getOrElse(false))
+     doc.fullscreenEnabled.getOrElse(false),
+     doc.webkitFullscreenEnabled.getOrElse(false))
   }
 
-  lazy val isFullscreenEnabled = fullscreenEnabled || webkitFullscreenEnabled
+  lazy val isFullscreenEnabled = fullscreenEnabled || webkitFullscreenEnabled || ipadFullscreenEnabled
 
   implicit class DocumentFullscreenWrapper(private val document: Document)
       extends AnyVal {
@@ -59,16 +67,14 @@ object Implicits {
     def myFullscreenElement: js.UndefOr[Element] = {
       if (webkitFullscreenEnabled) doc.webkitFullScreenElement
       else if (fullscreenEnabled) doc.fullscreenElement
+      else if (ipadFullscreenEnabled) doc.webkitFullscreenElement
       else js.undefined
     }
     def myExitFullscreen(): js.Promise[Unit] = {
-      if (webkitFullscreenEnabled) {
-        doc.webkitExitFullscreen()
-      } else if (fullscreenEnabled) {
-        doc.exitFullscreen()
-      } else {
-        js.Promise.reject("fullscreen not supported")
-      }
+      if (webkitFullscreenEnabled) doc.webkitExitFullscreen()
+      else if (fullscreenEnabled)doc.exitFullscreen()
+      else if (ipadFullscreenEnabled) doc.webkitExitFullscreen()
+      else js.Promise.reject("fullscreen not supported")
     }
 
     def myIsFullscreen: Boolean = {
@@ -84,13 +90,10 @@ object Implicits {
       element.asInstanceOf[DocumentElementFullscreen]
 
     def myRequestFullscreen(): js.Promise[Unit] = {
-      if (webkitFullscreenEnabled) {
-        elem.webkitRequestFullScreen()
-      } else if (fullscreenEnabled) {
-        elem.requestFullscreen()
-      } else {
-        js.Promise.reject("fullscreen not supported")
-      }
+      if (webkitFullscreenEnabled) elem.webkitRequestFullScreen()
+      else if (fullscreenEnabled) elem.requestFullscreen()
+      else if (ipadFullscreenEnabled) elem.webkitRequestFullscreen()
+      else js.Promise.reject("fullscreen not supported")
     }
 
   }
