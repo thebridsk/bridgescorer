@@ -113,7 +113,7 @@ class AppRouter {
           logit(InfoPage(routerCtl))
         )
         | staticRoute("#thankyou", ThankYou) ~> renderR((routerCtl) =>
-          logit(ThankYouPage())
+          logit(ThankYouPage(routerCtl))
         )
         | staticRoute("#graphql", GraphQLAppPage) ~> renderR((routerCtl) =>
           logit(GraphQLPage(routerCtl))
