@@ -7,12 +7,22 @@ import org.scalajs.dom.document
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Listenable
 
+/**
+  * Extended Document object with fullscreen functions.
+  *
+  * There are 3 sets of functions:
+  * - standard names
+  * - Chrome 15-70 names
+  * - iPad names
+  */
 @js.native
 trait DocumentFullscreen extends js.Object {
+  // standard names
   val fullscreenEnabled: js.UndefOr[Boolean] = js.native
   val fullscreenElement: js.UndefOr[Element] = js.native
   def exitFullscreen(): js.Promise[Unit] = js.native
 
+  // for Chrome 15-70
   val webkitFullScreenEnabled: js.UndefOr[Boolean] = js.native
   val webkitFullScreenElement: js.UndefOr[Element] = js.native
   def webkitExitFullscreen(): js.Promise[Unit] = js.native
@@ -23,9 +33,20 @@ trait DocumentFullscreen extends js.Object {
   // def webkitExitFullscreen(): js.Promise[Unit] = js.native
 }
 
+/**
+  * Extended Element object with fullscreen functions.
+  *
+  * There are 3 sets of functions:
+  * - standard names
+  * - Chrome 15-70 names
+  * - iPad names
+  */
+
 @js.native
 trait DocumentElementFullscreen extends js.Object {
+  // standard names
   def requestFullscreen(): js.Promise[Unit] = js.native
+  // for Chrome 15-70
   def webkitRequestFullScreen(): js.Promise[Unit] = js.native
   // for iPad
   def webkitRequestFullscreen(): js.Promise[Unit] = js.native
@@ -57,6 +78,11 @@ object Implicits {
 
   lazy val isFullscreenEnabled = fullscreenEnabled || webkitFullscreenEnabled || ipadFullscreenEnabled
 
+  /**
+    * Wraps a Document class, and adds "my" versions of the fullscreen
+    *
+    * @param document
+    */
   implicit class DocumentFullscreenWrapper(private val document: Document)
       extends AnyVal {
 
@@ -83,6 +109,12 @@ object Implicits {
     }
   }
 
+
+  /**
+    * Wraps a Element class, and adds "my" versions of the fullscreen
+    *
+    * @param element
+    */
   implicit class ElementFullscreenWrapper(private val element: Element)
       extends AnyVal {
 
