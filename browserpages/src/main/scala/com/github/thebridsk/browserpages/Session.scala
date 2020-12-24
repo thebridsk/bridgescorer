@@ -4,7 +4,6 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.safari.SafariDriver
-import java.util.concurrent.TimeUnit
 import org.openqa.selenium.firefox.FirefoxProfile
 import org.openqa.selenium.Point
 import org.openqa.selenium.Dimension
@@ -13,7 +12,7 @@ import org.openqa.selenium.edge.EdgeDriver
 import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.chrome.ChromeDriverService
 import java.util.concurrent.atomic.AtomicLong
-import java.io.File
+// import java.io.File
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.SessionNotCreatedException
 import scala.annotation.tailrec
@@ -33,6 +32,7 @@ import java.net.URL
 import org.openqa.selenium.edge.EdgeOptions
 import org.openqa.selenium.safari.SafariOptions
 import org.openqa.selenium.remote.LocalFileDetector
+import java.time.Duration
 
 class Session(name: String = "default") extends WebDriver {
   import Session._
@@ -137,54 +137,63 @@ class Session(name: String = "default") extends WebDriver {
   }
 
   private def chrome(headless: Boolean) = {
+
     // does not work
-//    val options = new ChromeOptions()
+//    val options = chromeOptions(headless)
 //    options.addArguments("--verbose", "--log-path=C:\\temp\\chrome_test.log")
 
-    val logfile = new File(
-      "logs",
-      s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log"
-    )
+    // val logfile = new File(
+    //   "logs",
+    //   s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log"
+    // )
 
-    val service = if (debug) {
-      testlog.info(s"Logfile for chromedriver is ${logfile}")
-      new ChromeDriverService.Builder()
-        .usingAnyFreePort()
-        .withSilent(false)
-        .withLogFile(logfile)
-        .withVerbose(true)
-        .build()
-    } else {
-      new ChromeDriverService.Builder()
-        .usingAnyFreePort()
-        .withSilent(true)
-        .build()
-    }
+    // val service = if (debug) {
+    //   testlog.info(s"Logfile for chromedriver is ${logfile}")
+    //   new ChromeDriverService.Builder()
+    //     .usingAnyFreePort()
+    //     .withSilent(false)
+    //     .withLogFile(logfile)
+    //     .withVerbose(true)
+    //     .build()
+    // } else {
+    //   new ChromeDriverService.Builder()
+    //     .usingAnyFreePort()
+    //     .withSilent(true)
+    //     .build()
+    // }
 
-    try {
-      chromeDriverService = Some(service)
-      service.start()
-      val options = chromeOptions(headless)
-      testlog.fine("Starting remote driver for chrome")
-      val dr = new ChromeDriver(service, options)
-      testlog.fine("Started remote driver for chrome")
-      dr
-    } catch {
-      case x: Throwable =>
-        testlog.warning("Exception starting remote driver for chrome", x)
-        service.stop()
-        chromeDriverService = None
-        throw x
-    }
+    // try {
+    //   chromeDriverService = Some(service)
+    //   service.start()
+    //   val options = chromeOptions(headless)
+    //   testlog.fine("Starting remote driver for chrome")
+    //   val dr = new ChromeDriver(service, options)
+    //   testlog.fine("Started remote driver for chrome")
+    //   dr
+    // } catch {
+    //   case x: Throwable =>
+    //     testlog.warning("Exception starting remote driver for chrome", x)
+    //     service.stop()
+    //     chromeDriverService = None
+    //     throw x
+    // }
 
+    new ChromeDriver(chromeOptions(headless))
+  }
+
+  private def useChromiumBasedEdge() = {
+    System.setProperty("webdriver.edge.edgehtml", "false")
   }
 
   private def edgeOptions = {
+    useChromiumBasedEdge()
     new EdgeOptions
   }
 
   private def edge = {
-    new EdgeDriver
+    useChromiumBasedEdge()
+    // System.setProperty("webdriver.edge.driver", "msedgedriver.exe")
+    new EdgeDriver(edgeOptions)
   }
 
   private def safariOptions = {
@@ -192,7 +201,7 @@ class Session(name: String = "default") extends WebDriver {
   }
 
   private def safari = {
-    new SafariDriver
+    new SafariDriver(safariOptions)
   }
 
   /**
@@ -308,6 +317,8 @@ class Session(name: String = "default") extends WebDriver {
     wd
   }
 
+  private val implicitWait = Duration.ofSeconds(2)
+
   private def createSession(browser: Option[String] = None): Session =
     synchronized {
       webDriver =
@@ -378,7 +389,7 @@ class Session(name: String = "default") extends WebDriver {
                 defaultBrowser // default
             }
         })
-      sessionImplicitlyWait(2, TimeUnit.SECONDS)
+      sessionImplicitlyWait(implicitWait)
       this
     }
 
@@ -426,10 +437,10 @@ class Session(name: String = "default") extends WebDriver {
   def isSessionRunning: Boolean = synchronized { webDriver != null }
 
   def sessionImplicitlyWait(
-      time: Long,
-      unit: TimeUnit = TimeUnit.SECONDS
-  ): WebDriver.Timeouts =
-    webDriver.manage().timeouts().implicitlyWait(time, unit);
+      wait: Duration
+  ): WebDriver.Timeouts = {
+    webDriver.manage().timeouts().implicitlyWait(wait);
+  }
 
   /**
     * Stop the browser webdriver
