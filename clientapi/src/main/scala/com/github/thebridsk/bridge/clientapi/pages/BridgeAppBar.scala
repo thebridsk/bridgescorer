@@ -343,7 +343,7 @@ object BridgeAppBarInternal {
                 ),
                 MuiMenuItem(
                   id = "Voyager",
-                  onClick = callbackPage(VoyagerView) _
+                  onClick = callbackPage(VoyagerView(Map())) _
                 )(
                   "Voyager"
                 ),

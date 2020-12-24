@@ -37,7 +37,8 @@ object AppRouter {
   case object PageTest extends AppPage // for debugging
   case object GraphQLAppPage extends AppPage
   case object ColorView extends AppPage
-  case object VoyagerView extends AppPage
+  case class VoyagerView( query: Map[String, String]) extends AppPage
+  object VoyagerViewDefault extends VoyagerView(Map())
   case object GraphiQLView extends AppPage
   case object LogView extends AppPage
 
@@ -67,7 +68,8 @@ class AppRouter {
         Info ::
         GraphQLAppPage ::
         ColorView ::
-        VoyagerView ::
+        VoyagerView(Map("url"->"/")) ::
+        VoyagerViewDefault ::
         GraphiQLView ::
         LogView ::
         Nil
@@ -119,9 +121,14 @@ class AppRouter {
         | staticRoute("#color", ColorView) ~> renderR((routerCtl) =>
           logit(ColorPage(routerCtl))
         )
-        | staticRoute("#voyager", VoyagerView) ~> renderR((routerCtl) =>
-          logit(VoyagerPage(routerCtl))
+        // | staticRoute("#voyager", VoyagerViewDefault) ~> renderR((routerCtl) =>
+        //   logit(VoyagerPage(routerCtl,VoyagerViewDefault))
+        // )
+        | dynamicRouteCT(
+          ("#voyager" ~ queryToMap)
+            .caseClass[VoyagerView]
         )
+          ~> dynRenderR((p, routerCtl) => logit(VoyagerPage(routerCtl,p)))
         | staticRoute("#graphiql", GraphiQLView) ~> renderR((routerCtl) =>
           logit(GraphiQLPage(routerCtl))
         )

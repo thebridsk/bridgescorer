@@ -8,6 +8,7 @@ import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.clientapi.routes.AppRouter.VoyagerView
 
 /**
   * A skeleton component.
@@ -23,10 +24,16 @@ import com.github.thebridsk.materialui.TextColor
 object VoyagerPage {
   import VoyagerPageInternal._
 
-  case class Props(router: BridgeRouter[AppPage])
+  case class Props(
+    router: BridgeRouter[AppPage],
+    page: VoyagerView
+  )
 
-  def apply(router: BridgeRouter[AppPage]) =
-    component(Props(router)) // scalafix:ok ExplicitResultTypes; ReactComponent
+  def apply(
+    router: BridgeRouter[AppPage],
+    page: VoyagerView
+  ) =
+    component(Props(router,page)) // scalafix:ok ExplicitResultTypes; ReactComponent
 
 }
 
@@ -49,6 +56,7 @@ object VoyagerPageInternal {
     */
   class Backend(scope: BackendScope[Props, State]) {
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+      val url = props.page.query.get("url").getOrElse("/v1/graphql")
       <.div(
         RootBridgeAppBar(
           Seq(
@@ -65,7 +73,7 @@ object VoyagerPageInternal {
           props.router
         )(),
         <.div(
-          Voyager("/v1/graphql")
+          Voyager(url)
         )
 //        <.div(
 //          AppButton( "Home", "Home",
