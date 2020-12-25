@@ -56,7 +56,8 @@ object BldVersion {
   lazy val vScalatestSelenium = "3.2.2.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.13.1"         // https://github.com/junit-team/junit4
 
-  lazy val vSelenium = "4.0.0-alpha-7" // https://github.com/SeleniumHQ/selenium
+  // lazy val vSelenium = "4.0.0-alpha-7" // https://github.com/SeleniumHQ/selenium
+  lazy val vSelenium = "3.141.59"      // https://github.com/SeleniumHQ/selenium
   lazy val vScallop = "4.0.1"          // https://github.com/scallop/scallop
   lazy val vSlf4j = "1.7.30"           // https://github.com/qos-ch/slf4j
   lazy val vPlayJson = "2.9.1"         // https://github.com/playframework/play-json

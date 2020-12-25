@@ -33,6 +33,8 @@ import org.openqa.selenium.edge.EdgeOptions
 import org.openqa.selenium.safari.SafariOptions
 import org.openqa.selenium.remote.LocalFileDetector
 import java.time.Duration
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 class Session(name: String = "default") extends WebDriver {
   import Session._
@@ -136,49 +138,51 @@ class Session(name: String = "default") extends WebDriver {
       options
   }
 
+  private def chromeDriver(headless: Boolean) = {
+    new ChromeDriver(chromeOptions(headless))
+  }
+
   private def chrome(headless: Boolean) = {
 
     // does not work
 //    val options = chromeOptions(headless)
 //    options.addArguments("--verbose", "--log-path=C:\\temp\\chrome_test.log")
 
-    // val logfile = new File(
-    //   "logs",
-    //   s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log"
-    // )
+    val logfile = new File(
+      "logs",
+      s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log"
+    )
 
-    // val service = if (debug) {
-    //   testlog.info(s"Logfile for chromedriver is ${logfile}")
-    //   new ChromeDriverService.Builder()
-    //     .usingAnyFreePort()
-    //     .withSilent(false)
-    //     .withLogFile(logfile)
-    //     .withVerbose(true)
-    //     .build()
-    // } else {
-    //   new ChromeDriverService.Builder()
-    //     .usingAnyFreePort()
-    //     .withSilent(true)
-    //     .build()
-    // }
+    val service = if (debug) {
+      testlog.info(s"Logfile for chromedriver is ${logfile}")
+      new ChromeDriverService.Builder()
+        .usingAnyFreePort()
+        .withSilent(false)
+        .withLogFile(logfile)
+        .withVerbose(true)
+        .build()
+    } else {
+      new ChromeDriverService.Builder()
+        .usingAnyFreePort()
+        .withSilent(true)
+        .build()
+    }
 
-    // try {
-    //   chromeDriverService = Some(service)
-    //   service.start()
-    //   val options = chromeOptions(headless)
-    //   testlog.fine("Starting remote driver for chrome")
-    //   val dr = new ChromeDriver(service, options)
-    //   testlog.fine("Started remote driver for chrome")
-    //   dr
-    // } catch {
-    //   case x: Throwable =>
-    //     testlog.warning("Exception starting remote driver for chrome", x)
-    //     service.stop()
-    //     chromeDriverService = None
-    //     throw x
-    // }
-
-    new ChromeDriver(chromeOptions(headless))
+    try {
+      chromeDriverService = Some(service)
+      service.start()
+      val options = chromeOptions(headless)
+      testlog.fine("Starting remote driver for chrome")
+      val dr = new ChromeDriver(service, options)
+      testlog.fine("Started remote driver for chrome")
+      dr
+    } catch {
+      case x: Throwable =>
+        testlog.warning("Exception starting remote driver for chrome", x)
+        service.stop()
+        chromeDriverService = None
+        throw x
+    }
   }
 
   private def useChromiumBasedEdge() = {
@@ -439,7 +443,11 @@ class Session(name: String = "default") extends WebDriver {
   def sessionImplicitlyWait(
       wait: Duration
   ): WebDriver.Timeouts = {
-    webDriver.manage().timeouts().implicitlyWait(wait);
+    // this is for selenium 4
+    // webDriver.manage().timeouts().implicitlyWait(wait)
+
+    // this works in selenium 3.141 and is deprecated in selenium 4
+    webDriver.manage().timeouts().implicitlyWait(wait.getSeconds(), TimeUnit.SECONDS)
   }
 
   /**
