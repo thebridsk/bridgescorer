@@ -26,6 +26,9 @@ package object data {
   type Movement = MovementV1
   val Movement = MovementV1
 
+  type IndividualMovement = IndividualMovementV1
+  val IndividualMovement = IndividualMovementV1
+
   type BoardSetsAndMovements = BoardSetsAndMovementsV1
   val BoardSetsAndMovements = BoardSetsAndMovementsV1
 

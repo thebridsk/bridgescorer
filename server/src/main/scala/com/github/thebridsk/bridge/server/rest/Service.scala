@@ -67,6 +67,7 @@ trait Service extends ImportExport {
     classOf[RestNames],
     classOf[RestBoardSet],
     classOf[RestMovement],
+    classOf[RestIndividualMovement],
     classOf[DuplicateMonitorWebservice],
     classOf[ChicagoMonitorWebservice],
     classOf[RubberMonitorWebservice],
@@ -81,6 +82,14 @@ trait Service extends ImportExport {
     implicit override lazy val restService: BridgeService =
       hasActorSystem.restService
   }
+
+  object restIndividualMovement extends RestIndividualMovement {
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
+  }
+
   object restBoardSet extends RestBoardSet {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
@@ -210,7 +219,7 @@ trait Service extends ImportExport {
                 restBoardSet.route ~ restMovement.route ~ restChicago.route ~
                 restDuplicate.route ~ restDuplicateResult.route ~ restDuplicateSummary.route ~
                 restNames.route ~ restRubber.route ~ restSuggestion.route ~
-                restDuplicatePlaces.route // ~ restMyLogging.route
+                restDuplicatePlaces.route ~ restIndividualMovement.route // ~ restMyLogging.route
             }
           }
         } ~

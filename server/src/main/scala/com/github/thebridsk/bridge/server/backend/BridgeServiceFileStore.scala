@@ -19,6 +19,7 @@ import com.github.thebridsk.bridge.server.yaml.YamlSupport._
 import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.data.MatchDuplicateResultV1
 import com.github.thebridsk.bridge.server.backend.resource.Converter
+import com.github.thebridsk.bridge.data.IndividualMovement
 
 class BridgeServiceFileStoreConverters(yaml: Boolean) {
 
@@ -50,6 +51,9 @@ class BridgeServiceFileStoreConverters(yaml: Boolean) {
 
   implicit val movementJson: VersionedInstanceJson[Movement.Id, Movement] =
     VersionedInstanceJson[Movement.Id, Movement]
+
+  implicit val individualMovementJson: VersionedInstanceJson[IndividualMovement.Id, IndividualMovement] =
+    VersionedInstanceJson[IndividualMovement.Id, IndividualMovement]
 
 }
 
@@ -107,6 +111,15 @@ class BridgeServiceFileStore(
       dir,
       "/com/github/thebridsk/bridge/server/backend/",
       "Movements.txt",
+      self.getClass.getClassLoader
+    )
+
+  val individualMovements: MultiStore[IndividualMovement.Id, IndividualMovement] =
+    MultiStore.createFileAndResource[IndividualMovement.Id, IndividualMovement](
+      id,
+      dir,
+      "/com/github/thebridsk/bridge/server/backend/",
+      "IndividualMovements.txt",
       self.getClass.getClassLoader
     )
 

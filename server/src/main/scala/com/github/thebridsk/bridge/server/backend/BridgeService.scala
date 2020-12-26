@@ -43,6 +43,7 @@ import com.github.thebridsk.utilities.version.VersionUtilities
 import scala.util.Using
 import java.io.FileInputStream
 import java.io.InputStream
+import com.github.thebridsk.bridge.data.IndividualMovement
 
 /**
   * The backend trait for our service.
@@ -64,6 +65,7 @@ abstract class BridgeService(val id: String) {
 
   val boardSets: Store[BoardSet.Id, BoardSet]
   val movements: Store[Movement.Id, Movement]
+  val individualMovements: Store[IndividualMovement.Id, IndividualMovement]
 
   /**
     * The import store.  Some some of the implementations support this, and will override this value.
@@ -669,6 +671,14 @@ class BridgeServiceInMemory(
       id,
       "/com/github/thebridsk/bridge/server/backend/",
       "Movements.txt",
+      self.getClass.getClassLoader
+    )
+
+  val individualMovements: Store[IndividualMovement.Id, IndividualMovement] =
+    MultiStore.createInMemoryAndResource[IndividualMovement.Id, IndividualMovement](
+      id,
+      "/com/github/thebridsk/bridge/server/backend/",
+      "IndividualMovements.txt",
       self.getClass.getClassLoader
     )
 

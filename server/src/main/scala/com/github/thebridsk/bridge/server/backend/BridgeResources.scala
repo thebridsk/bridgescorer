@@ -12,6 +12,7 @@ import com.github.thebridsk.bridge.server.backend.resource.PersistentSupport
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchRubber
@@ -204,6 +205,19 @@ class MovementCacheStoreSupport(
       Movement,
       "Movement",
       "/movements",
+      readOnly,
+      dontUpdateTime
+    ) {}
+
+class IndividualMovementCacheStoreSupport(
+    readOnly: Boolean,
+    dontUpdateTime: Boolean = false
+)(implicit
+    instanceJson: VersionedInstanceJson[IndividualMovement.Id, IndividualMovement]
+) extends GenericIdFromInstanceCacheStoreSupport(
+      IndividualMovement,
+      "IndividualMovement",
+      "/individualmovements",
       readOnly,
       dontUpdateTime
     ) {}
@@ -703,6 +717,8 @@ class BridgeResources(
     new BoardSetCacheStoreSupport(readOnly, dontUpdateTime)
   implicit val movementCacheStoreSupport: MovementCacheStoreSupport =
     new MovementCacheStoreSupport(readOnly, dontUpdateTime)
+  implicit val individualMovementCacheStoreSupport: IndividualMovementCacheStoreSupport =
+    new IndividualMovementCacheStoreSupport(readOnly, dontUpdateTime)
 
 }
 
