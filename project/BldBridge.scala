@@ -291,8 +291,7 @@ object BldBridge {
     action = releaseStepTaskAggregated(mydist in Distribution in bridgescorer) // publish release notes
   )
 
-  lazy val bridgescorer: Project = project
-    .in(file("."))
+  lazy val bridgescorer: Project = Project("root", file("."))
     .aggregate(
       BldBridgeShared.sharedJVM,
       BldBridgeShared.sharedJS,

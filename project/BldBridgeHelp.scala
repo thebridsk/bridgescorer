@@ -17,7 +17,7 @@ object BldBridgeHelp {
 
   val patternVersion = """(\d+(?:\.\d+)*(?:-SNAPSHOT)?)-.*""".r
 
-  lazy val help = project.in(file("help")).
+  lazy val help = Project("help", file("help")).
     settings( versionSetting: _* ).
     settings(
       scalaVersion  := verScalaVersion,

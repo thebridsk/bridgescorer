@@ -23,7 +23,7 @@ object BldBridgeDemo {
 
   val demoTargetDir = settingKey[File]("The demo directory.")
 
-  lazy val demo: Project = project.in(file("demo"))
+  lazy val demo: Project = Project("demo", file("demo"))
     .configure( commonSettings )
     .dependsOn(BldBridgeScoreKeeper.bridgescorekeeper % "test->test" )
     .dependsOn(BldBridgeServer.`bridgescorer-server`)

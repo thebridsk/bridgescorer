@@ -2,7 +2,7 @@
 import sbt._
 import Keys._
 
-import sbtcrossproject.{crossProject, CrossType}
+import sbtcrossproject.CrossProject
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
@@ -16,7 +16,7 @@ import BldVersion._
 
 object BldBridgeRotation {
 
-  lazy val `bridgescorer-rotation` = crossProject(JSPlatform, JVMPlatform).in(file("rotation")).
+  lazy val `bridgescorer-rotation` = CrossProject("rotation", file("rotation"))(JSPlatform, JVMPlatform).
     configure(commonSettings,buildInfo("com.github.thebridsk.bridge.version", "VersionRotation")).
     settings(
       name := "bridgescorer-rotation",

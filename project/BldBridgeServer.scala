@@ -25,8 +25,7 @@ import MyReleaseVersion._
 
 object BldBridgeServer {
 
-  lazy val `bridgescorer-server`: Project = project
-    .in(file("server"))
+  lazy val `bridgescorer-server`: Project = Project("server", file("server"))
     .configure(
       commonSettings,
       buildInfo("com.github.thebridsk.bridge.server.version", "VersionServer")

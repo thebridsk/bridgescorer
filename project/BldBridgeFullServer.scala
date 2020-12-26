@@ -25,8 +25,7 @@ import MyReleaseVersion._
 
 object BldBridgeFullServer {
 
-  lazy val `bridgescorer-fullserver`: Project = project
-    .in(file("fullserver"))
+  lazy val `bridgescorer-fullserver`: Project = Project("fullserver", file("fullserver"))
     .configure(
       commonSettings
     )
