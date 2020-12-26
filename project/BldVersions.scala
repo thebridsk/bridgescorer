@@ -40,7 +40,7 @@ object BldVersion {
 
   lazy val vWebJarsReact = "17.0.1"    // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.6.1"     // https://www.npmjs.com/package/react-widgets
-  lazy val vWebJarsFlux = "3.1.3"      // https://www.npmjs.com/package/flux
+  lazy val vWebJarsFlux = "4.0.0"      // https://www.npmjs.com/package/flux
   lazy val vReactWidgetsMoment = "4.0.30"  // https://www.npmjs.com/package/react-widgets-moment
   lazy val vMoment = "2.29.1"          // https://www.npmjs.com/package/moment
   lazy val vGlobalize = "1.6.0"               // https://www.npmjs.com/package/globalize
