@@ -20,43 +20,37 @@ import com.github.thebridsk.bridge.client.pages.duplicate.components.EnterScorek
   *   None
   *
   * Usage:
-  *   <pre><code>
+  * {{{
   *   val router: BridgeRouter[AppPage]
   *
   *   TestPage(router)
-  *   </code></pre>
+  * }}}
   *
   * @author werewolf
   */
 object TestPage {
-  import TestPageInternal._
+  import Internal._
 
   case class Props(router: BridgeRouter[AppPage])
 
+  /**
+    * Instantiate the component
+    *
+    * @param router
+    * @return the unmounted react component
+    */
   def apply(router: BridgeRouter[AppPage]) =
     component(Props(router)) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  protected object TestPageInternal {
+  protected object Internal {
 
     val logger: Logger = Logger("bridge.TestPage")
 
-    /**
-      * Internal state for rendering the component.
-      *
-      * I'd like this class to be private, but the instantiation of component
-      * will cause State to leak.
-      */
     case class State(
       name: String = "",
       selected: Option[PlayerPosition] = None
     )
 
-    /**
-      * Internal state for rendering the component.
-      *
-      * I'd like this class to be private, but the instantiation of component
-      * will cause Backend to leak.
-      */
     class Backend(scope: BackendScope[Props, State]) {
 
       val didMount: Callback = Callback {
@@ -97,7 +91,7 @@ object TestPage {
       }
     }
 
-    private[pages] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("TestPage")
       .initialStateFromProps { props =>
         State()
