@@ -41,15 +41,31 @@ import com.github.thebridsk.bridge.client.components.EnterName
 import com.github.thebridsk.bridge.client.pages.duplicate.components.SelectScorekeeper
 
 /**
-  * Shows the team x board table and has a totals column that shows the number of points the team has.
+  * Component that allows the players to be identified at a table for a round.
   *
-  * The ScoreboardView object will identify which MatchDuplicate to look at.
+  * If all players are unknown, the first round, then first a scorekeeper pages is shown
+  * to enter the scorekeeper and position, then a page to enter the remaining players.
+  *
+  * If only one team is unknown, then an page is shown that allows the entering of the names
+  * of the team.
+  *
+  * If both teams are known, then a page is shown where the scorekeeper can be selected, followed
+  * by positioning of the opponents.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * PageTableTeams( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
-  * </code></pre>
+  * {{{
+  * // one of
+  * val page = TableTeamByRoundView(id, tableid, round)
+  * val page = TableTeamByRoundEditView(id, tableid, round)
+  * val page = TableTeamByBoardView(id, tableid, round, board)
+  * val page = TableTeamByBoardEditView(id, tableid, round, board)
+  *
+  * PageTableTeams(
+  *   routerCtl = ...,
+  *   page = page
+  * )
+  * }}}
   *
   * @author werewolf
   */

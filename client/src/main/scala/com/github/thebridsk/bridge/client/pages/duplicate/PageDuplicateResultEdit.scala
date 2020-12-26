@@ -464,7 +464,7 @@ object PageDuplicateResultEdit {
 
     }
 
-    private[duplicate] val Header = ScalaComponent
+    private val Header = ScalaComponent
       .builder[Props]("PageDuplicateResultEdit.Header")
       .render_P(props => {
         <.thead(
@@ -480,7 +480,7 @@ object PageDuplicateResultEdit {
 
     private def noNull(s: String) = Option(s).getOrElse("")
 
-    private[duplicate] val TeamRow = ScalaComponent
+    private val TeamRow = ScalaComponent
       .builder[
         (
             Int,
@@ -544,7 +544,7 @@ object PageDuplicateResultEdit {
       })
       .build
 
-    private[duplicate] val TotalRow = ScalaComponent
+    private val TotalRow = ScalaComponent
       .builder[(List[DSE], Backend, Props, State)](
         "PageDuplicateResultEdit.TotalRow"
       )
@@ -581,7 +581,7 @@ object PageDuplicateResultEdit {
         }
       }
 
-    private[duplicate] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("PageDuplicateResultEdit")
       .initialStateFromProps { props => State() }
       .backend(new Backend(_))

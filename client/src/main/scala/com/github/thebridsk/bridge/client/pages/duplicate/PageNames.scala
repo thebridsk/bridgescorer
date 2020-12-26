@@ -68,7 +68,7 @@ object PageNames {
       Props(routerCtl, page, returnPage)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  object Internal {
+  protected object Internal {
 
     val logger: Logger = Logger("bridge.PageNames")
 
@@ -90,7 +90,7 @@ object PageNames {
 
     }
 
-    private[duplicate] val Header = ScalaComponent
+    val Header = ScalaComponent
       .builder[Props]("PageNames.Header")
       .render_P(props => {
         <.thead(

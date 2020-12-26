@@ -35,7 +35,7 @@ object PageRubberNames {
   ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(Props(page, router))
 
-  object Internal {
+  protected object Internal {
 
     val logger: Logger = Logger("bridge.PageRubberNames")
 

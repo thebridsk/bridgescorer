@@ -220,7 +220,7 @@ object PageDuplicateResult {
         }
       }
 
-    private[duplicate] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("PageDuplicateResult")
       .initialStateFromProps { props => State() }
       .backend(new Backend(_))

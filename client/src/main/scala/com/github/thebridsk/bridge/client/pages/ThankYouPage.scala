@@ -34,7 +34,7 @@ object ThankYouPageInternal {
       if (document.myIsFullscreen) document.myExitFullscreen()
     }
 
-  private[pages] val component = ScalaComponent
+  val component = ScalaComponent
     .builder[Props]("ThankYouPage")
     .stateless
     .noBackend

@@ -320,7 +320,7 @@ object ColorBar {
     component(Props(colors, Nil, None, titles, None, None))
   }
 
-  object Internal {
+  protected object Internal {
 
     import BaseStyles._
     import com.github.thebridsk.color.Colors._

@@ -309,7 +309,7 @@ object PageDuplicateHand {
         }
       }
 
-    private[duplicate] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("PageDuplicateHand")
       .initialStateFromProps { props => State.create(props) }
       .backend(new Backend(_))

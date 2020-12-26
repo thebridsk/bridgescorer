@@ -164,7 +164,7 @@ object PageAllBoards {
                     "Scoreboard",
                     props.routerCtl.setOnClick(props.page.toScoreboardView)
                   ),
-                  PageScoreboardInternal.scoringMethodButton(
+                  PageScoreboard.scoringMethodButton(
                     state.useIMP,
                     Some(score.isIMP),
                     false,
@@ -208,7 +208,7 @@ object PageAllBoards {
         }
       }
 
-    private[duplicate] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("PageAllBoards")
       .initialStateFromProps { props => State() }
       .backend(new Backend(_))

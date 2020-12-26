@@ -52,7 +52,7 @@ object Popup {
       Props(display, content, id, clickaway)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  object Internal {
+  protected object Internal {
 
     val logger: Logger = Logger("bridge.Popup")
 

@@ -439,7 +439,7 @@ object RootBridgeAppBar {
       }
     }
 
-    private[pages] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("RootBridgeAppBar")
       .initialStateFromProps { props =>
         State()

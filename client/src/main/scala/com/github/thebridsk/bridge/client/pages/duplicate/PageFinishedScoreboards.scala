@@ -29,7 +29,7 @@ import japgolly.scalajs.react.internal.Effect
   * To use, just code the following:
   *
   * {{{
-  * PageScoreboard(
+  * PageFinishedScoreboards(
   *   routerCtl = ...,
   *   game = FinishedScoreboardsView(id)
   * )

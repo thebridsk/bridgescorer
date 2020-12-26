@@ -144,7 +144,7 @@ object BeepComponent {
     )
   }
 
-  object Internal {
+  protected object Internal {
 
     val log: Logger = Logger("bridge.BeepComponent")
 

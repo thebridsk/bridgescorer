@@ -510,7 +510,7 @@ object BridgeAppBar {
       }
     }
 
-    private[pages] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("BridgeAppBar")
       .initialStateFromProps { props =>
         State()

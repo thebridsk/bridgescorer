@@ -293,7 +293,7 @@ object PageBoard {
                     props.routerCtl.setOnClick(props.page.toAllBoardsView)
                   ),
                   " ",
-                  PageScoreboardInternal.scoringMethodButton(
+                  PageScoreboard.scoringMethodButton(
                     state.useIMP,
                     Some(score.isIMP),
                     false,
@@ -329,7 +329,7 @@ object PageBoard {
       }
     }
 
-    private[duplicate] val BoardsRow = ScalaComponent
+    private val BoardsRow = ScalaComponent
       .builder[(List[Board.Id], Props, MatchDuplicateScore)](
         "PageBoard.BoardsRow"
       )
@@ -343,7 +343,7 @@ object PageBoard {
       })
       .build
 
-    private[duplicate] val BoardCell = ScalaComponent
+    private val BoardCell = ScalaComponent
       .builder[(Board.Id, Props, BoardScore)]("PageBoard.BoardCell")
       .render_P(args => {
         val (id, props, bs) = args
@@ -377,7 +377,7 @@ object PageBoard {
         }
       }
 
-    private[duplicate] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("PageBoard")
       .initialStateFromProps { props =>
         State()

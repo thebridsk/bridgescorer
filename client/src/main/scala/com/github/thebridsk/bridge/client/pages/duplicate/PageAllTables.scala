@@ -148,7 +148,7 @@ object PageAllTables {
         }
       }
 
-    private[duplicate] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("PageAllTables")
       .initialStateFromProps { props => State() }
       .backend(new Backend(_))

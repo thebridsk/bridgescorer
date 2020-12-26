@@ -154,7 +154,7 @@ object PageBoardSet {
         }
       }
 
-    private[duplicate] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("PageBoardSet")
       .initialStateFromProps { props => State() }
       .backend(new Backend(_))

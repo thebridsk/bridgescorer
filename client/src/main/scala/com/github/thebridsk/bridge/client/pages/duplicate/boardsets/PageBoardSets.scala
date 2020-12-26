@@ -75,7 +75,7 @@ object PageBoardSets {
       Props(routerCtl, backpage, initialDisplay)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  object Internal {
+  protected object Internal {
 
     import com.github.thebridsk.bridge.clientcommon.react.Utils._
     import DuplicateStyles._

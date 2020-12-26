@@ -23,7 +23,7 @@ import japgolly.scalajs.react.extra.router.BaseUrl
 import com.github.thebridsk.bridge.client.routes.TestBridgeRouter
 import japgolly.scalajs.react.extra.router.Path
 import com.github.thebridsk.bridge.client.routes.AppRouter.Home
-import com.github.thebridsk.bridge.client.pages.duplicate.PageNewDuplicateInternal
+import com.github.thebridsk.bridge.client.pages.duplicate.PageNewDuplicate
 import org.scalatest.Assertion
 
 object MyTest {
@@ -253,13 +253,13 @@ class MyTest extends AnyFlatSpec with Matchers {
 
   it should "convert a list of int to a string with ranges" in {
     val list = 2 :: 3 :: 4 :: Nil
-    PageNewDuplicateInternal.intToString(list) mustBe "2-4"
+    PageNewDuplicate.intToString(list) mustBe "2-4"
   }
 
   it should "convert another list of int to a string with ranges" in {
     val list2 =
       1 :: 2 :: 3 :: 4 :: 7 :: 9 :: 10 :: 12 :: 14 :: 16 :: 17 :: 19 :: 20 :: Nil
-    PageNewDuplicateInternal.intToString(
+    PageNewDuplicate.intToString(
       list2
     ) mustBe "1-4, 7, 9-10, 12, 14, 16-17, 19-20"
 
