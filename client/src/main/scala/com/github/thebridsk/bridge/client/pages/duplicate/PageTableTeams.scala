@@ -872,7 +872,7 @@ object PageTableTeamsInternal {
             score.tables.get(props.page.tableid) match {
               case Some(rounds) =>
                 val readonly =
-                  state.originalNames.isAllValid && !props.page.editPlayers
+                  state.originalNames.isAllValid
                 rounds.find { r =>
                   r.round == props.page.round
                 } match {
