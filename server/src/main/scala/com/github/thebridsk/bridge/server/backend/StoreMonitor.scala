@@ -60,6 +60,8 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 import akka.stream.CompletionStrategy
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePictures
 
 object StoreMonitor {
   sealed trait ChatEvent
@@ -524,6 +526,12 @@ class DuplicateStoreMonitor(
       case UpdateDuplicatePictures(dupid, pictures) =>
         log.debug(s"UpdateDuplicatePictures ${dupid} ${pictures}")
         futureError("Use REST API", seq)
+      case UpdateIndividualDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.debug(s"UpdateDuplicatePicture ${dupid} ${boardid} ${picture}")
+        futureError("Use REST API", seq)
+      case UpdateIndividualDuplicatePictures(dupid, pictures) =>
+        log.debug(s"UpdateDuplicatePictures ${dupid} ${pictures}")
+        futureError("Use REST API", seq)
       case StartMonitorDuplicate(dupid: MatchDuplicate.Id) =>
         log.info(s"StartMonitorDuplicate ${dupid}")
         val subid = get(sender) match {
@@ -656,6 +664,12 @@ class ChicagoStoreMonitor(
         futureError("Unknown request", seq)
       case UpdateDuplicatePictures(dupid, pictures) =>
         log.debug(s"UpdateDuplicatePictures not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.warning("UpdateIndividualDuplicatePicture not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePictures(dupid, pictures) =>
+        log.debug(s"UpdateIndividualDuplicatePictures not implemented")
         futureError("Unknown request", seq)
       case StartMonitorDuplicate(dupid: MatchDuplicate.Id) =>
         log.warning("StartMonitorDuplicate not implemented")
@@ -796,6 +810,12 @@ class RubberStoreMonitor(
         futureError("Unknown request", seq)
       case UpdateDuplicatePictures(dupid, pictures) =>
         log.debug(s"UpdateDuplicatePictures not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.warning("UpdateIndividualDuplicatePicture not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePictures(dupid, pictures) =>
+        log.debug(s"UpdateIndividualDuplicatePictures not implemented")
         futureError("Unknown request", seq)
       case StartMonitorDuplicate(dupid: MatchDuplicate.Id) =>
         log.warning("StartMonitorDuplicate not implemented")

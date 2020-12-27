@@ -26,6 +26,14 @@ object ProtocolJsonSupportImpl {
     Json.format[UpdateDuplicatePicture]
   implicit val updateDuplicatePicturesFormat: OFormat[UpdateDuplicatePictures] =
     Json.format[UpdateDuplicatePictures]
+  implicit val updateIndividualDuplicateFormat: OFormat[UpdateIndividualDuplicate] =
+    Json.format[UpdateIndividualDuplicate]
+  implicit val updateIndividualDuplicateHandFormat: OFormat[UpdateIndividualDuplicateHand] =
+    Json.format[UpdateIndividualDuplicateHand]
+  implicit val updateIndividualDuplicatePictureFormat: OFormat[UpdateIndividualDuplicatePicture] =
+    Json.format[UpdateIndividualDuplicatePicture]
+  implicit val updateIndividualDuplicatePicturesFormat: OFormat[UpdateIndividualDuplicatePictures] =
+    Json.format[UpdateIndividualDuplicatePictures]
   implicit val noDataFormat: OFormat[NoData] = Json.format[NoData]
   implicit val updateChicagoFormat: OFormat[UpdateChicago] =
     Json.format[UpdateChicago]
@@ -251,6 +259,10 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       case x: UpdateDuplicateTeam     => Json.toJson(x)
       case x: UpdateDuplicatePicture  => Json.toJson(x)
       case x: UpdateDuplicatePictures => Json.toJson(x)
+      case x: UpdateIndividualDuplicate         => Json.toJson(x)
+      case x: UpdateIndividualDuplicateHand     => Json.toJson(x)
+      case x: UpdateIndividualDuplicatePicture  => Json.toJson(x)
+      case x: UpdateIndividualDuplicatePictures => Json.toJson(x)
       case x: NoData                  => Json.toJson(x)
       case x: UpdateChicago           => Json.toJson(x)
       case x: UpdateChicagoRound      => Json.toJson(x)
@@ -337,6 +349,10 @@ class ToBrowserMessageFormat extends SealedFormat[ToBrowserMessage] {
       case x: UpdateDuplicateTeam     => Json.toJson[UpdateDuplicateTeam](x)
       case x: UpdateDuplicatePicture  => Json.toJson[UpdateDuplicatePicture](x)
       case x: UpdateDuplicatePictures => Json.toJson[UpdateDuplicatePictures](x)
+      case x: UpdateIndividualDuplicate         => Json.toJson[UpdateIndividualDuplicate](x)
+      case x: UpdateIndividualDuplicateHand     => Json.toJson[UpdateIndividualDuplicateHand](x)
+      case x: UpdateIndividualDuplicatePicture  => Json.toJson[UpdateIndividualDuplicatePicture](x)
+      case x: UpdateIndividualDuplicatePictures => Json.toJson[UpdateIndividualDuplicatePictures](x)
       case x: NoData                  => Json.toJson[NoData](x)
       case x: UpdateChicago           => Json.toJson[UpdateChicago](x)
       case x: UpdateChicagoRound      => Json.toJson(x)

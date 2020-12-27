@@ -37,7 +37,7 @@ import com.github.thebridsk.bridge.data.IndividualMovement
   * swagger annotations.
   */
 @Path("/rest/individualmovements")
-@Tags(Array(new Tag(name = "Duplicate")))
+@Tags(Array(new Tag(name = "IndividualDuplicate")))
 trait RestIndividualMovement extends HasActorSystem {
 
   lazy val testlog: LoggingAdapter = Logging(actorSystem, classOf[RestIndividualMovement])

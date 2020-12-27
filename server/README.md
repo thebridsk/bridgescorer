@@ -117,20 +117,20 @@ A Rest rest resource has the following components:
 
 Adding new rest resource requires the following:
 
-- add protocol class for the resource
-- add rest trait for the resource
-- in BridgeResources class, add an implicit CacheStoreSupport object for the type
-- in BridgeService class, add new store
-- in BridgeServiceInMemory class, add new store
-- in BridgeServiceFileStoreConverters class, add new VersionedInstanceJson
-- in BridgeServiceFileStore class, add new store
-- in BridgeServiceZipStore class, add new store
-- in Service class
-  - add new rest type to restTypes list
-  - add new instance of rest trait for new type
-  - add route for new rest trait into routeRest
 - in com.github.thebridsk.bridge.data package.scala add type
+- add protocol class for the resource
 - in JsonSupport
   - add KeyReads and KeyWrites for the key to the resource
   - add Format for resource Id
   - add format for resource
+- in BridgeServiceFileStoreConverters class, add new VersionedInstanceJson
+- in BridgeResources class, add an implicit CacheStoreSupport object for the type
+- in BridgeService class, add new store
+- in BridgeServiceInMemory class, add new store
+- in BridgeServiceFileStore class, add new store
+- in BridgeServiceZipStore class, add new store
+- add rest trait for the resource
+- in Service class
+  - add new rest type to restTypes list
+  - add new instance of rest trait for new type
+  - add route for new rest trait into routeRest

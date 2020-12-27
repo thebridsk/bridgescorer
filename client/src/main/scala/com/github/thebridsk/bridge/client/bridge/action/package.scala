@@ -15,6 +15,10 @@ import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Action
 import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.IndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
+import com.github.thebridsk.bridge.data.IndividualBoard
 
 package object action {
   import _root_.com.github.thebridsk.bridge.data.DuplicatePicture
@@ -74,6 +78,16 @@ package object action {
   case class ActionUpdatePictures(
       dupid: MatchDuplicate.Id,
       picture: List[DuplicatePicture]
+  ) extends DuplicateBridgeAction
+  case class ActionUpdateIndividualPicture(
+      dupid: IndividualDuplicate.Id,
+      boardid: IndividualBoard.Id,
+      handid: IndividualDuplicateHand.Id,
+      picture: Option[IndividualDuplicatePicture]
+  ) extends DuplicateBridgeAction
+  case class ActionUpdateIndividualPictures(
+      dupid: IndividualDuplicate.Id,
+      picture: List[IndividualDuplicatePicture]
   ) extends DuplicateBridgeAction
 
   sealed trait BoardSetAction extends BridgeAction

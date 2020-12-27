@@ -1,6 +1,6 @@
 package com.github.thebridsk.bridge.server.rest
 
-import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.IndividualDuplicate
 import akka.event.Logging._
 import akka.http.scaladsl.server.Directives._
 import javax.ws.rs.Path
@@ -46,20 +46,21 @@ import scala.reflect.io.Directory
 import scala.reflect.io.File
 import io.swagger.v3.oas.annotations.media.Encoding
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
-import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
-import com.github.thebridsk.bridge.data.Team
-import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
 import akka.http.scaladsl.model.StatusCode
 import scala.util.matching.Regex
+import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.IndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePicture
 
-object RestNestedPictureHand {
-  val log: Logger = Logger[RestNestedPictureHand]()
+object RestNestedPictureIndividualHand {
+  val log: Logger = Logger[RestNestedPictureIndividualHand]()
 
   val patternImageFile: Regex = """Image\.([^.]+)\.([^.]+)\.(jpg)""".r
 
   case class PictureFilenameParts(
-      boardId: Board.Id,
-      handId: Team.Id,
+      boardId: IndividualBoard.Id,
+      handId: IndividualDuplicateHand.Id,
       ext: String
   )
 
@@ -69,7 +70,7 @@ object RestNestedPictureHand {
   def getPartsMetadataFile(mdf: MetaDataFile): Option[PictureFilenameParts] = {
     mdf match {
       case patternImageFile(bid, hid, ext) =>
-        Some(PictureFilenameParts(Board.id(bid), Team.id(hid), ext))
+        Some(PictureFilenameParts(IndividualBoard.id(bid), IndividualDuplicateHand.id(hid), ext))
       case _ => None
     }
   }
@@ -90,14 +91,14 @@ object RestNestedPictureHand {
     file.startsWith("Image.")
   }
 
-  def isImageFilename(file: MetaDataFile, boardId: Board.Id): Boolean = {
+  def isImageFilename(file: MetaDataFile, boardId: IndividualBoard.Id): Boolean = {
     file.startsWith(s"Image.${boardId.id}.")
   }
 
   def isImageFilename(
       file: MetaDataFile,
-      boardId: Board.Id,
-      handId: Team.Id
+      boardId: IndividualBoard.Id,
+      handId: IndividualDuplicateHand.Id
   ): Boolean = {
     file.startsWith(s"Image.${boardId.id}.${handId.id}.")
   }
@@ -122,7 +123,7 @@ object RestNestedPictureHand {
   lazy val tempDir: Directory =
     Directory.makeTemp("tempImportStore", ".dir", null)
 
-  def tempDestination(boardId: Board.Id, handId: Team.Id)(
+  def tempDestination(boardId: IndividualBoard.Id, handId: IndividualDuplicateHand.Id)(
       fileInfo: FileInfo
   ): JFile = {
     val fn = fileInfo.fileName
@@ -144,9 +145,9 @@ object RestNestedPictureHand {
 
   def getUrlOfPicture(
       resName: String,
-      dupId: MatchDuplicate.Id,
-      boardId: Board.Id,
-      handId: Team.Id
+      dupId: IndividualDuplicate.Id,
+      boardId: IndividualBoard.Id,
+      handId: IndividualDuplicateHand.Id
   ): String = {
     val rn = if (resName.startsWith("/")) resName else "/" + resName
     s"/v1/rest${rn}/${dupId.id}/pictures/${boardId.id}/hands/${handId.id}"
@@ -154,7 +155,7 @@ object RestNestedPictureHand {
 
 }
 
-import RestNestedPictureHand._
+import RestNestedPictureIndividualHand._
 
 /**
   * Rest API implementation for the hand resource.
@@ -162,11 +163,11 @@ import RestNestedPictureHand._
   * The REST API and all the methods are documented using
   * swagger annotations.
   */
-@Path("/rest/duplicates/{dupId}/pictures/{boardId}/hands")
-@Tags(Array(new Tag(name = "Duplicate")))
-class RestNestedPictureHand(
-    store: Store[MatchDuplicate.Id, MatchDuplicate],
-    parent: RestNestedPicture
+@Path("/rest/individualduplicates/{dupId}/pictures/{boardId}/hands")
+@Tags(Array(new Tag(name = "IndividualDuplicate")))
+class RestNestedPictureIndividualHand(
+    store: Store[IndividualDuplicate.Id, IndividualDuplicate],
+    parent: RestNestedPictureIndividual
 ) {
 
   import UtilsPlayJson._
@@ -181,11 +182,11 @@ class RestNestedPictureHand(
     */
   @Hidden
   def route(implicit
-      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
-      @Parameter(hidden = true) boardId: Board.Id
+      @Parameter(hidden = true) dupId: IndividualDuplicate.Id,
+      @Parameter(hidden = true) boardId: IndividualBoard.Id
   ): Route =
     pathPrefix("hands") {
-      logRequestResult("RestNestedPictureHand.route", DebugLevel) {
+      logRequestResult("RestNestedPictureIndividualHand.route", DebugLevel) {
         getPicture(dupId, boardId) ~ getPictures(dupId, boardId) ~ putPicture(
           dupId,
           boardId
@@ -194,17 +195,17 @@ class RestNestedPictureHand(
     }
 
   def getPictureUrl(
-      dupId: MatchDuplicate.Id,
-      boardId: Board.Id,
-      handId: Team.Id
+      dupId: IndividualDuplicate.Id,
+      boardId: IndividualBoard.Id,
+      handId: IndividualDuplicateHand.Id
   ): String = {
     getUrlOfPicture(resNameWithSlash, dupId, boardId, handId)
   }
 
   def getAllPictures(
-      dupId: MatchDuplicate.Id,
-      boardId: Board.Id
-  ): Future[Either[(StatusCode, RestMessage), Iterator[DuplicatePicture]]] = {
+      dupId: IndividualDuplicate.Id,
+      boardId: IndividualBoard.Id
+  ): Future[Either[(StatusCode, RestMessage), Iterator[IndividualDuplicatePicture]]] = {
     store.metaData
       .listFilesFilter(dupId) { f =>
         val parts = getPartsMetadataFile(f)
@@ -216,9 +217,9 @@ class RestNestedPictureHand(
             val r = it.flatMap { mdf =>
               mdf match {
                 case patternImageFile(bid, hid, ext) =>
-                  val handid = Team.id(hid)
-                  val boardid = Board.id(bid)
-                  DuplicatePicture(
+                  val handid = IndividualDuplicateHand.id(hid)
+                  val boardid = IndividualBoard.id(bid)
+                  IndividualDuplicatePicture(
                     boardid,
                     handid,
                     getPictureUrl(dupId, boardId, handid)
@@ -294,8 +295,8 @@ class RestNestedPictureHand(
   )
   def xxxgetPictures: Unit = {}
   def getPictures(implicit
-      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
-      @Parameter(hidden = true) boardId: Board.Id
+      @Parameter(hidden = true) dupId: IndividualDuplicate.Id,
+      @Parameter(hidden = true) boardId: IndividualBoard.Id
   ): Route =
     pathEndOrSingleSlash {
       get {
@@ -396,13 +397,13 @@ class RestNestedPictureHand(
   )
   def xxxgetPicture: Unit = {}
   def getPicture(implicit
-      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
-      @Parameter(hidden = true) boardId: Board.Id
+      @Parameter(hidden = true) dupId: IndividualDuplicate.Id,
+      @Parameter(hidden = true) boardId: IndividualBoard.Id
   ): Route =
     logRequest("getPictureHand", DebugLevel) {
       get {
         path("""[a-zA-Z0-9]+""".r) { hids =>
-          val hid = Team.id(hids)
+          val hid = IndividualDuplicateHand.id(hids)
           val fprefix = s"${hids}."
           val fut = store.metaData
             .listFilesFilter(dupId) { f =>
@@ -475,9 +476,9 @@ class RestNestedPictureHand(
                             val r =
                               mdf match {
                                 case patternImageFile(bid, tid, ext) =>
-                                  val teamid = Team.id(tid)
-                                  val boardid = Board.id(bid)
-                                  val v = DuplicatePicture(
+                                  val teamid = IndividualDuplicateHand.id(tid)
+                                  val boardid = IndividualBoard.id(bid)
+                                  val v = IndividualDuplicatePicture(
                                     boardid,
                                     teamid,
                                     getPictureUrl(dupId, boardId, teamid)
@@ -617,14 +618,14 @@ class RestNestedPictureHand(
   )
   def xxxputPicture: Unit = {}
   def putPicture(implicit
-      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
-      @Parameter(hidden = true) boardId: Board.Id
+      @Parameter(hidden = true) dupId: IndividualDuplicate.Id,
+      @Parameter(hidden = true) boardId: IndividualBoard.Id
   ): Route =
     logRequest("putPictureHand", DebugLevel) {
       logResult("putPictureHand", DebugLevel) {
         put {
           path("""[a-zA-Z0-9]+""".r) { hids =>
-            val hid = Team.id(hids)
+            val hid = IndividualDuplicateHand.id(hids)
             storeUploadedFiles("picture", tempDestination(boardId, hid)) {
               files =>
                 if (files.length != 1) {
@@ -673,12 +674,12 @@ class RestNestedPictureHand(
                             case Success(runit) =>
                               val changeContext = ChangeContext()
                               changeContext.update(
-                                UpdateDuplicatePicture(
+                                UpdateIndividualDuplicatePicture(
                                   dupid = dupId,
                                   boardid = boardId,
                                   handId = hid,
                                   picture = Some(
-                                    DuplicatePicture(
+                                    IndividualDuplicatePicture(
                                       boardId,
                                       hid,
                                       getPictureUrl(dupId, boardId, hid)
@@ -789,12 +790,12 @@ class RestNestedPictureHand(
   )
   def xxxdeletePicture: Unit = {}
   def deletePicture(implicit
-      @Parameter(hidden = true) dupId: MatchDuplicate.Id,
-      @Parameter(hidden = true) boardId: Board.Id
+      @Parameter(hidden = true) dupId: IndividualDuplicate.Id,
+      @Parameter(hidden = true) boardId: IndividualBoard.Id
   ): Route =
     delete {
       path("""[a-zA-Z0-9]+""".r) { handIds =>
-        val handId = Team.id(handIds)
+        val handId = IndividualDuplicateHand.id(handIds)
         val fut = store.metaData.listFiles(dupId).map { rimdf =>
           rimdf match {
             case Right(imdf) =>
@@ -817,7 +818,7 @@ class RestNestedPictureHand(
                             )
                             val changeContext = ChangeContext()
                             changeContext.update(
-                              UpdateDuplicatePicture(
+                              UpdateIndividualDuplicatePicture(
                                 dupid = dupId,
                                 boardid = boardId,
                                 handId = handId,

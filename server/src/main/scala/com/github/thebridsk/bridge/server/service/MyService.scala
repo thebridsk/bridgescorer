@@ -54,7 +54,7 @@ trait MyService
 
   val excptHandler: ExceptionHandler = ExceptionHandler {
     case x: IllegalArgumentException =>
-      log.warning(s"Illegal argument in request: ${x.getMessage()}")
+      log.warning(s"MyService: Illegal argument in request: ${x.getMessage()}")
       import UtilsPlayJson._
       complete(
         StatusCodes.BadRequest,
@@ -122,13 +122,18 @@ trait MyService
   /**
     * Spray routing which logs all requests and responses at the Debug level.
     */
-  val myRouteWithLogging: Route = handleExceptions(excptHandler) {
-    handleRejections(totallyMissingHandler) {
-//    logRequest(("topLevel", Logging.DebugLevel)) {
-//      logResult(("topLevel", Logging.DebugLevel)) {
-      logRouteWithIp
-//      }
-//    }
+  val myRouteWithLogging: Route = {
+    import CorsDirectives._
+    cors() {
+      handleExceptions(excptHandler) {
+        handleRejections(totallyMissingHandler) {
+          // logRequest(("topLevel", Logging.DebugLevel)) {
+          //   logResult(("topLevel", Logging.DebugLevel)) {
+          logRouteWithIp
+          //   }
+          // }
+        }
+      }
     }
   }
 
@@ -359,6 +364,9 @@ trait MyService
       val r = s
         .addTagsItem(
           new Tag().name("Duplicate").description("Duplicate bridge operations")
+        )
+        .addTagsItem(
+          new Tag().name("IndividualDuplicate").description("Individual duplicate bridge operations")
         )
         .addTagsItem(
           new Tag().name("Chicago").description("Chicage bridge operations")

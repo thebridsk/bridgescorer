@@ -10,6 +10,10 @@ import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.DuplicatePicture
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
+import com.github.thebridsk.bridge.data.IndividualDuplicatePicture
 
 object Protocol {
 
@@ -128,6 +132,40 @@ object Protocol {
   case class UpdateDuplicatePictures(
       dupid: MatchDuplicate.Id,
       picture: List[DuplicatePicture]
+  ) extends ToServerMessage
+      with ToBrowserMessage
+
+  /**
+    * Update the IndividualDuplicate.
+    */
+  case class UpdateIndividualDuplicate(matchDuplicate: IndividualDuplicate)
+      extends ToServerMessage
+      with ToBrowserMessage
+
+  /**
+    * Update a board in a duplicate match.
+    */
+  case class UpdateIndividualDuplicateHand(dupid: IndividualDuplicate.Id, hand: IndividualDuplicateHand)
+      extends ToServerMessage
+      with ToBrowserMessage
+
+  /**
+    * Update a picture in a duplicate match, if None, then the picture was deleted.
+    */
+  case class UpdateIndividualDuplicatePicture(
+      dupid: IndividualDuplicate.Id,
+      boardid: IndividualBoard.Id,
+      handId: IndividualDuplicateHand.Id,
+      picture: Option[IndividualDuplicatePicture]
+  ) extends ToServerMessage
+      with ToBrowserMessage
+
+  /**
+    * Update a picture in a duplicate match, if None, then the picture was deleted.
+    */
+  case class UpdateIndividualDuplicatePictures(
+      dupid: IndividualDuplicate.Id,
+      picture: List[IndividualDuplicatePicture]
   ) extends ToServerMessage
       with ToBrowserMessage
 

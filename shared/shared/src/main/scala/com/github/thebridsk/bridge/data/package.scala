@@ -17,6 +17,15 @@ package object data {
   type DuplicateHand = DuplicateHandV2
   val DuplicateHand = DuplicateHandV2
 
+  type IndividualDuplicate = IndividualDuplicateV1
+  val IndividualDuplicate = IndividualDuplicateV1
+
+  type IndividualBoard = IndividualBoardV1
+  val IndividualBoard = IndividualBoardV1
+
+  type IndividualDuplicateHand = IndividualDuplicateHandV1
+  val IndividualDuplicateHand = IndividualDuplicateHandV1
+
   type MatchRubber = MatchRubberV1
   val MatchRubber = MatchRubberV1
 

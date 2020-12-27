@@ -18,6 +18,7 @@ import com.github.thebridsk.bridge.server.backend.resource.Result
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import com.github.thebridsk.bridge.data.IndividualMovement
+import com.github.thebridsk.bridge.data.IndividualDuplicate
 
 object BridgeServiceZipStore {
 
@@ -54,6 +55,8 @@ class BridgeServiceZipStore(
     ZipStore[MatchChicago.Id, MatchChicago](id, zipfile)
   val duplicates: ZipStore[MatchDuplicate.Id, MatchDuplicate] =
     ZipStore[MatchDuplicate.Id, MatchDuplicate](id, zipfile)
+  val individualduplicates: ZipStore[IndividualDuplicate.Id, IndividualDuplicate] =
+    ZipStore[IndividualDuplicate.Id, IndividualDuplicate](id, zipfile)
   val duplicateresults
       : ZipStore[MatchDuplicateResult.Id, MatchDuplicateResult] =
     ZipStore[MatchDuplicateResult.Id, MatchDuplicateResult](id, zipfile)

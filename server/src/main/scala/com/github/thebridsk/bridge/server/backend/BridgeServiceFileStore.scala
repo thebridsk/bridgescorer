@@ -20,6 +20,7 @@ import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.data.MatchDuplicateResultV1
 import com.github.thebridsk.bridge.server.backend.resource.Converter
 import com.github.thebridsk.bridge.data.IndividualMovement
+import com.github.thebridsk.bridge.data.IndividualDuplicate
 
 class BridgeServiceFileStoreConverters(yaml: Boolean) {
 
@@ -36,6 +37,10 @@ class BridgeServiceFileStoreConverters(yaml: Boolean) {
     VersionedInstanceJson[MatchDuplicate.Id, MatchDuplicate]
       .add[MatchDuplicateV2]
       .add[MatchDuplicateV1]
+
+  implicit val individualDuplicateJson
+      : VersionedInstanceJson[IndividualDuplicate.Id, IndividualDuplicate] =
+    VersionedInstanceJson[IndividualDuplicate.Id, IndividualDuplicate]
 
   implicit val matchDuplicateResultJson
       : VersionedInstanceJson[MatchDuplicateResult.Id, MatchDuplicateResult] =
@@ -90,6 +95,8 @@ class BridgeServiceFileStore(
     FileStore[MatchChicago.Id, MatchChicago](id, dir)
   val duplicates: FileStore[MatchDuplicate.Id, MatchDuplicate] =
     FileStore[MatchDuplicate.Id, MatchDuplicate](id, dir)
+  val individualduplicates: FileStore[IndividualDuplicate.Id, IndividualDuplicate] =
+    FileStore[IndividualDuplicate.Id, IndividualDuplicate](id, dir)
   val duplicateresults
       : FileStore[MatchDuplicateResult.Id, MatchDuplicateResult] =
     FileStore[MatchDuplicateResult.Id, MatchDuplicateResult](id, dir)

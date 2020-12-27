@@ -24,11 +24,16 @@ import com.github.thebridsk.bridge.server.backend.RubberMonitorWebservice
 import java.time.Instant
 import java.time.ZoneId
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.ValidationRejection
+import akka.event.LoggingAdapter
+import akka.event.Logging
 
 //import akka.event.LoggingAdapter
 
 trait Service extends ImportExport {
   hasActorSystem: HasActorSystem =>
+
+  private lazy val log: LoggingAdapter = Logging(actorSystem, classOf[Service])
 
   def ports: ServerPort
 
@@ -63,11 +68,17 @@ trait Service extends ImportExport {
     classOf[RestNestedHand],
     classOf[RestNestedTeam],
     classOf[RestNestedPicture],
+    classOf[RestNestedPictureHand],
     classOf[RestSuggestion],
     classOf[RestNames],
     classOf[RestBoardSet],
     classOf[RestMovement],
     classOf[RestIndividualMovement],
+    classOf[RestIndividualDuplicate],
+    classOf[RestNestedIndividualBoard],
+    classOf[RestNestedIndividualHand],
+    classOf[RestNestedPictureIndividual],
+    classOf[RestNestedPictureIndividualHand],
     classOf[DuplicateMonitorWebservice],
     classOf[ChicagoMonitorWebservice],
     classOf[RubberMonitorWebservice],
@@ -109,6 +120,11 @@ trait Service extends ImportExport {
       hasActorSystem.restService
   }
   val restDuplicate: RestDuplicate = new RestDuplicate {
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val restService = hasActorSystem.restService
+  }
+  val restIndividualDuplicate: RestIndividualDuplicate = new RestIndividualDuplicate {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
@@ -164,8 +180,14 @@ trait Service extends ImportExport {
       .newBuilder()
       .handle {
         case MalformedRequestContentRejection(errorMsg, ex) =>
-//      logger.warning("Oops: "+errorMsg, ex)
+          log.error(ex, s"Oops MalformedRequestContentRejection: ${errorMsg}")
           complete(StatusCodes.BadRequest, RestMessage(errorMsg))
+      }
+      .handle {
+        case ValidationRejection(msg, ex) =>
+          ex.map(log.error(_, s"Oops ValidationRejection: ${msg}")).
+             getOrElse(log.error(s"Oops ValidationRejection: ${msg}"))
+          complete(StatusCodes.BadRequest, "That wasn't valid! " + msg)
       }
       .handleAll[MethodRejection] { rejections =>
         val methods = rejections map (_.supported)
@@ -219,7 +241,8 @@ trait Service extends ImportExport {
                 restBoardSet.route ~ restMovement.route ~ restChicago.route ~
                 restDuplicate.route ~ restDuplicateResult.route ~ restDuplicateSummary.route ~
                 restNames.route ~ restRubber.route ~ restSuggestion.route ~
-                restDuplicatePlaces.route ~ restIndividualMovement.route // ~ restMyLogging.route
+                restDuplicatePlaces.route ~ restIndividualMovement.route ~
+                restIndividualDuplicate.route // ~ restMyLogging.route
             }
           }
         } ~

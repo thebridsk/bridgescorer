@@ -44,6 +44,7 @@ import scala.util.Using
 import java.io.FileInputStream
 import java.io.InputStream
 import com.github.thebridsk.bridge.data.IndividualMovement
+import com.github.thebridsk.bridge.data.IndividualDuplicate
 
 /**
   * The backend trait for our service.
@@ -60,6 +61,7 @@ abstract class BridgeService(val id: String) {
 
   val chicagos: Store[MatchChicago.Id, MatchChicago]
   val duplicates: Store[MatchDuplicate.Id, MatchDuplicate]
+  val individualduplicates: Store[IndividualDuplicate.Id, IndividualDuplicate]
   val duplicateresults: Store[MatchDuplicateResult.Id, MatchDuplicateResult]
   val rubbers: Store[MatchRubber.Id, MatchRubber]
 
@@ -214,9 +216,15 @@ abstract class BridgeService(val id: String) {
 
   val defaultBoards = BoardSet.default
   val defaultMovement = Movement.default
+  val defaultIndividualBoards = BoardSet.standard
+  val defaultIndividualMovement = IndividualMovement.default
 
   def fillBoards(dup: MatchDuplicate): Future[Result[MatchDuplicate]] = {
     fillBoards(dup, defaultBoards, defaultMovement)
+  }
+
+  def fillBoards(dup: IndividualDuplicate): Future[Result[IndividualDuplicate]] = {
+    fillBoards(dup, defaultBoards, defaultIndividualMovement)
   }
 
   def fillBoards(
@@ -226,6 +234,39 @@ abstract class BridgeService(val id: String) {
   ): Future[Result[MatchDuplicate]] = {
 
     val fmv = movements.read(movement)
+    val fbb = boardSets.read(boardset)
+
+    fbb.flatMap { rbb =>
+      rbb match {
+        case Right(bb) =>
+          fmv.map { rmv =>
+            rmv match {
+              case Right(mv) =>
+                Result(dup.fillBoards(bb, mv))
+              case Left(error) =>
+                Result(
+                  StatusCodes.BadRequest,
+                  s"Movement $movement was not found"
+                )
+            }
+          }
+        case Left(error) =>
+          Result.future(
+            StatusCodes.BadRequest,
+            s"Boardset $boardset was not found"
+          )
+      }
+    }
+
+  }
+
+  def fillBoards(
+      dup: IndividualDuplicate,
+      boardset: BoardSet.Id,
+      movement: IndividualMovement.Id
+  ): Future[Result[IndividualDuplicate]] = {
+
+    val fmv = individualMovements.read(movement)
     val fbb = boardSets.read(boardset)
 
     fbb.flatMap { rbb =>
@@ -651,6 +692,9 @@ class BridgeServiceInMemory(
 
   val duplicates: Store[MatchDuplicate.Id, MatchDuplicate] =
     InMemoryStore[MatchDuplicate.Id, MatchDuplicate](id)
+
+  val individualduplicates: Store[IndividualDuplicate.Id, IndividualDuplicate] =
+    InMemoryStore[IndividualDuplicate.Id, IndividualDuplicate](id)
 
   val duplicateresults: Store[MatchDuplicateResult.Id, MatchDuplicateResult] =
     InMemoryStore[MatchDuplicateResult.Id, MatchDuplicateResult](id)

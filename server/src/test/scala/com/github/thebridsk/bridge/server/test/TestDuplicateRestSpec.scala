@@ -55,6 +55,8 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictur
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.AttributeKey
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePictures
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePicture
 
 class TestDuplicateRestSpec
     extends AnyFlatSpec
@@ -185,6 +187,16 @@ class TestDuplicateRestSpec
             "Ignored unexpected response from the monitor: " + upict
           )
           true
+        case upict: UpdateIndividualDuplicatePicture =>
+          testlog.debug(
+            "Ignored unexpected response from the monitor: " + upict
+          )
+          true
+        case upict: UpdateIndividualDuplicatePictures =>
+          testlog.debug(
+            "Ignored unexpected response from the monitor: " + upict
+          )
+          true
         case uboard: UpdateDuplicateHand =>
           testlog.debug(
             "Ignored unexpected response from the monitor: " + uboard
@@ -250,6 +262,16 @@ class TestDuplicateRestSpec
       case upict: UpdateDuplicatePictures =>
         testlog.debug("Ignored unexpected response from the monitor: " + upict)
         true
+      case upict: UpdateIndividualDuplicatePicture =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + upict
+        )
+        true
+      case upict: UpdateIndividualDuplicatePictures =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + upict
+        )
+        true
       case uboard: UpdateDuplicateHand =>
         testlog.debug("Ignored unexpected response from the monitor: " + uboard)
         true
@@ -306,6 +328,16 @@ class TestDuplicateRestSpec
       case upict: UpdateDuplicatePictures =>
         testlog.debug("Ignored unexpected response from the monitor: " + upict)
         true
+      case upict: UpdateIndividualDuplicatePicture =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + upict
+        )
+        true
+      case upict: UpdateIndividualDuplicatePictures =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + upict
+        )
+        true
       case uboard: UpdateDuplicateHand =>
         fail("Unexpected response from the monitor: " + uboard)
       case UpdateDuplicate(mp) =>
@@ -358,6 +390,16 @@ class TestDuplicateRestSpec
         true
       case upict: UpdateDuplicatePictures =>
         testlog.debug("Ignored unexpected response from the monitor: " + upict)
+        true
+      case upict: UpdateIndividualDuplicatePicture =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + upict
+        )
+        true
+      case upict: UpdateIndividualDuplicatePictures =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + upict
+        )
         true
       case uboard: UpdateDuplicateHand =>
         fail("Unexpected response from the monitor: " + uboard)

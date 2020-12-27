@@ -17,6 +17,10 @@ import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
 import com.github.thebridsk.bridge.data.DuplicatePicture
 import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.IndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
+import com.github.thebridsk.bridge.data.IndividualBoard
 
 object BridgeDispatcher extends Dispatcher {
   val logger: Logger = Logger("bridge.BridgeDispatcher")
@@ -77,6 +81,17 @@ object BridgeDispatcher extends Dispatcher {
       dupid: MatchDuplicate.Id,
       pictures: List[DuplicatePicture]
   ): Unit = dispatcher.dispatch(ActionUpdatePictures(dupid, pictures))
+  def updateIndividualPicture(
+      dupid: IndividualDuplicate.Id,
+      boardid: IndividualBoard.Id,
+      handid: IndividualDuplicateHand.Id,
+      picture: Option[IndividualDuplicatePicture]
+  ): Unit =
+    dispatcher.dispatch(ActionUpdateIndividualPicture(dupid, boardid, handid, picture))
+  def updateIndividualPictures(
+      dupid: IndividualDuplicate.Id,
+      pictures: List[IndividualDuplicatePicture]
+  ): Unit = dispatcher.dispatch(ActionUpdateIndividualPictures(dupid, pictures))
 
   def createBoardSet(boardSet: BoardSet): Unit =
     dispatcher.dispatch(ActionCreateBoardSet(boardSet))
