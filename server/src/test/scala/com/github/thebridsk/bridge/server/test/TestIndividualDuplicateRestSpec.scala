@@ -2,18 +2,17 @@ package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.server.service.MyService
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.bridge.South
-import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.IndividualDuplicate
 import com.github.thebridsk.bridge.server.test.backend.BridgeServiceTesting
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.model.MediaTypes
-import com.github.thebridsk.bridge.data.DuplicateHand
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
 import com.github.thebridsk.bridge.data.bridge.Spades
 import com.github.thebridsk.bridge.data.bridge.Doubled
 import com.github.thebridsk.bridge.server.backend.BridgeServiceInMemory
@@ -21,7 +20,6 @@ import akka.http.scaladsl.testkit.WSProbe
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import akka.http.scaladsl.model.ws.TextMessage
 import akka.http.scaladsl.model.ws.BinaryMessage
-import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicateTeam
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicateHand
@@ -32,11 +30,8 @@ import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import com.github.thebridsk.bridge.data.websocket.Protocol.NoData
 import akka.event.Logging
 import com.github.thebridsk.bridge.server.rest.ServerPort
-import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.websocket.Protocol.ToServerMessage
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.Send
-import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorDuplicate
-import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import scala.reflect.ClassTag
 import com.github.thebridsk.bridge.server.backend.resource.ChangeContext
 import com.github.thebridsk.bridge.server.backend.resource.CreateChangeContext
@@ -59,15 +54,17 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDupli
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicate
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicateHand
+import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorIndividualDuplicate
 
-class TestDuplicateRestSpec
+class TestIndividualDuplicateRestSpec
     extends AnyFlatSpec
     with ScalatestRouteTest
     with Matchers
     with MyService
     with RoutingSpec {
 
-  import TestDuplicateRestSpecImplicits._
+  import TestIndividualDuplicateRestSpecImplicits._
 
   TestStartLogging.startLogging()
 
@@ -84,7 +81,7 @@ class TestDuplicateRestSpec
   lazy val testlog: LoggingAdapter =
     Logging(actorSystem, classOf[TestDuplicateRestSpec])
 
-  behavior of "MyService REST for duplicate"
+  behavior of "MyService REST for individualduplicate"
 
   class ListenerStatus[T](implicit classT: ClassTag[T]) extends StoreListener {
 
@@ -98,7 +95,7 @@ class TestDuplicateRestSpec
       lastDelete = None
     }
 
-    def getMatchDuplicate(context: ChangeContext): Option[T] = {
+    def getIndividualDuplicate(context: ChangeContext): Option[T] = {
       log
       testlog.debug("Got a change: " + context)
       val d = context.changes.headOption match {
@@ -118,22 +115,22 @@ class TestDuplicateRestSpec
     }
 
     override def create(context: ChangeContext): Unit = {
-      lastCreate = getMatchDuplicate(context);
+      lastCreate = getIndividualDuplicate(context);
       testlog.debug("Got a create change: " + context)
     }
     override def update(context: ChangeContext): Unit = {
-      lastUpdate = getMatchDuplicate(context);
+      lastUpdate = getIndividualDuplicate(context);
       testlog.debug("Got a update change: " + context)
     }
     override def delete(context: ChangeContext): Unit = {
-      lastDelete = getMatchDuplicate(context);
+      lastDelete = getIndividualDuplicate(context);
       testlog.debug("Got a delete change: " + context)
     }
 
   }
 
-  def withListener(f: ListenerStatus[MatchDuplicate] => Unit): Unit = {
-    withListener(restService.duplicates, f)
+  def withListener(f: ListenerStatus[IndividualDuplicate] => Unit): Unit = {
+    withListener(restService.individualduplicates, f)
   }
 
   def withListener[Id <: Comparable[Id], T <: VersionedInstance[T, T, Id]](
@@ -151,7 +148,7 @@ class TestDuplicateRestSpec
 
   def testIgnoreJoinLookForUpdate(
       wsClient: WSProbe,
-      mat: MatchDuplicate
+      mat: IndividualDuplicate
   ): Unit = {
     while (
       (wsClient.expectMessage() match {
@@ -195,8 +192,10 @@ class TestDuplicateRestSpec
           )
           true
         case UpdateDuplicate(mp) =>
-          assert(mat.equalsIgnoreModifyTime(mp))
-          false
+          testlog.debug(
+            "Ignored unexpected response from the monitor: " + mp
+          )
+          true
         case upict: UpdateIndividualDuplicatePicture =>
           testlog.debug(
             "Ignored unexpected response from the monitor: " + upict
@@ -213,10 +212,8 @@ class TestDuplicateRestSpec
           )
           true
         case UpdateIndividualDuplicate(mp) =>
-          testlog.debug(
-            "Ignored unexpected response from the monitor: " + mp
-          )
-          true
+          assert(mat.equalsIgnoreModifyTime(mp))
+          false
         case uboard: UpdateChicagoRound =>
           testlog.debug(
             "Ignored unexpected response from the monitor: " + uboard
@@ -244,7 +241,7 @@ class TestDuplicateRestSpec
     ) {}
   }
 
-  def testUpdate(wsClient: WSProbe, mat: MatchDuplicate): Any = {
+  def testUpdate(wsClient: WSProbe, mat: IndividualDuplicate): Any = {
     (wsClient.expectMessage() match {
       case TextMessage.Strict(s) =>
         val dp = DuplexProtocol.fromString(s)
@@ -278,9 +275,10 @@ class TestDuplicateRestSpec
         testlog.debug("Ignored unexpected response from the monitor: " + uboard)
         true
       case UpdateDuplicate(mp) =>
-        testlog.debug("mat: " + mat)
-        testlog.debug("mp : " + mp)
-        assert(mat.equalsIgnoreModifyTime(mp))
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + mp
+        )
+        true
 
       case upict: UpdateIndividualDuplicatePicture =>
         testlog.debug(
@@ -298,10 +296,9 @@ class TestDuplicateRestSpec
         )
         true
       case UpdateIndividualDuplicate(mp) =>
-        testlog.debug(
-          "Ignored unexpected response from the monitor: " + mp
-        )
-        true
+        testlog.debug("mat: " + mat)
+        testlog.debug("mp : " + mp)
+        assert(mat.equalsIgnoreModifyTime(mp))
 
       case pj: MonitorJoined =>
         fail("Unexpected response from the monitor: " + pj)
@@ -356,6 +353,7 @@ class TestDuplicateRestSpec
         fail("Unexpected response from the monitor: " + uboard)
       case UpdateDuplicate(mp) =>
         fail("Unexpected response from the monitor: " + mp)
+
       case upict: UpdateIndividualDuplicatePicture =>
         fail("Unexpected response from the monitor: " + upict)
       case upict: UpdateIndividualDuplicatePictures =>
@@ -364,6 +362,7 @@ class TestDuplicateRestSpec
         fail("Unexpected response from the monitor: " + uboard)
       case UpdateIndividualDuplicate(mp) =>
         fail("Unexpected response from the monitor: " + mp)
+
       case pl: MonitorLeft =>
         fail("Unexpected response from the monitor: " + pl)
       case pj: MonitorJoined =>
@@ -417,6 +416,7 @@ class TestDuplicateRestSpec
         fail("Unexpected response from the monitor: " + uboard)
       case UpdateDuplicate(mp) =>
         fail("Unexpected response from the monitor: " + mp)
+
       case upict: UpdateIndividualDuplicatePicture =>
         fail("Unexpected response from the monitor: " + upict)
       case upict: UpdateIndividualDuplicatePictures =>
@@ -425,6 +425,7 @@ class TestDuplicateRestSpec
         fail("Unexpected response from the monitor: " + uboard)
       case UpdateIndividualDuplicate(mp) =>
         fail("Unexpected response from the monitor: " + mp)
+
       case pl: MonitorLeft =>
         testlog.debug("Got the left: " + pl)
       case pj: MonitorJoined =>
@@ -457,32 +458,27 @@ class TestDuplicateRestSpec
 
   import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 
-  var createdM1: Option[MatchDuplicate] = None
-  it should "return a MatchDuplicate json object for match 1 for POST request to /v1/rest/duplicates" in withListener(
+  var createdM1: Option[IndividualDuplicate] = None
+  it should "return a IndividualDuplicate json object for match 1 for POST request to /v1/rest/individualduplicates" in withListener(
     listenerstatus => {
       Post(
-        "/v1/rest/duplicates?default",
-        MatchDuplicate.create(MatchDuplicate.id("M1"))
+        "/v1/rest/individualduplicates?default",
+        IndividualDuplicate.create(IndividualDuplicate.id("I1"))
       ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         mediaType mustBe MediaTypes.`application/json`
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe "http://example.com/duplicates/M1"
+            h.value() mustBe "http://example.com/v1/rest/individualduplicates/I1"
           case None =>
             fail("Location header was not found in response")
         }
-        val md = responseAs[MatchDuplicate]
+        val md = responseAs[IndividualDuplicate]
         createdM1 = Some(md)
-        for (id <- 1 to 4) {
-          val tid = Team.id(id)
-          assert(
-            md.getTeam(tid).get.equalsIgnoreModifyTime(Team.create(tid, "", ""))
-          )
-        }
-        for (id <- 1 to 18) {
-          val board = md.getBoard(Board.id(id))
+        md.players.length mustBe 8
+        for (id <- 1 to 21) {
+          val board = md.getBoard(IndividualBoard.id(id))
           assert(board.isDefined, s"- Board $id was not found")
           val b = board.get
           assert(
@@ -497,63 +493,63 @@ class TestDuplicateRestSpec
     }
   )
 
-  it should "return a MatchDuplicate json object for match 1 for PUT request to /v1/rest/duplicates/M1" in withListener(
+  it should "return a IndividualDuplicate json object for match 1 for PUT request to /v1/rest/individualduplicates/I1" in withListener(
     listenerstatus => {
       import scala.concurrent.duration._
       import scala.language.postfixOps
       val wsClient = WSProbe()
-      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
+      WS("/v1/individual/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
         .addAttributes(remoteAddress) ~> myRouteWithLogging ~>
         check {
           isWebSocketUpgrade mustBe true
           wsClient.inProbe.within(10 seconds) {
             testJoin(wsClient)
-            val cleanmd = new BridgeServiceInMemory("test").fillBoards(
-              MatchDuplicate.create(MatchDuplicate.id("M1"))
-            )
-//          testUpdate(wsClient,cleanmd)
+            // val cleanmd = new BridgeServiceInMemory("test").fillBoards(
+            //   IndividualDuplicate.create(IndividualDuplicate.id("I1"))
+            // )
+            // testUpdate(wsClient,cleanmd)
           }
-          wsClient.send(StartMonitorDuplicate(MatchDuplicate.id("M1")))
+          wsClient.send(StartMonitorIndividualDuplicate(IndividualDuplicate.id("I1")))
           wsClient.inProbe.within(10 seconds) {
             testUpdate(wsClient, createdM1.get)
           }
           testlog.debug(
-            "TestDuplicateRestSpec: updating M1 with monitoring active"
+            "TestDuplicateRestSpec: updating I1 with monitoring active"
           )
           Put(
-            "/v1/rest/duplicates/M1",
-            BridgeServiceTesting.testingMatch
+            "/v1/rest/individualduplicates/I1",
+            BridgeServiceTesting.testingIndividualMatch
           ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
             handled mustBe true
             status mustBe NoContent
 //          mediaType mustBe MediaTypes.`application/json`
-//          assert( responseAs[MatchDuplicate].equalsIgnoreModifyTime( BridgeServiceTesting.testingMatch ))
+//          assert( responseAs[IndividualDuplicate].equalsIgnoreModifyTime( BridgeServiceTesting.testingIndividualMatch ))
             assert(listenerstatus.lastCreate.isEmpty)
             assert(!listenerstatus.lastUpdate.isEmpty)
             assert(
               listenerstatus.lastUpdate.get.equalsIgnoreModifyTime(
-                BridgeServiceTesting.testingMatch
+                BridgeServiceTesting.testingIndividualMatch
               )
             )
             assert(listenerstatus.lastDelete.isEmpty)
           }
           wsClient.inProbe.within(10 seconds) {
-//          testIgnoreJoinLookForUpdate(wsClient,BridgeServiceTesting.testingMatch)
+//          testIgnoreJoinLookForUpdate(wsClient,BridgeServiceTesting.testingIndividualMatch)
 //          testJoin(wsClient)
-            testUpdate(wsClient, BridgeServiceTesting.testingMatch)
+            testUpdate(wsClient, BridgeServiceTesting.testingIndividualMatch)
           }
           testlog.debug(
-            "TestDuplicateRestSpec: finished updating M1 with monitoring active"
+            "TestDuplicateRestSpec: finished updating I1 with monitoring active"
           )
-          Get("/v1/rest/duplicates/M1").withAttributes(
+          Get("/v1/rest/individualduplicates/I1").withAttributes(
             remoteAddress
           ) ~> myRouteWithLogging ~> check {
             handled mustBe true
             status mustBe OK
             mediaType mustBe MediaTypes.`application/json`
             assert(
-              responseAs[MatchDuplicate].equalsIgnoreModifyTime(
-                BridgeServiceTesting.testingMatch
+              responseAs[IndividualDuplicate].equalsIgnoreModifyTime(
+                BridgeServiceTesting.testingIndividualMatch
               )
             )
           }
@@ -562,12 +558,12 @@ class TestDuplicateRestSpec
     }
   )
 
-  it should "monitor should return match M1 after the Join message" in withListener(
+  it should "monitor should return match I1 after the Join message" in withListener(
     listenerstatus => {
       import scala.concurrent.duration._
       import scala.language.postfixOps
       val wsClient = WSProbe()
-      WS("/v1/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
+      WS("/v1/individual/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
         .addAttributes(remoteAddress) ~> myRouteWithLogging ~>
         check {
           isWebSocketUpgrade mustBe true
@@ -575,24 +571,24 @@ class TestDuplicateRestSpec
             testJoin(wsClient)
           }
 //        wsClient.inProbe.within(10 seconds) {
-//          testUpdate(wsClient,BridgeServiceTesting.testingMatch)
+//          testUpdate(wsClient,BridgeServiceTesting.testingIndividualMatch)
 //        }
           terminateWebsocket(wsClient)
         }
     }
   )
 
-  it should "return a MatchDuplicate json object for match 1 for GET requests to /v1/rest/duplicates/M1" in withListener(
+  it should "return a IndividualDuplicate json object for match 1 for GET requests to /v1/rest/individualduplicates/I1" in withListener(
     listenerstatus => {
-      Get("/v1/rest/duplicates/M1").withAttributes(
+      Get("/v1/rest/individualduplicates/I1").withAttributes(
         remoteAddress
       ) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe OK
         mediaType mustBe MediaTypes.`application/json`
         assert(
-          responseAs[MatchDuplicate].equalsIgnoreModifyTime(
-            BridgeServiceTesting.testingMatch
+          responseAs[IndividualDuplicate].equalsIgnoreModifyTime(
+            BridgeServiceTesting.testingIndividualMatch
           )
         )
         assert(listenerstatus.lastCreate.isEmpty)
@@ -602,15 +598,15 @@ class TestDuplicateRestSpec
     }
   )
 
-  it should "return a not found for match 2 for GET requests to /v1/rest/duplicates/M2" in {
-    Get("/v1/rest/duplicates/M2").withAttributes(
+  it should "return a not found for match 2 for GET requests to /v1/rest/individualduplicates/I2" in {
+    Get("/v1/rest/individualduplicates/I2").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
       responseAs[RestMessage] mustBe RestMessage(
-        "Did not find resource /duplicates/M2"
+        "Did not find resource /individualduplicates/I2"
       )
     }
   }
@@ -626,308 +622,195 @@ class TestDuplicateRestSpec
       mediaType mustBe MediaTypes.`application/json`
       val resp = responseAs[List[String]]
       testlog.debug("names are " + resp)
-      resp mustBe List(
-        "Ellen",
-        "Ethan",
-        "Nancy",
-        "Norman",
-        "Sally",
-        "Sam",
-        "Wayne",
-        "Wilma"
-      )
+      resp mustBe List("Ellen", "Ethan", "Nancy", "Norman", "Sally", "Sam", "Wayne", "Wilma")
     }
   }
 
   behavior of "MyService REST for duplicate boards"
 
-  it should "return a Board json object for board 1 for GET requests to /v1/rest/duplicates/M1/boards/B1" in {
-    Get("/v1/rest/duplicates/M1/boards/B1").withAttributes(
+  it should "return a Board json object for board 1 for GET requests to /v1/rest/individualduplicates/I1/boards/B1" in {
+    Get("/v1/rest/individualduplicates/I1/boards/B1").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
       assert(
-        responseAs[Board].equalsIgnoreModifyTime(
-          BridgeServiceTesting.testingMatch.getBoard(Board.id(1)).get
+        responseAs[IndividualBoard].equalsIgnoreModifyTime(
+          BridgeServiceTesting.testingIndividualMatch.getBoard(IndividualBoard.id(1)).get
         )
       )
     }
   }
 
-  it should "return a Board json object for board 2 for GET requests to /v1/rest/duplicates/M1/boards/B2" in {
-    Get("/v1/rest/duplicates/M1/boards/B2").withAttributes(
+  it should "return a Board json object for board 2 for GET requests to /v1/rest/individualduplicates/I1/boards/B2" in {
+    Get("/v1/rest/individualduplicates/I1/boards/B2").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
       assert(
-        responseAs[Board].equalsIgnoreModifyTime(
-          BridgeServiceTesting.testingMatch.getBoard(Board.id(2)).get
+        responseAs[IndividualBoard].equalsIgnoreModifyTime(
+          BridgeServiceTesting.testingIndividualMatch.getBoard(IndividualBoard.id(2)).get
         )
       )
     }
   }
 
-  it should "return a Board json object for board 3 for GET requests to /v1/rest/duplicates/M1/boards/B3" in {
-    Get("/v1/rest/duplicates/M1/boards/B3").withAttributes(
+  it should "return a Board json object for board 3 for GET requests to /v1/rest/individualduplicates/I1/boards/B3" in {
+    Get("/v1/rest/individualduplicates/I1/boards/B3").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe OK
       mediaType mustBe MediaTypes.`application/json`
       assert(
-        responseAs[Board].equalsIgnoreModifyTime(
-          Board.create(Board.id(3), false, true, South.pos, List())
+        responseAs[IndividualBoard].equalsIgnoreModifyTime(
+          IndividualBoard(IndividualBoard.id(3), false, true, South.pos, List())
         )
       )
     }
   }
 
-  it should "return a not found for board 4 for GET requests to /v1/rest/duplicates/M1/boards/B4" in {
-    Get("/v1/rest/duplicates/M1/boards/B4").withAttributes(
+  it should "return a not found for board 4 for GET requests to /v1/rest/individualduplicates/I1/boards/B4" in {
+    Get("/v1/rest/individualduplicates/I1/boards/B4").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
       responseAs[RestMessage] mustBe RestMessage(
-        "Did not find resource /duplicates/M1/boards/B4"
+        "Did not find resource /individualduplicates/I1/boards/B4"
       )
     }
   }
 
-  it should "return a not found for match 2 for GET requests to /v1/rest/duplicates/M2/boards/B1" in {
-    Get("/v1/rest/duplicates/M2/boards/B1").withAttributes(
+  it should "return a not found for match 2 for GET requests to /v1/rest/individualduplicates/I2/boards/B1" in {
+    Get("/v1/rest/individualduplicates/I2/boards/B1").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
       responseAs[RestMessage] mustBe RestMessage(
-        "Did not find resource /duplicates/M2"
-      )
-    }
-  }
-
-  behavior of "MyService REST for duplicate teams"
-
-  var t: Team = null
-
-  it should "return a Team json object for team 1 for GET requests to /v1/rest/duplicates/M1/teams/T1" in {
-    Get("/v1/rest/duplicates/M1/teams/T1").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe OK
-      mediaType mustBe MediaTypes.`application/json`
-      t = responseAs[Team]
-      assert(
-        t.equalsIgnoreModifyTime(
-          BridgeServiceTesting.testingMatch.getTeam(Team.id(1)).get
-        )
-      )
-    }
-  }
-
-  it should "return a Team json object for team 1 for PUT requests to /v1/rest/duplicates/M1/teams/T1" in {
-    val nt = t.setPlayers("Fred", "George")
-    Put("/v1/rest/duplicates/M1/teams/T1", nt).withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe NoContent
-    }
-    Get("/v1/rest/duplicates/M1/teams/T1").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe OK
-      mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[Team].equalsIgnoreModifyTime(nt))
-    }
-    Put("/v1/rest/duplicates/M1/teams/T1", t).withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe NoContent
-    }
-    Get("/v1/rest/duplicates/M1/teams/T1").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe OK
-      mediaType mustBe MediaTypes.`application/json`
-      assert(responseAs[Team].equalsIgnoreModifyTime(t))
-    }
-  }
-
-  it should "return a Team json object for team 2 for GET requests to /v1/rest/duplicates/M1/teams/T2" in {
-    Get("/v1/rest/duplicates/M1/teams/T2").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe OK
-      mediaType mustBe MediaTypes.`application/json`
-      assert(
-        responseAs[Team].equalsIgnoreModifyTime(
-          BridgeServiceTesting.testingMatch.getTeam(Team.id(2)).get
-        )
-      )
-    }
-  }
-
-  it should "return a not found for team 5 for GET requests to /v1/rest/duplicates/M1/teams/T5" in {
-    Get("/v1/rest/duplicates/M1/teams/T5").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe NotFound
-      mediaType mustBe MediaTypes.`application/json`
-      responseAs[RestMessage] mustBe RestMessage(
-        "Did not find resource /duplicates/M1/teams/T5"
-      )
-    }
-  }
-
-  it should "return a not found for match 2 for GET requests to /v1/rest/duplicates/M2/teams/T9" in {
-    Get("/v1/rest/duplicates/M2/teams/T9").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe NotFound
-      mediaType mustBe MediaTypes.`application/json`
-      responseAs[RestMessage] mustBe RestMessage(
-        "Did not find resource /duplicates/M2"
-      )
-    }
-  }
-
-  it should "return a bad request for match 2 for GET requests to /v1/rest/duplicates/K2/teams/B1" in {
-    Get("/v1/rest/duplicates/K2/teams/B1").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe BadRequest
-      mediaType mustBe MediaTypes.`application/json`
-      responseAs[RestMessage] mustBe RestMessage(
-        "Illegal argument in request: String not valid for Ids for class MatchDuplicateV3$: K2"
+        "Did not find resource /individualduplicates/I2"
       )
     }
   }
 
   behavior of "MyService REST for duplicate hands"
 
-  it should "return a hand json object for hand 1 for GET requests to /v1/rest/duplicates/M1/boards/B1/hands/T1" in {
-    Get("/v1/rest/duplicates/M1/boards/B1/hands/T1").withAttributes(
+  it should "return a hand json object for hand 1 for GET requests to /v1/rest/individualduplicates/I1/boards/B1/hands/p8" in {
+    Get("/v1/rest/individualduplicates/I1/boards/B1/hands/p8").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       withClue("response is " + response) { status mustBe OK }
       mediaType mustBe MediaTypes.`application/json`
       assert(
-        responseAs[DuplicateHand].equalsIgnoreModifyTime(
-          DuplicateHand.create(
-            Hand.create(
-              "H1",
-              7,
-              Spades.suit,
-              Doubled.doubled,
-              North.pos,
-              false,
-              false,
-              true,
-              7
+        responseAs[IndividualDuplicateHand].equalsIgnoreModifyTime(
+          IndividualDuplicateHand(
+            Some(
+              Hand.create(
+                "p8",
+                7,
+                Spades.suit,
+                Doubled.doubled,
+                North.pos,
+                false,
+                false,
+                true,
+                7
+              )
             ),
             Table.id(1),
             1,
-            Board.id(1),
-            Team.id(1),
-            Team.id(2)
+            IndividualBoard.id(1),
+            8,1,5,7
           )
         )
       )
     }
   }
 
-  it should "return a not found for hand 3 for GET requests to /v1/rest/duplicates/M1/boards/B1/hands/T4" in {
-    Get("/v1/rest/duplicates/M1/boards/B1/hands/T4").withAttributes(
+  it should "return a not found for hand 3 for GET requests to /v1/rest/individualduplicates/I1/boards/B1/hands/T4" in {
+    Get("/v1/rest/individualduplicates/I1/boards/B1/hands/T4").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
       responseAs[RestMessage] mustBe RestMessage(
-        "Did not find resource /duplicates/M1/boards/B1/hands/T4"
+        "Did not find resource /individualduplicates/I1/boards/B1/hands/T4"
       )
     }
   }
 
-  it should "return a not found for board 4 for GET requests to /v1/rest/duplicates/M1/boards/B4/hands/T1" in {
-    Get("/v1/rest/duplicates/M1/boards/B4/hands/T1").withAttributes(
+  it should "return a not found for board 4 for GET requests to /v1/rest/individualduplicates/I1/boards/B4/hands/T1" in {
+    Get("/v1/rest/individualduplicates/I1/boards/B4/hands/T1").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
       responseAs[RestMessage] mustBe RestMessage(
-        "Did not find resource /duplicates/M1/boards/B4"
+        "Did not find resource /individualduplicates/I1/boards/B4"
       )
     }
   }
 
-  it should "return a not found for match 2 for GET requests to /v1/rest/duplicates/M2/boards/B1" in {
-    Get("/v1/rest/duplicates/M2/boards/B1").withAttributes(
+  it should "return a not found for match 2 for GET requests to /v1/rest/individualduplicates/I2/boards/B1" in {
+    Get("/v1/rest/individualduplicates/I2/boards/B1").withAttributes(
       remoteAddress
     ) ~> myRouteWithLogging ~> check {
       handled mustBe true
       status mustBe NotFound
       mediaType mustBe MediaTypes.`application/json`
       responseAs[RestMessage] mustBe RestMessage(
-        "Did not find resource /duplicates/M2"
+        "Did not find resource /individualduplicates/I2"
       )
     }
   }
 
-  it should "return a hand json object for POST requests to /v1/rest/duplicates/M1/boards/B2/hands" in withListener(
+  it should "return a hand json object for POST requests to /v1/rest/individualduplicates/I1/boards/B2/hands" in withListener(
     listenerstatus => {
-      val hand = DuplicateHand.create(
-        Hand.create(
-          "T3",
-          7,
-          Spades.suit,
-          Doubled.doubled,
-          North.pos,
-          false,
-          false,
-          false,
-          1
+      val hand = IndividualDuplicateHand(
+        Some(
+          Hand.create(
+            "p8",
+            7,
+            Spades.suit,
+            Doubled.doubled,
+            North.pos,
+            false,
+            false,
+            false,
+            1
+          )
         ),
-        Table.id(2),
-        2,
-        Board.id(2),
-        Team.id(3),
-        Team.id(4)
+        Table.id(1),
+        1,
+        IndividualBoard.id(2),
+        8,1,5,7
       )
-      Post("/v1/rest/duplicates/M1/boards/B2/hands", hand).withAttributes(
+      Post("/v1/rest/individualduplicates/I1/boards/B2/hands", hand).withAttributes(
         remoteAddress
       ) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe "http://example.com/duplicates/M1/boards/B2/hands/T3"
+            h.value() mustBe "http://example.com/v1/rest/individualduplicates/I1/boards/B2/hands/p8"
           case None =>
             fail("Location header was not found in response")
         }
         mediaType mustBe MediaTypes.`application/json`
-        assert(responseAs[DuplicateHand].equalsIgnoreModifyTime(hand))
+        assert(responseAs[IndividualDuplicateHand].equalsIgnoreModifyTime(hand))
         assert(!listenerstatus.lastCreate.isEmpty)
         assert(listenerstatus.lastUpdate.isEmpty)
         val newMatch =
-          BridgeServiceTesting.testingMatch.updateHand(Board.id(2), hand)
+          BridgeServiceTesting.testingIndividualMatch.updateHand(IndividualBoard.id(2), hand)
         testlog.debug("newMatch is " + newMatch)
         testlog.debug("fromList is " + listenerstatus.lastCreate.get)
         assert(listenerstatus.lastCreate.get.equalsIgnoreModifyTime(newMatch))
@@ -936,19 +819,19 @@ class TestDuplicateRestSpec
     }
   )
 
-  it should "return a deleted for Delete requests to /v1/rest/duplicates/M1/boards/B2/hands/T3" in withListener(
+  it should "return a deleted for Delete requests to /v1/rest/individualduplicates/I1/boards/B2/hands/p8" in withListener(
     listenerstatus => {
-      var m1: Option[MatchDuplicate] = None
-      Get("/v1/rest/duplicates/M1").withAttributes(
+      var m1: Option[IndividualDuplicate] = None
+      Get("/v1/rest/individualduplicates/I1").withAttributes(
         remoteAddress
       ) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe OK
         mediaType mustBe MediaTypes.`application/json`
-        val r = responseAs[MatchDuplicate]
+        val r = responseAs[IndividualDuplicate]
         m1 = Some(r)
       }
-      Delete("/v1/rest/duplicates/M1/boards/B2/hands/T3").withAttributes(
+      Delete("/v1/rest/individualduplicates/I1/boards/B2/hands/p8").withAttributes(
         remoteAddress
       ) ~> myRouteWithLogging ~> check {
         handled mustBe true
@@ -957,12 +840,12 @@ class TestDuplicateRestSpec
 //      responseAs[RestMessage] mustBe RestMessage("Deleted Hand T3")
         assert(listenerstatus.lastCreate.isEmpty)
         assert(listenerstatus.lastUpdate.isEmpty)
-//      assert( listenerstatus.lastUpdate.get.equalsIgnoreModifyTime( BridgeServiceTesting.testingMatch ))
+//      assert( listenerstatus.lastUpdate.get.equalsIgnoreModifyTime( BridgeServiceTesting.testingIndividualMatch ))
         assert(!listenerstatus.lastDelete.isEmpty)
-        listenerstatus.lastDelete.get.id mustBe BridgeServiceTesting.testingMatch.id
+        listenerstatus.lastDelete.get.id mustBe BridgeServiceTesting.testingIndividualMatch.id
 
         val m1withhanddeleted = m1.get.updateBoard(
-          m1.get.getBoard(Board.id(2)).get.deleteHand(Team.id(3))
+          m1.get.getBoard(IndividualBoard.id(2)).get.deleteHand(IndividualDuplicateHand.id(8))
         )
         assert(
           listenerstatus.lastDelete.get.equalsIgnoreModifyTime(
@@ -975,29 +858,29 @@ class TestDuplicateRestSpec
 
   behavior of "MyService REST for duplicate when using delete"
 
-  it should "return a deleted for Delete requests to /v1/rest/duplicates/M1" in withListener(
+  it should "return a deleted for Delete requests to /v1/rest/individualduplicates/I1" in withListener(
     listenerstatus => {
-      var m1: Option[MatchDuplicate] = None
-      Get("/v1/rest/duplicates/M1").withAttributes(
+      var m1: Option[IndividualDuplicate] = None
+      Get("/v1/rest/individualduplicates/I1").withAttributes(
         remoteAddress
       ) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe OK
         mediaType mustBe MediaTypes.`application/json`
-        val r = responseAs[MatchDuplicate]
+        val r = responseAs[IndividualDuplicate]
         m1 = Some(r)
       }
-      Delete("/v1/rest/duplicates/M1").withAttributes(
+      Delete("/v1/rest/individualduplicates/I1").withAttributes(
         remoteAddress
       ) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe NoContent
 //      mediaType mustBe MediaTypes.`application/json`
-//      responseAs[RestMessage] mustBe RestMessage("Deleted MatchDuplicate M1")
+//      responseAs[RestMessage] mustBe RestMessage("Deleted IndividualDuplicate I1")
         assert(listenerstatus.lastCreate.isEmpty)
         assert(listenerstatus.lastUpdate.isEmpty)
         assert(!listenerstatus.lastDelete.isEmpty)
-        listenerstatus.lastDelete.get.id mustBe BridgeServiceTesting.testingMatch.id
+        listenerstatus.lastDelete.get.id mustBe BridgeServiceTesting.testingIndividualMatch.id
         assert(listenerstatus.lastDelete.get.equalsIgnoreModifyTime(m1.get))
       }
     }
@@ -1018,26 +901,21 @@ class TestDuplicateRestSpec
     }
   }
 
-  behavior of "MyService REST for DuplicateSumary"
+  behavior of "MyService REST for individual duplicates"
 
-  it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?default" in withListener(
+  it should "return a IndividualDuplicate json object for a POST request to /v1/rest/individualduplicates?default" in withListener(
     listenerstatus => {
       Post(
-        "/v1/rest/duplicates?default",
-        MatchDuplicate.create(MatchDuplicate.id("M1"))
+        "/v1/rest/individualduplicates?default",
+        IndividualDuplicate.create(IndividualDuplicate.id("I1"))
       ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
         handled mustBe true
         status mustBe Created
         mediaType mustBe MediaTypes.`application/json`
-        val md = responseAs[MatchDuplicate]
-        for (id <- 1 to 4) {
-          val tid = Team.id(id)
-          assert(
-            md.getTeam(tid).get.equalsIgnoreModifyTime(Team.create(tid, "", ""))
-          )
-        }
-        for (id <- 1 to 18) {
-          val board = md.getBoard(Board.id(id))
+        val md = responseAs[IndividualDuplicate]
+        md.boards.length mustBe 21
+        for (id <- 1 to 21) {
+          val board = md.getBoard(IndividualBoard.id(id))
           assert(board.isDefined, s"- Board $id was not found")
           val b = board.get
           assert(
@@ -1052,162 +930,9 @@ class TestDuplicateRestSpec
     }
   )
 
-  it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table" in withListener(
-    listenerstatus => {
-      Post(
-        "/v1/rest/duplicates?boards=StandardBoards&movements=Mitchell3Table",
-        MatchDuplicate.create(MatchDuplicate.id("M1"))
-      ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
-        handled mustBe true
-        status mustBe Created
-        mediaType mustBe MediaTypes.`application/json`
-        val md = responseAs[MatchDuplicate]
-        for (id <- 1 to 6) {
-          val tid = Team.id(id)
-          assert(
-            md.getTeam(tid).get.equalsIgnoreModifyTime(Team.create(tid, "", ""))
-          )
-        }
-        for (id <- 1 to 18) {
-          val board = md.getBoard(Board.id(id))
-          assert(board.isDefined, s"- Board $id was not found")
-          val b = board.get
-          assert(
-            b.hands.size == 3,
-            s"- Board $id did not have 3 hands, there were ${b.hands.size}"
-          )
-        }
-        assert(!listenerstatus.lastCreate.isEmpty)
-        assert(listenerstatus.lastUpdate.isEmpty)
-        assert(listenerstatus.lastDelete.isEmpty)
-      }
-    }
-  )
-
-  it should "return a MatchDuplicate json object for a POST request to /v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay" in withListener(
-    listenerstatus => {
-      Post(
-        "/v1/rest/duplicates?boards=StandardBoards&movements=Howell3TableNoRelay",
-        MatchDuplicate.create(MatchDuplicate.id("M1"))
-      ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
-        handled mustBe true
-        status mustBe Created
-        mediaType mustBe MediaTypes.`application/json`
-        val md = responseAs[MatchDuplicate]
-        for (id <- 1 to 6) {
-          val tid = Team.id(id)
-          assert(
-            md.getTeam(tid).get.equalsIgnoreModifyTime(Team.create(tid, "", ""))
-          )
-        }
-        for (id <- 1 to 20) {
-          val board = md.getBoard(Board.id(id))
-          assert(board.isDefined, s"- Board $id was not found")
-          val b = board.get
-          assert(
-            b.hands.size == 3,
-            s"- Board $id did not have 3 hands, there were ${b.hands.size}"
-          )
-        }
-        assert(!listenerstatus.lastCreate.isEmpty)
-        assert(listenerstatus.lastUpdate.isEmpty)
-        assert(listenerstatus.lastDelete.isEmpty)
-      }
-    }
-  )
-
-  it should "return a list of duplicate summaries for GET requests to /v1/rest/duplicatesummaries" in {
-    Get("/v1/rest/duplicatesummaries").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      testlog.info(s"resp is: ${response}")
-      handled mustBe true
-      status mustBe OK
-      mediaType mustBe MediaTypes.`application/json`
-      val resp = responseAs[List[DuplicateSummary]]
-      resp.length must be(3)
-    }
-  }
-
-  it should "return a list of match duplicates for GET requests to /v1/rest/duplicates" in {
-    Get("/v1/rest/duplicates").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      handled mustBe true
-      status mustBe OK
-      mediaType mustBe MediaTypes.`application/json`
-      val resp = responseAs[List[MatchDuplicate]]
-      resp.length must be(3)
-
-//      println("resp is: "+resp)
-    }
-  }
-
-  behavior of "MyService REST for DuplicateResult"
-
-  it should "return a MatchDuplicateResult given a MatchDuplicate instance" in {
-    restService.createTestDuplicate(MatchDuplicate.create()).map {
-      _ match {
-        case Right(dup) =>
-          val mdr = MatchDuplicateResult.createFrom(dup)
-
-          mdr.results.size mustBe 1
-          mdr.results(0).size mustBe 4
-        case Left((status, msg)) =>
-          fail(s"unable to crete a match duplicate object ${status} ${msg}")
-      }
-    }
-
-  }
-
-  it should "notify the listener when a MatchDuplicateResult is created" in withListener[
-    MatchDuplicateResult.Id,
-    MatchDuplicateResult
-  ](
-    restService.duplicateresults,
-    listenerstatus => {
-      val mdr = MatchDuplicateResult.create()
-      restService.duplicateresults.syncStore.createChild(mdr) match {
-        case Right(md) =>
-          assert(!listenerstatus.lastCreate.isEmpty)
-          assert(listenerstatus.lastUpdate.isEmpty)
-          assert(listenerstatus.lastDelete.isEmpty)
-        case Left((status, msg)) =>
-          fail(
-            s"unable to crete a match duplicate result object ${status} ${msg}"
-          )
-      }
-    }
-  )
-
-  it should "return a MatchDuplicateResult json object for a POST request to /v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=2TablesArmonk" in withListener[
-    MatchDuplicateResult.Id,
-    MatchDuplicateResult
-  ](
-    restService.duplicateresults,
-    listenerstatus => {
-      Post(
-        "/v1/rest/duplicateresults?default=true&boards=ArmonkBoards&movements=2TablesArmonk",
-        MatchDuplicateResult.create(MatchDuplicateResult.id(1))
-      ).withAttributes(remoteAddress) ~> myRouteWithLogging ~> check {
-        handled mustBe true
-        status mustBe Created
-        mediaType mustBe MediaTypes.`application/json`
-        val mdr = responseAs[MatchDuplicateResult]
-
-        mdr.results.size mustBe 1
-        mdr.results(0).size mustBe 4
-
-        assert(!listenerstatus.lastCreate.isEmpty)
-        assert(listenerstatus.lastUpdate.isEmpty)
-        assert(listenerstatus.lastDelete.isEmpty)
-      }
-    }
-  )
-
 }
 
-object TestDuplicateRestSpecImplicits {
+object TestIndividualDuplicateRestSpecImplicits {
   implicit class WebSocketSender(private val wsClient: WSProbe) extends AnyVal {
 
     def send(msg: ToServerMessage): Unit = {

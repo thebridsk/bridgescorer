@@ -54,6 +54,10 @@ object ProtocolJsonSupportImpl {
     Json.format[StartMonitorDuplicate]
   implicit val StopMonitorDuplicateFormat: OFormat[StopMonitorDuplicate] =
     Json.format[StopMonitorDuplicate]
+  implicit val StartMonitorIndividualDuplicateFormat: OFormat[StartMonitorIndividualDuplicate] =
+    Json.format[StartMonitorIndividualDuplicate]
+  implicit val StopMonitorIndividualDuplicateFormat: OFormat[StopMonitorIndividualDuplicate] =
+    Json.format[StopMonitorIndividualDuplicate]
   implicit val StartMonitorChicagoFormat: OFormat[StartMonitorChicago] =
     Json.format[StartMonitorChicago]
   implicit val StopMonitorChicagoFormat: OFormat[StopMonitorChicago] =
@@ -179,6 +183,14 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       Option(Json.fromJson[StopMonitorDuplicate](o).map { o =>
         o
       })
+    } else if (className == classOf[StartMonitorIndividualDuplicate].getName) {
+      Option(Json.fromJson[StartMonitorIndividualDuplicate](o).map { o =>
+        o
+      })
+    } else if (className == classOf[StopMonitorIndividualDuplicate].getName) {
+      Option(Json.fromJson[StopMonitorIndividualDuplicate](o).map { o =>
+        o
+      })
     } else if (className == classOf[StartMonitorChicago].getName) {
       Option(Json.fromJson[StartMonitorChicago](o).map { o =>
         o
@@ -213,6 +225,22 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       })
     } else if (className == classOf[UpdateDuplicatePictures].getName) {
       Option(Json.fromJson[UpdateDuplicatePictures](o).map { o =>
+        o
+      })
+    } else if (className == classOf[UpdateIndividualDuplicate].getName) {
+      Option(Json.fromJson[UpdateIndividualDuplicate](o).map { o =>
+        o
+      })
+    } else if (className == classOf[UpdateIndividualDuplicateHand].getName) {
+      Option(Json.fromJson[UpdateIndividualDuplicateHand](o).map { o =>
+        o
+      })
+    } else if (className == classOf[UpdateIndividualDuplicatePicture].getName) {
+      Option(Json.fromJson[UpdateIndividualDuplicatePicture](o).map { o =>
+        o
+      })
+    } else if (className == classOf[UpdateIndividualDuplicatePictures].getName) {
+      Option(Json.fromJson[UpdateIndividualDuplicatePictures](o).map { o =>
         o
       })
     } else if (className == classOf[NoData].getName) {
@@ -250,6 +278,8 @@ class ToServerMessageFormat extends SealedFormat[ToServerMessage] {
       case x: StopMonitorSummary      => Json.toJson(x)
       case x: StartMonitorDuplicate   => Json.toJson(x)
       case x: StopMonitorDuplicate    => Json.toJson(x)
+      case x: StartMonitorIndividualDuplicate   => Json.toJson(x)
+      case x: StopMonitorIndividualDuplicate    => Json.toJson(x)
       case x: StartMonitorChicago     => Json.toJson(x)
       case x: StopMonitorChicago      => Json.toJson(x)
       case x: StartMonitorRubber      => Json.toJson(x)
@@ -309,6 +339,22 @@ class ToBrowserMessageFormat extends SealedFormat[ToBrowserMessage] {
       })
     } else if (className == classOf[UpdateDuplicatePictures].getName) {
       Option(Json.fromJson[UpdateDuplicatePictures](o).map { o =>
+        o
+      })
+    } else if (className == classOf[UpdateIndividualDuplicate].getName) {
+      Option(Json.fromJson[UpdateIndividualDuplicate](o).map { o =>
+        o
+      })
+    } else if (className == classOf[UpdateIndividualDuplicateHand].getName) {
+      Option(Json.fromJson[UpdateIndividualDuplicateHand](o).map { o =>
+        o
+      })
+    } else if (className == classOf[UpdateIndividualDuplicatePicture].getName) {
+      Option(Json.fromJson[UpdateIndividualDuplicatePicture](o).map { o =>
+        o
+      })
+    } else if (className == classOf[UpdateIndividualDuplicatePictures].getName) {
+      Option(Json.fromJson[UpdateIndividualDuplicatePictures](o).map { o =>
         o
       })
     } else if (className == classOf[NoData].getName) {

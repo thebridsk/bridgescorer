@@ -26,5 +26,6 @@ class AllUnitTests
       new TestDuplicateWebsocket,
       new TestGraphQL,
       new TestRemoteLoggingConfig,
-      new TestPlayerComparisonStats
+      new TestPlayerComparisonStats,
+      new TestIndividualDuplicateRestSpec
     )

@@ -35,6 +35,10 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictur
 import org.scalatest.Assertion
 import akka.http.scaladsl.model.AttributeKey
 import com.github.thebridsk.bridge.server.test.TestDuplicateRestSpecImplicits._
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePictures
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicateHand
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicate
 
 @SuppressWarnings(
   Array( // Get really weird errors on missing implicits in WS() call
@@ -266,6 +270,16 @@ object WebsocketClientImplicits {
           case UpdateDuplicate(mp) =>
             assert(mat.equalsIgnoreModifyTime(mp))
             false
+
+          case upict: UpdateIndividualDuplicatePicture =>
+            fail("Unexpected response from the monitor: " + upict)
+          case upict: UpdateIndividualDuplicatePictures =>
+            fail("Unexpected response from the monitor: " + upict)
+          case uboard: UpdateIndividualDuplicateHand =>
+            fail("Unexpected response from the monitor: " + uboard)
+          case UpdateIndividualDuplicate(mp) =>
+            fail("Unexpected response from the monitor: " + mp)
+
           case pj: MonitorJoined =>
             testlog.debug(
               s"${wc.address} Ignored Unexpected response from the monitor: ${pj}"
@@ -313,6 +327,16 @@ object WebsocketClientImplicits {
           testlog.debug("mat: " + mat)
           testlog.debug("mp : " + mp)
           assert(mat.equalsIgnoreModifyTime(mp))
+
+        case upict: UpdateIndividualDuplicatePicture =>
+          fail("Unexpected response from the monitor: " + upict)
+        case upict: UpdateIndividualDuplicatePictures =>
+          fail("Unexpected response from the monitor: " + upict)
+        case uboard: UpdateIndividualDuplicateHand =>
+          fail("Unexpected response from the monitor: " + uboard)
+        case UpdateIndividualDuplicate(mp) =>
+          fail("Unexpected response from the monitor: " + mp)
+
         case pj: MonitorJoined =>
           fail(s"${wc.address} Unexpected response from the monitor: ${pj}")
         case pl: MonitorLeft =>
@@ -350,6 +374,16 @@ object WebsocketClientImplicits {
           fail(s"${wc.address} Unexpected response from the monitor: ${uboard}")
         case UpdateDuplicate(mp) =>
           fail(s"${wc.address} Unexpected response from the monitor: ${mp}")
+
+        case upict: UpdateIndividualDuplicatePicture =>
+          fail("Unexpected response from the monitor: " + upict)
+        case upict: UpdateIndividualDuplicatePictures =>
+          fail("Unexpected response from the monitor: " + upict)
+        case uboard: UpdateIndividualDuplicateHand =>
+          fail("Unexpected response from the monitor: " + uboard)
+        case UpdateIndividualDuplicate(mp) =>
+          fail("Unexpected response from the monitor: " + mp)
+
         case pl: MonitorLeft =>
           fail(s"${wc.address} Unexpected response from the monitor: ${pl}")
         case pj: MonitorJoined =>
@@ -387,6 +421,16 @@ object WebsocketClientImplicits {
           fail(s"${wc.address} Unexpected response from the monitor: ${uboard}")
         case UpdateDuplicate(mp) =>
           fail(s"${wc.address} Unexpected response from the monitor: ${mp}")
+
+        case upict: UpdateIndividualDuplicatePicture =>
+          fail("Unexpected response from the monitor: " + upict)
+        case upict: UpdateIndividualDuplicatePictures =>
+          fail("Unexpected response from the monitor: " + upict)
+        case uboard: UpdateIndividualDuplicateHand =>
+          fail("Unexpected response from the monitor: " + uboard)
+        case UpdateIndividualDuplicate(mp) =>
+          fail("Unexpected response from the monitor: " + mp)
+
         case pl: MonitorLeft =>
           testlog.debug(s"${wc.address} Got the left: ${pl}")
         case pj: MonitorJoined =>

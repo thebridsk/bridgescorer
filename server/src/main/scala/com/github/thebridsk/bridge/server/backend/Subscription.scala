@@ -7,6 +7,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.MatchRubber
+import com.github.thebridsk.bridge.data.IndividualDuplicate
 
 class Subscription(val id: String, val actor: ActorRef) {
 
@@ -47,6 +48,40 @@ object DuplicateSubscription {
     sub match {
       case DuplicateSubscription(sid, actor, mid) if (mid == id) => true
       case _                                                     => false
+    }
+  }
+
+}
+
+class IndividualDuplicateSubscription(
+    id: String,
+    actor: ActorRef,
+    val matchid: IndividualDuplicate.Id
+) extends Subscription(id, actor) {
+
+  def this(subscription: Subscription, matchid: IndividualDuplicate.Id) =
+    this(subscription.id, subscription.actor, matchid)
+
+  def isMatch(mid: IndividualDuplicate.Id): Boolean = matchid == mid
+
+  override def needsStoreMonitored = true
+}
+
+object IndividualDuplicateSubscription {
+
+  def apply(id: String, actor: ActorRef, matchid: IndividualDuplicate.Id) =
+    new IndividualDuplicateSubscription(id, actor, matchid)
+
+  def unapply(
+      obj: IndividualDuplicateSubscription
+  ): Option[(String, ActorRef, IndividualDuplicate.Id)] = {
+    Some((obj.id, obj.actor, obj.matchid))
+  }
+
+  def filter(id: IndividualDuplicate.Id)(sub: Subscription): Boolean = {
+    sub match {
+      case IndividualDuplicateSubscription(sid, actor, mid) if (mid == id) => true
+      case _                                                               => false
     }
   }
 

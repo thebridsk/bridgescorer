@@ -69,6 +69,20 @@ object Protocol {
       extends ToServerMessage
 
   /**
+    * Start monitoring a duplicate match
+    * @param dupid - the id of the duplicate match to start/stop monitoring
+    */
+  case class StartMonitorIndividualDuplicate(dupid: IndividualDuplicate.Id)
+      extends ToServerMessage
+
+  /**
+    * Stop monitoring a duplicate match
+    * @param dupid - the id of the duplicate match to start/stop monitoring
+    */
+  case class StopMonitorIndividualDuplicate(dupid: IndividualDuplicate.Id)
+      extends ToServerMessage
+
+  /**
     * Start monitoring a chicago match
     * @param chiid - the id of the chicago match to start/stop monitoring
     */

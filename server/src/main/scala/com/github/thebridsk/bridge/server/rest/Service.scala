@@ -27,6 +27,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.ValidationRejection
 import akka.event.LoggingAdapter
 import akka.event.Logging
+import com.github.thebridsk.bridge.server.backend.IndividualDuplicateMonitorWebservice
 
 //import akka.event.LoggingAdapter
 
@@ -157,6 +158,8 @@ trait Service extends ImportExport {
   }
   object duplicateMonitor
       extends DuplicateMonitorWebservice(totallyMissingResourceHandler, this)
+  object individualDuplicateMonitor
+      extends IndividualDuplicateMonitorWebservice(totallyMissingResourceHandler, this)
   object chicagoMonitor
       extends ChicagoMonitorWebservice(totallyMissingResourceHandler, this)
   object rubberMonitor
@@ -247,6 +250,7 @@ trait Service extends ImportExport {
           }
         } ~
           duplicateMonitor.route ~
+          individualDuplicateMonitor.route ~
           chicagoMonitor.route ~
           rubberMonitor.route ~
           importExportRoute

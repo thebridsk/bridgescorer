@@ -10,7 +10,6 @@ import javax.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
 import scala.util.Success
 import scala.util.Failure
-import akka.http.scaladsl.model.StatusCodes
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.BridgeNestedResources._
 import io.swagger.v3.oas.annotations.Operation

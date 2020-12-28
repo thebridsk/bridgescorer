@@ -224,7 +224,7 @@ abstract class BridgeService(val id: String) {
   }
 
   def fillBoards(dup: IndividualDuplicate): Future[Result[IndividualDuplicate]] = {
-    fillBoards(dup, defaultBoards, defaultIndividualMovement)
+    fillBoards(dup, defaultIndividualBoards, defaultIndividualMovement)
   }
 
   def fillBoards(
@@ -423,12 +423,28 @@ abstract class BridgeService(val id: String) {
           Result(error)
       }
     }
+    val n5 = individualduplicates.readAll().map { rd =>
+      rd match {
+        case Right(dups) =>
+          Result(
+            dups.values
+              .flatMap(_.players)
+              .filter(p => p.length() > 0)
+              .toList
+              .distinct
+          ).logit("getAllNames() on individualduplicates")
+        case Left(error) =>
+          BridgeServiceWithLogging.log
+            .fine(s"getAllNames() got error on individualduplicates.readAll $error")
+          Result(error)
+      }
+    }
 
     def compare(s1: String, s2: String) = {
       s1.toLowerCase() < s2.toLowerCase()
     }
 
-    val futures = List(n1, n2, n3, n4)
+    val futures = List(n1, n2, n3, n4, n5)
 
     (Future
       .foldLeft(futures)(List[String]()) { (ac, v) =>
