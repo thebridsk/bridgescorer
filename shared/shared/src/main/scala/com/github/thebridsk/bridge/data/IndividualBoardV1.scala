@@ -112,12 +112,30 @@ case class IndividualBoardV1 private (
 
   def timesPlayed: Int = hands.filter(dh => dh.wasPlayed).size
 
+  /**
+    * @param player
+    * @return a hand that was played by the specified player
+    */
   def handPlayedByPlayer(player: Int): Option[IndividualDuplicateHandV1] =
     hands.collectFirst {
-      case hand: IndividualDuplicateHandV1 if hand.isPlayer(player) => hand
+      case hand: IndividualDuplicateHandV1 if hand.isPlayer(player) && hand.played.isDefined => hand
     }
 
+  /**
+    * @param player
+    * @return true if board was played by the specified player
+    */
   def wasPlayedByPlayer(player: Int): Boolean = !handPlayedByPlayer(player).isEmpty
+
+  /**
+    * @param players
+    * @return true if all players played the board.
+    */
+  def wasPlayedByPlayers(players: List[Int]): Boolean = {
+    players
+      .find(!wasPlayedByPlayer(_))
+      .isEmpty
+  }
 
   def copyForCreate(id: IndividualBoard.Id): IndividualBoardV1 = {
     val time = SystemTime.currentTimeMillis()

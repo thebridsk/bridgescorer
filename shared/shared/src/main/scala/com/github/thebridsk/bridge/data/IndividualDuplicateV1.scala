@@ -231,7 +231,7 @@ case class IndividualDuplicateV1 private (
     */
   @Hidden
   def getPlayer(p: Int): String = {
-    players(p)
+    players(p-1)
   }
 
   def updatePlayer(p: Int, name: String): IndividualDuplicateV1 = {
@@ -249,6 +249,27 @@ case class IndividualDuplicateV1 private (
 
   def deletePlayer(p: Int): IndividualDuplicateV1 =
     updatePlayer(p,"")
+
+  /**
+    * @param table
+    * @param round
+    * @return A hand played at the table and round, or None if not found.
+    */
+  def playersOnTableInRound(table: Table.Id, round: Int): Option[IndividualDuplicateHandV1] = {
+    boards
+      .flatMap(_.hands)
+      .find(dh => dh.round == round && dh.table == table)
+  }
+
+  /**
+    * @return the indexes in the order that would return the player's names in sorted order.
+    */
+  def sortedPlayers: List[Int] = {
+    players
+      .zipWithIndex
+      .sortBy(_._1)
+      .map(_._2 + 1)
+  }
 
   def getHand(boardId: IndividualBoard.Id, handId: IndividualDuplicateHandV1.Id): Option[IndividualDuplicateHandV1] = {
     getBoard(boardId) match {
