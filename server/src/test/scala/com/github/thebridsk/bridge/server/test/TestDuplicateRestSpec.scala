@@ -469,7 +469,7 @@ class TestDuplicateRestSpec
         mediaType mustBe MediaTypes.`application/json`
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe "http://example.com/duplicates/M1"
+            h.value() mustBe "http://example.com/v1/rest/duplicates/M1"
           case None =>
             fail("Location header was not found in response")
         }
@@ -918,7 +918,7 @@ class TestDuplicateRestSpec
         status mustBe Created
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe "http://example.com/duplicates/M1/boards/B2/hands/T3"
+            h.value() mustBe "http://example.com/v1/rest/duplicates/M1/boards/B2/hands/T3"
           case None =>
             fail("Location header was not found in response")
         }
