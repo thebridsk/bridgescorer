@@ -2126,53 +2126,57 @@ class Duplicate5TestPages
       "Checking scoreboards",
       CodeBlock {
         import SessionDirector._
-
-        val sb = ScoreboardPage.current
-        sb.checkTable(resultAfterOneRoundZero: _*)
-        val (ts, pes) = allHands.getScoreToRound(1, HandDirectorView)
-        val (ts1, pes1) = fixTables(ts, pes, 1)
-        sb.checkTable(ts1: _*)
-        sb.checkPlaceTable(pes1: _*)
-        checkPlayedBoards(sb, false, None, 1)
+        captureLogsOnError {
+          val sb = ScoreboardPage.current
+          sb.checkTable(resultAfterOneRoundZero: _*)
+          val (ts, pes) = allHands.getScoreToRound(1, HandDirectorView)
+          val (ts1, pes1) = fixTables(ts, pes, 1)
+          sb.checkTable(ts1: _*)
+          sb.checkPlaceTable(pes1: _*)
+          checkPlayedBoards(sb, false, None, 1)
+        }
       },
       CodeBlock {
         import SessionComplete._
-
-        val sb = ScoreboardPage.current
-        sb.checkTable(resultAfterOneRoundCheckMark: _*)
-        val (ts, pes) = allHands.getScoreToRound(1, HandCompletedView)
-        val (ts1, pes1) = fixTables(ts, pes, 1)
-        sb.checkTable(ts1: _*)
-        sb.checkPlaceTable(pes1: _*)
-        checkPlayedBoards(sb, true, None, 1)
+        captureLogsOnError {
+          val sb = ScoreboardPage.current
+          sb.checkTable(resultAfterOneRoundCheckMark: _*)
+          val (ts, pes) = allHands.getScoreToRound(1, HandCompletedView)
+          val (ts1, pes1) = fixTables(ts, pes, 1)
+          sb.checkTable(ts1: _*)
+          sb.checkPlaceTable(pes1: _*)
+          checkPlayedBoards(sb, true, None, 1)
+        }
       },
       CodeBlock {
         import SessionTable1._
-
-        val sb = ScoreboardPage.current
-        sb.checkTable(resultAfterOneRoundCheckMark: _*)
-        val (ts, pes) = allHands.getScoreToRound(
-          1,
-          HandTableView(1, 1, team1.teamid, team2.teamid)
-        )
-        val (ts1, pes1) = fixTables(ts, pes, 1)
-        sb.checkTable(ts1: _*)
-        sb.checkPlaceTable(pes1: _*)
-        checkPlayedBoards(sb, false, Some(1), 1)
+        captureLogsOnError {
+          val sb = ScoreboardPage.current
+          sb.checkTable(resultAfterOneRoundCheckMark: _*)
+          val (ts, pes) = allHands.getScoreToRound(
+            1,
+            HandTableView(1, 1, team1.teamid, team2.teamid)
+          )
+          val (ts1, pes1) = fixTables(ts, pes, 1)
+          sb.checkTable(ts1: _*)
+          sb.checkPlaceTable(pes1: _*)
+          checkPlayedBoards(sb, false, Some(1), 1)
+        }
       },
       CodeBlock {
         import SessionTable2._
-
-        val sb = ScoreboardPage.current
-        sb.checkTable(resultAfterOneRoundCheckMark: _*)
-        val (ts, pes) = allHands.getScoreToRound(
-          1,
-          HandTableView(2, 1, team4.teamid, team3.teamid)
-        )
-        val (ts1, pes1) = fixTables(ts, pes, 1)
-        sb.checkTable(ts1: _*)
-        sb.checkPlaceTable(pes1: _*)
-        checkPlayedBoards(sb, false, Some(2), 1)
+        captureLogsOnError {
+          val sb = ScoreboardPage.current
+          sb.checkTable(resultAfterOneRoundCheckMark: _*)
+          val (ts, pes) = allHands.getScoreToRound(
+            1,
+            HandTableView(2, 1, team4.teamid, team3.teamid)
+          )
+          val (ts1, pes1) = fixTables(ts, pes, 1)
+          sb.checkTable(ts1: _*)
+          sb.checkPlaceTable(pes1: _*)
+          checkPlayedBoards(sb, false, Some(2), 1)
+        }
       }
     )
   }

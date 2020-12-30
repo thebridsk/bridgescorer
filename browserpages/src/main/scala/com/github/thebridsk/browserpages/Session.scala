@@ -333,7 +333,37 @@ class Session(name: String = "default") extends WebDriver {
             )
             defaultBrowser // default
           case Some(wd) =>
+            import Session.patternRemote
             wd.toLowerCase() match {
+              case patternRemote(browser,remoteurl) =>
+                val options = browser.toLowerCase match {
+                  case "chrome" =>
+                    testlog.fine("Using chrome")
+                    chromeOptions(false) // Chrome.webDriver
+                  case "chromeheadless" =>
+                    testlog.fine("Using chrome headless")
+                    chromeOptions(true) // Chrome.webDriver
+                  case "safari" =>
+                    testlog.fine("Using safari")
+                    safariOptions // Safari.webDriver
+                  case "firefox" =>
+                    testlog.fine("Using firefox")
+                    firefoxOptions(false) // Firefox.webDriver
+                  case "firefoxheadless" =>
+                    testlog.fine("Using firefox headless")
+                    firefoxOptions(true) // Firefox.webDriver
+                  case "edge" =>
+                    testlog.fine("Using edge")
+                    edgeOptions
+                  case _ =>
+                    testlog.fine("Unknown browser specified for remote, using default, chrome: " + wd)
+                    chromeOptions(false)
+                }
+                // https://www.selenium.dev/documentation/en/remote_webdriver/remote_webdriver_client/
+                val driver = new RemoteWebDriver(new URL(remoteurl), options)
+                // https://www.selenium.dev/documentation/en/remote_webdriver/remote_webdriver_client/#local-file-detector
+                driver.setFileDetector(new LocalFileDetector());
+                driver
               case "chrome" =>
                 testlog.fine("Using chrome")
                 chrome(false) // Chrome.webDriver
@@ -352,44 +382,8 @@ class Session(name: String = "default") extends WebDriver {
               case "edge" =>
                 testlog.fine("Using edge")
                 edge
-              case remoteConfig: String if remoteConfig.startsWith("remote ") =>
-                testlog.fine("Using a remote web driver")
-                wd match {
-                  case Session.patternRemote(browser,remoteurl) =>
-                    val options = browser.toLowerCase match {
-                      case "chrome" =>
-                        testlog.fine("Using chrome")
-                        chromeOptions(false) // Chrome.webDriver
-                      case "chromeheadless" =>
-                        testlog.fine("Using chrome headless")
-                        chromeOptions(true) // Chrome.webDriver
-                      case "safari" =>
-                        testlog.fine("Using safari")
-                        safariOptions // Safari.webDriver
-                      case "firefox" =>
-                        testlog.fine("Using firefox")
-                        firefoxOptions(false) // Firefox.webDriver
-                      case "firefoxheadless" =>
-                        testlog.fine("Using firefox headless")
-                        firefoxOptions(true) // Firefox.webDriver
-                      case "edge" =>
-                        testlog.fine("Using edge")
-                        edgeOptions
-                      case _ =>
-                        testlog.fine("Unknown browser specified, using default: " + wd)
-                        chromeOptions(false)
-                    }
-                    // https://www.selenium.dev/documentation/en/remote_webdriver/remote_webdriver_client/
-                    val driver = new RemoteWebDriver(new URL(remoteurl), options)
-                    // https://www.selenium.dev/documentation/en/remote_webdriver/remote_webdriver_client/#local-file-detector
-                    driver.setFileDetector(new LocalFileDetector());
-                    driver
-                  case _ =>
-                    testlog.warning(s"Remote configuration is not valid, using default: ${remoteConfig}")
-                    defaultBrowser
-                }
-              case _ =>
-                testlog.fine("Unknown browser specified, using default: " + wd)
+              case lcwd =>
+                testlog.fine("Unknown browser specified, using default: " + lcwd)
                 defaultBrowser // default
             }
         })
@@ -626,7 +620,14 @@ class Session(name: String = "default") extends WebDriver {
 
   def showLogs(logType: String): Unit = {
     testlog.info(s"Show logs for logtype: ${logType}")
-    showLogs(manage().logs().get(logType))
+    val lt = try {
+      manage().logs().get(logType)
+    } catch {
+      case x: Exception =>
+        testlog.warning(s"Session ${name}: Error getting logs", x)
+        return
+    }
+    showLogs(lt)
   }
 
   def showLogs(logEntries: LogEntries): Unit = {

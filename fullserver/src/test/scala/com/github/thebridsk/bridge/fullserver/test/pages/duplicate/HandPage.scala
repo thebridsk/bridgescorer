@@ -119,7 +119,7 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
     val t = getElemByXPath(
       s"""//div[contains(concat(' ', @class, ' '), ' handViewTableBoard ')]/table/tbody/tr[3]/td[1]"""
     ).text
-    t must fullyMatch regex s"""Dealer ${pos.name}\n.*"""
+    t must fullyMatch regex s"""Dealer ${pos.name}(\n.*)?"""
     this
   }
 

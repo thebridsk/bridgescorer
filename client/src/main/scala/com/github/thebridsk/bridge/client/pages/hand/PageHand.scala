@@ -71,7 +71,8 @@ object PageHand {
       helppage: Option[String] = None,
       picture: Option[String] = None,
       supportPicture: Boolean = false
-  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    logger.fine(s"PageHand.apply(): contract=$contract")
     component(
       Props(
         contract.withScoring,
@@ -89,6 +90,7 @@ object PageHand {
         supportPicture
       )
     )
+  }
 
   /**
     * Constructor for entering a new hand
@@ -442,6 +444,8 @@ object PageHandInternal {
     }
 
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+      logger.fine(s"PageHand.render(): props.contract=${props.contract}")
+      logger.fine(s"PageHand.render(): props.currentcontract=${state.currentcontract}")
       if (state.changeScorekeeper) renderChangeScorekeeper(props, state)
       else renderHand(props, state)
     }

@@ -264,8 +264,18 @@ object TestServer {
 
   def getProp(name: String): Option[String] = {
     sys.props.get(name) match {
-      case Some(s) => Some(s)
-      case None    => sys.env.get(name)
+      case Some(s) =>
+        testlog.fine(s"Found system property for $name: $s")
+        Some(s)
+      case None    =>
+        sys.env.get(name)
+          .map { s =>
+            testlog.fine(s"Found env variable for $name: $s")
+            s
+          }.orElse {
+            testlog.fine(s"Did not find env variable or system property for $name")
+            None
+          }
     }
   }
 }
