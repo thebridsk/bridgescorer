@@ -16,6 +16,7 @@ import com.github.thebridsk.bridge.server.backend.FileImportStore
 import com.github.thebridsk.bridge.server.logging.RemoteLoggingConfig
 import java.io.File
 import com.github.thebridsk.bridge.server.backend.BridgeServiceWithLogging
+import java.net.InetAddress
 
 object TestServer {
 
@@ -117,6 +118,23 @@ object TestServer {
   val portuse: String = if (port == schemeport) "" else { ":" + port }
   val hosturl: String =
     useTestServerURL.getOrElse(scheme + "://" + hostname + portuse) + "/"
+  val hosturlWithNameResolved: String = {
+    try {
+      val url = new URL(hosturl)
+      val hostname = url.getHost()
+      val ip = InetAddress.getByName(hostname)
+      val ipaddr = ip.getHostAddress()
+      val newurl = new URL(url.getProtocol(), ipaddr, url.getPort(), url.getFile())
+      val r = newurl.toString()
+      testlog.warning(s"URL with name resolved is ${r}, was ${hosturl}")
+      r
+    } catch {
+      case x: Exception =>
+        testlog.warning(s"Unable to get IP of bridgescorer host, using ${hosturl}", x)
+        hosturl
+    }
+
+  }
   private val pageprod: String = hosturl + "public/index.html"
   private val pagedev: String = hosturl + "public/index-fastopt.html"
   private val pagedemoprod: String = hosturl + "public/demo.html"
