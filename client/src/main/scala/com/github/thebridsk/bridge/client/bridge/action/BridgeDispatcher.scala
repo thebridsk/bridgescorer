@@ -32,6 +32,13 @@ object BridgeDispatcher extends Dispatcher {
 
   def stop(): Unit = dispatcher.dispatch(ActionStop())
 
+  def startIndividualDuplicate(dupid: IndividualDuplicate.Id): Unit = {
+    logger.info("Setting up store for MatchDuplicate " + dupid)
+    dispatcher.dispatch(ActionStartIndividualDuplicate(dupid))
+  }
+
+  def stopIndividualDuplicate(): Unit = dispatcher.dispatch(ActionStopIndividualDuplicate())
+
   def updateDuplicateSummary(
       importId: Option[String],
       summary: List[DuplicateSummary]
@@ -81,6 +88,11 @@ object BridgeDispatcher extends Dispatcher {
       dupid: MatchDuplicate.Id,
       pictures: List[DuplicatePicture]
   ): Unit = dispatcher.dispatch(ActionUpdatePictures(dupid, pictures))
+
+  def updateIndividualDuplicate(duplicate: IndividualDuplicate): Unit =
+    dispatcher.dispatch(ActionUpdateIndividualDuplicate(duplicate))
+  def updateIndividualDuplicateHand(dupid: IndividualDuplicate.Id, hand: IndividualDuplicateHand): Unit =
+    dispatcher.dispatch(ActionUpdateIndividualDuplicateHand(dupid, hand))
   def updateIndividualPicture(
       dupid: IndividualDuplicate.Id,
       boardid: IndividualBoard.Id,

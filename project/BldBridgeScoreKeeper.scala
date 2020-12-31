@@ -103,6 +103,7 @@ object BldBridgeScoreKeeper {
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
       fork := true,
+      Test / fork := true,
 
       // testOptions in Test := Seq(),
 

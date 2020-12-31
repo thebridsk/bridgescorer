@@ -49,6 +49,7 @@ trait MyService
 
   override lazy val cacheDuration: Duration = Duration("0s")
 
+  def listenInterface: List[String] = List()
   def host = "loopback"
   def ports: ServerPort = ServerPort(None, None)
 
@@ -105,7 +106,9 @@ trait MyService
     .handleNotFound { complete(StatusCodes.NotFound, "Not here!myservice") }
     .result()
 
-  val serverService = new ServerService(totallyMissingHandler)
+  val serverService = new ServerService(totallyMissingHandler) {
+    val listenInterface = MyService.this.listenInterface
+  }
 
   val myRouteWithLoggingDebugging: RequestContext => Future[RouteResult] =
 //    logRequest(("topLevel", Logging.DebugLevel)) {

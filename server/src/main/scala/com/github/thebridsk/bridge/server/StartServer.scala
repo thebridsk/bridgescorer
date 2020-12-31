@@ -617,10 +617,9 @@ private class StartServer {
       override lazy val cacheDuration =
         cache.getOrElse(Duration(defaultCacheFor))
 
-      override def ports = ServerPort(httpPort, httpsPort)
-      override lazy val host = if (interface == "0.0.0.0") {
+      override lazy val listenInterface = {
         import scala.jdk.CollectionConverters._
-        val x = NetworkInterface.getNetworkInterfaces.asScala
+        NetworkInterface.getNetworkInterfaces.asScala
           .filter { x =>
             x.isUp() && !x.isLoopback()
           }
@@ -634,7 +633,10 @@ private class StartServer {
             x.getHostAddress
           }
           .toList
-        x.headOption.getOrElse("loopback")
+      }
+      override def ports = ServerPort(httpPort, httpsPort)
+      override lazy val host = if (interface == "0.0.0.0") {
+        listenInterface.headOption.getOrElse("loopback")
         "loopback"
       } else {
         interface

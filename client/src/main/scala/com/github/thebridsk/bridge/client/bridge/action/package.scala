@@ -26,6 +26,7 @@ package object action {
   sealed trait BridgeAction extends Action
 
   sealed trait DuplicateBridgeAction extends BridgeAction
+  sealed trait IndividualDuplicateBridgeAction extends BridgeAction
 
   /**
     * @param importId the import Id.  If None, then this is the main store.
@@ -79,16 +80,26 @@ package object action {
       dupid: MatchDuplicate.Id,
       picture: List[DuplicatePicture]
   ) extends DuplicateBridgeAction
+
+  case class ActionStartIndividualDuplicate(dupid: IndividualDuplicate.Id)
+      extends IndividualDuplicateBridgeAction
+  case class ActionStopIndividualDuplicate() extends IndividualDuplicateBridgeAction
+  case class ActionUpdateIndividualDuplicate(duplicate: IndividualDuplicate)
+      extends IndividualDuplicateBridgeAction
+  case class ActionUpdateIndividualDuplicateHand(
+      dupid: IndividualDuplicate.Id,
+      hand: IndividualDuplicateHand
+  ) extends IndividualDuplicateBridgeAction
   case class ActionUpdateIndividualPicture(
       dupid: IndividualDuplicate.Id,
       boardid: IndividualBoard.Id,
       handid: IndividualDuplicateHand.Id,
       picture: Option[IndividualDuplicatePicture]
-  ) extends DuplicateBridgeAction
+  ) extends IndividualDuplicateBridgeAction
   case class ActionUpdateIndividualPictures(
       dupid: IndividualDuplicate.Id,
       picture: List[IndividualDuplicatePicture]
-  ) extends DuplicateBridgeAction
+  ) extends IndividualDuplicateBridgeAction
 
   sealed trait BoardSetAction extends BridgeAction
   sealed trait MovementAction extends BridgeAction

@@ -16,17 +16,119 @@ import com.github.thebridsk.bridge.server.backend.FileImportStore
 import com.github.thebridsk.bridge.server.logging.RemoteLoggingConfig
 import java.io.File
 import com.github.thebridsk.bridge.server.backend.BridgeServiceWithLogging
-import java.net.InetAddress
 
+/**
+  * Keep track of all variables associated with the server,
+  * and optionally start the bridgescorer server for testing
+  *
+  * The following variables affect the variables and the server,
+  * they may be specified as environment variables or system properties.
+  * If both are specified, the system properties is used.
+  *
+  * - **TestServerStart** (Boolean, default: `true`) start the test server
+  * - **TestServerListen** (String, default: `http://localhost:8081`) the protocol, interface and port the server will listen on.
+  *                        If port is not specified, then 8081 is used.
+  *                        Only used when **TestServerStart** is true.
+  * - **TestServerURL** (String, default: `${TestServerProtocol}://${TestServerListen}/`)
+  *                     the URL to use to connect to the server.  Must end in "/"
+  * - **TestProductionPage** (Boolean, default: `false`) whether production pages are tested
+  *
+  * The [[start]] method has a parameter, *https* that defaults to false.  This
+  * parameter determines whether the server is started with https.  If https is started,
+  * it will be on port+443-80, where port is the http port in **TestServerListen**.
+  * This parameter is ignored if the protocol in **TestServerListen** is `https`
+  *
+  */
 object TestServer {
 
   val testlog: Logger = Logger(TestServer.getClass.getName)
 
-  val startTestServer: Boolean = getBooleanProp("StartTestServer", false)
-  val useTestServerURL: Option[String] = getProp("UseBridgeScorerURL")
-  val useTestServerScheme: Option[String] = getProp("UseBridgeScorerScheme")
-  val useTestServerHost: Option[String] = getProp("UseBridgeScorerHost")
-  val useTestServerPort: Option[String] = getProp("UseBridgeScorerPort")
+
+  /**
+    * Normalize the URL.
+    *
+    * Add protocol http if none is specified,
+    * use port 8081 if none specified
+    *
+    * This must match same function in BridgeServer.scala
+    */
+  private def normalizeURL(url: String) = {
+    val u = new URL(url)
+    val port = {
+      val p = u.getPort()
+      if (p < 0) 8081
+      else p
+    }
+    new URL(
+      Option(u.getProtocol()).getOrElse("http"),
+      u.getHost(),
+      port,
+      u.getFile()
+    )
+  }
+
+  /**
+    * Get the value of a URL system property or environment variable.
+    *
+    * If both system property and environment variable is set, the
+    * system property value is used.
+    *
+    * Normalized the URL, this adds protocol http if none is specified,
+    * use port 8081 if none specified.
+    *
+    * Checks for protocol being http or https
+    *
+    * optionally checks the file part of the URL to make sure it ends in a "/"
+    *
+    * @param name the name of the environment variable or system property
+    * @param defaultValue the value to use if none is set
+    * @param ignoreFile if true, then don't check if file part ends in "/"
+    *
+    * @throws Exception if the URL is not valid.
+    *
+    * This must match same function in BridgeServer.scala
+    */
+  private def getPropURL(
+      name: String,
+      defaultValue: String,
+      ignoreFile: Boolean = false
+  ): URL = {
+    val v = getProp(name).getOrElse(defaultValue)
+    try {
+      val url = normalizeURL(v)
+      val protocol = url.getProtocol()
+      if (protocol != "http" && protocol != "https") {
+        throw new Exception(s"${name} must be http or https, found ${protocol}: ${v}")
+      }
+      if (!ignoreFile && url.getFile() != "/") {
+        throw new Exception(s"${name} must end in '/': ${v}")
+      }
+      url
+    } catch {
+      case x: Exception =>
+        throw new Exception(s"Value ${name} is not a valid URL: ${v}\n${x}",x)
+    }
+  }
+
+  private def endsInSlash( v: String ) = {
+    if (v.endsWith("/")) v
+    else s"$v/"
+  }
+
+  val testServerStart: Boolean = getBooleanProp("TestServerStart", true)
+  /**
+    * The protocol, interface and port that the server will listen on.
+    *
+    * This must match same val in BridgeServer.scala
+    */
+  val testServerListen: URL = getPropURL("TestServerListen", "http://localhost:8081", true)
+  /**
+    * The URL to use to connect to the server.
+    *
+    * This must match same val in BridgeServer.scala
+    */
+  val testServerURL: URL = getPropURL("TestServerURL", endsInSlash(testServerListen.toString()))
+
   val useWebsocketLogging: Option[String] = getProp("UseWebsocketLogging")
   val testProductionPage: Boolean = getBooleanProp("TestProductionPage", false)
 
@@ -101,40 +203,12 @@ object TestServer {
     bs
   }
 
-  val startingServer: Boolean =
-    startTestServer || (
-      useTestServerHost.isEmpty && useTestServerPort.isEmpty && useTestServerURL.isEmpty
-    )
+  private val hostname = testServerListen.getHost()
+  private val port = testServerListen.getPort()
+  private val isPortHttps = testServerListen.getProtocol()=="https"
 
-  val scheme: String = useTestServerScheme.getOrElse("http")
-  val interface = useTestServerHost.getOrElse("localhost") // the interface to start the server on
-  val hostname: String =
-    useTestServerHost.getOrElse(interface) // the hostname for URLs
-  val port: Int = useTestServerPort match {
-    case None        => 8081
-    case Some(sport) => sport.toInt
-  }
-  val schemeport: Int = if (scheme == "http") 80 else 443
-  val portuse: String = if (port == schemeport) "" else { ":" + port }
-  val hosturl: String =
-    useTestServerURL.getOrElse(scheme + "://" + hostname + portuse) + "/"
-  val hosturlWithNameResolved: String = {
-    try {
-      val url = new URL(hosturl)
-      val hostname = url.getHost()
-      val ip = InetAddress.getByName(hostname)
-      val ipaddr = ip.getHostAddress()
-      val newurl = new URL(url.getProtocol(), ipaddr, url.getPort(), url.getFile())
-      val r = newurl.toString()
-      testlog.warning(s"URL with name resolved is ${r}, was ${hosturl}")
-      r
-    } catch {
-      case x: Exception =>
-        testlog.warning(s"Unable to get IP of bridgescorer host, using ${hosturl}", x)
-        hosturl
-    }
+  val hosturl = testServerURL.toString()
 
-  }
   private val pageprod: String = hosturl + "public/index.html"
   private val pagedev: String = hosturl + "public/index-fastopt.html"
   private val pagedemoprod: String = hosturl + "public/demo.html"
@@ -159,7 +233,7 @@ object TestServer {
   def onlyRunWhenStartingServer(
       notRunMsg: Option[String] = None
   )(runWhenStarting: () => Unit): Unit = {
-    if (startingServer) {
+    if (testServerStart) {
       runWhenStarting()
     } else {
       notRunMsg match {
@@ -175,6 +249,13 @@ object TestServer {
 
   def getHttpsPort: Int = port + 443 - 80
 
+  private def httpsContext = {
+    StartServer.serverSSLContext(
+      Some("abcdef"),
+      Some("../server/key/examplebridgescorekeeper.jks")
+    )
+  }
+
   def start(https: Boolean = false): Unit = {
     MonitorTCP.startMonitoring()
     try {
@@ -182,24 +263,25 @@ object TestServer {
         synchronized {
           if ((getAndIncrementStartCount()) == 0) {
             testlog.info(
-              s"Starting TestServer https=${https}, hosturl=${hosturl}, useWebsocketLogging=${useWebsocketLogging}, backend.defaultLoggerConfig=${backend
+              s"Starting TestServer https=${https}, testServerURL=${testServerURL}, useWebsocketLogging=${useWebsocketLogging}, backend.defaultLoggerConfig=${backend
                 .getDefaultLoggerConfig(false)}"
             )
             Server.init()
-            val (httpsPort, connectionContext) = if (https) {
-              val context = StartServer.serverSSLContext(
-                Some("abcdef"),
-                Some("../server/key/examplebridgescorekeeper.jks")
-              )
-              val httpsport = getHttpsPort
-              testlog.info(s"HTTPS port is ${httpsport}")
-              (Some(httpsport), Some(context))
-            } else {
-              (None, None)
-            }
+            val (httpPort, httpsPort, connectionContext) =
+              if (isPortHttps) {
+                testlog.info(s"HTTPS port is ${port}")
+                (None, Some(port), Some(httpsContext))
+              } else if (https) {
+                val httpsport = getHttpsPort
+                testlog.info(s"HTTPS port is ${httpsport}, HTTP port is ${port}")
+                (Some(port), Some(httpsport), Some(httpsContext))
+              } else {
+                testlog.info(s"HTTP port is ${port}")
+                (Some(port), None, None)
+              }
             val future = StartServer.start(
-              interface = interface,
-              httpPort = Some(port),
+              interface = hostname,
+              httpPort = httpPort,
               httpsPort = httpsPort,
               bridge = Some(backend),
               connectionContext = connectionContext
@@ -228,7 +310,7 @@ object TestServer {
     }
   }
 
-  def isServerStartedByTest = startingServer
+  def isServerStartedByTest = testServerStart
 
   def getAppPage: String =
     if (testProductionPage) getAppPageProd else getAppPageDev

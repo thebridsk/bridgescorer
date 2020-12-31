@@ -59,6 +59,8 @@ class DuplicateTestFromTestDirectory
 
   val testlog: Logger = Logger[DuplicateTestFromTestDirectory]()
 
+  TestStartLogging.startLogging()
+
   val screenshotDir = "target/DuplicateTestFromTestDirectory"
 
   import scala.concurrent.duration._
@@ -109,11 +111,6 @@ class DuplicateTestFromTestDirectory
   }
 
   behavior of "Play a duplicate match"
-
-  it should "start logging" in {
-    TestStartLogging.startLogging()
-    tcpSleep(15)
-  }
 
   import org.scalatest.prop.TableDrivenPropertyChecks._
   val templates: TableFor1[MatchDuplicate] =

@@ -25,7 +25,7 @@ import scala.concurrent.Future
   * swagger annotations.
   */
 @Tags(Array(new Tag(name = "Server")))
-class ServerService(totallyMissingHandler: RejectionHandler) {
+abstract class ServerService(totallyMissingHandler: RejectionHandler) {
 
   val log: Logger = Logger[ServerService]()
 
@@ -34,6 +34,8 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
     * tracing request and responses
     */
   val logLevelForTracingRequestResponse = DebugLevel // ErrorLevel // DebugLevel
+
+  val listenInterface: List[String]
 
   val serverUrlPrefix = "shutdown"
 
@@ -89,17 +91,18 @@ class ServerService(totallyMissingHandler: RejectionHandler) {
         parameterMap { params =>
           if (params.get("doit").getOrElse("") == "yes") {
             ip.toOption match {
-              case Some(inet) if (inet.isLoopbackAddress()) =>
-                log.info("Terminating server")
-                import scala.language.postfixOps
-                MyService.shutdownHook match {
-                  case Some(hook) =>
-                    hook.terminateServerIn(1 second)
-                    complete(StatusCodes.NoContent)
-                  case None =>
-                    log.severe("Error")
-                    complete(StatusCodes.NotFound)
-                }
+              case Some(inet) if inet.isLoopbackAddress()
+                                 || listenInterface.contains(inet.getHostAddress()) =>
+                  log.info("Terminating server")
+                  import scala.language.postfixOps
+                  MyService.shutdownHook match {
+                    case Some(hook) =>
+                      hook.terminateServerIn(1 second)
+                      complete(StatusCodes.NoContent)
+                    case None =>
+                      log.severe("Error")
+                      complete(StatusCodes.NotFound)
+                  }
               case _ =>
                 log.severe(
                   "Could not determine remote address or it is not local, ip=" + ip

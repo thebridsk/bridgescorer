@@ -119,7 +119,7 @@ class SSLTest
 
     try {
       val path = "v1/rest/serverversion"
-      val url: URL = new URL(TestServer.hosturlWithNameResolved + path)
+      val url: URL = new URL(TestServer.hosturl + path)
       val conn = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setInstanceFollowRedirects(false)
       conn.setRequestProperty("Accept-Encoding", "gzip, deflate")

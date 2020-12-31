@@ -300,6 +300,8 @@ object RubberController {
         case Protocol.UpdateDuplicateTeam(rubid, team) =>
         case _: Protocol.UpdateDuplicatePicture        =>
         case _: Protocol.UpdateDuplicatePictures       =>
+        case _: Protocol.UpdateIndividualDuplicate     =>
+        case _: Protocol.UpdateIndividualDuplicateHand =>
         case _: Protocol.UpdateIndividualDuplicatePicture        =>
         case _: Protocol.UpdateIndividualDuplicatePictures       =>
         case Protocol.NoData(_)                        =>

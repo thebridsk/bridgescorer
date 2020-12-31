@@ -100,10 +100,9 @@ object BldBridge {
         |  WebDriverDebug <bool>       turn on chromedriver or geckodriver debugging, default is false
         |
         |Environment Variables when using server in tests
-        |  UseBridgeScorerURL              Override URL of server, default: http://localhost:8081
-        |  UseBridgeScorerScheme           Override schema of servr URL, default: http
-        |  UseBridgeScorerHost             Override host of server URL, default: localhost
-        |  UseBridgeScorerPort             Override port of server URL, default: 8081
+        |  TestServerStart                 indicates whether test starts the server, default: true
+        |  TestServerListen                the protocol, host and port the server listens on, default: http://localhost:8081
+        |  TestServerURL                   the URL to connect to the server, must end in "/", default: same as TestServerListen
         |  UseWebsocketLogging             use websockets for client logging
         |  OptRemoteLogger <file>          the remote logger configuration to use
         |  OptBrowserRemoteLogging <name>  the name of the configuration to use for browsers

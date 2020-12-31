@@ -4,7 +4,10 @@ import com.github.thebridsk.bridge.data.IndividualDuplicate
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.data.IndividualBoard
 
-sealed trait IndividualDuplicateViewPerspective
+sealed trait IndividualDuplicateViewPerspective {
+  def score( md: IndividualDuplicate): IndividualDuplicateScore =
+    IndividualDuplicateScore(md,this)
+}
 
 object IndividualDuplicateViewPerspective {
   case object PerspectiveComplete extends IndividualDuplicateViewPerspective
@@ -20,6 +23,15 @@ object IndividualDuplicateViewPerspective {
         .map(dh => List(dh.north, dh.south, dh.east, dh.west))
         .getOrElse(List())
     }
+  }
+}
+
+object IndividualDuplicateScore {
+  def apply(
+    duplicate: IndividualDuplicate,
+    perspective: IndividualDuplicateViewPerspective
+  ): IndividualDuplicateScore = {
+    new IndividualDuplicateScore(duplicate, perspective)
   }
 }
 
@@ -61,6 +73,25 @@ class IndividualDuplicateScore(
           r + (res.player -> next)
         }
     }
+  }
+
+  def isAtRoundEnd: Boolean = {
+    duplicate.boards.flatMap(_.hands)
+      .groupBy(_.round)
+      .map { e2 =>
+        val (round, lhinr) = e2
+        val (allPlayed,atLeastOnePlayed,allUnplayed) = lhinr.foldLeft((true,false,true)) { (ac,v) =>
+          val played = v.played.isDefined
+          (
+            ac._1 && played,
+            ac._2 || played,
+            ac._3 && !played
+          )
+        }
+        (round, allPlayed, allPlayed||allUnplayed)
+      }
+      .find(!_._3)
+      .isEmpty
   }
 
   /**

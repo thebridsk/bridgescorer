@@ -43,6 +43,9 @@ object BldBridgeServer {
       server := {
         (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs""").value
       },
+      serverhelp := {
+        (run in Compile).toTask(""" --help""").value
+      },
 
       mainClass in Test := Some("org.scalatest.tools.Runner"),
       testOptions in Test += Tests.Filter { s =>
