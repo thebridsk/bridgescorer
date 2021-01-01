@@ -18,6 +18,7 @@ import javax.ws.rs.POST
 import com.github.thebridsk.utilities.logging.Logger
 import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
 import scala.concurrent.Future
+import com.github.thebridsk.bridge.server.StartServer
 
 /**
   * <p>
@@ -88,33 +89,47 @@ abstract class ServerService(totallyMissingHandler: RejectionHandler) {
   def shutdown(@Parameter(hidden = true) ip: RemoteAddress): Route =
     logRequestResult(ip.toString(), logLevelForTracingRequestResponse) {
       post {
-        parameterMap { params =>
-          if (params.get("doit").getOrElse("") == "yes") {
-            ip.toOption match {
-              case Some(inet) if inet.isLoopbackAddress()
-                                 || listenInterface.contains(inet.getHostAddress()) =>
-                  log.info("Terminating server")
-                  import scala.language.postfixOps
-                  MyService.shutdownHook match {
-                    case Some(hook) =>
-                      hook.terminateServerIn(1 second)
-                      complete(StatusCodes.NoContent)
-                    case None =>
-                      log.severe("Error")
-                      complete(StatusCodes.NotFound)
+        optionalAttribute(StartServer.attributeInetSocketLocal) { localAddr =>
+          optionalAttribute(StartServer.attributeInetSocketRemote) { remoteAddr =>
+            if (localAddr == remoteAddr) {
+              parameterMap { params =>
+                if (params.get("doit").getOrElse("") == "yes") {
+                  ip.toOption match {
+                    case Some(inet) if inet.isLoopbackAddress()
+                                      || listenInterface.contains(inet.getHostAddress()) =>
+                        log.info("Terminating server")
+                        import scala.language.postfixOps
+                        MyService.shutdownHook match {
+                          case Some(hook) =>
+                            hook.terminateServerIn(1 second)
+                            complete(StatusCodes.NoContent)
+                          case None =>
+                            log.severe("Error")
+                            complete(StatusCodes.NotFound)
+                        }
+                    case _ =>
+                      log.severe(
+                        s"Could not determine remote address or it is not local, ip=${ip}"
+                      )
+                      complete(
+                        StatusCodes.BadRequest,
+                        "Request not from valid address"
+                      )
                   }
-              case _ =>
-                log.severe(
-                  "Could not determine remote address or it is not local, ip=" + ip
-                )
-                complete(
-                  StatusCodes.BadRequest,
-                  "Request not from valid address"
-                )
+                } else {
+                  log.severe("Missing secret")
+                  complete(StatusCodes.BadRequest, "Request is missing secret")
+                }
+              }
+            } else {
+              log.warning(
+                s"local and remote address for connection did not match, local=${localAddr}, remote=${remoteAddr}"
+              )
+              complete(
+                StatusCodes.BadRequest,
+                "Request not from localhost"
+              )
             }
-          } else {
-            log.severe("Missing secret")
-            complete(StatusCodes.BadRequest, "Request is missing secret")
           }
         }
       }

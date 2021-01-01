@@ -24,6 +24,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import akka.event.LoggingAdapter
 import com.github.thebridsk.bridge.server.test.RoutingSpec
+import com.github.thebridsk.bridge.server.StartServer
 
 class MyServiceSpec
     extends AnyFlatSpec
@@ -252,20 +253,20 @@ class MyServiceSpec
       }
     }
   }
+  class Hook extends ShutdownHook {
+    import scala.concurrent.duration._
+    import scala.language.postfixOps
+
+    var called = false
+    def terminateServerIn(duration: Duration = 10 seconds): Future[_] = {
+      called = true
+      val terminatePromise = Promise[String]()
+      Future { terminatePromise.success("Terminate") }
+    }
+
+  }
 
   it should "shutdown the server when /v1/shutdown?doit=yes is called" in {
-    class Hook extends ShutdownHook {
-      import scala.concurrent.duration._
-      import scala.language.postfixOps
-
-      var called = false
-      def terminateServerIn(duration: Duration = 10 seconds): Future[_] = {
-        called = true
-        val terminatePromise = Promise[String]()
-        Future { terminatePromise.success("Terminate") }
-      }
-
-    }
     val shutdownHook = new Hook
 
     MyService.shutdownHook = Some(shutdownHook)
@@ -304,6 +305,61 @@ class MyServiceSpec
       status mustBe NoContent
       shutdownHook.called mustBe true
     }
+    MyService.shutdownHook = None
+  }
+
+  it should "fail to shutdown the server when /v1/shutdown is called with incorrect remote address" in {
+    val shutdownHook = new Hook
+
+    MyService.shutdownHook = Some(shutdownHook)
+    Post("/v1/shutdown").withAttributes(
+      remoteAddressLocal
+      + (StartServer.attributeInetSocketLocal -> "local")
+      + (StartServer.attributeInetSocketRemote -> "remote")
+    ) ~> Route.seal {
+      logRouteWithIp
+    } ~> check {
+      status mustBe BadRequest
+      responseAs[String] mustBe "Request not from localhost"
+      shutdownHook.called mustBe false
+    }
+    MyService.shutdownHook = None
+  }
+
+  it should "fail to shutdown the server when /v1/shutdown is called with correct remote address" in {
+    val shutdownHook = new Hook
+
+    MyService.shutdownHook = Some(shutdownHook)
+    Post("/v1/shutdown").withAttributes(
+      remoteAddressLocal
+      + (StartServer.attributeInetSocketLocal -> "local")
+      + (StartServer.attributeInetSocketRemote -> "local")
+    ) ~> Route.seal {
+      logRouteWithIp
+    } ~> check {
+      status mustBe BadRequest
+      responseAs[String] mustBe "Request is missing secret"
+      shutdownHook.called mustBe false
+    }
+    MyService.shutdownHook = None
+  }
+
+  it should "shutdown the server when /v1/shutdown?doit=yes is called with correct remote address" in {
+    val shutdownHook = new Hook
+
+    MyService.shutdownHook = Some(shutdownHook)
+    Post("/v1/shutdown?doit=yes").withAttributes(
+      remoteAddressLocal
+      + (StartServer.attributeInetSocketLocal -> "local")
+      + (StartServer.attributeInetSocketRemote -> "local")
+    ) ~> Route
+      .seal {
+        logRouteWithIp
+      } ~> check {
+      status mustBe NoContent
+      shutdownHook.called mustBe true
+    }
+    MyService.shutdownHook = None
   }
 
   def getURL(port: Int): ServerURL = {
