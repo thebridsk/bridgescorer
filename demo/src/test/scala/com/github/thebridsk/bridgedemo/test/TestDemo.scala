@@ -72,6 +72,8 @@ class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     import Session1._
     import com.github.thebridsk.browserpages.PageBrowser._
 
+    assume(!isRemote, "Demo website can only be tested with file:// URL, requires local browser")
+
     val rawdemodir =
       new File("target/demo").getAbsoluteFile.getCanonicalFile.toString
         .replace('\\', '/')

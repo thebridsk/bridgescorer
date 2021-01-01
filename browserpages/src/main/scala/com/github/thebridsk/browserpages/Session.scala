@@ -53,6 +53,9 @@ class Session(name: String = "default") extends WebDriver {
     f.equalsIgnoreCase("true") || f.equals("1")
   }
 
+  private var remoteSession: Boolean = false
+  def isRemote: Boolean = remoteSession
+
 //  private def firefoxOld = {
 //    val profile = new ProfilesIni();
 //
@@ -325,6 +328,7 @@ class Session(name: String = "default") extends WebDriver {
 
   private def createSession(browser: Option[String] = None): Session =
     synchronized {
+      remoteSession = false
       webDriver =
         wrapWebDriver(browser.orElse(getPropOrEnv("DefaultWebDriver")) match {
           case None =>
@@ -363,6 +367,7 @@ class Session(name: String = "default") extends WebDriver {
                 val driver = new RemoteWebDriver(new URL(remoteurl), options)
                 // https://www.selenium.dev/documentation/en/remote_webdriver/remote_webdriver_client/#local-file-detector
                 driver.setFileDetector(new LocalFileDetector());
+                remoteSession = true
                 driver
               case "chrome" =>
                 testlog.fine("Using chrome")
