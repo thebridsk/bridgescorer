@@ -45,6 +45,7 @@ object BldBridge {
         |  distribution:travis    run build that is run in Travis-CI
         |  distribution:travis1   run build that is run in step 1 in Travis-CI
         |  distribution:travis2   run build that is run in step 2 in Travis-CI
+        |  distribution:mydist    runs a clean build with alltests
         |  myrelease-with-defaults do a release using defaults
         |  bridgescalafix         run scalafix on all projects with semanticDB, runs bridgescorer-fullserver/test
         |Note, the following will fail:
@@ -103,6 +104,7 @@ object BldBridge {
         |  TestServerStart                 indicates whether test starts the server, default: true
         |  TestServerListen                the protocol, host and port the server listens on, default: http://localhost:8081
         |  TestServerURL                   the URL to connect to the server, must end in "/", default: same as TestServerListen
+        |  TestServerFixHostInURL          fix the host in the TestServerURL, default: false
         |  UseWebsocketLogging             use websockets for client logging
         |  OptRemoteLogger <file>          the remote logger configuration to use
         |  OptBrowserRemoteLogging <name>  the name of the configuration to use for browsers

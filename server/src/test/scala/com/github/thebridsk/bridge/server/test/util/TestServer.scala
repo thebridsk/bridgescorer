@@ -16,6 +16,7 @@ import com.github.thebridsk.bridge.server.backend.FileImportStore
 import com.github.thebridsk.bridge.server.logging.RemoteLoggingConfig
 import java.io.File
 import com.github.thebridsk.bridge.server.backend.BridgeServiceWithLogging
+import java.net.InetAddress
 
 /**
   * Keep track of all variables associated with the server,
@@ -31,6 +32,10 @@ import com.github.thebridsk.bridge.server.backend.BridgeServiceWithLogging
   *                        Only used when **TestServerStart** is true.
   * - **TestServerURL** (String, default: `${TestServerProtocol}://${TestServerListen}/`)
   *                     the URL to use to connect to the server.  Must end in "/"
+  * - **TestServerFixHostInURL** (Boolean, default: `false`) fix the URL in TestServerURL
+  *                              fixes the host in the URL to make sure it can be resolved.
+  *                              This is required for SSL tests, since the host name is checked
+  *                              in the SSL host certificate.
   * - **TestProductionPage** (Boolean, default: `false`) whether production pages are tested
   *
   * The [[start]] method has a parameter, *https* that defaults to false.  This
@@ -93,7 +98,10 @@ object TestServer {
       defaultValue: String,
       ignoreFile: Boolean = false
   ): URL = {
-    val v = getProp(name).getOrElse(defaultValue)
+    val v = getProp(name).getOrElse {
+      testlog.fine(s"Using default value for ${name}: ${defaultValue}")
+      defaultValue
+    }
     try {
       val url = normalizeURL(v)
       val protocol = url.getProtocol()
@@ -110,9 +118,30 @@ object TestServer {
     }
   }
 
-  private def endsInSlash( v: String ) = {
+  private def endsInSlash(v: String ) = {
     if (v.endsWith("/")) v
     else s"$v/"
+  }
+
+  private def fixHostInURL(url: URL) = {
+    if (getBooleanProp("TestServerFixHostInURL", false)) {
+      try {
+        val h = url.getHost()
+        val hip = InetAddress.getByName(h)
+        new URL(
+          url.getProtocol(),
+          hip.getHostAddress(),
+          url.getPort(),
+          url.getFile()
+        )
+      } catch {
+        case x: Exception =>
+          testlog.warning(s"Unable to fix host in ${url}", x)
+          url
+      }
+    } else {
+      url
+    }
   }
 
   val testServerStart: Boolean = getBooleanProp("TestServerStart", true)
@@ -127,7 +156,8 @@ object TestServer {
     *
     * This must match same val in BridgeServer.scala
     */
-  val testServerURL: URL = getPropURL("TestServerURL", endsInSlash(testServerListen.toString()))
+  val testServerURL: URL =
+    fixHostInURL(getPropURL("TestServerURL", endsInSlash(testServerListen.toString())))
 
   val useWebsocketLogging: Option[String] = getProp("UseWebsocketLogging")
   val testProductionPage: Boolean = getBooleanProp("TestProductionPage", false)
