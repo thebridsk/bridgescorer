@@ -46,6 +46,17 @@ object BldBridgeDemo {
         }
       }.value,
 
+      fork in Test := true,
+      javaOptions in Test ++= Seq(
+        "-Xmx4096M",
+        "-DDefaultWebDriver=" + useBrowser,
+        "-DSessionComplete=" + useBrowser,
+        "-DSessionDirector=" + useBrowser,
+        "-DSessionTable1=" + useBrowser,
+        "-DSessionTable2=" + useBrowser,
+        testProductionPage
+      ),
+
       publishDemo := {
         // val x = generateDemo.value
         import collection.JavaConverters._
