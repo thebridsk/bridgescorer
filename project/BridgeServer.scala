@@ -195,7 +195,7 @@ class BridgeServer( val assemblyJar: String, val port: Int = 8082) {
     else s"$v/"
   }
 
-  val testServerListen: URL = getPropURL("TestServerListen", "localhost", true)
+  val testServerListen: URL = getPropURL("TestServerListen", "http://localhost:8081", true)
   val testServerURL: URL = getPropURL("TestServerURL", endsInSlash(testServerListen.toString()))
 
   val useServerListen: URL = new URL(

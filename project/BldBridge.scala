@@ -307,6 +307,7 @@ object BldBridge {
       BldBrowserPages.browserpages,
       BldColor.colorJS,
       BldColor.colorJVM,
+      BldBridgeHelp.help,
       BldBridgeScoreKeeper.bridgescorekeeper,
       BldBridgeDemo.demo
     )
@@ -481,20 +482,20 @@ object BldBridge {
                   log.info("Publishing to " + f)
                   Some(f)
                 } else {
-                  throw new RuntimeException(
+                  log.info(
                     "DistributionDirectory directory does not exist: " + f
                   )
                   None
                 }
               } else {
-                throw new RuntimeException(
-                  "DistributionDirectory property does not exist in file ~/bridgescorer/config.properties"
+                log.info(
+                  s"DistributionDirectory property does not exist in file $configfile"
                 )
                 None
               }
             } else {
-              throw new RuntimeException(
-                "file ~/bridgescorer/config.properties does not exist"
+              log.info(
+                s"Distribution file, $configfile does not exist"
               )
               None
             }
@@ -525,7 +526,19 @@ object BldBridge {
             val sourcetestjar = new File(targetdir, testjar)
             val targettestjar = new File(distdir, testjar)
 
-            IO.listFiles(distdir, GlobFilter("*.jar")).foreach { jar =>
+            val (fileassemblysha, assemblysha) = (assemblysha256 in BldBridgeScoreKeeper.bridgescorekeeper).value
+            val (filetestassemblysha, testassemblysha) = (assemblysha256 in BldBridgeScoreKeeper.bridgescorekeeper in Test).value
+            val destassemblysha = new File(distdir, assemblysha)
+            val desttestassemblysha = new File(distdir, testassemblysha)
+
+            val copyfiles = Map(
+              sourceassemblyjar.toPath -> targetassemblyjar.toPath,
+              sourcetestjar.toPath -> targettestjar.toPath,
+              fileassemblysha.toPath -> destassemblysha.toPath,
+              filetestassemblysha.toPath -> desttestassemblysha.toPath
+            )
+
+            IO.listFiles(distdir, new PatternFilter(""".+?\.jar(\.sha256)?""".r.pattern)).foreach { jar =>
               {
                 log.info("Moving jar to save: " + jar)
                 IO.move(
@@ -535,22 +548,19 @@ object BldBridge {
               }
             }
 
-            log.info("Publishing " + assemblyjar + " to " + distdir)
-            Files.copy(
-              sourceassemblyjar.toPath,
-              targetassemblyjar.toPath,
-              StandardCopyOption.REPLACE_EXISTING
-            )
-            log.info("Publishing " + testjar + " to " + distdir)
-            Files.copy(
-              sourcetestjar.toPath,
-              targettestjar.toPath,
-              StandardCopyOption.REPLACE_EXISTING
-            )
+            copyfiles.foreach { e =>
+              val (s, t) = e
+              log.info("Publishing " + assemblyjar + " to " + distdir)
+              Files.copy(
+                s,
+                t,
+                StandardCopyOption.REPLACE_EXISTING
+              )
+            }
 
             log.info("Published to " + distdir)
           case None =>
-            throw new RuntimeException("DistributionDirectory is not set")
+            log.info("DistributionDirectory is not set")
         }
 
       },

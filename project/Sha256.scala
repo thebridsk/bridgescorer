@@ -14,10 +14,8 @@ object Sha256 {
    * @param f the file to get the SHA-256 sum of.
    * @return the SHA-256 in the format required by sha256sum
    */
-  def generate( f: File ) = {
+  def generate( f: File, shaFile: File ) = {
     val name = f.getName
-
-    val shaFile = new File( f.toString()+".sha256" )
 
     val md = MessageDigest.getInstance("SHA-256")
 
@@ -54,7 +52,7 @@ object Sha256 {
   def main(args: Array[String]): Unit = {
     if (args.isEmpty) return
     val start = System.currentTimeMillis()
-    generate( new File(args(0)))
+    generate( new File(args(0)), new File(s"${args(0)}.sha256"))
     val end = System.currentTimeMillis()
     System.out.println(s"Generating SHA256 took ${end-start} ms" )
   }

@@ -13,6 +13,7 @@ import com.github.thebridsk.bridge.server.test.util.ParallelUtils._
 import org.scalatest.concurrent.Eventually.{patienceConfig => _, _}
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
+import com.github.thebridsk.bridge.server.test.util.TestServer
 
 object TestDemo {
   val testlog: Logger = Logger[TestDemo]()
@@ -39,7 +40,12 @@ class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     interval = scaled(Span(intervalMillis, Millis))
   )
 
+  val rawdemodir =
+    new File("target/demo").getAbsoluteFile.getCanonicalFile
+
   val Session1 = new Session
+
+  var demoServer: Option[DemoServer] = None
 
   override def beforeAll(): Unit = {
 
@@ -48,6 +54,9 @@ class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
         "Starting a browser or server",
         CodeBlock {
           Session1.sessionStart().setPositionRelative(0, 0).setSize(1100, 900)
+        },
+        CodeBlock {
+          demoServer = Some(DemoServer(rawdemodir, TestServer.testServerListen))
         }
       )
     } catch {
@@ -62,27 +71,56 @@ class TestDemo extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
 
     waitForFuturesIgnoreTimeouts(
       "Stopping a browser or server",
-      CodeBlock { Session1.sessionStop() }
+      CodeBlock { Session1.sessionStop() },
+      CodeBlock {
+        demoServer.foreach { ds =>
+          demoServer = None
+          ds.stopServer()
+        }
+      }
     )
   }
+  val rawdemodirstring = rawdemodir.toString.replace('\\', '/')
+  val demourl = TestServer.testServerURL.toString()
+
+  val isFileURL = demourl.startsWith("file://")
+  def allow = !isFileURL || !Session1.isRemote
 
   behavior of "Demo WebSite"
 
-  it should "test the generated demo website" in {
+  it should "show the main demo page" in {
     import Session1._
     import com.github.thebridsk.browserpages.PageBrowser._
 
-    assume(!isRemote, "Demo website can only be tested with file:// URL, requires local browser")
+    log.info(s"Demo URL base is ${demourl}")
+    assume(!isFileURL, "Demo website can only be tested with http:// URL")
 
-    val rawdemodir =
-      new File("target/demo").getAbsoluteFile.getCanonicalFile.toString
-        .replace('\\', '/')
-    val demodir =
-      if (rawdemodir.charAt(0) == '/') rawdemodir else s"/$rawdemodir"
-    log.info(s"Demo directory is ${demodir}")
+    val index = TestServer.getAppDemoPage
+    val mainpage = TestServer.getAppDemoPage
 
-    val index = s"file://$demodir/help/index.html"
-    val intro = s"file://$demodir/help/introduction.html"
+    go to index
+
+    eventually {
+      val url = currentUrl
+      url mustBe mainpage
+
+      find(xpath("""//div[@id='url']/h1""")).text mustBe "Server"
+
+      val server = find(xpath("""//div[@id='url']/ul/li""")).text
+      server mustBe "Demo mode, all data entered will be lost on page refresh or closing page"
+    }
+
+  }
+
+  it should "show the help page" in {
+    import Session1._
+    import com.github.thebridsk.browserpages.PageBrowser._
+
+    log.info(s"Demo URL base is ${demourl}")
+    assume(allow, "Local browser must be used with a file:// URL")
+
+    val index = s"${demourl}help/index.html"
+    val intro = s"${demourl}help/introduction.html"
 
     go to index
 
