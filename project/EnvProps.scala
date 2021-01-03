@@ -39,7 +39,7 @@ object EnvProps {
     name: String,
     default: String
   ): String = {
-    getProp(name).getOrElse(defaultValue)
+    getProp(name).getOrElse(default)
   }
 
   /**
