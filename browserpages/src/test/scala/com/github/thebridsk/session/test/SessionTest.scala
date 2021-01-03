@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.browserpages.Session
+import com.github.thebridsk.bridge.session.test.TestStartLogging
 
 /**
   * @author werewolf
@@ -14,6 +15,8 @@ import com.github.thebridsk.browserpages.Session
 class SessionTest extends AnyFlatSpec with Matchers {
 
   import Eventually.{patienceConfig => _, _}
+
+  TestStartLogging.startLogging()
 
   import scala.concurrent.duration._
 
