@@ -31,6 +31,17 @@ case class IndividualDuplicateV1 private (
       minItems = 0,
       uniqueItems = true,
       schema = new Schema(
+        description = "The teams playing the match",
+        required = true,
+        implementation = classOf[Team]
+      ),
+      arraySchema = new Schema(description = "All the teams.  If size is 0, then individual movements were used.", required = true)
+    )
+    teams: List[Team],
+    @ArraySchema(
+      minItems = 0,
+      uniqueItems = true,
+      schema = new Schema(
         description = "The duplicate boards of the match",
         required = true,
         implementation = classOf[IndividualBoardV1]
@@ -250,6 +261,22 @@ case class IndividualDuplicateV1 private (
   def deletePlayer(p: Int): IndividualDuplicateV1 =
     updatePlayer(p,"")
 
+  @Schema(hidden = true)
+  def getPlayerName(i: Int): String = {
+    val p = getPlayer(i)
+    if (p == "") s"${i}"
+    else p
+  }
+
+  @Schema(hidden = true)
+  def getPlayerNames(): List[String] = {
+    players.zipWithIndex.map { e =>
+      val (p,i) = e
+      if (p == "") s"${i+1}"
+      else p
+    }
+  }
+
   /**
     * @param table
     * @param round
@@ -301,6 +328,12 @@ case class IndividualDuplicateV1 private (
       }
       .flatten
       .toList
+  }
+
+  def allDone: Boolean = {
+    boards.find { b =>
+      b.hands.find(h => !h.wasPlayed).isDefined
+    }.isEmpty
   }
 
   def allPlayedHands: View[IndividualDuplicateHandV1] = {
@@ -463,6 +496,12 @@ case class IndividualDuplicateV1 private (
     )
   }
 
+  def anyHandsPlayed: Boolean = {
+    boards.find { b =>
+      b.hands.find(h => h.wasPlayed).isDefined
+    }.isDefined
+  }
+
   def numberPlayedHands: Int = {
     boards
       .map { b =>
@@ -495,6 +534,7 @@ object IndividualDuplicateV1 extends HasId[IdIndividualDuplicate]("I") {
       id,
       List(),
       List(),
+      List(),
       BoardSet.idNul,
       IndividualMovement.idNul,
       time,
@@ -518,6 +558,7 @@ object IndividualDuplicateV1 extends HasId[IdIndividualDuplicate]("I") {
     new IndividualDuplicateV1(
       id,
       players,
+      List(),
       boards.sortWith(IndividualBoard.sort),
       boardset,
       movement,

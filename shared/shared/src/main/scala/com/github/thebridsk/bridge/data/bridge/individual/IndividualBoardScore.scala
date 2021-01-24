@@ -14,26 +14,6 @@ object IndividualBoardScore {
   ): IndividualBoardScore = {
     new IndividualBoardScore(duplicate, board, perspective)
   }
-}
-
-class IndividualBoardScore(
-    val duplicate: IndividualDuplicate,
-    val board: IndividualBoard,
-    val perspective: IndividualDuplicateViewPerspective
-) {
-
-  /**
-    * the total number of players.
-    *
-    * The players are numbered starting at 1 to *numberOfPlayers* inclusive.
-    */
-  def numberOfPlayers: Int = duplicate.players.length
-
-  /**
-    * @param i the index, one based, must be 0 < *i* <= [[numberOfPlayers]]
-    * @return the players name
-    */
-  def player(i: Int): String = duplicate.players(i-1)
 
   case class Result(
       hide: Boolean,
@@ -55,6 +35,27 @@ class IndividualBoardScore(
     def withPlayer(player: Int, isNS: Boolean) =
       copy(player = player, isNS = isNS)
   }
+}
+
+class IndividualBoardScore(
+    val duplicate: IndividualDuplicate,
+    val board: IndividualBoard,
+    val perspective: IndividualDuplicateViewPerspective
+) {
+  import IndividualBoardScore._
+
+  /**
+    * the total number of players.
+    *
+    * The players are numbered starting at 1 to *numberOfPlayers* inclusive.
+    */
+  def numberOfPlayers: Int = duplicate.players.length
+
+  /**
+    * @param i the index, one based, must be 0 < *i* <= [[numberOfPlayers]]
+    * @return the players name
+    */
+  def player(i: Int): String = duplicate.players(i-1)
 
   val totalToPlayed = board.hands.length
 

@@ -9,6 +9,7 @@ import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateMovement
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllBoardSets
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllMovement
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllIndividualMovement
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateAllBoardsetsAndMovement
@@ -16,6 +17,10 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionCreateBoardSet
 import com.github.thebridsk.bridge.client.bridge.action.ActionDeleteBoardSet
 import com.github.thebridsk.bridge.client.bridge.action.ActionCreateMovement
 import com.github.thebridsk.bridge.client.bridge.action.ActionDeleteMovement
+import com.github.thebridsk.bridge.client.bridge.action.ActionCreateIndividualMovement
+import com.github.thebridsk.bridge.client.bridge.action.ActionDeleteIndividualMovement
+import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateIndividualMovement
+import com.github.thebridsk.bridge.data.IndividualMovement
 
 object BoardSetStore extends ChangeListenable {
   val logger: Logger = Logger("bridge.BoardSetStore")
@@ -36,6 +41,8 @@ object BoardSetStore extends ChangeListenable {
           updateBoardSets(true, boardSets: _*)
         case ActionUpdateAllMovement(movement) =>
           updateMovement(true, movement: _*)
+        case ActionUpdateAllIndividualMovement(movement) =>
+          updateIndividualMovement(true, movement: _*)
         case ActionCreateBoardSet(boardSet) =>
           updateBoardSets(false, boardSet)
         case ActionDeleteBoardSet(boardSet) =>
@@ -46,11 +53,18 @@ object BoardSetStore extends ChangeListenable {
           updateMovement(false, movement)
         case ActionDeleteMovement(movement) =>
           deleteMovement(movement)
+        case ActionUpdateIndividualMovement(movement) =>
+          updateIndividualMovement(false, movement)
+        case ActionCreateIndividualMovement(movement) =>
+          updateIndividualMovement(false, movement)
+        case ActionDeleteIndividualMovement(movement) =>
+          deleteIndividualMovement(movement)
         case ActionUpdateMovement(movement) =>
           updateMovement(false, movement)
-        case ActionUpdateAllBoardsetsAndMovement(newboardSets, newmovements) =>
+        case ActionUpdateAllBoardsetsAndMovement(newboardSets, newmovements, newindividualmovements) =>
           updateBoardSetsNoNotify(true, newboardSets: _*)
           updateMovementNoNotify(true, newmovements: _*)
+          updateIndividualMovementNoNotify(true, newindividualmovements: _*)
           notifyChange()
         case x =>
         // There are multiple stores, all the actions get sent to all stores
@@ -60,12 +74,16 @@ object BoardSetStore extends ChangeListenable {
 
   private val boardSets = mutable.Map[BoardSet.Id, BoardSet]()
   private val movements = mutable.Map[Movement.Id, Movement]()
+  private val individualmovements = mutable.Map[IndividualMovement.Id, IndividualMovement]()
 
   def getBoardSets(): Map[BoardSet.Id, BoardSet] = Map(boardSets.toList: _*)
   def getBoardSet(name: BoardSet.Id): Option[BoardSet] = boardSets.get(name)
 
   def getMovement(): Map[Movement.Id, Movement] = Map(movements.toList: _*)
   def getMovement(name: Movement.Id): Option[Movement] = movements.get(name)
+
+  def getIndividualMovement(): Map[IndividualMovement.Id, IndividualMovement] = Map(individualmovements.toList: _*)
+  def getIndividualMovement(name: IndividualMovement.Id): Option[IndividualMovement] = individualmovements.get(name)
 
   def updateBoardSetsNoNotify(
       deleteMissing: Boolean,
@@ -115,6 +133,31 @@ object BoardSetStore extends ChangeListenable {
 
   def deleteMovement(id: Movement.Id): Unit = {
     movements.remove(id)
+    notifyChange()
+  }
+
+  def updateIndividualMovementNoNotify(
+      deleteMissing: Boolean,
+      newMovement: IndividualMovement*
+  ): Unit = {
+    val keys = mutable.Set(individualmovements.keySet.toSeq: _*)
+    newMovement.foreach { bs =>
+      {
+        val name = bs.name
+        keys -= name
+        individualmovements += name -> bs
+      }
+    }
+    if (deleteMissing) keys.foreach { key => individualmovements.remove(key) }
+  }
+
+  def updateIndividualMovement(deleteMissing: Boolean, newMovement: IndividualMovement*): Unit = {
+    updateIndividualMovementNoNotify(deleteMissing, newMovement: _*)
+    notifyChange()
+  }
+
+  def deleteIndividualMovement(id: IndividualMovement.Id): Unit = {
+    individualmovements.remove(id)
     notifyChange()
   }
 

@@ -1,162 +1,71 @@
-package com.github.thebridsk.bridge.data
+package com.github.thebridsk.bridge.data.bridge.individual
 
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
-import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
 
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.Hidden
 import scala.reflect.ClassTag
+import com.github.thebridsk.bridge.data.HasId
+import com.github.thebridsk.bridge.data.MatchDuplicate
+import com.github.thebridsk.bridge.data.MatchDuplicateResult
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.Difference
+import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.data.Id
 
 @Schema(
-  title = "DuplicateSummaryDetails - Team stats in a match",
-  description = "Details about a team in a match"
-)
-case class DuplicateSummaryDetails(
-    @Schema(description = "The id of the team", required = true)
-    team: Team.Id,
-    @Schema(
-      description = "The number of times the team was declarer",
-      required = true,
-      minimum = "0"
-    )
-    declarer: Int = 0,
-    @Schema(
-      description =
-        "The number of times the team made the contract as declarer",
-      required = true,
-      minimum = "0"
-    )
-    made: Int = 0,
-    @Schema(
-      description = "The number of times the team went down as declarer",
-      required = true,
-      minimum = "0"
-    )
-    down: Int = 0,
-    @Schema(
-      description = "The number of times the team defended the contract",
-      required = true,
-      minimum = "0"
-    )
-    defended: Int = 0,
-    @Schema(
-      description =
-        "The number of times the team took down the contract as defenders",
-      required = true,
-      minimum = "0"
-    )
-    tookDown: Int = 0,
-    @Schema(
-      description =
-        "The number of times the team allowed the contract to be made as defenders",
-      required = true,
-      minimum = "0"
-    )
-    allowedMade: Int = 0,
-    @Schema(
-      description = "The number of times the team passed out a game",
-      required = true,
-      minimum = "0"
-    )
-    passed: Int = 0
-) {
-
-  def add(v: DuplicateSummaryDetails): DuplicateSummaryDetails = {
-    copy(
-      declarer = declarer + v.declarer,
-      made = made + v.made,
-      down = down + v.down,
-      defended = defended + v.defended,
-      tookDown = tookDown + v.tookDown,
-      allowedMade = allowedMade + v.allowedMade,
-      passed = passed + v.passed
-    )
-  }
-
-  def percentMade: Double = if (declarer == 0) 0.0 else made * 100.0 / declarer
-  def percentDown: Double = if (declarer == 0) 0.0 else down * 100.0 / declarer
-  def percentAllowedMade: Double =
-    if (defended == 0) 0.0 else allowedMade * 100.0 / defended
-  def percentTookDown: Double =
-    if (defended == 0) 0.0 else tookDown * 100.0 / defended
-
-  def percentDeclared: Double =
-    if (total == 0) 0.0 else declarer * 100.0 / total
-  def percentDefended: Double =
-    if (total == 0) 0.0 else defended * 100.0 / total
-  def percentPassed: Double = if (total == 0) 0.0 else passed * 100.0 / total
-
-  /**
-    * Returns the total number of hands played by the team.
-    */
-  def total: Int = declarer + defended + passed
-}
-
-object DuplicateSummaryDetails {
-  def zero(team: Team.Id) = new DuplicateSummaryDetails(team)
-  def passed(team: Team.Id) = new DuplicateSummaryDetails(team, passed = 1)
-  def made(team: Team.Id) =
-    new DuplicateSummaryDetails(team, declarer = 1, made = 1)
-  def down(team: Team.Id) =
-    new DuplicateSummaryDetails(team, declarer = 1, down = 1)
-  def allowedMade(team: Team.Id) =
-    new DuplicateSummaryDetails(team, defended = 1, allowedMade = 1)
-  def tookDown(team: Team.Id) =
-    new DuplicateSummaryDetails(team, defended = 1, tookDown = 1)
-}
-
-@Schema(
-  title = "DuplicateSummaryEntry - The summary of a team in a duplicate match",
-  description = "The summary of a team in a duplicate match"
+  title = "DuplicateSummaryEntry - The summary of a player in a duplicate match",
+  description = "The summary of a player in a duplicate match"
 )
 case class DuplicateSummaryEntry(
-    @Schema(description = "The team", required = true)
-    team: Team,
+    @Schema(description = "The player", required = true)
+    player: String,
     @Schema(
-      description = "The points the team scored when using MP scoring",
+      description = "The points the player scored when using MP scoring",
       required = false,
       `type` = "number",
       format = "double"
     )
-    result: Option[Double],
+    result: Option[Int],
     @Schema(
-      description = "The place the team finished in when using MP scoring",
+      description = "The place the player finished in when using MP scoring",
       required = false,
       `type` = "integer",
       format = "int32"
     )
     place: Option[Int],
     @Schema(
-      description = "Details about the team",
+      description = "Details about the player",
       required = false,
-      implementation = classOf[DuplicateSummaryDetails]
+      implementation = classOf[IndividualDuplicateSummaryDetails]
     )
-    details: Option[DuplicateSummaryDetails] = None,
+    details: Option[IndividualDuplicateSummaryDetails] = None,
     @Schema(
-      description = "The IMPs the team scored",
+      description = "The IMPs the player scored",
       required = false,
       `type` = "number",
       format = "double"
     )
     resultImp: Option[Double] = None,
     @Schema(
-      description = "The place using IMPs the team finished in",
+      description = "The place using IMPs the player finished in",
       required = false,
       `type` = "integer",
       format = "int32"
     )
     placeImp: Option[Int] = None
 ) {
-  def id = team.id
 
   @Hidden
-  def getResultMp: Double = result.getOrElse(0.0)
+  def getResultMp: Int = result.getOrElse(0)
   @Hidden
   def getPlaceMp: Int = place.getOrElse(1)
 
+  @Hidden
   def getResultImp: Double = resultImp.getOrElse(0.0)
+  @Hidden
   def getPlaceImp: Int = placeImp.getOrElse(1)
 
   def hasImp: Boolean = resultImp.isDefined && placeImp.isDefined
@@ -267,7 +176,7 @@ case class DuplicateSummary(
       arraySchema =
         new Schema(description = "The scores of the teams.", required = true)
     )
-    teams: List[DuplicateSummaryEntry],
+    players: List[DuplicateSummaryEntry],
     @Schema(
       description = "The number of boards in the match",
       required = true,
@@ -281,7 +190,9 @@ case class DuplicateSummary(
     )
     tables: Int,
     @Schema(description = "True if this is only the results", required = true)
-    onlyresult: Boolean,
+    onlyResult: Boolean,
+    @Schema(description = "If length is zero, individual movement was used, otherwise list of teams.", required = true)
+    teams: List[Team],
     @Schema(
       description =
         "When the duplicate match was created, in milliseconds since 1/1/1970 UTC",
@@ -309,47 +220,44 @@ case class DuplicateSummary(
     scoringmethod: Option[String] = None
 ) {
 
-  def players(): List[String] =
-    teams.flatMap { t =>
-      Seq(t.team.player1, t.team.player2)
-    }.toList
+  def playerNames(): List[String] =
+    players.map(_.player)
   def playerPlaces(): Map[String, Int] =
-    teams.flatMap { t =>
-      Seq((t.team.player1 -> t.getPlaceMp), (t.team.player2 -> t.getPlaceMp))
+    players.map { p =>
+      p.player -> p.getPlaceMp
     }.toMap
-  def playerScores(): Map[String, Double] =
-    teams.flatMap { t =>
-      Seq((t.team.player1 -> t.getResultMp), (t.team.player2 -> t.getResultMp))
+  def playerScores(): Map[String, Int] =
+    players.map { p =>
+      p.player -> p.getResultMp
     }.toMap
   def playerPlacesImp(): Map[String, Int] =
-    teams.flatMap { t =>
-      Seq((t.team.player1 -> t.getPlaceImp), (t.team.player2 -> t.getPlaceImp))
+    players.map { p =>
+      p.player -> p.getPlaceImp
     }.toMap
   def playerScoresImp(): Map[String, Double] =
-    teams.flatMap { t =>
-      Seq(
-        (t.team.player1 -> t.getResultImp),
-        (t.team.player2 -> t.getResultImp)
-      )
+    players.map { p =>
+      p.player -> p.getResultImp
     }.toMap
 
   def hasMpScores: Boolean =
-    teams.headOption
-      .map(t => t.place.isDefined && t.result.isDefined)
+    players.headOption
+      .map(p => p.place.isDefined && p.result.isDefined)
       .getOrElse(false)
   def hasImpScores: Boolean =
-    teams.headOption
-      .map(t => t.placeImp.isDefined && t.resultImp.isDefined)
+    players.headOption
+      .map(p => p.placeImp.isDefined && p.resultImp.isDefined)
       .getOrElse(false)
 
   def idAsDuplicateResultId: Option[Id[MatchDuplicateResult.ItemType]] =
     id.toSubclass[MatchDuplicateResult.ItemType]
   def idAsDuplicateId: Option[Id[MatchDuplicate.ItemType]] =
     id.toSubclass[MatchDuplicate.ItemType]
+  def idAsIndividualDuplicateId: Option[Id[IndividualDuplicate.ItemType]] =
+    id.toSubclass[IndividualDuplicate.ItemType]
 
   def containsPair(p1: String, p2: String): Boolean = {
     teams.find { dse =>
-      (dse.team.player1 == p1 && dse.team.player2 == p2) || (dse.team.player1 == p2 && dse.team.player2 == p1)
+      (dse.player1 == p1 && dse.player2 == p2) || (dse.player1 == p2 && dse.player2 == p1)
     }.isDefined
   }
 
@@ -357,39 +265,11 @@ case class DuplicateSummary(
     * @return true if all players played in game
     */
   def containsPlayer(name: String*): Boolean = {
-    name.find { p =>
-      // return true if player did not play
-      teams.find { dse =>
-        // true if p is one of the players
-        dse.team.player1 == p || dse.team.player2 == p
-      }.isEmpty
-    }.isEmpty
+    val names = playerNames()
+    name.find { p => !names.contains(p) }.isEmpty
   }
 
-  /**
-    * Modify the player names according to the specified name map.
-    * The timestamp is not changed.
-    * @return None if the names were not changed.  Some() with the modified object
-    */
-  def modifyPlayers(nameMap: Map[String, String]): Option[DuplicateSummary] = {
-    val (nteams, modified) = teams
-      .map { t =>
-        t.team.modifyPlayers(nameMap) match {
-          case Some(nt) => (t.copy(team = nt), true)
-          case None     => (t, false)
-        }
-      }
-      .foldLeft((List[DuplicateSummaryEntry](), false)) { (ac, v) =>
-        (ac._1 ::: List(v._1), ac._2 || v._2)
-      }
-    if (modified) {
-      Some(copy(teams = nteams))
-    } else {
-      None
-    }
-  }
-
-  import MatchDuplicateV3._
+  import MatchDuplicate._
   @Hidden
   def isMP: Boolean =
     scoringmethod
@@ -407,12 +287,15 @@ case class DuplicateSummary(
 
 }
 
-trait IdDuplicateSummary
+package object ids {
+  type IdDuplicateSummary = com.github.thebridsk.bridge.data.IdDuplicateSummary
+}
+import ids.IdDuplicateSummary
 
 object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
   override def id(i: Int): Id = {
     throw new IllegalArgumentException(
-      "DuplicateSummary Ids can not be generated, must use MatchDuplicate.Id, MatchDuplicateResult.Id, IndividualDuplicate.Id"
+      "DuplicateSummary Ids can not be generated, must use MatchDuplicate.Id, MatchDuplicateResult.Id, or IndividualDuplicate.Id"
     )
   }
 
@@ -449,6 +332,20 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
     }
   }
 
+  def useId[T](
+      id: DuplicateSummary.Id,
+      fmd: MatchDuplicate.Id => T,
+      fmdr: MatchDuplicateResult.Id => T,
+      fid: IndividualDuplicate.Id => T,
+      default: => T
+  ): T = {
+    id.toSubclass[MatchDuplicate.ItemType].map(fmd).getOrElse {
+      id.toSubclass[MatchDuplicateResult.ItemType].map(fmdr).getOrElse {
+        id.toSubclass[IndividualDuplicate.ItemType].map(fid).getOrElse(default)
+      }
+    }
+  }
+
   import com.github.thebridsk.bridge.data.{Id => DId}
   def runIf[T <: IdDuplicateSummary: ClassTag, R](
       id: DuplicateSummary.Id,
@@ -458,6 +355,7 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
   }
 
   def create(md: MatchDuplicate): DuplicateSummary = {
+    import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
     val score = MatchDuplicateScore(md, PerspectiveComplete)
     val places = score.places.flatMap { p =>
       p.teams.map { t =>
@@ -472,14 +370,46 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
     val details = score.getDetails.map { d =>
       d.team -> d
     }.toMap
-    val t = md.teams.map { team =>
-      DuplicateSummaryEntry(
-        team,
-        Some(score.teamScores(team.id)),
-        Some(places(team.id)),
-        details.get(team.id),
-        score.teamImps.get(team.id),
-        placesImps.get(team.id)
+    val t = md.teams.flatMap { team =>
+      List(
+        DuplicateSummaryEntry(
+          team.player1,
+          Some(score.teamScores(team.id).toInt),
+          Some(places(team.id)),
+          details.get(team.id).map { d =>
+            IndividualDuplicateSummaryDetails(
+              team.player1,
+              d.declarer,
+              d.made,
+              d.down,
+              d.defended,
+              d.tookDown,
+              d.allowedMade,
+              d.passed
+            )
+          },
+          score.teamImps.get(team.id),
+          placesImps.get(team.id)
+        ),
+        DuplicateSummaryEntry(
+          team.player2,
+          Some(score.teamScores(team.id).toInt),
+          Some(places(team.id)),
+          details.get(team.id).map { d =>
+            IndividualDuplicateSummaryDetails(
+              team.player2,
+              d.declarer,
+              d.made,
+              d.down,
+              d.defended,
+              d.tookDown,
+              d.allowedMade,
+              d.passed
+            )
+          },
+          score.teamImps.get(team.id),
+          placesImps.get(team.id)
+        )
       )
     }.toList
     DuplicateSummary(
@@ -489,6 +419,7 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
       md.boards.size,
       md.teams.size / 2,
       false,
+      md.teams,
       md.created,
       md.updated,
       None,
@@ -503,14 +434,101 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
     DuplicateSummary(
       mdr.id,
       !mdr.notfinished.getOrElse(false),
-      mdr.results.flatten,
+      mdr.results.flatten.flatMap { d =>
+        List(
+          DuplicateSummaryEntry(
+            d.team.player1,
+            d.result.map(_.toInt),
+            d.place,
+            d.details.map { dsd =>
+              IndividualDuplicateSummaryDetails(
+                d.team.player1,
+                dsd.declarer,
+                dsd.made,
+                dsd.down,
+                dsd.defended,
+                dsd.tookDown,
+                dsd.allowedMade,
+                dsd.passed
+              )
+            },
+            d.resultImp,
+            d.placeImp
+          ),
+          DuplicateSummaryEntry(
+            d.team.player2,
+            d.result.map(_.toInt),
+            d.place,
+            d.details.map { dsd =>
+              IndividualDuplicateSummaryDetails(
+                d.team.player2,
+                dsd.declarer,
+                dsd.made,
+                dsd.down,
+                dsd.defended,
+                dsd.tookDown,
+                dsd.allowedMade,
+                dsd.passed
+              )
+            },
+            d.resultImp,
+            d.placeImp
+          )
+        )
+      },
       boards,
       tables,
       true,
+      Nil, // teams
       mdr.played,
       mdr.played,
       None,
       Some(md.scoringmethod)
+    )
+  }
+
+  def create(md: IndividualDuplicate): DuplicateSummary = {
+    import com.github.thebridsk.bridge.data.bridge.individual.IndividualDuplicateViewPerspective.PerspectiveComplete
+    val score = IndividualDuplicateScore(md, PerspectiveComplete)
+    val places = score.placesMP.flatMap { p =>
+      p.players.map { pp =>
+        pp -> p.place
+      }.toList
+    }.toMap
+    val placesImps = score.placesImps.flatMap { p =>
+      p.players.map { pp =>
+        pp -> p.place
+      }.toList
+    }.toMap
+    val details = score.getDetails.map { d =>
+      d.player -> d
+    }.toMap
+    val t = (1 to md.players.size).map { iplayer =>
+      val name = md.getPlayer(iplayer)
+      val sc = score.scores(iplayer)
+      val placeMp = score.placesMP.find(_.players.contains(name)).map(_.place)
+      val placeImp = score.placesImps.find(_.players.contains(name)).map(_.place)
+      DuplicateSummaryEntry(
+        name,
+        Some(sc.mp),
+        placeMp,
+        None,
+        Some(sc.imp),
+        placeImp,
+      )
+    }.toList
+    DuplicateSummary(
+      md.id,
+      score.isAllDone,
+      t,
+      md.boards.size,
+      md.teams.size / 2,
+      false,
+      md.teams,
+      md.created,
+      md.updated,
+      None,
+      md.scoringmethod
     )
   }
 }

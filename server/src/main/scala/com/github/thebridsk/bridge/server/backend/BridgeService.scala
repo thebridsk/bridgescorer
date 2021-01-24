@@ -45,6 +45,7 @@ import java.io.FileInputStream
 import java.io.InputStream
 import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.bridge.individual.{ DuplicateSummary => IDuplicateSummary }
 
 /**
   * The backend trait for our service.
@@ -488,6 +489,41 @@ abstract class BridgeService(val id: String) {
       fmdrs.map { mdrs =>
         Result((mds ::: mdrs).sortWith((one, two) => one.created > two.created))
       }
+    }
+  }
+
+  def getIndividualDuplicateSummaries(): Future[Result[List[IDuplicateSummary]]] = {
+    val fmds = duplicates.readAll().map { fmds =>
+      fmds match {
+        case Right(m) =>
+          m.values.map(md => IDuplicateSummary.create(md)).toList
+        case Left(r) =>
+          Nil
+      }
+    }
+    val fmids = individualduplicates.readAll().map { fmds =>
+      fmds match {
+        case Right(m) =>
+          m.values.map(md => IDuplicateSummary.create(md)).toList
+        case Left(r) =>
+          Nil
+      }
+    }
+    val fmdrs = duplicateresults.readAll().map { fmds =>
+      fmds match {
+        case Right(m) =>
+          m.values.map(md => IDuplicateSummary.create(md)).toList
+        case Left(r) =>
+          Nil
+      }
+    }
+
+    for {
+      mds <- fmds
+      mdrs <- fmdrs
+      mids <- fmids
+    } yield {
+      Result((mds ::: mdrs ::: mids).sortWith((one, two) => one.created > two.created))
     }
   }
 

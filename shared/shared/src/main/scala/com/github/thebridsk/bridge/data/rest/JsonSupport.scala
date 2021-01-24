@@ -144,6 +144,13 @@ trait JsonSupport {
   implicit val bestMatchFormat: OFormat[BestMatch] = Json.format[BestMatch]
   implicit val duplicateSummaryFormat: OFormat[DuplicateSummary] =
     Json.format[DuplicateSummary]
+  implicit val iDuplicateSummaryDetailsFormat: OFormat[com.github.thebridsk.bridge.data.bridge.individual.IndividualDuplicateSummaryDetails] =
+    Json.format
+  implicit val iBestMatchFormat: OFormat[com.github.thebridsk.bridge.data.bridge.individual.BestMatch] = Json.format
+  implicit val iDuplicateSummaryEntryFormat: OFormat[com.github.thebridsk.bridge.data.bridge.individual.DuplicateSummaryEntry] =
+    Json.format
+  implicit val iDuplicateSummaryFormat: OFormat[com.github.thebridsk.bridge.data.bridge.individual.DuplicateSummary] =
+    Json.format
   implicit val boardTeamResultsFormat: OFormat[BoardTeamResults] =
     Json.format[BoardTeamResults]
   implicit val boardResultsFormat: OFormat[BoardResults] =

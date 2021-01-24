@@ -2,6 +2,7 @@ package com.github.thebridsk.bridge.clientcommon.skeleton.react
 
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 
 /**
   * A skeleton component.
@@ -53,6 +54,18 @@ object SkeletonComponent {
       }
     }
 
+    def didUpdate(
+        cdu: ComponentDidUpdate[Props, State, Backend, Unit]
+    ): Callback =
+      Callback {
+        val props = cdu.currentProps
+        val prevProps = cdu.prevProps
+        if (prevProps != props) {
+          // props have change, reinitialize state
+          cdu.setState(State())
+        }
+      }
+
     val component = ScalaComponent
       .builder[Props]("SkeletonComponent")
       .initialStateFromProps { props => State() }
@@ -60,6 +73,7 @@ object SkeletonComponent {
       .renderBackend
       .componentDidMount(scope => scope.backend.didMount)
       .componentWillUnmount(scope => scope.backend.willUnmount)
+      .componentDidUpdate(didUpdate)
       .build
   }
 

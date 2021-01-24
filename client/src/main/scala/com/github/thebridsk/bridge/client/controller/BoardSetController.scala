@@ -189,7 +189,7 @@ object BoardSetController {
         .map(items => {
           items.foreach { bm =>
             BridgeDispatcher
-              .updateAllBoardSetAndMovements(bm.boardsets, bm.movements)
+              .updateAllBoardSetAndMovements(bm.boardsets, bm.movements, bm.individualmovements)
           }
         })
     } else {
@@ -210,7 +210,8 @@ object BoardSetController {
             val bm = JsonSupport.readJson[BoardSetsAndMovements](r)
             BridgeDispatcher.updateAllBoardSetAndMovements(
               bm.boardsets,
-              bm.movements
+              bm.movements,
+              List.empty
             )
             demoCB
           }

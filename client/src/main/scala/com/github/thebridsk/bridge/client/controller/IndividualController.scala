@@ -46,6 +46,7 @@ object IndividualController extends {
 
   private def setServerEventConnection(): Unit = {
     sseConnection = if (useSSEFromServer) {
+      logger.fine(s"Creating SSE for individual duplicates")
       new SSE[IndividualDuplicate.Id]("/v1/sse/individualduplicates/", Listener)
     } else {
       new DuplexPipeServerEventConnection("", Listener) {
@@ -149,19 +150,21 @@ object IndividualController extends {
         case Protocol.MonitorJoined(id, members) =>
         case Protocol.MonitorLeft(id, members)   =>
         case Protocol.UpdateDuplicate(matchDuplicate) =>
-          BridgeDispatcher.updateDuplicateMatch(matchDuplicate)
         case Protocol.UpdateDuplicateHand(dupid, hand) =>
-          BridgeDispatcher.updateDuplicateHand(dupid, hand)
         case Protocol.UpdateDuplicateTeam(dupid, team) =>
-          BridgeDispatcher.updateTeam(dupid, team)
         case Protocol.UpdateDuplicatePicture(dupid, boardid, handid, picture) =>
-          BridgeDispatcher.updatePicture(dupid, boardid, handid, picture)
         case Protocol.UpdateDuplicatePictures(dupid, pictures) =>
-          BridgeDispatcher.updatePictures(dupid, pictures)
-        case _: Protocol.UpdateIndividualDuplicate     =>
-        case _: Protocol.UpdateIndividualDuplicateHand =>
-        case _: Protocol.UpdateIndividualDuplicatePicture        =>
-        case _: Protocol.UpdateIndividualDuplicatePictures       =>
+
+        case Protocol.UpdateIndividualDuplicate(matchDuplicate) =>
+          logger.fine(s"got an update to individual duplicate: $matchDuplicate")
+          BridgeDispatcher.updateIndividualDuplicate(matchDuplicate)
+        case Protocol.UpdateIndividualDuplicateHand(dupid, hand) =>
+          BridgeDispatcher.updateIndividualDuplicateHand(dupid, hand)
+        case Protocol.UpdateIndividualDuplicatePicture(dupid, boardid, handid, picture) =>
+          BridgeDispatcher.updateIndividualPicture(dupid, boardid, handid, picture)
+        case Protocol.UpdateIndividualDuplicatePictures(dupid, pictures) =>
+          BridgeDispatcher.updateIndividualPictures(dupid, pictures)
+
         case Protocol.NoData(_)                  =>
         case Protocol.UpdateChicago(_)           =>
         case Protocol.UpdateChicagoRound(_, _)   =>

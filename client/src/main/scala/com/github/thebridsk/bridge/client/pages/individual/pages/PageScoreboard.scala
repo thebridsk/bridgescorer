@@ -1,34 +1,39 @@
-package com.github.thebridsk.bridge.client.pages.duplicate
+package com.github.thebridsk.bridge.client.pages.individual
 
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.client.controller.Controller
-import com.github.thebridsk.bridge.client.bridge.store.DuplicateStore
+import com.github.thebridsk.bridge.client.controller.IndividualController
+import com.github.thebridsk.bridge.client.bridge.store.IndividualDuplicateStore
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector
-import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
-import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
 import com.github.thebridsk.bridge.clientcommon.react.DateUtils
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BaseScoreboardViewWithPerspective
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.SummaryView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.FinishedScoreboardsView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.DirectorScoreboardView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.NamesView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.CompleteScoreboardView
-import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableRoundScoreboardView
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
-import com.github.thebridsk.materialui.MuiTypography
-import com.github.thebridsk.materialui.TextVariant
-import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicatePage
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.BaseScoreboardViewWithPerspective
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.client.pages.individual.styles.IndividualStyles._
+import com.github.thebridsk.bridge.data.bridge.individual.IndividualDuplicateViewPerspective._
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.CompleteScoreboardView
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.DirectorScoreboardView
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.FinishedScoreboardsView
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.TableRoundScoreboardView
+import com.github.thebridsk.bridge.client.pages.individual.router.components.ViewScoreboard
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.TableView
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.SummaryView
+import com.github.thebridsk.bridge.client.pages.individual.components.DuplicateBridgeAppBar
+import com.github.thebridsk.materialui.MuiTypography
+import com.github.thebridsk.materialui.TextVariant
+import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.client.pages.individual.components.ViewScoreboardHelp
+import com.github.thebridsk.bridge.client.pages.individual.components.ViewScoreboardDetails
+import com.github.thebridsk.bridge.client.pages.individual.components.ViewPlayerMatchResult
 
 /**
   * A component page that shows final scoreboard view.
@@ -67,7 +72,7 @@ object PageScoreboard {
   import Internal._
 
   case class Props(
-      routerCtl: BridgeRouter[DuplicatePage],
+      routerCtl: BridgeRouter[IndividualDuplicatePage],
       game: BaseScoreboardViewWithPerspective
   )
 
@@ -82,7 +87,7 @@ object PageScoreboard {
     * @see See [[PageScoreboard]] for usage.
     */
   def apply(
-      routerCtl: BridgeRouter[DuplicatePage],
+      routerCtl: BridgeRouter[IndividualDuplicatePage],
       game: BaseScoreboardViewWithPerspective
   ) =
     component(
@@ -115,7 +120,7 @@ object PageScoreboard {
 
   protected object Internal {
 
-    val logger: Logger = Logger("bridge.PageScoreboard")
+    val logger: Logger = Logger("bridge.PageScoreboardIndividual")
 
     case class State(
         deletePopup: Boolean = false,
@@ -126,14 +131,14 @@ object PageScoreboard {
       /**
         * whether the current display should show MP scoring
         */
-      def isMP(md: MatchDuplicate): Boolean = !useIMP.getOrElse(md.isIMP)
+      def isMP(md: IndividualDuplicate): Boolean = !useIMP.getOrElse(md.isIMP)
 
       /**
         * whether the current display should show IMP scoring
         */
-      def isIMP(md: MatchDuplicate): Boolean = useIMP.getOrElse(md.isIMP)
+      def isIMP(md: IndividualDuplicate): Boolean = useIMP.getOrElse(md.isIMP)
 
-      def toggleIMP(md: MatchDuplicate): State = {
+      def toggleIMP(md: IndividualDuplicate): State = {
         copy(useIMP = Some(!isIMP(md)))
       }
 
@@ -149,7 +154,6 @@ object PageScoreboard {
     }
 
     class Backend(scope: BackendScope[Props, State]) {
-      import DuplicateStyles._
 
       def setScoringMethod(currentInMatchIsIMP: Boolean): Callback =
         scope.state >>= { state =>
@@ -157,7 +161,7 @@ object PageScoreboard {
             state.useIMP match {
               case Some(next) if currentInMatchIsIMP != next =>
                 // switch to next
-                DuplicateStore.getMatch() match {
+                IndividualDuplicateStore.getMatch() match {
                   case Some(md) =>
                     val nmd = md.copy(scoringmethod =
                       Some(
@@ -165,7 +169,7 @@ object PageScoreboard {
                         else MatchDuplicate.MatchPoints
                       )
                     )
-                    Controller.updateMatch(nmd)
+                    IndividualController.updateMatch(nmd)
                   case None =>
                 }
               case _ =>
@@ -176,7 +180,7 @@ object PageScoreboard {
 
       def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
 
-        def callbackPage(page: DuplicatePage)(e: ReactEvent) =
+        def callbackPage(page: IndividualDuplicatePage)(e: ReactEvent) =
           props.routerCtl.set(page).runNow()
 
         def isSetScoringMethodEnabled(currentInMatchIsIMP: Boolean) = {
@@ -194,14 +198,14 @@ object PageScoreboard {
           rc
         }
 
-        DuplicateStore.getView(props.game.getPerspective) match {
-          case Some(score) if score.id == props.game.dupid =>
-            val winnersets = score.getWinnerSets
+        IndividualDuplicateStore.getView(props.game.getPerspective) match {
+          case Some(score) if score.duplicate.id == props.game.dupid =>
+            val winnersets = score.getWinnerSets()
 
             def getScoringMethodButton() =
               scoringMethodButton(
                 state.useIMP,
-                Some(score.isIMP),
+                Some(score.duplicate.isIMP),
                 false,
                 nextIMPs
               )
@@ -242,7 +246,7 @@ object PageScoreboard {
                 )
             }
 
-            val sortedTables = score.tables.keys.toList.sorted
+            val sortedTables = score.duplicate.getTableIds()
 
             logger.fine("WinnerSets: " + winnersets)
             <.div(
@@ -250,7 +254,7 @@ object PageScoreboard {
                 if (state.deletePopup) {
                   Some(
                     <.span(
-                      s"Are you sure you want to delete duplicate match ${score.id.id}"
+                      s"Are you sure you want to delete duplicate match ${score.duplicate.id.id}"
                     )
                   )
                 } else {
@@ -259,7 +263,7 @@ object PageScoreboard {
                 Some(actionDeleteOk),
                 Some(actionDeleteCancel)
               ),
-              DuplicatePageBridgeAppBar(
+              DuplicateBridgeAppBar(
                 id = Some(props.game.dupid),
                 tableIds = sortedTables,
                 title = Seq[CtorType.ChildArg](
@@ -278,19 +282,19 @@ object PageScoreboard {
                 pagemenu: _*
               ),
               <.div(
-                dupStyles.divScoreboardPage,
+                dupStyles.pageScoreboard,
                 ViewScoreboard(
-                  props.routerCtl,
                   props.game,
                   score,
-                  state.isIMP(score.duplicate)
+                  state.isMP(score.duplicate),
+                  props.routerCtl
                 ),
                 winnersets
                   .map(ws =>
                     ViewPlayerMatchResult(
                       (if (state.isIMP(score.duplicate))
                         score.placeImpByWinnerSet(ws)
-                      else score.placeByWinnerSet(ws)),
+                      else score.placeMPByWinnerSet(ws)),
                       state.isIMP(score.duplicate)
                     )
                   )
@@ -338,8 +342,8 @@ object PageScoreboard {
                             ^.disabled := !isSetScoringMethodEnabled(
                               score.duplicate.isIMP
                             )
-                          ).when(!score.isStarted),
-                          if (score.alldone) {
+                          ).when(!score.duplicate.anyHandsPlayed),
+                          if (score.duplicate.allDone) {
                             TagMod(
                               " ",
                               AppButton(
@@ -393,13 +397,14 @@ object PageScoreboard {
                             ^.onClick --> actionDelete
                           ),
                           " ",
-                          AppButton(
-                            "EditNames",
-                            "Edit Names",
-                            props.routerCtl.setOnClick(
-                              NamesView(props.game.sdupid)
-                            )
-                          )
+                          // // TODO: Edit names implementation
+                          // AppButton(
+                          //   "EditNames",
+                          //   "Edit Names",
+                          //   props.routerCtl.setOnClick(
+                          //     NamesView(props.game.sdupid)
+                          //   )
+                          // )
                         )
                       ).toTagMod
                     case PerspectiveTable(team1, team2) =>
@@ -407,10 +412,14 @@ object PageScoreboard {
                         case trgv: TableRoundScoreboardView =>
                           val tablenumber = trgv.tableid.toNumber
                           val allplayedInRound =
-                            score.getRound(trgv.tableid, trgv.round) match {
-                              case Some(r) => r.complete
-                              case _       => false
-                            }
+                            score.getBoardsInRound(trgv.round, trgv.tableid)
+                              .find { bs =>
+                                bs.board.hands.find { h =>
+                                  h.table==trgv.tableid &&
+                                  h.round == trgv.round &&
+                                  h.played.isEmpty
+                                }.isDefined
+                              }.isEmpty
                           Seq(
                             <.div(
                               baseStyles.divFooterLeft,
@@ -462,16 +471,16 @@ object PageScoreboard {
                 <.div(
                   baseStyles.divTextFooter,
                   <.p(
-                    "Game " + score.id.id + " created " + DateUtils.formatDate(
-                      score.created
-                    ) + " last updated " + DateUtils.formatDate(score.updated)
+                    "Game " + score.duplicate.id.id + " created " + DateUtils.formatDate(
+                      score.duplicate.created
+                    ) + " last updated " + DateUtils.formatDate(score.duplicate.updated)
                   )
                 )
               )
             )
           case _ =>
             <.div(
-              DuplicatePageBridgeAppBar(
+              DuplicateBridgeAppBar(
                 id = Some(props.game.dupid),
                 tableIds = List(),
                 title = Seq[CtorType.ChildArg](
@@ -500,8 +509,8 @@ object PageScoreboard {
 
       val actionDeleteOk: Callback = scope.props >>= { props =>
         Callback {
-          Controller
-            .deleteMatchDuplicate(props.game.dupid)
+          IndividualController
+            .deleteIndividualDuplicate(props.game.dupid)
             .foreach(msg => {
               logger.info("Deleted duplicate match, going to summary view")
               props.routerCtl.set(SummaryView).runNow()
@@ -518,22 +527,22 @@ object PageScoreboard {
       val nextIMPs: Callback = scope.modState { s => s.nextIMPs }
 
       val storeCallback: Callback = scope.modStateOption { s =>
-        DuplicateStore.getMatch().map(md => s.copy(useIMP = Some(md.isIMP)))
+        IndividualDuplicateStore.getMatch().map(md => s.copy(useIMP = Some(md.isIMP)))
       }
 
       val didMount: Callback = scope.props >>= { (p) =>
         Callback {
           logger.info("PageScoreboard.didMount")
-          DuplicateStore.addChangeListener(storeCallback)
+          IndividualDuplicateStore.addChangeListener(storeCallback)
 
-          Controller.monitor(p.game.dupid)
+          IndividualController.monitor(p.game.dupid)
         }
       }
 
       val willUnmount: Callback = CallbackTo {
         logger.info("PageScoreboard.willUnmount")
-        DuplicateStore.removeChangeListener(storeCallback)
-        Controller.delayStop()
+        IndividualDuplicateStore.removeChangeListener(storeCallback)
+        IndividualController.delayStop()
       }
     }
 
@@ -544,7 +553,7 @@ object PageScoreboard {
         val props = cdu.currentProps
         val prevProps = cdu.prevProps
         if (prevProps.game != props.game) {
-          Controller.monitor(props.game.dupid)
+          IndividualController.monitor(props.game.dupid)
           cdu.setState(State())
         }
       }

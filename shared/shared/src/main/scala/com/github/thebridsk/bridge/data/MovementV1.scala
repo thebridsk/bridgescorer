@@ -85,9 +85,15 @@ case class MovementV1(
       required = false
     )
     updateTime: Option[SystemTime.Timestamp] = None
-) extends VersionedInstance[MovementV1, MovementV1, MovementV1.Id] {
+) extends VersionedInstance[MovementV1, MovementV1, MovementV1.Id]
+  with MovementBase
+{
 
   def id = name
+  def nameAsString: String = name.id
+
+  @Schema(hidden = true)
+  override def getMovementId: Option[Movement.Id] = Some(name)
 
   @Schema(hidden = true)
   private def optional(flag: Boolean, fun: Movement => Movement) = {
@@ -182,6 +188,7 @@ case class MovementV1(
       .sortWith((l, r) => l._1 < r._1)
       .map(_._2.sortWith((l, r) => l.round < r.round))
   }
+  def tables: Int = getTables.size
 
   @Schema(hidden = true)
   def created: SystemTime.Timestamp = creationTime.getOrElse(0)

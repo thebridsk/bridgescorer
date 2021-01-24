@@ -31,6 +31,8 @@ trait BridgeRouter[Page] {
 
   def toRootPage(page: AppPage): Unit = {}
 
+  def onClickToRootPage(page: AppPage): TagMod = ^.onClick --> Callback { toRootPage(page) }
+
   /**
     * Returns the RouterCtl that is wrapped by this
     * @return None if there is no RouterCtl

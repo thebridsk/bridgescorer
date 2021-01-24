@@ -19,6 +19,8 @@ import com.github.thebridsk.bridge.data.IndividualDuplicate
 import com.github.thebridsk.bridge.data.IndividualDuplicatePicture
 import com.github.thebridsk.bridge.data.IndividualDuplicateHand
 import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.bridge.individual.{ DuplicateSummary => IDuplicateSummary }
+import com.github.thebridsk.bridge.data.IndividualMovement
 
 package object action {
   import _root_.com.github.thebridsk.bridge.data.DuplicatePicture
@@ -81,6 +83,34 @@ package object action {
       picture: List[DuplicatePicture]
   ) extends DuplicateBridgeAction
 
+  /**
+    * @param importId the import Id.  If None, then this is the main store.
+    * @param summary
+    */
+  case class ActionUpdateIndividualDuplicateSummary(
+      importId: Option[String],
+      summary: List[IDuplicateSummary]
+  ) extends BridgeAction
+
+  case class ActionUpdateIndividualDuplicateSummaryItem(
+      importId: Option[String],
+      summary: IDuplicateSummary
+  ) extends BridgeAction
+
+  /**
+    * @param importId the import Id.  If None, then this is the main store.
+    * @param summary
+    */
+  case class ActionUpdateIndividualDuplicateSummaryDemoMatch(
+      importId: Option[String],
+      summary: List[MatchDuplicate]
+  ) extends BridgeAction
+
+  case class ActionUpdateIndividualDuplicateSummaryDemoMatchItem(
+      importId: Option[String],
+      summary: MatchDuplicate
+  ) extends BridgeAction
+
   case class ActionStartIndividualDuplicate(dupid: IndividualDuplicate.Id)
       extends IndividualDuplicateBridgeAction
   case class ActionStopIndividualDuplicate() extends IndividualDuplicateBridgeAction
@@ -103,6 +133,7 @@ package object action {
 
   sealed trait BoardSetAction extends BridgeAction
   sealed trait MovementAction extends BridgeAction
+  sealed trait IndividualMovementAction extends BridgeAction
 
   case class ActionCreateBoardSet(boardSet: BoardSet) extends BoardSetAction
   case class ActionDeleteBoardSet(id: BoardSet.Id) extends BoardSetAction
@@ -110,13 +141,19 @@ package object action {
   case class ActionCreateMovement(movement: Movement) extends MovementAction
   case class ActionDeleteMovement(id: Movement.Id) extends MovementAction
   case class ActionUpdateMovement(movement: Movement) extends MovementAction
+  case class ActionCreateIndividualMovement(movement: IndividualMovement) extends IndividualMovementAction
+  case class ActionDeleteIndividualMovement(id: IndividualMovement.Id) extends IndividualMovementAction
+  case class ActionUpdateIndividualMovement(movement: IndividualMovement) extends IndividualMovementAction
   case class ActionUpdateAllBoardSets(boardSets: List[BoardSet])
       extends BoardSetAction
   case class ActionUpdateAllMovement(movement: List[Movement])
       extends MovementAction
+  case class ActionUpdateAllIndividualMovement(movement: List[IndividualMovement])
+      extends IndividualMovementAction
   case class ActionUpdateAllBoardsetsAndMovement(
       boardSets: List[BoardSet],
-      movement: List[Movement]
+      movement: List[Movement],
+      individualmovement: List[IndividualMovement],
   ) extends MovementAction
 
   sealed trait ChicagoBridgeAction extends BridgeAction

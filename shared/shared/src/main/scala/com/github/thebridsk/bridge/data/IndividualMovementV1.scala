@@ -88,9 +88,15 @@ case class IndividualMovementV1(
       required = false
     )
     updateTime: Option[SystemTime.Timestamp] = None
-) extends VersionedInstance[IndividualMovementV1, IndividualMovementV1, IndividualMovementV1.Id] {
+) extends VersionedInstance[IndividualMovementV1, IndividualMovementV1, IndividualMovementV1.Id]
+  with MovementBase
+{
 
   def id = name
+  def nameAsString: String = name.id
+
+  @Schema(hidden = true)
+  override def getIndividualId: Option[IndividualMovement.Id] = Some(name)
 
   @Schema(hidden = true)
   private def optional(flag: Boolean, fun: IndividualMovement => IndividualMovement) = {
@@ -185,6 +191,7 @@ case class IndividualMovementV1(
       .sortWith((l, r) => l._1 < r._1)
       .map(_._2.sortWith((l, r) => l.round < r.round))
   }
+  def tables: Int = getTables.size
 
   @Schema(hidden = true)
   def created: SystemTime.Timestamp = creationTime.getOrElse(0)

@@ -127,12 +127,15 @@ object IndividualDuplicateStore extends ChangeListenable {
       .getOrElse(List())
   }
 
-  private var dispatchToken: Option[DispatchToken] = Some(
-    BridgeDispatcher.register(dispatch _)
-  )
+  private var dispatchToken: Option[DispatchToken] = {
+    val tok = BridgeDispatcher.register(dispatch _)
+    logger.fine(s"IndividualDuplicateStore registered with BridgeDispatcher")
+    Some(tok)
+  }
 
   def dispatch(msg: Any): Unit =
     Alerter.tryitWithUnit {
+      // logger.fine(s"IndividualDuplicateStore.dispatch: $msg")
       msg match {
         case m: IndividualDuplicateBridgeAction =>
           m match {

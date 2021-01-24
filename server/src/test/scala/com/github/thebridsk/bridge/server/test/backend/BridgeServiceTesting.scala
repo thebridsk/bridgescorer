@@ -136,6 +136,7 @@ object BridgeServiceTesting {
     IndividualDuplicate(
       IndividualDuplicate.id(1),
       List("Nancy", "Sam", "Ellen", "Wayne", "Norman", "Sally", "Ethan", "Wilma"),
+      List(),
       List(
         IndividualBoard(
           IndividualBoard.id(1),

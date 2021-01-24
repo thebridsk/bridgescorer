@@ -254,6 +254,12 @@ abstract class BaseStoreMonitor[VId <: Comparable[
       add(new Subscription(name, subscriber))
       dispatchToAll(MonitorJoined(name, members))
       process(name, Send(StartMonitorDuplicate(dupid)))
+    case NewParticipantSSEIndividualDuplicate(name, dupid, subscriber) =>
+      log.info("(" + name + "): New monitor")
+      context.watch(subscriber)
+      add(new Subscription(name, subscriber))
+      dispatchToAll(MonitorJoined(name, members))
+      process(name, Send(StartMonitorIndividualDuplicate(dupid)))
     case NewParticipantSSEChicago(name, dupid, subscriber) =>
       log.info("(" + name + "): New monitor")
       context.watch(subscriber)

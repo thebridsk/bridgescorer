@@ -45,6 +45,8 @@ import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
 import japgolly.scalajs.react.internal.Effect
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateModule.PlayIndividualDuplicate
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.{ SummaryView => ISummaryView }
 
 /**
   * The home page for the bridge application.
@@ -316,6 +318,17 @@ object HomePage {
                         rootStyles.playButton,
                         ^.disabled := isWorking,
                         ^.onClick --> latestNewMatch
+                      )
+                    )
+                  ),
+                  <.tr(
+                    <.td(
+                      AppButton(
+                        "Individual",
+                        "Individual List",
+                        rootStyles.playButton,
+                        ^.disabled := isWorking,
+                        ^.onClick --> callbackPage(PlayIndividualDuplicate(ISummaryView))
                       )
                     )
                   ),

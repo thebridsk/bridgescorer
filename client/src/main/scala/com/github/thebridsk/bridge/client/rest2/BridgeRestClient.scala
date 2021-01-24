@@ -29,6 +29,7 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestion
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.bridge.individual.{ DuplicateSummary => IDuplicateSummary }
 import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.data.IndividualBoard
 import com.github.thebridsk.bridge.data.IndividualDuplicate
@@ -194,6 +195,10 @@ object RestClientDuplicate
 object RestClientDuplicateSummary
     extends RestClient[DuplicateSummary, DuplicateSummary.Id](
       "/v1/rest/duplicatesummaries"
+    )
+object RestClientIndividualDuplicateSummary
+    extends RestClient[IDuplicateSummary, IDuplicateSummary.Id](
+      "/v1/rest/individualduplicatesummaries"
     )
 object RestClientLoggerConfig
     extends RestClient[LoggerConfig, String]("/v1/rest/loggerConfig")

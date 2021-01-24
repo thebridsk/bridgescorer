@@ -47,7 +47,7 @@ class IndividualDuplicateMonitorWebservice(
 //  }
 
   def route: Route = routews ~ routesse
-  @Path("/individual/ws")
+  @Path("/individualduplicates/ws")
   @GET
   @Operation(
     tags = Array("Server"),
@@ -63,7 +63,7 @@ class IndividualDuplicateMonitorWebservice(
   def xxxroutews: Unit = {}
   val routews: Route =
     get {
-      pathPrefix("individual" / "ws") {
+      pathPrefix("individualduplicates" / "ws") {
         // logRequestResult("routews", Logging.DebugLevel) {
         // logResult("routews", Logging.DebugLevel) {
         handleRejections(totallyMissingResourceHandler) {
@@ -90,7 +90,7 @@ class IndividualDuplicateMonitorWebservice(
         // }
       }
     }
-  @Path("/sse/duplicates/{dupId}")
+  @Path("/sse/individualduplicates/{dupId}")
   @GET
   @Operation(
     tags = Array("Duplicate"),
@@ -136,7 +136,7 @@ class IndividualDuplicateMonitorWebservice(
       get {
         logRequest("sse", Logging.DebugLevel) {
           logResult("sse", Logging.DebugLevel) {
-            pathPrefix("duplicates") {
+            pathPrefix("individualduplicates") {
               handleRejections(totallyMissingResourceHandler) {
                 pathPrefix("""[a-zA-Z0-9]+""".r) { id =>
                   pathEndOrSingleSlash {
