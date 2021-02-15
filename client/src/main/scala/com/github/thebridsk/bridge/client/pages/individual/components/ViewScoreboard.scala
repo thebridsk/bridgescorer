@@ -17,6 +17,8 @@ import com.github.thebridsk.bridge.data.IndividualDuplicateHand
 import com.github.thebridsk.bridge.data.bridge.individual.IndividualBoardScore
 import com.github.thebridsk.bridge.data.util.Strings
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
+import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.TableRoundScoreboardView
 
 /**
   * A React component that shows the scoreboard for an individual duplicate match.
@@ -79,6 +81,8 @@ object ViewScoreboard {
 
   protected object Internal {
 
+    val log = Logger("bridge.ViewScoreboard")
+
     case class State()
 
     private val Caption = ScalaComponent
@@ -94,7 +98,7 @@ object ViewScoreboard {
                 case PerspectiveComplete =>
                   "Scoreboard with completed boards only"
                 case PerspectiveTable(currentTable, currentRound) =>
-                  "Scoreboard from table ${currentTable} round ${currentRound}"
+                  s"Scoreboard from table ${currentTable.toNumber} round ${currentRound}"
               }
           },
           ", ",
@@ -133,9 +137,9 @@ object ViewScoreboard {
 
     private implicit class WrapPerspective(val view: BaseScoreboardViewWithPerspective) extends AnyVal {
 
-        def tablePerspective: Option[PerspectiveTable] =
+        def tablePerspective: Option[TableRoundScoreboardView] =
           view match {
-            case p: PerspectiveTable => Some(p)
+            case p: TableRoundScoreboardView => Some(p)
             case _                   => None
           }
 
@@ -148,9 +152,10 @@ object ViewScoreboard {
           *   false if finished perspective
           */
         def isShowBoardButton(b: IndividualBoardScore): Boolean = {
+          log.fine(s"isShowBoardButton: tablePerspective=${tablePerspective}, view=${view}")
           tablePerspective.map { tp =>
             b.board.hands.find { h =>
-              h.table==tp.table &&
+              h.table==tp.tableid &&
                 h.round==tp.round
             }.isDefined
           }.getOrElse(!view.isInstanceOf[FinishedScoreboardView])
@@ -165,7 +170,7 @@ object ViewScoreboard {
         def unplayedHand(b: IndividualBoardScore): Option[IndividualDuplicateHand.Id] = {
           tablePerspective.flatMap { tp =>
             b.board.hands.find { h =>
-              h.table==tp.table &&
+              h.table==tp.tableid &&
                 h.round==tp.round
             }.filter { h =>
               h.played.isEmpty

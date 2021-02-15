@@ -53,3 +53,80 @@ table th {
   margin-top: 10px;
   margin-right: 10px;
 }
+/*
+.pageNewDuplicate {
+
+}
+*/
+/*
+.pageTable {
+
+}
+*/
+/*
+.viewTable {
+
+}
+*/
+
+.viewTable tbody > tr > td:first-child button {
+  border-radius: 20px;
+  background-color: var(--color-default-button);
+  color: var(--color-fg-default-button);
+  border-style: outset;
+  border-width: 2px;
+  padding: 3px 6px;
+  white-space: nowrap;
+  min-width: 44px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+/*
+.pageMovements {
+
+}
+*/
+
+.pageTableNames {
+  display: block;
+  font-size: x-large;
+}
+.pageTableNames > div:first-child {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+}
+.pageTableNames > div:first-child::after, .pageTableNames > div:first-child::before {
+  content: '';
+  width: 100%;
+  order: 1;
+}
+.pageTableNames > div:first-child > div:nth-child(n + 2) {
+  order: 1;
+}
+.pageTableNames > div:first-child > div:nth-child(n + 4) {
+  order: 2;
+}
+.pageTableNames > div:first-child > div {
+  margin: 20px 40px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.pageTableNames > div:first-child > div >div:first-child {
+  font-size: xx-large;
+}
+
+.pageAllTables {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: left;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.pageAllTables > table {
+  margin: 10px;
+}

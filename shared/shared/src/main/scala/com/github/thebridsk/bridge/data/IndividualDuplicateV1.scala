@@ -76,7 +76,7 @@ case class IndividualDuplicateV1 private (
     )
     scoringmethod: Option[String] = None
 ) extends VersionedInstance[
-      IndividualDuplicateV1,
+      IndividualDuplicate,
       IndividualDuplicateV1,
       IndividualDuplicate.Id
     ] {
@@ -258,7 +258,7 @@ case class IndividualDuplicateV1 private (
     copy(players=players)
   }
 
-  def deletePlayer(p: Int): IndividualDuplicateV1 =
+  def deletePlayer(p: Int): IndividualDuplicate =
     updatePlayer(p,"")
 
   @Schema(hidden = true)
@@ -298,7 +298,7 @@ case class IndividualDuplicateV1 private (
       .map(_._2 + 1)
   }
 
-  def getHand(boardId: IndividualBoard.Id, handId: IndividualDuplicateHandV1.Id): Option[IndividualDuplicateHandV1] = {
+  def getHand(boardId: IndividualBoard.Id, handId: IndividualDuplicateHand.Id): Option[IndividualDuplicateHandV1] = {
     getBoard(boardId) match {
       case Some(board) => board.getHand(handId)
       case None        => None
@@ -340,6 +340,20 @@ case class IndividualDuplicateV1 private (
     boards.view.flatMap { b =>
       b.hands.filter(dh => dh.wasPlayed)
     }
+  }
+
+  def activeRound: Int = {
+    val rounds = boards.view.flatMap( _.hands )
+      .groupBy(_.round)
+      .toList
+      .sortWith((l,r) => l._1 < r._1)
+    rounds.find { e =>
+        val (round, hands) = e
+        hands.find(_.played.isEmpty).isDefined
+      }.map { e =>
+        val (round, hands) = e
+        round
+      }.getOrElse(rounds.size)
   }
 
   import IndividualDuplicateV1._
@@ -459,14 +473,14 @@ case class IndividualDuplicateV1 private (
     )
   }
 
-  @Schema(hidden = true)
+  @Hidden
   def getScoringMethod: String =
     scoringmethod.getOrElse(IndividualDuplicateV1.MatchPoints)
 
   /**
     * Get all the table Ids in sort order.
     */
-  @Schema(hidden = true)
+  @Hidden
   def getTableIds(): List[Table.Id] = {
     boards
       .flatMap(b => b.hands)
@@ -479,7 +493,7 @@ case class IndividualDuplicateV1 private (
       .sortWith((l, r) => l < r)
   }
 
-  @Schema(hidden = true)
+  @Hidden
   def getBoardSetObject(): BoardSetV1 = {
     val bins = boards
       .map { b =>
@@ -493,6 +507,38 @@ case class IndividualDuplicateV1 private (
       "Used in match " + id,
       "Used in match " + id,
       bins
+    )
+  }
+
+  @Hidden
+  def getIndividualMovement: IndividualMovement = {
+    val rounds = boards.flatMap { board =>
+      board.hands.map { hand =>
+        IndividualHandInTable(
+          hand.table.toInt,
+          hand.round,
+          hand.north,
+          hand.south,
+          hand.east,
+          hand.west,
+          List(hand.board.toInt)
+        )
+      }
+    }.foldLeft(Map[(Int, Int), IndividualHandInTable]()) { (ac, iht) =>
+      val key = (iht.table, iht.round)
+      ac.get(key) match {
+        case Some(sum) =>
+          ac + (key -> sum.copy(boards = sum.boards:::iht.boards))
+        case None =>
+          ac + (key -> iht)
+      }
+    }.values.toList
+    IndividualMovement(
+      movement,
+      "",
+      "",
+      players.size,
+      rounds
     )
   }
 
@@ -510,13 +556,13 @@ case class IndividualDuplicateV1 private (
       .foldLeft(0)((ac, v) => ac + v)
   }
 
-  def convertToCurrentVersion: (Boolean, IndividualDuplicateV1) =
+  def convertToCurrentVersion: (Boolean, IndividualDuplicate) =
     (
       true,
       this
     )
 
-  def readyForWrite: IndividualDuplicateV1 = this
+  def readyForWrite: IndividualDuplicate = this
 
 }
 

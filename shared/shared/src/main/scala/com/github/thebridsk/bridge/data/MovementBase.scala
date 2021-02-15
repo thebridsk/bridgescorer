@@ -1,5 +1,7 @@
 package com.github.thebridsk.bridge.data
 
+import scala.reflect.ClassTag
+
 
 trait MovementBase extends Ordered[MovementBase] {
 
@@ -9,7 +11,10 @@ trait MovementBase extends Ordered[MovementBase] {
   def getBoards: List[Int]
   def nameAsString: String
   def isDisabled: Boolean
+  def isDeletable: Boolean
+  def isResetToDefault: Boolean
 
+  def getId: MovementBase.Id
   def getIndividualId: Option[IndividualMovement.Id] = None
   def getMovementId: Option[Movement.Id] = None
 
@@ -52,5 +57,47 @@ trait MovementBase extends Ordered[MovementBase] {
   ): T = {
     getIndividualId.map(ifn(_))
       .getOrElse(getMovementId.map(mfn(_)).getOrElse(default))
+  }
+}
+
+trait IdMovementBase
+
+object MovementBase extends HasId[IdMovementBase]("", true) {
+  override def id(i: Int): Id = {
+    throw new IllegalArgumentException(
+      "MovementBase Ids can not be generated, must use Movement.Id or IndividualMovement.Id"
+    )
+  }
+
+  def useId[T](
+      id: MovementBase.Id,
+      fmd: Movement.Id => T,
+      fmdr: IndividualMovement.Id => T,
+      default: => T
+  ): T = {
+    id.toSubclass[Movement.ItemType].map(fmd).getOrElse {
+      id.toSubclass[IndividualMovement.ItemType].map(fmdr).getOrElse(default)
+    }
+  }
+
+  def use[T](
+      mov: MovementBase,
+      fmov: Movement => T,
+      fimov: IndividualMovement => T,
+      default: => T
+  ): T = {
+    mov match {
+      case m: Movement => fmov(m)
+      case m: IndividualMovement => fimov(m)
+      case _ => default
+    }
+  }
+
+  import com.github.thebridsk.bridge.data.{Id => DId}
+  def runIf[T <: IdMovementBase: ClassTag, R](
+      id: MovementBase.Id,
+      default: => R
+  )(f: DId[T] => R): R = {
+    id.toSubclass[T].map(sid => f(sid)).getOrElse(default)
   }
 }

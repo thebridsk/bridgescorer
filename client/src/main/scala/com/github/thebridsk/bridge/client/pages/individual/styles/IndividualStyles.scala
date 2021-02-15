@@ -28,4 +28,11 @@ class IndividualStyles {
   val viewPlayerMatchResult: TagMod = cls("viewPlayerMatchResult")
 
   val pageNewDuplicate: TagMod = cls("pageNewDuplicate")
+
+  val pageTable: TagMod = cls("pageTable")
+  val viewTable: TagMod = cls("viewTable")
+  val pageAllTables: TagMod = cls("pageAllTables")
+  val pageTableNames: TagMod = cls("pageTableNames")
+
+  val pageMovements: TagMod = cls("pageMovements")
 }

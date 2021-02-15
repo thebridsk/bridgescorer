@@ -554,7 +554,7 @@ object PageScoreboard {
         val prevProps = cdu.prevProps
         if (prevProps.game != props.game) {
           IndividualController.monitor(props.game.dupid)
-          cdu.setState(State())
+          cdu.setState(State()).runNow()
         }
       }
 

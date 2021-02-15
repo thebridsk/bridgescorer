@@ -49,7 +49,7 @@ object ThankYouPageInternal {
         )(),
         <.div(
           rootStyles.thankYouDiv,
-          <.h1("Thank you for using the Bridge Scorer"),
+          <.h1("Thank you for using the Bridge ScoreKeeper"),
           <.p("You can now close this window"),
           <.p(TitleSuits.suitspan)
         )

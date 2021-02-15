@@ -228,6 +228,28 @@ case class Table(
   def players(): List[String] = {
     north :: south :: east :: west :: sittingOut :: Nil
   }
+
+  /**
+    * Returns the order in which the players are displayed in the html code.
+    *
+    * @param sk the scorekeeper
+    *
+    * @return list of rotation.Table.Location
+    */
+  def getPlayerOrder(sk: Location) = {
+    List(
+      partnerLocOf(sk).get,
+      leftLocOf(sk).get,
+      rightLocOf(sk).get,
+      sk
+    )
+  }
+
+  def arePlayersValid(withSittingOut: Boolean = false) = {
+    val p = north :: south :: east :: west :: Nil
+    val s = if (sittingOut.isEmpty()) Nil else sittingOut::Nil
+    (p:::s).find(_.isEmpty()).isEmpty
+  }
 }
 
 object Table {

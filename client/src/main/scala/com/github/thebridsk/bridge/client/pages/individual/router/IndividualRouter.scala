@@ -22,7 +22,6 @@ import IndividualDuplicateViewPerspective._
 import com.github.thebridsk.bridge.data.IndividualBoard
 import com.github.thebridsk.bridge.data.IndividualDuplicate
 import com.github.thebridsk.bridge.data.IndividualDuplicateHand
-import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.client.pages.individual.PageScoreboard
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -30,6 +29,11 @@ import com.github.thebridsk.bridge.client.pages.individual.PageSummary
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateModule.PlayDuplicate
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.{CompleteScoreboardView => DCompleteScoreboardView}
 import com.github.thebridsk.bridge.client.pages.individual.pages.PageNewDuplicate
+import com.github.thebridsk.bridge.client.pages.individual.pages.PageTable
+import com.github.thebridsk.bridge.client.pages.individual.pages.PageAllTables
+import com.github.thebridsk.bridge.client.pages.individual.pages.PageMovements
+import com.github.thebridsk.bridge.data.MovementBase
+import com.github.thebridsk.bridge.client.pages.individual.pages.PageTableNames
 
 object IndividualDuplicateModule extends Module {
   case class PlayIndividualDuplicate(m: IndividualDuplicatePage) extends AppPage
@@ -298,10 +302,10 @@ object IndividualDuplicateRouter {
     def toRoundView(roundid: Int): TableRoundScoreboardView =
       TableRoundScoreboardView(sdupid, stableid, roundid)
 
-    def toTableTeamView(roundid: Int): TableTeamByRoundView =
-      TableTeamByRoundView(sdupid, stableid, roundid)
-    def toTableTeamView(roundid: Int, boardid: IndividualBoard.Id): TableTeamByBoardView =
-      TableTeamByBoardView(sdupid, stableid, roundid, boardid.id)
+    def toTableNamesView(roundid: Int): TableNamesByRoundView =
+      TableNamesByRoundView(sdupid, stableid, roundid)
+    def toTableNamesView(roundid: Int, boardid: IndividualBoard.Id): TableNamesByBoardView =
+      TableNamesByBoardView(sdupid, stableid, roundid, boardid.id)
   }
 
   case class AllTableView(sdupid: String) extends IndividualDuplicatePage {
@@ -317,7 +321,7 @@ object IndividualDuplicateRouter {
       TableRoundScoreboardView(sdupid, tableid.id, roundid)
   }
 
-  trait TableTeamView extends IndividualDuplicatePage {
+  trait TableNamesView extends IndividualDuplicatePage {
     val sdupid: String
     def dupid: IndividualDuplicate.Id = IndividualDuplicate.id(sdupid)
     val stableid: String
@@ -328,20 +332,20 @@ object IndividualDuplicateRouter {
     def toTableView: TableView
   }
 
-  case class TableTeamByRoundView(sdupid: String, stableid: String, round: Int)
-      extends TableTeamView {
+  case class TableNamesByRoundView(sdupid: String, stableid: String, round: Int)
+      extends TableNamesView {
     def toNextView: TableRoundScoreboardView =
       TableRoundScoreboardView(sdupid, stableid, round)
     def toTableView: TableView = TableView(sdupid, stableid)
 
   }
 
-  case class TableTeamByBoardView(
+  case class TableNamesByBoardView(
       sdupid: String,
       stableid: String,
       round: Int,
       sboardid: String
-  ) extends TableTeamView {
+  ) extends TableNamesView {
     def boardid: IndividualBoard.Id = IndividualBoard.id(sboardid)
     def toNextView: TableBoardView =
       TableBoardView(sdupid, stableid, round, sboardid)
@@ -426,12 +430,12 @@ object IndividualDuplicateRouter {
   case object MovementSummaryView extends IndividualDuplicatePage
 
   case class MovementView(sdisplay: String) extends IndividualDuplicatePage {
-    def display: IndividualMovement.Id = IndividualMovement.id(sdisplay)
+    def display: MovementBase.Id = MovementBase.id(sdisplay)
   }
 
   case object MovementNewView extends IndividualDuplicatePage
   case class MovementEditView(sdisplay: String) extends IndividualDuplicatePage {
-    def display: IndividualMovement.Id = IndividualMovement.id(sdisplay)
+    def display: MovementBase.Id = MovementBase.id(sdisplay)
   }
 
   case class ImportSummaryView(importId: String) extends SummaryViewBase {
@@ -466,7 +470,7 @@ object IndividualDuplicateRouter {
     // DuplicateResultView("E1") ::
     // DuplicateResultEditView("E1") ::
     // AllTableView("M1") ::
-    // TableView("M1", "1") ::
+    TableView("M1", "1") ::
     TableRoundScoreboardView("M1", "1", 1) ::
     // TableRoundAllBoardView("M1", "1", 1) ::
     // TableHandView("M1", "1", 1, "1", "T1") ::
@@ -475,14 +479,14 @@ object IndividualDuplicateRouter {
     // TableBoardView("M1", "1", 1, "1") ::
     // CompleteBoardView("M1", "1") ::
     // DirectorBoardView("M1", "1") ::
-    // TableTeamByRoundView("M1", "1", 1) ::
-    // TableTeamByBoardView("M1", "1", 1, "1") ::
+    TableNamesByRoundView("M1", "1", 1) ::
+    TableNamesByBoardView("M1", "1", 1, "1") ::
     // BoardSetSummaryView ::
     // BoardSetView("ArmonkBoards") ::
     // BoardSetNewView ::
     // BoardSetEditView("ArmonkBoards") ::
-    // MovementSummaryView ::
-    // MovementView("2TablesArmonk") ::
+    MovementSummaryView ::
+    MovementView("2TablesArmonk") ::
     // MovementNewView ::
     // MovementEditView("2TablesArmonk") ::
     // ImportSummaryView("import.zip") ::
@@ -519,14 +523,14 @@ object IndividualDuplicateRouter {
         //     .caseClass[MovementEditView]
         // )
         //   ~> dynRenderR((p, routerCtl) => PageEditMovement(routerCtl, p))
-        // | dynamicRouteCT(
-        //   ("movements" / string("[a-zA-Z0-9]+")).caseClass[MovementView]
-        // )
-        //   ~> dynRenderR((p, routerCtl) =>
-        //     PageMovements(routerCtl, SummaryView, Some(p.display))
-        //   )
-        // | staticRoute("movements", MovementSummaryView)
-        //   ~> renderR(routerCtl => PageMovements(routerCtl, SummaryView, None))
+        | dynamicRouteCT(
+          ("movements" / string("[a-zA-Z0-9]+")).caseClass[MovementView]
+        )
+          ~> dynRenderR((p, routerCtl) =>
+            PageMovements(routerCtl, SummaryView, Some(p.display))
+          )
+        | staticRoute("movements", MovementSummaryView)
+          ~> renderR(routerCtl => PageMovements(routerCtl, SummaryView, None))
         // | dynamicRouteCT(
         //   ("results" / string("[a-zA-Z0-9]+")).caseClass[DuplicateResultView]
         // )
@@ -601,13 +605,13 @@ object IndividualDuplicateRouter {
         )
           ~> dynRenderR((p, routerCtl) => PageScoreboard(routerCtl, p))
 
-        // | dynamicRouteCT(
-        //   ("match" / string("[a-zA-Z0-9]+") / "table" / string(
-        //     "[a-zA-Z0-9]+"
-        //   ) / "round" / int / "boards" / string("[a-zA-Z0-9]+") / "teams")
-        //     .caseClass[TableTeamByBoardView]
-        // )
-        //   ~> dynRenderR((p, routerCtl) => PageTableTeams(routerCtl, p))
+        | dynamicRouteCT(
+          ("match" / string("[a-zA-Z0-9]+") / "table" / string(
+            "[a-zA-Z0-9]+"
+          ) / "round" / int / "boards" / string("[a-zA-Z0-9]+") / "teams")
+            .caseClass[TableNamesByBoardView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageTableNames(routerCtl, p))
         // | dynamicRouteCT(
         //   ("match" / string("[a-zA-Z0-9]+") / "table" / string(
         //     "[a-zA-Z0-9]+"
@@ -623,12 +627,12 @@ object IndividualDuplicateRouter {
         //     .caseClass[TableBoardView]
         // )
         //   ~> dynRenderR((p, routerCtl) => PageBoard(routerCtl, p))
-        // | dynamicRouteCT(
-        //   ("match" / string("[a-zA-Z0-9]+") / "table" / string(
-        //     "[a-zA-Z0-9]+"
-        //   ) / "round" / int / "teams").caseClass[TableTeamByRoundView]
-        // )
-        //   ~> dynRenderR((p, routerCtl) => PageTableTeams(routerCtl, p))
+        | dynamicRouteCT(
+          ("match" / string("[a-zA-Z0-9]+") / "table" / string(
+            "[a-zA-Z0-9]+"
+          ) / "round" / int / "teams").caseClass[TableNamesByRoundView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageTableNames(routerCtl, p))
         | dynamicRouteCT(
           ("match" / string("[a-zA-Z0-9]+") / "table" / string(
             "[a-zA-Z0-9]+"
@@ -641,15 +645,15 @@ object IndividualDuplicateRouter {
         //   ) / "round" / int / "boards").caseClass[TableRoundAllBoardView]
         // )
         //   ~> dynRenderR((p, routerCtl) => PageAllBoards(routerCtl, p))
-        // | dynamicRouteCT(
-        //   ("match" / string("[a-zA-Z0-9]+") / "table" / string("[a-zA-Z0-9]+"))
-        //     .caseClass[TableView]
-        // )
-        //   ~> dynRenderR((p, routerCtl) => PageTable(routerCtl, p))
-        // | dynamicRouteCT(
-        //   ("match" / string("[a-zA-Z0-9]+") / "table").caseClass[AllTableView]
-        // )
-          // ~> dynRenderR((p, routerCtl) => PageAllTables(routerCtl, p))
+        | dynamicRouteCT(
+          ("match" / string("[a-zA-Z0-9]+") / "table" / string("[a-zA-Z0-9]+"))
+            .caseClass[TableView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageTable(routerCtl, p))
+        | dynamicRouteCT(
+          ("match" / string("[a-zA-Z0-9]+") / "table").caseClass[AllTableView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageAllTables(routerCtl, p))
         | dynamicRouteCT(
           ("match" / string("[a-zA-Z0-9]+")).caseClass[CompleteScoreboardView]
         )

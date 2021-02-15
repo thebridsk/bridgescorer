@@ -2,4 +2,4 @@
 # any non-blank line that does not start with a # is a name of a resource
 # in the same package as this file.
 
-IndividualMovement.2Tables.yaml
+IndividualMovement.Individual2Tables.yaml

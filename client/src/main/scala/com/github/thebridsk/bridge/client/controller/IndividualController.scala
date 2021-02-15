@@ -22,6 +22,15 @@ import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientIndividualDuplicate
 import com.github.thebridsk.bridge.data.IndividualDuplicateHand
 import com.github.thebridsk.bridge.data.IndividualMovement
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
+import com.github.thebridsk.bridge.data.rest.JsonSupport._
+import com.github.thebridsk.bridge.clientcommon.graphql.GraphQLClient
+import play.api.libs.json.JsDefined
+import play.api.libs.json.JsUndefined
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
+import com.github.thebridsk.bridge.clientcommon.rest2.ResultObject
 
 object IndividualController extends {
   val logger: Logger = Logger("bridge.IndividualController")
@@ -231,6 +240,117 @@ object IndividualController extends {
           "Update hand (" + dup.id + "," + hand.board + "," + hand.id + ")"
         )
       })
+  }
+
+  def updatePlayers(
+    dup: IndividualDuplicate,
+    newplayers: Map[Int, String]
+  ): Result[List[String]] = {
+    if (AjaxResult.isEnabled.getOrElse(false)) {
+      serverUpdatePlayers(dup, newplayers)
+    } else {
+      new ResultObject(
+        Future {
+          val md = newplayers.foldLeft(dup) { (ac, e) =>
+            val (ip, name) = e
+            ac.updatePlayer(ip, name)
+          }
+          updateMatch(md)
+          md.players
+        }
+      )
+    }
+  }
+
+  case class Player(i: Int, name: String)
+  case class Players(players: List[Player])
+
+  implicit val PlayerFormat = Json.format[Player]
+  implicit val PlayersFormat = Json.format[Players]
+
+  case class ResponseUpdatePlayers(
+    updatePlayers: List[String]
+  )
+
+  implicit val ResponseUpdatePlayersFormat = Json.format[ResponseUpdatePlayers]
+
+  private def serverUpdatePlayers(
+    dup: IndividualDuplicate,
+    newplayers: Map[Int, String]
+  ): AjaxResult[List[String]] = {
+    // val query =
+    //   """mutation updatePlayers( $dupId: IndividualDuplicateId!, $players: Players! ) {
+    //     |  individualduplicate( id: $dupId ) {
+    //     |     players( players: {
+    //     |      players: [
+    //     |        {
+    //     |           i: 1
+    //     |           name: "Uno"
+    //     |        },
+    //     |        {
+    //     |          i:2
+    //     |          name: "Two"
+    //     |        }
+    //     |      ]
+    //     |    })
+    //     |   }
+    //     |}""".stripMargin
+    val query =
+      """mutation updatePlayers( $dupId: IndividualDuplicateId!, $players: Players! ) {
+        |  individualduplicate( id: $dupId ) {
+        |     updatePlayers( players: $players )
+        |   }
+        |}""".stripMargin
+    val p = Json.toJson(
+      Players(
+        newplayers.map { e =>
+          val (k, v) = e
+          Player(k, v)
+        }.toList
+      )
+    )
+    val vars = JsObject(
+      Seq("dupId" -> Json.toJson(dup.id), "players" -> p)
+    )
+    val op = Some("updatePlayers")
+    val result = GraphQLClient.request(query, Some(vars), op)
+    // resultGraphQL.set(result)
+    result
+      .map { gr =>
+        gr.data match {
+          case Some(data) =>
+            data \ "individualduplicate" match {
+              case JsDefined(x: JsObject) =>
+                Json.fromJson[ResponseUpdatePlayers](x) match {
+                  case JsSuccess(y, _) =>
+                    logger.fine(s"updatePlayers return ${y}")
+                    y.updatePlayers
+                  case JsError(e) =>
+                    logger.fine(s"unexpected value from updatePlayers, got ${x}: ${e}")
+                    throw new Exception(s"unexpected value from updatePlayers, got ${x}")
+                }
+              case JsDefined(x) =>
+                throw new Exception(s"unexpected value from updatePlayers, got ${x}")
+              case _: JsUndefined =>
+                throw new Exception(
+                  s"error updating players, did not find individualduplicate field, got ${Json.prettyPrint(data)}"
+                )
+            }
+          case None =>
+            throw new Exception(
+              s"error updating players, ${gr.getError()}"
+            )
+        }
+      }
+      .recover {
+        case x: Exception =>
+          logger.warning(
+            s"exception updating players",
+            x
+          )
+          throw new Exception(s"exception updating players", x)
+      }
+
   }
 
   def monitor(dupid: IndividualDuplicate.Id, restart: Boolean = false): Unit = {

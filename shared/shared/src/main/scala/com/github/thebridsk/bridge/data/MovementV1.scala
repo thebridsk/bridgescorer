@@ -93,6 +93,9 @@ case class MovementV1(
   def nameAsString: String = name.id
 
   @Schema(hidden = true)
+  def getId: MovementBase.Id = name
+
+  @Schema(hidden = true)
   override def getMovementId: Option[Movement.Id] = Some(name)
 
   @Schema(hidden = true)
@@ -207,7 +210,7 @@ case class MovementV1(
 
 }
 
-trait IdMovement
+trait IdMovement extends IdMovementBase
 
 object MovementV1 extends HasId[IdMovement]("", true) {
   def default: Id = Movement.id("2TablesArmonk")
