@@ -39,7 +39,8 @@ object ViewDeclarer {
       nextInput: PageHandNextInput.Value,
       visible: Boolean,
       nsVul: Boolean,
-      ewVul: Boolean
+      ewVul: Boolean,
+      playingDuplicate: Boolean
   )
 
   def apply(
@@ -54,7 +55,8 @@ object ViewDeclarer {
       nextInput: PageHandNextInput.Value,
       visible: Boolean,
       nsVul: Boolean,
-      ewVul: Boolean
+      ewVul: Boolean,
+      playingDuplicate: Boolean
   ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(
       Props(
@@ -69,7 +71,8 @@ object ViewDeclarer {
         nextInput,
         visible,
         nsVul,
-        ewVul
+        ewVul,
+        playingDuplicate
       )
     )
 
@@ -97,7 +100,7 @@ object ViewDeclarerInternal {
   class Backend(scope: BackendScope[Props, State]) {
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
       import HandStyles._
-      val playingDuplicate = props.teamEW.isDefined || props.teamNS.isDefined
+      val playingDuplicate = props.teamEW.isDefined || props.teamNS.isDefined || props.playingDuplicate
       val (missingRequired, missingNotNext) = {
         val mr = props.current.isEmpty
         if (mr) {

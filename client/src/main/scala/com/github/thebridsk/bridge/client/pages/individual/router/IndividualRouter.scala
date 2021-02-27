@@ -35,6 +35,7 @@ import com.github.thebridsk.bridge.client.pages.individual.pages.PageMovements
 import com.github.thebridsk.bridge.data.MovementBase
 import com.github.thebridsk.bridge.client.pages.individual.pages.PageTableNames
 import com.github.thebridsk.bridge.client.pages.individual.PageBoard
+import com.github.thebridsk.bridge.client.pages.individual.pages.PageDuplicateHand
 
 object IndividualDuplicateModule extends Module {
   case class PlayIndividualDuplicate(m: IndividualDuplicatePage) extends AppPage
@@ -482,13 +483,13 @@ object IndividualDuplicateRouter {
     DirectorAllBoardView("M1") ::
     // DuplicateResultView("E1") ::
     // DuplicateResultEditView("E1") ::
-    // AllTableView("M1") ::
+    AllTableView("M1") ::
     TableView("M1", "1") ::
     TableRoundScoreboardView("M1", "1", 1) ::
     TableRoundAllBoardView("M1", "1", 1) ::
-    // TableHandView("M1", "1", 1, "1", "T1") ::
-    // CompleteHandView("M1", "1", "T1") ::
-    // DirectorHandView("M1", "1", "T1") ::
+    TableHandView("M1", "1", 1, "1", "T1") ::
+    CompleteHandView("M1", "1", "T1") ::
+    DirectorHandView("M1", "1", "T1") ::
     TableRoundBoardView("M1", "1", 1, "1") ::
     CompleteBoardView("M1", "1") ::
     DirectorBoardView("M1", "1") ::
@@ -573,12 +574,12 @@ object IndividualDuplicateRouter {
         //     .caseClass[DuplicateBoardSetView]
         // )
         //   ~> dynRenderR((p, routerCtl) => PageBoardSet(routerCtl, p))
-        // | dynamicRouteCT(
-        //   ("match" / string("[a-zA-Z0-9]+") / "boards" / string(
-        //     "[a-zA-Z0-9]+"
-        //   ) / "hands" / string("[a-zA-Z0-9]+")).caseClass[CompleteHandView]
-        // )
-        //   ~> dynRenderR((p, routerCtl) => PageDuplicateHand(routerCtl, p))
+        | dynamicRouteCT(
+          ("match" / string("[a-zA-Z0-9]+") / "boards" / string(
+            "[a-zA-Z0-9]+"
+          ) / "hands" / string("[a-zA-Z0-9]+")).caseClass[CompleteHandView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageDuplicateHand(routerCtl, p))
         | dynamicRouteCT(
           ("match" / string("[a-zA-Z0-9]+") / "boards" / string("[a-zA-Z0-9]+"))
             .caseClass[CompleteBoardView]
@@ -595,12 +596,12 @@ object IndividualDuplicateRouter {
             .caseClass[FinishedScoreboardView]
         )
           ~> dynRenderR((p, routerCtl) => PageScoreboard(routerCtl, p))
-        // | dynamicRouteCT(
-        //   ("match" / string("[a-zA-Z0-9]+") / "director" / "boards" / string(
-        //     "[a-zA-Z0-9]+"
-        //   ) / "hands" / string("[a-zA-Z0-9]+")).caseClass[DirectorHandView]
-        // )
-        //   ~> dynRenderR((p, routerCtl) => PageDuplicateHand(routerCtl, p))
+        | dynamicRouteCT(
+          ("match" / string("[a-zA-Z0-9]+") / "director" / "boards" / string(
+            "[a-zA-Z0-9]+"
+          ) / "hands" / string("[a-zA-Z0-9]+")).caseClass[DirectorHandView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageDuplicateHand(routerCtl, p))
         | dynamicRouteCT(
           ("match" / string("[a-zA-Z0-9]+") / "director" / "boards" / string(
             "[a-zA-Z0-9]+"
@@ -625,14 +626,14 @@ object IndividualDuplicateRouter {
             .caseClass[TableNamesByBoardView]
         )
           ~> dynRenderR((p, routerCtl) => PageTableNames(routerCtl, p))
-        // | dynamicRouteCT(
-        //   ("match" / string("[a-zA-Z0-9]+") / "table" / string(
-        //     "[a-zA-Z0-9]+"
-        //   ) / "round" / int / "boards" / string(
-        //     "[a-zA-Z0-9]+"
-        //   ) / "hands" / string("[a-zA-Z0-9]+")).caseClass[TableHandView]
-        // )
-        //   ~> dynRenderR((p, routerCtl) => PageDuplicateHand(routerCtl, p))
+        | dynamicRouteCT(
+          ("match" / string("[a-zA-Z0-9]+") / "table" / string(
+            "[a-zA-Z0-9]+"
+          ) / "round" / int / "boards" / string(
+            "[a-zA-Z0-9]+"
+          ) / "hands" / string("[a-zA-Z0-9]+")).caseClass[TableHandView]
+        )
+          ~> dynRenderR((p, routerCtl) => PageDuplicateHand(routerCtl, p))
         | dynamicRouteCT(
           ("match" / string("[a-zA-Z0-9]+") / "table" / string(
             "[a-zA-Z0-9]+"

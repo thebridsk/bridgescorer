@@ -236,7 +236,7 @@ class RestClientIndividualDuplicateBoard(
 class RestClientIndividualDuplicateBoardHandPicture(
     parent: RestClientIndividualDuplicateBoardPicture,
     instance: String
-) extends RestClient[IndividualDuplicatePicture, Team.Id](
+) extends RestClient[IndividualDuplicatePicture, IndividualDuplicateHand.Id](
       "hands",
       Some(parent),
       Some(instance)
@@ -250,7 +250,7 @@ class RestClientIndividualDuplicateBoardHandPicture(
     * @param timeout
     */
   def putPicture(
-      id: Team.Id,
+      id: IndividualDuplicateHand.Id,
       file: File,
       query: Map[String, String] = Map.empty,
       headers: Map[String, String] = Map.empty,
@@ -286,7 +286,7 @@ object RestClientIndividualDuplicate
     ) {
   def boardResource(dupid: IndividualDuplicate.Id) =
     new RestClientIndividualDuplicateBoard(this, dupid.id)
-  def pictureResource(dupid: IndividualBoard.Id) =
+  def pictureResource(dupid: IndividualDuplicate.Id) =
     new RestClientIndividualDuplicateBoardPicture(this, dupid.id)
 
   def createIndividualDuplicate(

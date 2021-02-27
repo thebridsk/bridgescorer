@@ -45,7 +45,8 @@ object SectionHeader {
       callbackHonors: Option[ViewHonors.CallbackHonors],
       callbackHonorsPlayer: Option[ViewHonors.CallbackHonorsPlayer],
       currentHonors: Option[Int],
-      currentHonorsPlayer: Option[PlayerPosition]
+      currentHonorsPlayer: Option[PlayerPosition],
+      playingDuplicate: Boolean
   )
 
   def apply(
@@ -71,7 +72,8 @@ object SectionHeader {
       callbackHonors: Option[ViewHonors.CallbackHonors],
       callbackHonorsPlayer: Option[ViewHonors.CallbackHonorsPlayer],
       currentHonors: Option[Int],
-      currentHonorsPlayer: Option[PlayerPosition]
+      currentHonorsPlayer: Option[PlayerPosition],
+      playingDuplicate: Boolean = false
   ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     component(
       Props(
@@ -97,7 +99,8 @@ object SectionHeader {
         callbackHonors,
         callbackHonorsPlayer,
         currentHonors,
-        currentHonorsPlayer
+        currentHonorsPlayer,
+        playingDuplicate
       )
     )
 
@@ -109,7 +112,7 @@ object SectionHeader {
       import HandStyles._
       import InputMethod._
       import PageHandNextInput._
-      val playingDuplicate = props.teamEW.isDefined || props.teamNS.isDefined
+      val playingDuplicate = props.teamEW.isDefined || props.teamNS.isDefined || props.playingDuplicate
       def show(view: PageHandNextInput) = {
         val r =
           ComponentInputStyleButton.inputMethod != Prompt || view <= props.nextInput
@@ -164,7 +167,8 @@ object SectionHeader {
           props.nextInput,
           show(InputContractBy),
           props.currentNSVul.vul,
-          props.currentEWVul.vul
+          props.currentEWVul.vul,
+          props.playingDuplicate
         )
 //                                    props.scoringSystem.isInstanceOf[Duplicate] ?= ViewVulnerability( props.currentNSVul, props.currentEWVul, props.callbackNSVul, props.callbackEWVul)
       )

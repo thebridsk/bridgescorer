@@ -1309,3 +1309,13 @@
 .rootHomeDiv table th {
   border: 1px none var(--color-table-border);
 }
+
+.dupDivTableNamesPage table,
+.dupDivTableNamesPage th,
+.dupDivTableNamesPage td,
+.dupDivTableNamesPage tr:nth-child(2n+1),
+.dupDivTableNamesPage tbody
+{
+  border: none;
+  background-color: var(--color-bg);
+}

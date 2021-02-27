@@ -70,7 +70,8 @@ object PageHand {
       honorsPlayer: Option[PlayerPosition] = None,
       helppage: Option[String] = None,
       picture: Option[String] = None,
-      supportPicture: Boolean = false
+      supportPicture: Boolean = false,
+      playingDuplicate: Boolean = false
   ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     logger.fine(s"PageHand.apply(): contract=$contract")
     component(
@@ -87,7 +88,8 @@ object PageHand {
         honorsPlayer,
         helppage,
         picture,
-        supportPicture
+        supportPicture,
+        playingDuplicate
       )
     )
   }
@@ -132,7 +134,8 @@ object PageHand {
       honorsPlayer: Option[PlayerPosition] = None,
       helppage: Option[String] = None,
       picture: Option[String] = None,
-      supportPicture: Boolean = false
+      supportPicture: Boolean = false,
+      playingDuplicate: Boolean = false
   ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     apply(
       Contract(
@@ -168,7 +171,8 @@ object PageHand {
       honorsPlayer = honorsPlayer,
       helppage = helppage,
       picture = picture,
-      supportPicture = supportPicture
+      supportPicture = supportPicture,
+      playingDuplicate = playingDuplicate
     )
 
   var scorekeeper: PlayerPosition = North
@@ -200,7 +204,8 @@ object PageHandInternal {
       honorsPlayer: Option[PlayerPosition] = None,
       helppage: Option[String] = None,
       picture: Option[String] = None,
-      supportPicture: Boolean = false
+      supportPicture: Boolean = false,
+      playingDuplicate: Boolean = false
   )
 
   /**
