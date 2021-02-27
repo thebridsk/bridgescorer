@@ -130,3 +130,13 @@ table th {
 .pageAllTables > table {
   margin: 10px;
 }
+
+.pageBoard > div {
+  padding: 5px;
+}
+
+/*
+.viewBoard {
+
+}
+*/

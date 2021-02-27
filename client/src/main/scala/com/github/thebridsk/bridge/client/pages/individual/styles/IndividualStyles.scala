@@ -35,4 +35,7 @@ class IndividualStyles {
   val pageTableNames: TagMod = cls("pageTableNames")
 
   val pageMovements: TagMod = cls("pageMovements")
+
+  val pageBoard: TagMod = cls("pageBoard")
+  val viewBoard: TagMod = cls("viewBoard")
 }

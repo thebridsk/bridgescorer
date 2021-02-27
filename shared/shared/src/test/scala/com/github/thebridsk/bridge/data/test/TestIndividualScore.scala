@@ -60,6 +60,7 @@ class TestIndividualScore extends AnyFlatSpec with Matchers {
           b.getResult(p) match {
             case Some(result) =>
               withClue(s"board 1, player ${p} got ${result}") {
+                result.player mustBe p
                 result.hide mustBe false
                 if (result.isNS) {
                   result.nsMP mustBe 1
@@ -128,7 +129,7 @@ class TestIndividualScore extends AnyFlatSpec with Matchers {
                 result.hand.played.get.contract mustBe "4S"
               }
             case None =>
-              fail(s"Did not find score for player ${p} for board 2")
+              fail(s"Did not find score for player ${p} for board 3")
           }
         }
         List(4,1,6,5).foreach { p =>
@@ -139,7 +140,37 @@ class TestIndividualScore extends AnyFlatSpec with Matchers {
                 result.hand.played.isDefined mustBe false
               }
             case None =>
-              fail(s"Did not find score for player ${p} for board 2")
+              fail(s"Did not find score for player ${p} for board 3")
+          }
+        }
+      case None =>
+        fail("Did not find score for board 1")
+    }
+
+    s.getBoardScore(4) match {
+      case Some(b) =>
+        List(8,3,7,2).foreach { p =>
+          b.getResult(p) match {
+            case Some(result) =>
+              withClue(s"board 2, player ${p} got ${result}") {
+                result.player mustBe p
+                result.hide mustBe true
+                result.hand.played.isDefined mustBe false
+              }
+            case None =>
+              fail(s"Did not find score for player ${p} for board 4")
+          }
+        }
+        List(4,1,6,5).foreach { p =>
+          b.getResult(p) match {
+            case Some(result) =>
+              withClue(s"board 2, player ${p} got ${result}") {
+                result.player mustBe p
+                result.hide mustBe true
+                result.hand.played.isDefined mustBe false
+              }
+            case None =>
+              fail(s"Did not find score for player ${p} for board 4")
           }
         }
       case None =>
@@ -506,6 +537,34 @@ class TestIndividualScore extends AnyFlatSpec with Matchers {
               played = Some(
                 Hand.create("p8", 4, "S", "N", "N", false, false, true, 4)
               ),
+              table = Table.id(1),
+              round = 3,
+              board = IndividualBoard.id(3),
+              north = 8,
+              south = 3,
+              east = 7,
+              west = 2,
+            ),
+            IndividualDuplicateHand.apply(
+              played = None,
+              table = Table.id(2),
+              round = 3,
+              board = IndividualBoard.id(3),
+              north = 4,
+              south = 1,
+              east = 6,
+              west = 5,
+            )
+          ),
+        ),
+        IndividualBoard.apply(
+          id = IndividualBoard.id(4),
+          nsVul = false,
+          ewVul = false,
+          dealer = "N",
+          hands = List[IndividualDuplicateHand](
+            IndividualDuplicateHand.apply(
+              played = None,
               table = Table.id(1),
               round = 3,
               board = IndividualBoard.id(3),
