@@ -35,6 +35,7 @@ import org.openqa.selenium.remote.LocalFileDetector
 import java.time.Duration
 import java.io.File
 import java.util.concurrent.TimeUnit
+import java.util.HashMap
 
 class Session(name: String = "default") extends WebDriver {
   import Session._
@@ -126,7 +127,7 @@ class Session(name: String = "default") extends WebDriver {
 
   private var chromeDriverService: Option[ChromeDriverService] = None
 
-  private def chromeOptions(headless: Boolean) = {
+  private def chromeOptions(headless: Boolean, download: Boolean) = {
       val options = new ChromeOptions
       options.addArguments("disable-infobars")
 
@@ -138,14 +139,28 @@ class Session(name: String = "default") extends WebDriver {
         options.addArguments("window-size=1920,1080")
       }
       options.addArguments("disable-extensions")
+
+      if (download) {
+        val prefs = new HashMap[String, Object]()
+        // https://stackoverflow.com/questions/43919370/how-to-deal-with-the-save-as-dialog-box-using-selenium-in-chrome
+        // prefs.put("profile.default_content_setting_values.automatic_downloads", 1.asInstanceOf[Object])
+
+        // https://stackoverflow.com/questions/34515328/how-to-set-default-download-directory-in-selenium-chrome-capabilities
+        prefs.put("profile.default_content_settings.popups", 0.asInstanceOf[Object]);
+        prefs.put("download.default_directory", downloadDir.toString())
+
+        options.setExperimentalOption("prefs",prefs)
+
+      }
+
       options
   }
 
-  private def chromeDriver(headless: Boolean) = {
-    new ChromeDriver(chromeOptions(headless))
+  private def chromeDriver(headless: Boolean, download: Boolean) = {
+    new ChromeDriver(chromeOptions(headless, download))
   }
 
-  private def chrome(headless: Boolean) = {
+  private def chrome(headless: Boolean, download: Boolean) = {
 
     // does not work
 //    val options = chromeOptions(headless)
@@ -174,7 +189,7 @@ class Session(name: String = "default") extends WebDriver {
     try {
       chromeDriverService = Some(service)
       service.start()
-      val options = chromeOptions(headless)
+      val options = chromeOptions(headless, download)
       testlog.fine("Starting remote driver for chrome")
       val dr = new ChromeDriver(service, options)
       testlog.fine("Started remote driver for chrome")
@@ -236,7 +251,7 @@ class Session(name: String = "default") extends WebDriver {
   /**
     * The default browser when a specific browser has not been specified.
     */
-  def defaultBrowser: ChromeDriver = chrome(false)
+  def defaultBrowser(download: Boolean): ChromeDriver = chrome(false, download)
 
   /**
     * Start a browser webdriver
@@ -247,8 +262,8 @@ class Session(name: String = "default") extends WebDriver {
     * @param retry the number of retries
     * @return this Session object
     */
-  def sessionStart(browser: Option[String] = None, retry: Int = 2): Session = {
-    sessionStartInternal(browser, retry, retry)
+  def sessionStart(browser: Option[String] = None, retry: Int = 2, download: Boolean = false): Session = {
+    sessionStartInternal(browser, retry, retry, download)
   }
 
   /**
@@ -264,15 +279,16 @@ class Session(name: String = "default") extends WebDriver {
   private def sessionStartInternal(
       browser: Option[String] = None,
       original: Int = 2,
-      retry: Int = 2
+      retry: Int = 2,
+      download: Boolean
   ): Session = {
     try {
-      createSession(browser)
+      createSession(browser, download)
     } catch {
       case x: SessionNotCreatedException =>
         if (retry <= 0) throw x
         Thread.sleep((original - retry) * 3000L)
-        sessionStartInternal(browser, original, retry - 1)
+        sessionStartInternal(browser, original, retry - 1, download)
     }
   }
 
@@ -326,7 +342,7 @@ class Session(name: String = "default") extends WebDriver {
 
   private val implicitWait = Duration.ofSeconds(2)
 
-  private def createSession(browser: Option[String] = None): Session =
+  private def createSession(browser: Option[String] = None, download: Boolean): Session =
     synchronized {
       remoteSession = false
       webDriver =
@@ -335,7 +351,7 @@ class Session(name: String = "default") extends WebDriver {
             testlog.fine(
               "DefaultWebDriver is not set in system properties or environment, using default"
             )
-            defaultBrowser // default
+            defaultBrowser(download) // default
           case Some(wd) =>
             import Session.patternRemote
             wd.toLowerCase() match {
@@ -343,10 +359,10 @@ class Session(name: String = "default") extends WebDriver {
                 val options = browser.toLowerCase match {
                   case "chrome" =>
                     testlog.fine("Using chrome")
-                    chromeOptions(false) // Chrome.webDriver
+                    chromeOptions(false, download) // Chrome.webDriver
                   case "chromeheadless" =>
                     testlog.fine("Using chrome headless")
-                    chromeOptions(true) // Chrome.webDriver
+                    chromeOptions(true, download) // Chrome.webDriver
                   case "safari" =>
                     testlog.fine("Using safari")
                     safariOptions // Safari.webDriver
@@ -361,7 +377,7 @@ class Session(name: String = "default") extends WebDriver {
                     edgeOptions
                   case _ =>
                     testlog.fine("Unknown browser specified for remote, using default, chrome: " + wd)
-                    chromeOptions(false)
+                    chromeOptions(false, download)
                 }
                 // https://www.selenium.dev/documentation/en/remote_webdriver/remote_webdriver_client/
                 val driver = new RemoteWebDriver(new URL(remoteurl), options)
@@ -371,10 +387,10 @@ class Session(name: String = "default") extends WebDriver {
                 driver
               case "chrome" =>
                 testlog.fine("Using chrome")
-                chrome(false) // Chrome.webDriver
+                chrome(false, download) // Chrome.webDriver
               case "chromeheadless" =>
                 testlog.fine("Using chrome headless")
-                chrome(true) // Chrome.webDriver
+                chrome(true, download) // Chrome.webDriver
               case "safari" =>
                 testlog.fine("Using safari")
                 safari // Safari.webDriver
@@ -389,7 +405,7 @@ class Session(name: String = "default") extends WebDriver {
                 edge
               case lcwd =>
                 testlog.fine("Unknown browser specified, using default: " + lcwd)
-                defaultBrowser // default
+                defaultBrowser(download) // default
             }
         })
       sessionImplicitlyWait(implicitWait)
@@ -433,7 +449,7 @@ class Session(name: String = "default") extends WebDriver {
       retry: Int = 2
   ): Session =
     synchronized {
-      if (webDriver == null) sessionStart(browser, retry)
+      if (webDriver == null) sessionStart(browser, retry, download = false)
       else this
     }
 
@@ -761,4 +777,6 @@ object Session {
   val sessionCounter = new AtomicLong()
 
   val patternRemote = """remote +([^ ]+) +(.*)""".r
+
+  val downloadDir: File = new File("./target/downloads").getCanonicalFile().getAbsoluteFile()
 }
