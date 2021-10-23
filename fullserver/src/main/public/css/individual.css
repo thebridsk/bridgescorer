@@ -39,10 +39,12 @@ table th {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
+  justify-content: center;
 }
 
 .viewScoreboard {
   width: 100%;
+  justify-content: center;
 }
 .viewScoreboard > table > thead > tr:nth-child(2) > td {
   width: 43px
@@ -140,3 +142,7 @@ table th {
 
 }
 */
+
+.pageMovements > div table {
+  margin: 5px;
+}

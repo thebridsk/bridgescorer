@@ -76,7 +76,7 @@ case class IndividualDuplicateV1 private (
     )
     scoringmethod: Option[String] = None
 ) extends VersionedInstance[
-      IndividualDuplicate,
+      IndividualDuplicateV1,
       IndividualDuplicateV1,
       IndividualDuplicate.Id
     ] {

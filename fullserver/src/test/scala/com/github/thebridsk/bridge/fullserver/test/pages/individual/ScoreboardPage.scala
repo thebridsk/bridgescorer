@@ -1,4 +1,4 @@
-package com.github.thebridsk.bridge.fullserver.test.pages.duplicate
+package com.github.thebridsk.bridge.fullserver.test.pages.individual
 
 import com.github.thebridsk.browserpages.Page
 import com.github.thebridsk.source.SourcePosition
@@ -16,7 +16,8 @@ object ScoreboardPage {
 
   val log: Logger = Logger[ScoreboardPage]()
 
-  case class PlaceEntry(place: Int, points: String, teams: List[Team])
+  case class Player(index: Int, name: String)
+  case class PlaceEntry(place: Int, points: String, teams: List[Player])
 
   def current(implicit
       webDriver: WebDriver,
@@ -46,7 +47,7 @@ object ScoreboardPage {
   }
 
   def getUrl(id: String): String = {
-    TestServer.getAppPageUrl(s"duplicate/match/${id}")
+    TestServer.getAppPageUrl(s"individual/match/${id}")
   }
 
   val buttonIdsCompleted: List[(String, String)] =
@@ -57,7 +58,7 @@ object ScoreboardPage {
   val buttonIdsDirector: List[(String, String)] =
     ("AllBoards", "All Boards") ::
       ("Game", "Completed Games Scoreboard") ::
-      ("EditNames", "Edit Names") ::
+      // ("EditNames", "Edit Names") ::
       ("Delete", "Delete") ::
       Nil
 
@@ -97,9 +98,9 @@ object ScoreboardPage {
       webDriver: WebDriver,
       pos: Position
   ): (String, String, ViewType, Option[String], Option[String]) = {
-    val prefix = TestServer.getAppPageUrl("duplicate/match/")
+    val prefix = TestServer.getAppPageUrl("individual/match/")
     val cur = currentUrl
-    withClue(s"Unable to determine duplicate id: ${cur}") {
+    withClue(s"Unable to determine individual duplicate id: ${cur}") {
       cur must startWith(prefix)
       cur.drop(prefix.length()) match {
         case patternComplete(did, subres, subid) =>
@@ -146,7 +147,6 @@ object ScoreboardPage {
   object CompletedViewType extends ViewType
   object DirectorViewType extends ViewType
   case class TableViewType(table: String, round: String) extends ViewType
-
 }
 
 import ScoreboardPage._
@@ -310,21 +310,21 @@ class ScoreboardPage(
     new ScoreboardPage(dupid, CompletedViewType)
   }
 
-  def clickAllBoards(implicit
-      patienceConfig: PatienceConfig,
-      pos: Position
-  ): BoardsPage = {
-    clickButton("AllBoards")
-    new BoardsPage
-  }
+  // def clickAllBoards(implicit
+  //     patienceConfig: PatienceConfig,
+  //     pos: Position
+  // ): BoardsPage = {
+  //   clickButton("AllBoards")
+  //   new BoardsPage
+  // }
 
-  def clickEditNames(implicit
-      patienceConfig: PatienceConfig,
-      pos: Position
-  ): EditNamesPage = {
-    clickButton("EditNames")
-    new EditNamesPage(dupid.get)
-  }
+  // def clickEditNames(implicit
+  //     patienceConfig: PatienceConfig,
+  //     pos: Position
+  // ): EditNamesPage = {
+  //   clickButton("EditNames")
+  //   new EditNamesPage(dupid.get)
+  // }
 
   def clickTableButton(
       table: Int
@@ -483,7 +483,7 @@ class ScoreboardPage(
   def setScoreStyle(
       style: ScoreStyle
   )(implicit webDriver: WebDriver, pos: Position): ScoreboardPage = {
-    ScoreStyle.setScoreStyle(style)
+    ScoreboardPage.setScoreStyle(style)
     this
   }
 
@@ -492,7 +492,7 @@ class ScoreboardPage(
       patienceConfig: PatienceConfig,
       pos: Position
   ): Option[ScoreStyle] = {
-    ScoreStyle.getScoreStyle
+    ScoreboardPage.getScoreStyle
   }
 
 }

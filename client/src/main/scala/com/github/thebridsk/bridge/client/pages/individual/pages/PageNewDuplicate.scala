@@ -187,10 +187,13 @@ object PageNewDuplicate {
       })
       .build
 
+    private def getMovType(movement: MovementBase) = if (movement.isIndividual) "_I_" else "_T_"
+
     private val Row = ScalaComponent
       .builder[(MovementBase, Props, State, Backend)]("PageNewDuplicate.Row")
       .render_P(args => {
         val (movement, props, state, backend) = args
+        val movType = getMovType(movement)
         <.tr(
           <.td(movement.short),
           state
@@ -201,7 +204,7 @@ object PageNewDuplicate {
                 <.td(
                   if (missing.isEmpty) {
                     AppButton(
-                      s"New_${ movement.nameAsString }_${ boardset.id.id }",
+                      s"New${movType}${ movement.nameAsString }_${ boardset.id.id }",
                       boardset.short,
                       ^.onClick --> backend.newDuplicate(
                         boards = Some(boardset),
@@ -222,7 +225,7 @@ object PageNewDuplicate {
           <.td(
             movement.getMovementId.whenDefined { id =>
               AppButton(
-                s"New_${ movement.nameAsString }_Result",
+                s"New${movType}${ movement.nameAsString }_Result",
                 "Results Only",
                 ^.onClick --> backend.newDuplicate(
                   boards = None,
@@ -435,7 +438,7 @@ object PageNewDuplicate {
                       case mov: Movement =>
                         val b: TagMod =
                           AppButton(
-                            "ShowM_" + movement.nameAsString,
+                            "ShowM_T_" + movement.nameAsString,
                             movement.short,
                             props.routerCtl.onClickToRootPage(PlayDuplicate(DMovementView(mov.id.id)))
                           )
@@ -443,7 +446,7 @@ object PageNewDuplicate {
                       case mov: IndividualMovement =>
                         val b: TagMod =
                           AppButton(
-                            "ShowM_" + movement.nameAsString,
+                            "ShowM_I_" + movement.nameAsString,
                             movement.short,
                             props.routerCtl.onClickToRootPage(PlayIndividualDuplicate(MovementView(mov.id.id)))
                           )

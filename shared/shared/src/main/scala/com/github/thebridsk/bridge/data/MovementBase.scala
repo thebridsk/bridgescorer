@@ -18,6 +18,8 @@ trait MovementBase extends Ordered[MovementBase] {
   def getIndividualId: Option[IndividualMovement.Id] = None
   def getMovementId: Option[Movement.Id] = None
 
+  def isIndividual: Boolean = getIndividualId.isDefined
+
   /**
     * get the key for sorting movements
     *
