@@ -36,7 +36,7 @@ object NewDuplicatePage {
     new NewDuplicatePage
   }
 
-  def urlFor: String = TestServer.getAppPageUrl("duplicate/new")
+  def urlFor: String = TestServer.getAppPageUrl("individual/new")
 
   def movType(isIndividual: Boolean) = if (isIndividual) "_I_" else "_T_"
 
@@ -155,16 +155,36 @@ class NewDuplicatePage(implicit
     */
   def click(
       boardset: String,
-      movement: String,
-      isIndividual: Boolean
+      movement: String
+  )(
+    implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): ScoreboardPage = {
+    clickButton(buttonName(boardset, movement, false))
+    new ScoreboardPage
+  }
+
+  /**
+    *
+    *
+    * @param boardset
+    * @param movement
+    * @param patienceConfig
+    * @param pos
+    * @return The team scoreboard page or the individual scoreboard page depending
+    *         on the value of the isIndividual argument.
+    */
+  def clickIndividual(
+      boardset: String,
+      movement: String
   )(
     implicit
       patienceConfig: PatienceConfig,
       pos: Position
   ): TScoreboardPage = {
-    clickButton(buttonName(boardset, movement, isIndividual))
-    if (isIndividual) new TScoreboardPage
-    else new ScoreboardPage
+    clickButton(buttonName(boardset, movement, true))
+    new TScoreboardPage
   }
 
   /**
@@ -185,7 +205,7 @@ class NewDuplicatePage(implicit
       patienceConfig: PatienceConfig,
       pos: Position
   ): TDuplicateResultEditPage = {
-    click("Result", movement, isIndividual)  // return is ignored
+    click("Result", movement)  // return is ignored
     if (isIndividual) new TDuplicateResultEditPage
     else new TDuplicateResultEditPage
   }

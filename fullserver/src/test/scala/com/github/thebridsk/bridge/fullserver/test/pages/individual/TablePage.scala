@@ -9,8 +9,8 @@ import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.browserpages.PageBrowser._
 import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.utilities.logging.Logger
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.CompletedViewType
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage.TableViewType
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.ScoreboardPage.CompletedViewType
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.ScoreboardPage.TableViewType
 import com.github.thebridsk.browserpages.Page.AnyPage
 import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
 
@@ -28,7 +28,7 @@ object TablePage {
   }
 
   def urlFor(dupid: String, tableid: String): String =
-    TestServer.getAppPageUrl(s"duplicate/match/${dupid}/table/${tableid}")
+    TestServer.getAppPageUrl(s"individual/match/${dupid}/table/${tableid}")
 
   def goto(dupid: String, tableid: String, target: Target)(implicit
       webDriver: WebDriver,
@@ -51,7 +51,7 @@ object TablePage {
       webDriver: WebDriver,
       pos: Position
   ): (String, String) = {
-    val prefix = TestServer.getAppPageUrl("duplicate/match/")
+    val prefix = TestServer.getAppPageUrl("individual/match/")
     val cur = currentUrl
     withClue(s"Unable to determine duplicate id: ${cur}") {
       cur must startWith(prefix)
@@ -64,12 +64,10 @@ object TablePage {
 
   sealed trait Target
 
-  object MissingNames extends Target
   object EnterNames extends Target
-  object SelectNames extends Target
-  object EnterOrSelectNames extends Target
   object Hands extends Target
   object Boards extends Target
+
   val Results = Hands
 
 }
@@ -117,19 +115,13 @@ class TablePage(dupid: String, tableid: String, target: TablePage.Target)(
   )(implicit patienceConfig: PatienceConfig, pos: Position): AnyPage = {
     clickButton(s"Round_${round}")
     target match {
-      case MissingNames =>
-        new TableEnterMissingNamesPage(dupid, tableid, round.toString(), None)
       case EnterNames =>
-        new TableEnterScorekeeperPage(dupid, tableid, round.toString(), None)
-      case SelectNames =>
-        new TableSelectScorekeeperPage(dupid, tableid, round.toString(), None)
+        new TableEnterNamesPage(dupid, tableid, round.toString(), None)
       case Hands | Boards =>
         new ScoreboardPage(
           Some(dupid),
           TableViewType(tableid, round.toString())
         )
-      case EnterOrSelectNames =>
-        new TableEnterOrSelectNamesPage(dupid, tableid, round.toString(), None)
     }
   }
 
@@ -139,34 +131,8 @@ class TablePage(dupid: String, tableid: String, target: TablePage.Target)(
   ): AnyPage = {
     clickButton(s"Board_B${board}")
     target match {
-      case MissingNames =>
-        new TableEnterMissingNamesPage(
-          dupid,
-          tableid,
-          round.toString(),
-          Some(board.toString())
-        )
       case EnterNames =>
-        new TableEnterScorekeeperPage(
-          dupid,
-          tableid,
-          round.toString(),
-          Some(board.toString())
-        )
-      case SelectNames =>
-        new TableSelectScorekeeperPage(
-          dupid,
-          tableid,
-          round.toString(),
-          Some(board.toString())
-        )
-      case EnterOrSelectNames =>
-        new TableEnterOrSelectNamesPage(
-          dupid,
-          tableid,
-          round.toString(),
-          Some(board.toString())
-        )
+        new TableEnterNamesPage(dupid, tableid, round.toString(), Some(board))
       case Hands =>
         new HandPage
       case Boards =>

@@ -13,12 +13,12 @@ import com.github.thebridsk.bridge.data.bridge._
 import com.github.thebridsk.bridge.data.util.Strings
 import com.github.thebridsk.bridge.fullserver.test.pages.individual.ScoreboardPage.PlaceEntry
 import com.github.thebridsk.bridge.data.BoardSet
-import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HandPicture
 import com.github.thebridsk.bridge.data.BoardInSet
 import com.github.thebridsk.browserpages.Element
 import scala.util.matching.Regex
 import com.github.thebridsk.bridge.fullserver.test.pages.individual.ScoreboardPage
+import com.github.thebridsk.bridge.data.IndividualMovement
 
 object HandPage {
 
@@ -159,11 +159,10 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       tricks
     )
     if (validate)
-      board.checkTeamScores(
-        nsTeam,
+      board.checkHandPlayedContract(
+        north, south, east, west,
         nsScore,
         nsMP,
-        ewTeam,
         ewMP,
         contractTricks,
         contractSuit,
@@ -181,10 +180,9 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
   )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
     import eh._
     enterHand(
-      nsTeam,
+      north, south, east, west,
       nsScore,
       nsMP,
-      ewTeam,
       ewMP,
       contractTricks,
       contractSuit,
@@ -201,14 +199,25 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       round: Int,
       board: Int,
       allhands: AllHandsInMatch,
-      nsTeam: Team,
-      ewTeam: Team
+      north: Int,
+      south: Int,
+      east: Int,
+      west: Int
   )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
     withClue(
       s"""${pos.line} HandPage.enterHand table ${table} round ${round} board ${board} """
     ) {
       val b = allhands.getBoard(table, round, board)
-      onlyEnterHand(table, round, board, allhands, nsTeam, ewTeam).checkOthers(
+      onlyEnterHand(
+        table,
+        round,
+        board,
+        allhands,
+        allhands.playerMap(north),
+        allhands.playerMap(south),
+        allhands.playerMap(east),
+        allhands.playerMap(west)
+      ).checkOthers(
         b,
         allhands
       )
@@ -382,10 +391,12 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
 }
 
 case class EnterHand(
-    nsTeam: Int,
+    north: Int,
+    south: Int,
+    east: Int,
+    west: Int,
     nsScore: Int,
     nsMP: Double,
-    ewTeam: Int,
     ewMP: Double,
     nsIMP: Double,
     contractTricks: Int,
@@ -398,7 +409,8 @@ case class EnterHand(
 )(implicit patienceConfig: PatienceConfig, pos: Position) {
   def ewScore: Int = -nsScore
 
-  def didTeamPlay(team: Int): Boolean = team == nsTeam || team == ewTeam
+  def didPlayerPlay(player: Int): Boolean =
+    player == north || player == south || player == east || player == west
 
   def ewIMP: Double = if (nsIMP == 0.0) 0.0 else -nsIMP // I don't want -0.0
 }
@@ -406,7 +418,7 @@ case class EnterHand(
 sealed trait HandViewType
 case object HandDirectorView extends HandViewType
 case object HandCompletedView extends HandViewType
-case class HandTableView(table: Int, round: Int, team1: Int, team2: Int)
+case class HandTableView(table: Int, round: Int, north: Int, south: Int, east: Int, west: Int)
     extends HandViewType
 
 sealed trait OtherHand
@@ -424,10 +436,9 @@ case class OtherHandNotPlayed(
     round: Int,
     board: Int
 ) extends OtherHand
-case class TeamNotPlayingHand(
+case class PlayerNotPlayingHand(
     board: Int,
-    player1: ScoreboardPage.Player,
-    player2: ScoreboardPage.Player
+    player: Int
 ) extends OtherHand
 
 case class HandsOnBoard(
@@ -438,28 +449,37 @@ case class HandsOnBoard(
     other: OtherHand*
 ) {
 
-  def addTeamNotPlayed(tnp: TeamNotPlayingHand*): HandsOnBoard = {
+  def addTeamNotPlayed(tnp: PlayerNotPlayingHand*): HandsOnBoard = {
     HandsOnBoard(table, round, board, hand, (other.toList ::: (tnp.toList)): _*)
   }
 
-  def doesTeamPlay(team: Int): Boolean = {
+  def doesPlayerPlay(player: Int): Boolean = {
     other
       .find(oh =>
         oh match {
-          case TeamNotPlayingHand(b, t) if (team == t.teamid) => true
-          case _                                              => false
+          case PlayerNotPlayingHand(b, p) => p == player
+          case _                          => false
         }
       )
       .isEmpty
   }
 
-  def didTeamPlay(
-      team: Int,
+  /**
+    *
+    *
+    * @param player
+    * @param toRound
+    * @param allHands
+    * @return true if the player plays the hand on or before teh specified round, toRound.
+    * false if the player plays the hand after the round or does not play the hand.
+    */
+  def didPlayerPlay(
+      player: Int,
       toRound: Int,
       allHands: AllHandsInMatch
   ): Boolean = {
     if (round > toRound) false
-    else if (hand.didTeamPlay(team)) true
+    else if (hand.didPlayerPlay(player)) true
     else {
       other.find(oh =>
         oh match {
@@ -468,21 +488,20 @@ case class HandsOnBoard(
                 allHands
                   .getBoard(ohp.table, ohp.round, ohp.board)
                   .hand
-                  .didTeamPlay(team) =>
+                  .didPlayerPlay(player) =>
             true
           case _ =>
             false
         }
-      )
-      false
+      ).isDefined
     }
   }
 
   /**
     * Get the team score assuming this is the latest hand played
     */
-  def getTeamScore(
-      team: Int,
+  def getPlayerScore(
+      player: Int,
       viewtype: HandViewType,
       allHands: AllHandsInMatch,
       imp: Boolean = false
@@ -498,11 +517,11 @@ case class HandsOnBoard(
         else {
           other
             .filter(oh => oh.isInstanceOf[OtherHandNotPlayed])
-            .size > 1 && didTeamPlay(tv.team1, round, allHands) && didTeamPlay(
-            tv.team2,
-            round,
-            allHands
-          )
+            .size > 1 &&
+              didPlayerPlay(tv.north, round, allHands) &&
+              didPlayerPlay(tv.south, round, allHands) &&
+              didPlayerPlay(tv.east, round, allHands) &&
+              didPlayerPlay(tv.west, round, allHands)
         }
     })
 
@@ -511,25 +530,25 @@ case class HandsOnBoard(
       else (0.0, Strings.checkmark)
     }
 
-    if (team == hand.nsTeam) {
+    if (player == hand.north || player == hand.south) {
       points(if (imp) hand.nsIMP else hand.nsMP)
-    } else if (team == hand.ewTeam) {
+    } else if (player == hand.east || player == hand.west) {
       points(if (imp) hand.ewIMP else hand.ewMP)
     } else {
       HandPage.log.fine(
-        s"""Board ${board} checking team ${team} viewtype ${viewtype} this ${this}"""
+        s"""Board ${board} checking team ${player} viewtype ${viewtype} this ${this}"""
       )
       other
         .find(oh =>
           oh match {
-            case tnp: TeamNotPlayingHand if (tnp.team.teamid == team) =>
+            case tnp: PlayerNotPlayingHand if (tnp.player == player) =>
               true
             case _ => false
           }
         )
         .map { oh =>
           HandPage.log.fine(
-            s"""Board ${board} team ${team} did not play, viewtype ${viewtype} this ${this}"""
+            s"""Board ${board} team ${player} did not play, viewtype ${viewtype} this ${this}"""
           )
           (0.0, Strings.xmark)
         } match {
@@ -539,9 +558,9 @@ case class HandsOnBoard(
             oh match {
               case ohp: OtherHandPlayed =>
                 val h = allHands.getBoard(ohp.table, ohp.round, ohp.board).hand
-                if (team == h.nsTeam)
+                if (player == hand.north || player == hand.south)
                   points(if (imp) ohp.nsIMP else ohp.nsMP) :: Nil
-                else if (team == h.ewTeam)
+                else if (player == hand.east || player == hand.west)
                   points(if (imp) ohp.ewIMP else ohp.ewMP) :: Nil
                 else Nil
               case _ => Nil
@@ -603,7 +622,7 @@ case class HandsOnBoard(
 
 }
 
-case class TeamScoreboard(
+case class PlayerScore(
     player: ScoreboardPage.Player,
     points: Double,
     total: String,
@@ -612,10 +631,14 @@ case class TeamScoreboard(
 
 class AllHandsInMatch(
     val hands: List[HandsOnBoard],
-    val teams: List[Team],
+    val players: List[String],
     val boardsets: Option[BoardSet],
-    val movement: Option[Movement]
+    val movement: Option[IndividualMovement]
 ) {
+
+  val playerMap = players.zipWithIndex.map( e =>
+      (e._2+1, ScoreboardPage.Player(e._2 + 1, e._1))
+  ).toMap
 
   val boards: List[Int] = hands.map(h => h.board).distinct.sorted
 
@@ -668,32 +691,32 @@ class AllHandsInMatch(
       }
   }
 
-  def getTeamScoreToRound(
-      team: Team,
+  def getPlayerScoreToRound(
+      player: Int,
       toRound: Int,
       viewtype: HandViewType,
       imp: Boolean = false
-  ): TeamScoreboard = {
+  ): PlayerScore = {
     var total = 0.0
     val bs = boards.map { b =>
       getBoardToRound(toRound, b) match {
         case Some(hob) =>
-          val (mp, s) = hob.getTeamScore(team.teamid, viewtype, this, imp)
+          val (mp, s) = hob.getPlayerScore(player, viewtype, this, imp)
           total += mp
           s
         case None =>
           // nothing has been played yet, must find one in later round to see if I'm not playing it
           getBoardToRound(rounds.last, b) match {
             case Some(hob) =>
-              if (hob.doesTeamPlay(team.teamid)) ""
+              if (hob.doesPlayerPlay(player)) ""
               else Strings.xmark
             case None =>
               ""
           }
       }
     }
-    TeamScoreboard(
-      team,
+    PlayerScore(
+      playerMap.get(player).get,
       total,
       if (imp) f"$total%.1f" else BoardPage.toPointsString(total),
       bs
@@ -704,13 +727,13 @@ class AllHandsInMatch(
       toRound: Int,
       viewtype: HandViewType,
       imp: Boolean = false
-  ): (List[TeamScoreboard], List[PlaceEntry]) = {
-    val ts = teams.map(t => getTeamScoreToRound(t, toRound, viewtype, imp))
+  ): (List[PlayerScore], List[PlaceEntry]) = {
+    val ts = playerMap.map(e => getPlayerScoreToRound(e._1, toRound, viewtype, imp)).toList
     val scores =
       ts.sortWith((l, r) => l.points > r.points).map(t => t.total).distinct
     HandPage.log.fine("Scores are " + scores)
     val pes = scores
-      .map { sc => (sc, ts.filter(t => t.total == sc).map(t => t.team)) }
+      .map { sc => (sc, ts.filter(t => t.total == sc).map(t => t.player)) }
       .foldLeft((1, List[PlaceEntry]())) { (p, v) =>
         val (sc, teams) = v
         val (nextPlace, places) = p
@@ -731,33 +754,29 @@ class AllHandsInMatch(
     hands.filter(h => h.board == board)
   }
 
-  def getTeamsThatPlayBoard(board: Int): List[Int] = {
+  def getPlayersThatPlayBoard(board: Int): List[Int] = {
     getHandsOnBoards(board).flatMap(hob =>
-      hob.hand.nsTeam :: hob.hand.ewTeam :: Nil
+      hob.hand.north :: hob.hand.south :: hob.hand.east :: hob.hand.west :: Nil
     )
   }
 
-  val teamNumber: List[Int] = teams.map(t => t.teamid)
-
-  def getTeamsThatDontPlayBoard(board: Int): List[Int] = {
-    val played = getTeamsThatPlayBoard(board)
-    teamNumber.filter(t => !played.contains(t))
+  def getPlayersThatDontPlayBoard(board: Int): List[Int] = {
+    val played = getPlayersThatPlayBoard(board)
+    (1 to players.size).filter(p => !played.contains(p)).toList
   }
-
-  val teamsById: Map[Int, Team] = teams.map(t => (t.teamid, t)).toMap
 
   /**
     * Add in all the TeamNotPlayingHand for all hands where a team does not play the board.
     */
-  def addTeamsNotPlayingBoards: AllHandsInMatch = {
+  def addPlayersNotPlayingBoards: AllHandsInMatch = {
     val h = hands.map { hob =>
       hob.addTeamNotPlayed(
-        getTeamsThatDontPlayBoard(hob.board).map(t =>
-          TeamNotPlayingHand(hob.board, teamsById(t))
+        getPlayersThatDontPlayBoard(hob.board).map(t =>
+          PlayerNotPlayingHand(hob.board, t)
         ): _*
       )
     }
-    new AllHandsInMatch(h, teams, boardsets, movement)
+    new AllHandsInMatch(h, players, boardsets, movement)
   }
 
   /**
@@ -813,7 +832,7 @@ class AllHandsInMatch(
       )
     }
 
-    new AllHandsInMatch(nh, teams, boardsets, movement).addTeamsNotPlayingBoards
+    new AllHandsInMatch(nh, players, boardsets, movement).addPlayersNotPlayingBoards
   }
 
   def checkFixHands: AllHandsInMatch = {
@@ -835,29 +854,12 @@ class AllHandsInMatch(
   /**
     * @return Tuple2( ns, ew )
     */
-  def getNSEW(table: Int, round: Int): (Team, Team) = {
+  def getNSEW(table: Int, round: Int): (Int, Int, Int, Int) = {
     val boards = getBoardsInTableRound(table, round)
     val b = getBoard(table, round, boards.head)
-    (teamsById(b.hand.nsTeam), teamsById(b.hand.ewTeam))
+    (b.hand.north, b.hand.south, b.hand.east, b.hand.west)
   }
 
-  def getTeamThatDidNotPlay(table: Int, round: Int): Option[Int] = {
-    val boards = getBoardsInTableRound(table, round)
-    val played = boards.flatMap { b =>
-      val bb = getBoard(table, round, b)
-      bb.hand.nsTeam :: bb.hand.ewTeam :: Nil
-    }.distinct
-    teamNumber.find(t => !played.contains(t))
-  }
-
-  def getTeamThatDidNotPlay(round: Int): Option[Int] = {
-    val boards = getBoardsInRound(round)
-    val played = boards.flatMap { b =>
-      val bb = getBoardToRound(round, b).get
-      bb.hand.nsTeam :: bb.hand.ewTeam :: Nil
-    }.distinct
-    teamNumber.find(t => !played.contains(t))
-  }
 }
 
 object AllHandsInMatch {
@@ -874,9 +876,9 @@ object AllHandsInMatch {
     * @param handsOnBoard each list represents the hands that play on the same board
     */
   def apply(
-      teams: List[Team],
+      players: List[String],
       boardsets: BoardSet,
-      movement: Movement,
+      movement: IndividualMovement,
       handsOnBoard: List[EnterHand]*
   ): AllHandsInMatch = {
     val boards = movement.getBoards
@@ -897,7 +899,7 @@ object AllHandsInMatch {
               HandsOnBoard(wherePlayed.table, wherePlayed.round, board, hand)
           }
       }
-    new AllHandsInMatch(hands, teams, Some(boardsets), Some(movement)).fixHands
+    new AllHandsInMatch(hands, players, Some(boardsets), Some(movement)).fixHands
   }
 
 }

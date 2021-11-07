@@ -11,6 +11,7 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.utilities.logging.Logger
 import org.scalatest.Assertion
+import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreStyle
 
 object ScoreboardPage {
 
@@ -150,7 +151,7 @@ object ScoreboardPage {
 }
 
 import ScoreboardPage._
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.TablePage.EnterNames
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.Popup
 
 class ScoreboardPage(
@@ -414,21 +415,21 @@ class ScoreboardPage(
     * @param team
     */
   def checkTable(
-      teams: TeamScoreboard* /* ( Team, String, List[String] )* */
+      teams: PlayerScore* /* ( Team, String, List[String] )* */
   )(implicit pos: Position): Unit = {
     val table = getTable
     teams.foreach {
-      case TeamScoreboard(players, points, total, boardscores) =>
+      case PlayerScore(player, points, total, boardscores) =>
         withClue(
-          s"""checking scoreboard row for ${players} total ${total} boards ${boardscores}"""
+          s"""checking scoreboard row for ${player.index} total ${total} boards ${boardscores}"""
         ) {
-          table.find(row => row(0) == players.teamid.toString) match {
+          table.find(row => row(0) == player.index.toString) match {
             case Some(row) =>
-              row(1) mustBe players.toStringForScoreboard
+              row(1) mustBe player.name
               row(2) mustBe total
               row.drop(3) mustBe boardscores
             case None =>
-              fail(s"""${pos.line}: Did not find team ${players.teamid}""")
+              fail(s"""${pos.line}: Did not find team ${player.index}""")
           }
         }
     }
@@ -440,16 +441,16 @@ class ScoreboardPage(
   def checkPlaceTable(places: PlaceEntry*)(implicit pos: Position): Unit = {
     val table = getPlaceTable
     places.foreach {
-      case PlaceEntry(place, points, teams) =>
+      case PlaceEntry(place, points, players) =>
         withClue(
-          s"""working with place ${place} points ${points} teams ${teams}"""
+          s"""working with place ${place} points ${points} teams ${players}"""
         ) {
           table.find(row => row(0) == place.toString()) match {
             case Some(row) =>
               row(1) mustBe points
-              val players = row(2)
-              teams.foreach(team =>
-                players must include(team.toStringForPlayers)
+              val ps = row(2)
+              players.foreach(team =>
+                ps must include(team.name)
               )
             case None =>
               fail(s"""${pos.line}: Did not find place $place""")
@@ -483,7 +484,7 @@ class ScoreboardPage(
   def setScoreStyle(
       style: ScoreStyle
   )(implicit webDriver: WebDriver, pos: Position): ScoreboardPage = {
-    ScoreboardPage.setScoreStyle(style)
+    ScoreStyle.setScoreStyle(style)
     this
   }
 
@@ -492,7 +493,7 @@ class ScoreboardPage(
       patienceConfig: PatienceConfig,
       pos: Position
   ): Option[ScoreStyle] = {
-    ScoreboardPage.getScoreStyle
+    ScoreStyle.getScoreStyle
   }
 
 }

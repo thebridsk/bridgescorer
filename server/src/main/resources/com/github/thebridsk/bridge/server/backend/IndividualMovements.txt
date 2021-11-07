@@ -3,3 +3,4 @@
 # in the same package as this file.
 
 IndividualMovement.Individual2Tables.yaml
+IndividualMovement.Individual3Tables.yaml

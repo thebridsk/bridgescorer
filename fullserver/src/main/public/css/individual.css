@@ -137,6 +137,16 @@ table th {
   padding: 5px;
 }
 
+.pageBoard > div:nth-child(2) > div > table {
+  border: 0px;
+}
+.pageBoard > div:nth-child(2) > div > table tr {
+  background-color: var(--color-bg);
+}
+.pageBoard > div:nth-child(2) > div > table td {
+  border: 0px;
+}
+
 /*
 .viewBoard {
 

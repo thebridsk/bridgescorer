@@ -119,6 +119,29 @@ object BoardPage {
   // for table view
   val ColorTablePlayed = "baseRequiredNotNext"
 
+  val divPageBoardPrefix = """//div[contains(concat(' ', @class, ' '), ' pageBoard ')]"""
+  val divViewBoardPrefix = """//div[contains(concat(' ', @class, ' '), ' viewBoard ')]"""
+
+  case class Hand(
+    north: String,
+    south: String,
+    east: String,
+    west: String,
+    contract: String,
+    by: String,
+    made: String,
+    down: String,
+    nsScore: String,
+    ewScore: String,
+    nsPoints: String,
+    ewPoints: String,
+    picture: String
+  ) {
+    def contains(p: String): Boolean = {
+      p==north || p==south || p==east || p==west
+    }
+    def isPlayed: Boolean = contract != null && contract != ""
+  }
 }
 
 trait PageWithBoardButtons {
@@ -351,72 +374,159 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
     findElemsByXPath(xp)
   }
 
-  private def getTeamRow(team: Int)(implicit pos: Position) = {
-    findElemsByXPath(
-      HomePage.divBridgeAppPrefix + s"""//table/tbody/tr[${team}]/td"""
+  def getHands(rows: List[List[Element]])(implicit pos: Position): List[Hand] = {
+    rows.map { row =>
+      Hand(
+        row(0).text,
+        row(1).text,
+        row(2).text,
+        row(3).text,
+        row(4).text,
+        row(5).text,
+        row(6).text,
+        row(7).text,
+        row(8).text,
+        row(9).text,
+        row(10).text,
+        row(11).text,
+        row(12).text
+      )
+    }
+  }
+
+  def getHand(row: List[Element])(implicit pos: Position): Hand = {
+    Hand(
+      row(0).text,
+      row(1).text,
+      row(2).text,
+      row(3).text,
+      row(4).text,
+      row(5).text,
+      row(6).text,
+      row(7).text,
+      row(8).text,
+      row(9).text,
+      row(10).text,
+      row(11).text,
+      row(12).text
     )
   }
 
-  def checkTeamNSScore(
-      team: Int,
-      contract: String,
-      dec: PlayerPosition,
-      madeOrDown: MadeOrDown,
-      tricks: Int,
-      nsScore: Int,
-      ewTeam: Int,
-      matchPoints: Double
-  )(implicit pos: Position): BoardPage = {
-    withClue(s"checking NS score for team ${team}") {
-      val row = getTeamRow(team)
-      row(0).text mustBe team.toString()
-      row(1).text mustBe contract
-      if (contract == "Passed Out") {
-        row(2).text mustBe "-"
-        row(3).text mustBe "-"
-        row(4).text mustBe "-"
-      } else {
-        row(2).text mustBe dec.pos
-        madeOrDown match {
-          case Made =>
-            row(3).text mustBe tricks.toString()
-            row(4).text mustBe ""
-          case Down =>
-            row(3).text mustBe ""
-            row(4).text mustBe tricks.toString()
+  /**
+    * @param pos
+    * @return all the rows.  Each element is a row, a list of the cells in a row
+    */
+  def getRows(implicit pos: Position): List[List[Element]] = {
+    findElemsByXPath(
+      divViewBoardPrefix + """/table/body/tr/td"""
+    ).grouped(13).toList
+  }
+
+  /**
+   * @param player a player that played the hand
+   * @return the td elements in the row
+   */
+  private def getHandRow(player: Int)(implicit pos: Position): Option[Hand] = {
+    val p = player.toString()
+    val rows = getRows
+    rows.map { l => getHand(l) }.find { h =>
+      h.contains(p)
+    }
+  }
+
+  def checkHandNotPlayed(n: Int, s: Int, e: Int, w: Int)(implicit pos: Position): BoardPage = {
+    getHandRow(n) match {
+      case Some(h) =>
+        withClue(s"Hand results for players ${n},${s},${e},${w}: ${h}") {
+          h.north mustBe n.toString()
+          h.south mustBe s.toString()
+          h.east mustBe e.toString()
+          h.west mustBe w.toString()
+          h.contract mustBe ""
+          h.by mustBe ""
+          h.made mustBe ""
+          h.down mustBe ""
+          h.nsScore mustBe ""
+          h.ewScore mustBe ""
+          h.nsPoints mustBe ""
+          h.ewPoints mustBe ""
+          h.picture mustBe ""
         }
-      }
-      row(5).text mustBe nsScore.toString()
-      row(6).text mustBe ""
-      row(7).text mustBe ewTeam.toString()
-      row(8).text mustBe toPointsString(matchPoints)
-      this
+        this
+      case _ =>
+        throw new Exception(s"Hand not found for players ${n},${s},${e},${w}")
     }
   }
 
-  def checkTeamEWScore(team: Int, ewScore: Int, matchPoints: Double)(implicit
-      pos: Position
-  ): BoardPage = {
-    withClue(s"checking EW score for team ${team}") {
-      val row = getTeamRow(team)
-      row(0).text mustBe team.toString()
-      row(1).text mustBe ""
-      row(2).text mustBe ""
-      row(3).text mustBe ""
-      row(4).text mustBe ""
-      row(5).text mustBe ""
-      row(6).text mustBe ewScore.toString()
-      row(7).text mustBe ""
-      row(8).text mustBe toPointsString(matchPoints)
-      this
+  def checkHandPlayedWithCheckmarks(n: Int, s: Int, e: Int, w: Int)(implicit pos: Position): BoardPage = {
+    getHandRow(n) match {
+      case Some(h) =>
+        withClue(s"Hand results for players ${n},${s},${e},${w}: ${h}") {
+          h.north mustBe n.toString()
+          h.south mustBe s.toString()
+          h.east mustBe e.toString()
+          h.west mustBe w.toString()
+          h.contract mustBe Strings.checkmark
+          h.by mustBe Strings.checkmark
+          h.made mustBe Strings.checkmark
+          h.down mustBe Strings.checkmark
+          h.nsScore mustBe Strings.checkmark
+          h.ewScore mustBe Strings.checkmark
+          h.nsPoints mustBe Strings.checkmark
+          h.ewPoints mustBe Strings.checkmark
+          h.picture mustBe Strings.checkmark
+        }
+        this
+      case _ =>
+        throw new Exception(s"Hand not found for players ${n},${s},${e},${w}")
     }
   }
 
-  def checkTeamScores(
-      nsTeam: Int,
+  def checkHandPlayed(
+    n: Int,
+    s: Int,
+    e: Int,
+    w: Int,
+    contract: String,
+    by: String,
+    made: String,
+    down: String,
+    nsScore: String,
+    ewScore: String,
+    nsPoints: String,
+    ewPoints: String,
+    picture: String = ""
+  )(implicit pos: Position): BoardPage = {
+    getHandRow(n) match {
+      case Some(h) =>
+        withClue(s"Hand results for players ${n},${s},${e},${w},: ${h}") {
+          h.north mustBe n.toString()
+          h.south mustBe s.toString()
+          h.east mustBe e.toString()
+          h.west mustBe w.toString()
+          h.contract mustBe contract
+          h.by mustBe by
+          h.made mustBe made
+          h.down mustBe down
+          h.nsScore mustBe nsScore
+          h.ewScore mustBe ewScore
+          h.nsPoints mustBe nsPoints
+          h.ewPoints mustBe ewPoints
+          h.picture mustBe picture
+        }
+        this
+      case _ =>
+        throw new Exception(s"Hand not found for players ${n},${s},${e},${w}")
+    }
+  }
+
+  def checkHandPlayedContract(
+      north: Int,
+      south: Int,
+      east: Int,
+      west: Int,
       nsScore: Int,
       nsMP: Double,
-      ewTeam: Int,
       ewMP: Double,
       contractTricks: Int,
       contractSuit: ContractSuit,
@@ -424,167 +534,56 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       declarer: PlayerPosition,
       madeOrDown: MadeOrDown,
       tricks: Int,
-      vul: Vulnerability
-  )(implicit
-      patienceConfig: PatienceConfig,
-      pos: Position
-  ): BoardPage = {
-    val v = vul match {
-      case Vul    => " Vul"
-      case NotVul => ""
+      vul: Vulnerability,
+      validate: Boolean = true
+  )(implicit pos: Position): BoardPage = {
+    val contract = contractTricks match {
+      case 0 => "Passed Out"
+      case n =>
+        s"""${contractTricks}${contractSuit.suit}${contractDoubled.forScore}${vul.forScore}"""
     }
-    val contract =
-      if (contractTricks == 0) "Passed Out"
-      else
-        s"""${contractTricks}${contractSuit.suit}${contractDoubled.forScore}${v}"""
-    checkTeamNSScore(
-      nsTeam,
+    val (made, down) = madeOrDown match {
+      case Made =>
+        (s"${tricks}", "")
+      case Down =>
+        ("", s"${tricks}")
+    }
+    checkHandPlayed(
+      north, south, east, west,
       contract,
-      declarer,
-      madeOrDown,
-      tricks,
-      nsScore,
-      ewTeam,
-      nsMP
-    )
-    checkTeamEWScore(ewTeam, -nsScore, ewMP)
-    this
-  }
-
-  def checkTeamScores(eh: EnterHand): BoardPage = {
-    import eh._
-    checkTeamScores(
-      nsTeam,
-      nsScore,
-      nsMP,
-      ewTeam,
-      ewMP,
-      contractTricks,
-      contractSuit,
-      contractDoubled,
-      declarer,
-      madeOrDown,
-      tricks,
-      vul
+      declarer.pos,
+      made,
+      down,
+      s"${nsScore}",
+      s"${-nsScore}",
+      s"${nsMP}",
+      s"${ewMP}",
+      picture = ""
     )
   }
 
-  def checkTeamNSPlayed(team: Int, ewTeam: Int)(implicit
-      pos: Position
-  ): BoardPage = {
-    withClue(s"checking NS score for played for team ${team}") {
-      val row = getTeamRow(team)
-      row(0).text mustBe team.toString()
-      row(1).text mustBe "played"
-      row(2).text mustBe Strings.checkmark
-      row(3).text mustBe Strings.checkmark
-      row(4).text mustBe Strings.checkmark
-      row(5).text mustBe Strings.checkmark
-      row(6).text mustBe ""
-      row(7).text mustBe ewTeam.toString()
-      row(8).text mustBe Strings.checkmark
-      this
-    }
+  def checkHandScores(eh: EnterHand) = {
+            checkHandPlayedContract(
+              eh.north,
+              eh.south,
+              eh.east,
+              eh.west,
+              eh.nsScore,
+              eh.nsMP,
+              eh.ewMP,
+              eh.contractTricks,
+              eh.contractSuit,
+              eh.contractDoubled,
+              eh.declarer,
+              eh.madeOrDown,
+              eh.tricks,
+              eh.vul
+            )
+
   }
 
-  def checkTeamEWPlayed(team: Int)(implicit pos: Position): BoardPage = {
-    withClue(s"checking EW score for played for team ${team}") {
-      val row = getTeamRow(team)
-      row(0).text mustBe team.toString()
-      row(1).text mustBe "played"
-      row(2).text mustBe ""
-      row(3).text mustBe ""
-      row(4).text mustBe ""
-      row(5).text mustBe ""
-      row(6).text mustBe Strings.checkmark
-      row(7).text mustBe ""
-      row(8).text mustBe Strings.checkmark
-      this
-    }
-  }
-
-  def checkTeamNotPlaying(team: Int)(implicit pos: Position): BoardPage = {
-    withClue(s"checking for team ${team} not playing board") {
-      val row = getTeamRow(team)
-      row(0).text mustBe team.toString()
-      row(1).text mustBe ""
-      row(2).text mustBe ""
-      row(3).text mustBe ""
-      row(4).text mustBe ""
-      row(5).text mustBe ""
-      row(6).text mustBe ""
-      row(7).text mustBe ""
-      row(8).text mustBe ""
-      this
-    }
-  }
-
-  def checkTeamNotPlayed(nsTeam: Int, ewTeam: Int)(implicit
-      pos: Position
-  ): BoardPage = {
-    checkTeamNSNotPlayed(nsTeam, ewTeam)
-    checkTeamEWNotPlayed(ewTeam)
-  }
-
-  def checkTeamPlayed(nsTeam: Int, ewTeam: Int)(implicit
-      pos: Position
-  ): BoardPage = {
-    checkTeamNSPlayed(nsTeam, ewTeam)
-    checkTeamEWPlayed(ewTeam)
-  }
-
-  def checkTeamNSNotPlayed(team: Int, ewTeam: Int)(implicit
-      pos: Position
-  ): BoardPage = {
-    withClue(s"checking NS score for not played for team ${team}") {
-      val row = getTeamRow(team)
-      row(0).text mustBe team.toString()
-      row(1).text mustBe ""
-      row(2).text mustBe ""
-      row(3).text mustBe ""
-      row(4).text mustBe ""
-      row(5).text mustBe ""
-      row(6).text mustBe ""
-      row(7).text mustBe ewTeam.toString()
-      row(8).text mustBe ""
-      this
-    }
-  }
-
-  def checkTeamEWNotPlayed(team: Int)(implicit pos: Position): BoardPage = {
-    withClue(s"checking EW score for not played for team ${team}") {
-      val row = getTeamRow(team)
-      row(0).text mustBe team.toString()
-      row(1).text mustBe ""
-      row(2).text mustBe ""
-      row(3).text mustBe ""
-      row(4).text mustBe ""
-      row(5).text mustBe ""
-      row(6).text mustBe ""
-      row(7).text mustBe ""
-      row(8).text mustBe ""
-      row(5).isGray mustBe true // NS
-      row(6).isWhite mustBe true // EW
-      this
-    }
-  }
-
-  def checkTeamNeverPlays(team: Int)(implicit pos: Position): BoardPage = {
-    withClue(s"checking NS score for not played for team ${team}") {
-      val row = getTeamRow(team)
-      row(0).text mustBe team.toString()
-      row(1).text mustBe ""
-      row(2).text mustBe ""
-      row(3).text mustBe ""
-      row(4).text mustBe ""
-      row(5).text mustBe ""
-      row(6).text mustBe ""
-      row(7).text mustBe ""
-      row(8).text mustBe ""
-      row(5).isGray mustBe true // NS
-      row(6).isGray mustBe true // EW
-      this
-    }
+  def checkPlayerNeverPlays(player: Int) = {
+    getHandRow(player).isEmpty
   }
 
   def checkOthers(
@@ -598,7 +597,7 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       oh match {
         case OtherHandNotPlayed(tableid, roundid, boardid) =>
           val ob = allhands.getBoard(tableid, roundid, boardid)
-          checkTeamNotPlayed(ob.hand.nsTeam, ob.hand.ewTeam)
+          checkHandNotPlayed(ob.hand.north, ob.hand.south,ob.hand.east, ob.hand.west)
         case OtherHandPlayed(
               tableid,
               roundid,
@@ -609,14 +608,14 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
               ewIMP
             ) =>
           val ob = allhands.getBoard(tableid, roundid, boardid)
-          val eh = ob.hand.copy(nsMP = nsMP, ewMP = ewMP)
           if (!allplayed && checkmarks) {
-            checkTeamPlayed(eh.nsTeam, eh.ewTeam)
+            checkHandPlayedWithCheckmarks(ob.hand.north, ob.hand.south,ob.hand.east, ob.hand.west)
           } else {
-            checkTeamScores(eh)
+            val eh = ob.hand.copy(nsMP = nsMP, ewMP = ewMP)
+            checkHandScores(eh)
           }
-        case TeamNotPlayingHand(boardid, p1, p2) =>
-          checkTeamNeverPlays(team.teamid)
+        case PlayerNotPlayingHand(boardid, player) =>
+          checkPlayerNeverPlays(player)
       }
     }
     this
@@ -639,9 +638,9 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
           val allplayed =
             b.other.find(oh => oh.isInstanceOf[OtherHandNotPlayed]).isEmpty
           if (!allplayed && checkmarks) {
-            checkTeamPlayed(b.hand.nsTeam, b.hand.ewTeam)
+            checkHandPlayedWithCheckmarks(b.hand.north, b.hand.south, b.hand.east, b.hand.west)
           } else {
-            checkTeamScores(b.hand)
+            checkHandScores(b.hand)
           }
           checkOthers(b, allhands, checkmarks)
         case None =>
@@ -650,10 +649,10 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
             case Some(b) =>
               val allplayed =
                 b.other.find(oh => oh.isInstanceOf[OtherHandNotPlayed]).isEmpty
-              checkTeamNotPlayed(b.hand.nsTeam, b.hand.ewTeam)
+              checkHandNotPlayed(b.hand.north, b.hand.south, b.hand.east, b.hand.west)
               def checkNotPlayed(table: Int, round: Int, brd: Int) = {
                 val hob = allhands.getBoard(table, round, brd)
-                checkTeamNotPlayed(hob.hand.nsTeam, hob.hand.ewTeam)
+                checkHandNotPlayed(hob.hand.north, hob.hand.south, hob.hand.east, hob.hand.west)
               }
               b.other.foreach(oh =>
                 oh match {
@@ -669,8 +668,8 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
                         ewIMP
                       ) =>
                     checkNotPlayed(table, round, board)
-                  case TeamNotPlayingHand(board, team) =>
-                    checkTeamNeverPlays(team.teamid)
+                  case PlayerNotPlayingHand(board, player) =>
+                    checkPlayerNeverPlays(player)
                 }
               )
             case None =>
@@ -682,10 +681,10 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
   }
 
   def clickHand(
-      hand: Int
+      nplayer: Int
   )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage =
     eventually {
-      click on id(s"""Hand_T${hand}""")
+      click on id(s"""Hand_${nplayer}""")
       new HandPage
     }
 

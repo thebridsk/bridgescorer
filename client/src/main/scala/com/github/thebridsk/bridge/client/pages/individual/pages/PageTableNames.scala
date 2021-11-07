@@ -246,7 +246,10 @@ object PageTableNames {
                             setName(loc) _
                           )
                         } else {
-                          state.table.map(_.find(loc))
+                          <.span(
+                            ^.id := s"${loc.toString()}_name",
+                            state.table.map(_.find(loc))
+                          )
                         }
                       ),
                       AppButton(

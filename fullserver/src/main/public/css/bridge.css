@@ -407,6 +407,7 @@ label.baseRadioButton > span:nth-child(2) > span
   padding-top: 10px;
   width: 100%;
   max-width: 1050px;
+  margin:0 auto;
 }
 
 .baseDivFooterLeft {

@@ -21,6 +21,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.NewDuplicateP
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.MovementsPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardSetsPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage
+import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreStyleIMP
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableEnterScorekeeperPage
@@ -2728,7 +2729,7 @@ class Duplicate5TestPages
       CodeBlock {
         import SessionTable2._
         val sb1 = ScoreboardPage.current
-          .setScoreStyle(ScoreboardPage.ScoreStyleIMP)
+          .setScoreStyle(ScoreStyleIMP)
           .validate
 //        Thread.sleep(500L)
         validateRound(sb1, 2, 5, true)
