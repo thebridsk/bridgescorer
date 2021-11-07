@@ -127,7 +127,7 @@ class Session(name: String = "default") extends WebDriver {
 
   private var chromeDriverService: Option[ChromeDriverService] = None
 
-  private def chromeOptions(headless: Boolean, download: Boolean) = {
+  private def chromeOptions(headless: Boolean, download: Boolean = false) = {
       val options = new ChromeOptions
       options.addArguments("disable-infobars")
 
@@ -156,11 +156,11 @@ class Session(name: String = "default") extends WebDriver {
       options
   }
 
-  private def chromeDriver(headless: Boolean, download: Boolean) = {
+  private def chromeDriver(headless: Boolean, download: Boolean = false) = {
     new ChromeDriver(chromeOptions(headless, download))
   }
 
-  private def chrome(headless: Boolean, download: Boolean) = {
+  private def chrome(headless: Boolean, download: Boolean = false) = {
 
     // does not work
 //    val options = chromeOptions(headless)
@@ -251,7 +251,7 @@ class Session(name: String = "default") extends WebDriver {
   /**
     * The default browser when a specific browser has not been specified.
     */
-  def defaultBrowser(download: Boolean): ChromeDriver = chrome(false, download)
+  def defaultBrowser(download: Boolean = false): ChromeDriver = chrome(false, download)
 
   /**
     * Start a browser webdriver
@@ -280,7 +280,7 @@ class Session(name: String = "default") extends WebDriver {
       browser: Option[String] = None,
       original: Int = 2,
       retry: Int = 2,
-      download: Boolean
+      download: Boolean = false
   ): Session = {
     try {
       createSession(browser, download)
@@ -342,7 +342,7 @@ class Session(name: String = "default") extends WebDriver {
 
   private val implicitWait = Duration.ofSeconds(2)
 
-  private def createSession(browser: Option[String] = None, download: Boolean): Session =
+  private def createSession(browser: Option[String] = None, download: Boolean = false): Session =
     synchronized {
       remoteSession = false
       webDriver =
