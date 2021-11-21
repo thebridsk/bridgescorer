@@ -35,6 +35,7 @@ import org.openqa.selenium.remote.LocalFileDetector
 import java.time.Duration
 import java.io.File
 import java.util.concurrent.TimeUnit
+import org.openqa.selenium.UnsupportedCommandException
 
 class Session(name: String = "default") extends WebDriver {
   import Session._
@@ -138,6 +139,7 @@ class Session(name: String = "default") extends WebDriver {
         options.addArguments("window-size=1920,1080")
       }
       options.addArguments("disable-extensions")
+      options.setExperimentalOption("w3c", false)
       options
   }
 
@@ -649,12 +651,17 @@ class Session(name: String = "default") extends WebDriver {
   }
 
   def showLogs(): Unit = {
-    val logs = manage().logs()
-    import scala.jdk.CollectionConverters._
-    val ty = logs.getAvailableLogTypes().asScala
-    testlog.info(s"Available logtypes: ${ty.mkString}")
-    ty.foreach { logtype =>
-      showLogs(logtype)
+    try {
+      val logs = manage().logs()
+      import scala.jdk.CollectionConverters._
+      val ty = logs.getAvailableLogTypes().asScala
+      testlog.info(s"Available logtypes: ${ty.mkString}")
+      ty.foreach { logtype =>
+        showLogs(logtype)
+      }
+    } catch {
+      case x: UnsupportedCommandException =>
+        testlog.warning(s"Unsupported command was sent to browser", x)
     }
   }
 

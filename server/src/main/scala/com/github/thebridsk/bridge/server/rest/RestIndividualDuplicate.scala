@@ -304,6 +304,7 @@ trait RestIndividualDuplicate extends HasActorSystem {
         }
       }
     }
+
   @Path("/{dupId}")
   @PUT
   @Operation(
@@ -361,14 +362,17 @@ trait RestIndividualDuplicate extends HasActorSystem {
       logResult("RestIndividualDuplicate.putDuplicate") {
         put {
           path("""[a-zA-Z0-9]+""".r) { sid =>
-            val id = IndividualDuplicate.id(sid)
-            entity(as[IndividualDuplicate]) { dup =>
-              resourceUpdated(store.select(id).update(dup))
+            pathEnd {
+              val id = IndividualDuplicate.id(sid)
+              entity(as[IndividualDuplicate]) { dup =>
+                resourceUpdated(store.select(id).update(dup))
+              }
             }
           }
         }
       }
     }
+
   @Path("/{dupId}")
   @DELETE
   @Operation(
@@ -401,10 +405,13 @@ trait RestIndividualDuplicate extends HasActorSystem {
   def xxxdeleteDuplicate(): Unit = {}
   val deleteDuplicate: Route = delete {
     path("""[a-zA-Z0-9]+""".r) { sid =>
-      val id = IndividualDuplicate.id(sid)
-      resourceDelete(store.select(id).delete())
+      pathEnd {
+        val id = IndividualDuplicate.id(sid)
+        resourceDelete(store.select(id).delete())
+      }
     }
   }
+
 }
 
 object RestIndividualDuplicate {

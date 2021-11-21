@@ -280,6 +280,7 @@ abstract class BaseStoreMonitor[VId <: Comparable[
       log.debug(s"Receive: ToBrowserMessage Sending to all ${msg}")
       msg match {
         case UpdateDuplicate(md)        => dispatchToAllDuplicate(md.id, msg)
+        case UpdateIndividualDuplicate(md) => dispatchToAllIndividualDuplicate(md.id, msg)
         case UpdateDuplicateHand(id, h) => dispatchToAllDuplicate(id, msg)
         case UpdateDuplicateTeam(id, t) => dispatchToAllDuplicate(id, msg)
         case UpdateChicago(md)          => dispatchToAllChicago(md.id, msg)

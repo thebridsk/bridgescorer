@@ -112,7 +112,8 @@ class NewDuplicatePage(implicit
               else buttonName(b, m, true) :: Nil
             }
 
-        } ::: TMovementsPage.movements.map(m => s"ShowM_${m}")
+        } ::: TMovementsPage.movements.map(m => s"ShowM${movType(false)}${m}") :::
+           IndividualMovementsPage.movements.map(m => s"ShowM${movType(true)}${m}")
 
         findButtons(buttons: _*)
         this
@@ -160,9 +161,9 @@ class NewDuplicatePage(implicit
     implicit
       patienceConfig: PatienceConfig,
       pos: Position
-  ): ScoreboardPage = {
+  ): TScoreboardPage = {
     clickButton(buttonName(boardset, movement, false))
-    new ScoreboardPage
+    new TScoreboardPage
   }
 
   /**
@@ -182,9 +183,9 @@ class NewDuplicatePage(implicit
     implicit
       patienceConfig: PatienceConfig,
       pos: Position
-  ): TScoreboardPage = {
+  ): ScoreboardPage = {
     clickButton(buttonName(boardset, movement, true))
-    new TScoreboardPage
+    new ScoreboardPage("")
   }
 
   /**

@@ -151,6 +151,7 @@ object IndividualDuplicateMutationAction {
           val newdup = updatePlayers.players.foldLeft(value) { (ac, v) =>
             ac.updatePlayer(v.i, v.name)
           }
+          log.fine(s"In updatePlayer, updatePlayers=${updatePlayers}, value=${value}, newdup=${newdup}")
           Result((newdup, newdup))
         }
 
@@ -160,7 +161,10 @@ object IndividualDuplicateMutationAction {
       }
     ).map { rdup =>
       rdup match {
-        case Right(d) => d.players
+        case Right(d) =>
+          val r = d.players
+          log.fine(s"In updatePlayer, updatePlayers=${updatePlayers}, returning ${r}")
+          r
         case Left((statusCode, msg)) =>
           throw new Exception(
             s"Error updating ${dup.id.id} from store ${bs.id}: ${statusCode} ${msg.msg}"

@@ -12,12 +12,17 @@ import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.utilities.logging.Logger
 import org.scalatest.Assertion
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreStyle
+import com.github.thebridsk.bridge.data.IndividualBoard
 
 object ScoreboardPage {
 
   val log: Logger = Logger[ScoreboardPage]()
 
-  case class Player(index: Int, name: String)
+  case class Player(index: Int, name: String) {
+    override
+    def toString() = s"${index} ${name}"
+    def toLabelString() = s"${index}: ${name}"
+  }
   case class PlaceEntry(place: Int, points: String, teams: List[Player])
 
   def current(implicit
@@ -26,7 +31,7 @@ object ScoreboardPage {
       pos: Position
   ): ScoreboardPage = {
     val (did, view) = findDuplicateId
-    new ScoreboardPage(Option(did), view)
+    new ScoreboardPage(did, view)
   }
 
   def waitFor(implicit
@@ -35,7 +40,7 @@ object ScoreboardPage {
       pos: Position
   ): ScoreboardPage = {
     val (did, view) = eventually { findDuplicateId }
-    new ScoreboardPage(Option(did), view)
+    new ScoreboardPage(did, view)
   }
 
   def goto(id: String)(implicit
@@ -44,7 +49,7 @@ object ScoreboardPage {
       pos: Position
   ): ScoreboardPage = {
     go to getUrl(id)
-    new ScoreboardPage(Option(id), CompletedViewType)
+    new ScoreboardPage(id, CompletedViewType)
   }
 
   def getUrl(id: String): String = {
@@ -76,11 +81,11 @@ object ScoreboardPage {
       case TableViewType(tid, rid) => buttonIdsTable(tid)
     }
 
-  private val patternComplete = """(M\d+)(?:/([^/]+)/([a-zA-Z]\d+))?""".r
+  private val patternComplete = """(I\d+)(?:/([^/]+)/([a-zA-Z]\d+))?""".r
   private val patternDirector =
-    """(M\d+)/director(?:/([^/]+)/([a-zA-Z]\d+))?""".r
+    """(I\d+)/director(?:/([^/]+)/([a-zA-Z]\d+))?""".r
   private val patternTable =
-    """(M\d+)/table/(\d+)/round/(\d+)/([^/]+)(?:/([a-zA-Z]\d+))?""".r
+    """(I\d+)/table/(\d+)/round/(\d+)/([^/]+)(?:/([a-zA-Z]\d+))?""".r
 
   /**
     * Get the duplicate ID, the View type, subresource name and id.
@@ -89,6 +94,7 @@ object ScoreboardPage {
     *   duplicate/dupid/director[/sub/id]
     *   duplicate/dupid/table/tableid/round/roundid[/game|/sub/id]
     * @return Tuple4(
+    *            url
     *            dupid
     *            ViewType   - CompletedViewType, DirectorViewType, TableViewType(tableid,roundid)
     *            subresource    - "game" or subresource
@@ -104,7 +110,7 @@ object ScoreboardPage {
     withClue(s"Unable to determine individual duplicate id: ${cur}") {
       cur must startWith(prefix)
       cur.drop(prefix.length()) match {
-        case patternComplete(did, subres, subid) =>
+        case patternComplete(did, subres, subid) if subres == null || subres == "boards" =>
           (cur, did, CompletedViewType, Option(subres), Option(subid))
         case patternDirector(did, subres, subid) =>
           (cur, did, DirectorViewType, Option(subres), Option(subid))
@@ -155,7 +161,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.individual.TablePage.En
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.Popup
 
 class ScoreboardPage(
-    val dupid: Option[String] = None,
+    val dupid: String,
     val view: ScoreboardPage.ViewType = ScoreboardPage.CompletedViewType
 )(implicit
     val webDriver: WebDriver,
@@ -172,10 +178,7 @@ class ScoreboardPage(
       eventually {
         val (did, viewFromUrl) = findDuplicateId
 
-        dupid match {
-          case Some(oid) => oid mustBe did
-          case None      =>
-        }
+        if (dupid != "") dupid mustBe did
 
         viewFromUrl mustBe view
 
@@ -184,7 +187,7 @@ class ScoreboardPage(
         // <div class="dupDivScoreboardHelp"><h1>Director's Scoreboard</h1>
 
         val help = findElemByXPath(
-          "//div[contains(concat(' ', @class, ' '), ' dupDivScoreboardHelp ')]/h1"
+          "//div[contains(concat(' ', @class, ' '), ' viewScoreboardHelp ')]/h1"
         ).text
         view match {
           case ScoreboardPage.CompletedViewType =>
@@ -213,7 +216,7 @@ class ScoreboardPage(
         val did = validateInternal
 
         val buttons = eventually { findButtons(Map(buttonIds(view): _*)) }
-        val sb = new ScoreboardPage(Option(did), view)
+        val sb = new ScoreboardPage(did, view)
         sb
       }
     }(Position.here)
@@ -234,7 +237,7 @@ class ScoreboardPage(
             }).toList
 
           val buttons = findButtons(Map(ids: _*))
-          new ScoreboardPage(Option(did))
+          new ScoreboardPage(did)
         }
       }
     }
@@ -335,12 +338,12 @@ class ScoreboardPage(
         fail("Must be in Completed view to hit table button")
       case CompletedViewType =>
         clickButton(s"Table_${table}")
-        new TablePage(dupid.get, table.toString(), EnterNames)
+        new TablePage(dupid, table.toString(), EnterNames)
       case TableViewType(tid, rid) =>
         val e = getButton("Table")
         e.text mustBe s"Table ${table}"
         clickButton(s"Table")
-        new TablePage(dupid.get, table.toString(), EnterNames)
+        new TablePage(dupid, table.toString(), EnterNames)
     }
   }
 
@@ -366,14 +369,14 @@ class ScoreboardPage(
       board: Int
   )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage = {
     clickButton(s"Board_B${board}")
-    new HandPage
+    new HandPage(dupid, view, IndividualBoard.id(board).id, "")
   }
 
   def clickBoardToBoard(
       board: Int
   )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
     clickButton(s"Board_B${board}")
-    new BoardPage
+    new BoardPage(dupid, view, IndividualBoard.id(board).id)
   }
 
   def clickSummary(implicit

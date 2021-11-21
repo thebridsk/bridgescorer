@@ -29,7 +29,8 @@ object HandPage {
       patienceConfig: PatienceConfig,
       pos: Position
   ): HandPage = {
-    new HandPage
+    val (dupid, viewtype, board, hand) = parseUrl
+    new HandPage(dupid, viewtype, board, hand)
   }
 
   def goto(
@@ -44,7 +45,7 @@ object HandPage {
       pos: Position
   ): HandPage = {
     go to urlFor(dupid, tableId, roundId, board, hand)
-    new HandPage
+    new HandPage(dupid, ScoreboardPage.TableViewType(tableId.toString(), roundId.toString()), board, hand)
   }
 
   // duplicate URI: #duplicate/M19/table/1/round/1/boards/B1/hands/T1
@@ -60,11 +61,64 @@ object HandPage {
     )
 
   val patternForIds: Regex =
-    """(M\d+)/table/(\d+)/round/(\d+)/boards/(B\d+)/hands/(T\d+)""".r
+    """(I\d+)/table/(\d+)/round/(\d+)/boards/(B\d+)/hands/(p\d+)""".r
+
+  val patternDirectorForIds: Regex =
+    """(I\d+)/director/boards/(B\d+)/hands/(p\d+)""".r
+
+  val patternCompletedForIds: Regex =
+    """(I\d+)/boards/(B\d+)/hands/(p\d+)""".r
+
+  def parseUrl(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): (String, ScoreboardPage.ViewType, String, String) = {
+    val url = currentUrl
+    val prefix = TestServer.getAppPageUrl("individual/match/")
+    withClue(s"Unable to determine duplicate id from URL: ${url}") {
+      url must startWith(prefix)
+      url.drop(prefix.length()) match {
+        case patternForIds(did, tid, rid, bid, hid) =>
+          (
+            did,
+            ScoreboardPage.TableViewType(
+              tid,
+              rid
+            ),
+            bid,
+            hid
+          )
+        case patternDirectorForIds(did,bid,hid) =>
+          (
+            did,
+            ScoreboardPage.DirectorViewType,
+            bid,
+            hid
+          )
+        case patternCompletedForIds(did,bid,hid) =>
+          (
+            did,
+            ScoreboardPage.CompletedViewType,
+            bid,
+            hid
+          )
+        case _                      => fail("Could not determine table")
+      }
+    }
+  }
 }
 
-class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
-    extends BaseHandPage[HandPage]
+class HandPage(
+  val dupid: String,
+  val viewtype: ScoreboardPage.ViewType,
+  val board: String,
+  val hand: String
+)(
+  implicit
+    val webDriver: WebDriver,
+    pageCreated: SourcePosition
+) extends BaseHandPage[HandPage]
     with HandPicture[HandPage] {
   import HandPage._
 
@@ -75,11 +129,21 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
     logMethod(
       s"${pos.line} ${getClass.getSimpleName}.validate, patienceConfig=${patienceConfig}"
     ) {
-      eventually {
-        findIds
-      }
       super.validate
-      this
+      eventually {
+        val (did, tableid, roundid, boardid, handid) = findIds
+        did mustBe dupid
+        viewtype match {
+          case vt: ScoreboardPage.TableViewType =>
+            tableid mustBe vt.table
+            roundid mustBe vt.round
+          case _ =>
+            fail(s"Expecting a TableViewType, got ${viewtype}")
+        }
+        boardid mustBe board
+        if (hand != "") handid mustBe handid
+        new HandPage(dupid,viewtype,board,handid)
+      }
     }
 
   override def clickOk(implicit
@@ -87,7 +151,7 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       pos: Position
   ): BoardPage = {
     super.clickOk
-    new BoardPage
+    new BoardPage(dupid, viewtype, board)
   }
 
   override def clickCancel(implicit
@@ -95,7 +159,7 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       pos: Position
   ): BoardPage = {
     super.clickCancel
-    new BoardPage
+    new BoardPage(dupid, viewtype, board)
   }
 
   def findIds(implicit
@@ -272,6 +336,75 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
   }
 
   def onlyEnterHand(
+      hob: HandsOnBoard,
+      bis: BoardInSet,
+      north: ScoreboardPage.Player,
+      south: ScoreboardPage.Player,
+      east: ScoreboardPage.Player,
+      west: ScoreboardPage.Player,
+  )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
+    withClue(
+      s"""${pos.line} HandPage.onlyEnterHand table ${hob} """
+    ) {
+      val b = hob
+
+      val dealerPos: PlayerPosition = PlayerPosition(bis.dealer)
+
+      val dealer: ScoreboardPage.Player =
+          dealerPos match {
+            case North => north
+            case South => south
+            case East  => east
+            case West  => west
+          }
+
+      eventually {
+        b.hand.declarer match {
+          case North | South =>
+            b.hand.vul.vul mustBe bis.nsVul
+          case East | West =>
+            b.hand.vul.vul mustBe bis.ewVul
+        }
+
+        def buttonText(
+            player: ScoreboardPage.Player,
+            vul: Boolean,
+            pos: String
+        ) = {
+          val svul = if (vul) "Vul" else "vul"
+          s"""${player.index}: ${player.name.trim} $svul"""
+        }
+
+        getButton("DecN").text mustBe buttonText(
+          north,
+          bis.nsVul,
+          "North"
+        )
+        getButton("DecS").text mustBe buttonText(
+          south,
+          bis.nsVul,
+          "South"
+        )
+        getButton("DecE").text mustBe buttonText(
+          east,
+          bis.ewVul,
+          "East"
+        )
+        getButton("DecW").text mustBe buttonText(
+          west,
+          bis.ewVul,
+          "West"
+        )
+
+        checkDealerPos(dealerPos)
+        checkDealer(dealer.toLabelString())
+      }
+
+      onlyEnterHand(b.hand)
+    }
+  }
+
+  def onlyEnterHand(
       table: Int,
       round: Int,
       board: Int,
@@ -286,75 +419,17 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
     ) {
       val b = allhands.getBoard(table, round, board)
 
-      val dealerPos: Option[PlayerPosition] = {
-        allhands.boardsets match {
-          case Some(bs) =>
-            bs.boards
-              .find(bis => bis.id == board)
-              .map(bis => PlayerPosition(bis.dealer))
-          case None => None
-        }
-      }
+      val bis: BoardInSet = allhands.getBoardFromBoardSet(board).get
+      val dp: PlayerPosition = PlayerPosition(bis.dealer)
 
-      val dealer: Option[ScoreboardPage.Player] = dealerPos match {
-        case Some(dp) =>
+      val dealer: ScoreboardPage.Player =
           dp match {
-            case North => Some(north)
-            case South => Some(south)
-            case East  => Some(east)
-            case West  => Some(west)
+            case North => north
+            case South => south
+            case East  => east
+            case West  => west
           }
-        case None => None
-      }
-
-      eventually {
-        allhands.getBoardFromBoardSet(board) match {
-          case Some(bis) =>
-            b.hand.declarer match {
-              case North | South =>
-                b.hand.vul.vul mustBe bis.nsVul
-              case East | West =>
-                b.hand.vul.vul mustBe bis.ewVul
-            }
-
-            def buttonText(
-                player: ScoreboardPage.Player,
-                vul: Boolean,
-                pos: String
-            ) = {
-              val svul = if (vul) "Vul" else "vul"
-              s"""${player.index} ${player.name.trim} $svul $pos"""
-            }
-
-            getButton("DecN").text mustBe buttonText(
-              north,
-              bis.nsVul,
-              "North"
-            )
-            getButton("DecS").text mustBe buttonText(
-              south,
-              bis.nsVul,
-              "South"
-            )
-            getButton("DecE").text mustBe buttonText(
-              east,
-              bis.ewVul,
-              "East"
-            )
-            getButton("DecW").text mustBe buttonText(
-              west,
-              bis.ewVul,
-              "West"
-            )
-
-          case None =>
-        }
-
-        dealerPos.foreach(dp => checkDealerPos(dp))
-        dealer.foreach(d => checkDealer(d.name))
-      }
-
-      onlyEnterHand(b.hand)
+      onlyEnterHand(b, bis, north, south, east, west)
     }
 
   }
@@ -365,11 +440,11 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       patienceConfig: PatienceConfig,
       pos: Position
   ): Element = {
-    val e = find(xpath(s"""//span[@id = '${loc.name}']/span"""))
+    val e = find(xpath(s"""//span[@id = '${loc.name}']"""))
     e
   }
 
-  val patternPlayerNumber: Regex = """(\d+) (.*)""".r
+  val patternPlayerNumber: Regex = """(\d+): (.*) ([vV]ul)""".r
 
   def getPlayer(
       loc: PlayerPosition
@@ -379,7 +454,7 @@ class HandPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
   ): ScoreboardPage.Player = {
     eventually {
       findPlayerNameElement(loc).text match {
-        case patternPlayerNumber(index, name) => ScoreboardPage.Player(index.toInt, name)
+        case patternPlayerNumber(index, name, vul) => ScoreboardPage.Player(index.toInt, name)
         case x =>
           fail(
             s"Did not find a player number in declarer button for ${loc.name}: ${x}"
@@ -448,6 +523,8 @@ case class HandsOnBoard(
     hand: EnterHand,
     other: OtherHand*
 ) {
+
+  def setOther(o: OtherHand*) = HandsOnBoard(table, round, board, hand, o:_*)
 
   def addTeamNotPlayed(tnp: PlayerNotPlayingHand*): HandsOnBoard = {
     HandsOnBoard(table, round, board, hand, (other.toList ::: (tnp.toList)): _*)
@@ -751,7 +828,9 @@ class AllHandsInMatch(
   }
 
   def getHandsOnBoards(board: Int): List[HandsOnBoard] = {
-    hands.filter(h => h.board == board)
+    val h = hands.filter(h => h.board == board)
+    HandPage.log.info(s"Board ${board}: hands ${h}")
+    h
   }
 
   def getPlayersThatPlayBoard(board: Int): List[Int] = {
@@ -791,11 +870,11 @@ class AllHandsInMatch(
       val (played, notplayed) = getHandsOnBoards(hob.board)
         .filterNot(h => h.table == hob.table && h.round == hob.round)
         .foldLeft((List[HandsOnBoard](), List[HandsOnBoard]())) { (ac, h) =>
-          if (h.round < hob.round) (h :: ac._1, ac._2)
+          if (h.round <= hob.round) (h :: ac._1, ac._2)
           else (ac._1, h :: ac._2)
         }
       val allplayed = hob :: played
-
+      HandPage.log.info(s"allplayed is ${allplayed}")
       val (hobnsmp, hobewmp) = hob.getMatchPoints(allplayed)
       if (hob.hand.nsMP != hobnsmp || hob.hand.ewMP != hobewmp) {
         // error

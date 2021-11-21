@@ -22,6 +22,15 @@ object Store {
   val log: Logger = Logger[Store[_, _]]()
 }
 
+private class ContextSeq {
+  private var seq: Int = 0
+
+  def next: Int = synchronized {
+    seq = seq+1
+    seq
+  }
+}
+
 /**
   * Provides an API to a resource store.
   * The resource store consists of a cache and the specified persistent store.
@@ -79,6 +88,8 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[
     execute: ExecutionContext
 ) extends Resources[VId, VType]
     with StoreListenerManager {
+
+  private val contextSeq = new ContextSeq()
 
   def idToString(id: VId): String = persistent.support.idSupport.toString(id)
 
@@ -225,7 +236,10 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[
       .flatMap { r =>
         r match {
           case Right(v) =>
-            val f = cache.create(v.id, () => Result.future(v))
+            val f = cache.create(v.id, { () =>
+              changeContext.setSeq(contextSeq.next)
+              Result.future(v)
+            })
             f.map { t =>
               t match {
                 case Right(r) =>
@@ -451,6 +465,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[
     val rfut = cache.update(
       id,
       { ooldf =>
+        updator.setSeq(contextSeq.next)
         val oldf =
           ooldf.get // this can't be None, the third argument gets this value
         log.fine(
@@ -473,6 +488,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[
                             s"$resourceURI/${Resources.vidToString(id)}"
                           )
                         )
+                        notify(updator.changeContext)
                         Right(nv)
                       case Left(e) =>
                         Result(e)
@@ -499,7 +515,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[
         r match {
           case Right(nv1) =>
             val x = updator.responder(Right((nv1, tt.get)))
-            notify(updator.changeContext)
+            // notify(updator.changeContext)
             x
           case Left(error) =>
             Result(error)
@@ -547,6 +563,7 @@ abstract class Store[VId <: Comparable[VId], VType <: VersionedInstance[
                       List(
                         persistent.deleteFromPersistent(id, Some(oldv)).map {
                           ro =>
+                            changeContext.setSeq(contextSeq.next)
                             ro match {
                               case Right(o) =>
                                 notify(

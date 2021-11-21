@@ -184,7 +184,9 @@ class ListDuplicatePage(
       .map(id => buttons ::: importButtons)
       .getOrElse(buttons ::: mainButtons)
     val allbuttons = (matchIds.map { m =>
-      if (m.startsWith("M")) matchIdToButtonId(m) else resultIdToButtonId(m)
+      if (m.startsWith("M")) matchIdToButtonId(m)
+      else if (m.startsWith("I")) individualIdToButtonId(m)
+      else resultIdToButtonId(m)
     }.toList ::: b).toSet
     eventually {
       withClue(s"ListDuplicate.validate from ${pos.line}") {
@@ -275,9 +277,9 @@ class ListDuplicatePage(
   def clickMovements(implicit
       patienceConfig: PatienceConfig,
       pos: Position
-  ): MovementsPage = {
+  ): IndividualMovementsPage = {
     clickButton("Movements")
-    new MovementsPage()(webDriver, pos)
+    new IndividualMovementsPage()(webDriver, pos)
   }
 
   // def clickStatistics(implicit
@@ -315,7 +317,7 @@ class ListDuplicatePage(
       id: String
   )(implicit patienceConfig: PatienceConfig, pos: Position): ScoreboardPage = {
     clickButton(individualIdToButtonId(id))
-    new ScoreboardPage(Some(id))(webDriver, pos)
+    new ScoreboardPage(id)(webDriver, pos)
   }
 
   def clickResult(id: String)(implicit

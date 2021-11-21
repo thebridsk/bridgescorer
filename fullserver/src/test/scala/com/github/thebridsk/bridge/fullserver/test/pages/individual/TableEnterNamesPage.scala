@@ -12,6 +12,7 @@ import com.github.thebridsk.browserpages.PageBrowser._
 import org.scalatest.matchers.must.Matchers._
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.browserpages.Element
+import com.github.thebridsk.bridge.data.IndividualBoard
 
 object TableEnterNamesPage {
 
@@ -90,9 +91,9 @@ object TableEnterNamesPage {
     "SK_West" ::
     Nil
 
-  def posToInput(pos: PlayerPosition) = s"${pos.toString()}_input"
-  def posToName(pos: PlayerPosition) = s"${pos.toString()}_name"
-  def posToSK(pos: PlayerPosition) = s"SK_${pos.toString()}"
+  def posToInput(pos: PlayerPosition) = s"${pos.name}_input"
+  def posToName(pos: PlayerPosition) = s"${pos.name}_name"
+  def posToSK(pos: PlayerPosition) = s"SK_${pos.name}"
 
 }
 
@@ -161,7 +162,7 @@ class TableEnterNamesPage(
       pos: Position
   ): TableEnterNamesPage = {
     val text = eventually {
-      getTextInput(posToInput(loc))
+      getTextInput(loc.name)
     }
     text.value = name
     this
@@ -174,7 +175,7 @@ class TableEnterNamesPage(
       loc: PlayerPosition
   )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
-      getTextInput(posToInput(loc)).value
+      getTextInput(loc.name).value
     }
   }
 
@@ -185,7 +186,7 @@ class TableEnterNamesPage(
       loc: PlayerPosition
   )(implicit patienceConfig: PatienceConfig, pos: Position): List[Element] = {
     eventually {
-      getCombobox(posToInput(loc)).suggestions
+      getCombobox(loc.name).suggestions
     }
   }
 
@@ -196,7 +197,7 @@ class TableEnterNamesPage(
       loc: PlayerPosition
   )(implicit patienceConfig: PatienceConfig, pos: Position): Boolean = {
     eventually {
-      getCombobox(posToInput(loc)).isSuggestionVisible
+      getCombobox(loc.name).isSuggestionVisible
     }
   }
 
@@ -229,9 +230,14 @@ class TableEnterNamesPage(
     clickButton(buttonOK)
     board match {
       case Some(bid) =>
-        new HandPage()
+        new HandPage(
+          dupid,
+          ScoreboardPage.TableViewType(tableid, roundid),
+          IndividualBoard.id(bid).id,
+          ""
+        )
       case None =>
-        new ScoreboardPage(Some(dupid),ScoreboardPage.TableViewType(tableid,roundid))
+        new ScoreboardPage(dupid,ScoreboardPage.TableViewType(tableid,roundid))
     }
   }
 

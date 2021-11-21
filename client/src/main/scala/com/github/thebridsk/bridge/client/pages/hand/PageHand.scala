@@ -429,10 +429,11 @@ object PageHandInternal {
     val kickRefresh = scope.forceUpdate
 
     val ok: Callback = scope.stateProps { (state, props) =>
+      val c = props.contract
       props.callbackWithHonors
         .map { cb =>
           cb(
-            state.currentcontract,
+            state.currentcontract.setPlayers(c.north, c.south, c.east, c.west),
             state.picture,
             state.removePicture,
             state.honors.getOrElse(0),
@@ -441,7 +442,7 @@ object PageHandInternal {
         }
         .getOrElse {
           props.callbackOk(
-            state.currentcontract,
+            state.currentcontract.setPlayers(c.north, c.south, c.east, c.west),
             state.picture,
             state.removePicture
           )
@@ -566,10 +567,10 @@ object PageHandInternal {
         SectionHeader(
           contract.scoringSystem,
           state.declarer,
-          contract.north,
-          contract.south,
-          contract.east,
-          contract.west,
+          props.contract.north,
+          props.contract.south,
+          props.contract.east,
+          props.contract.west,
           contract.nsVul,
           contract.ewVul,
           setDeclarer,

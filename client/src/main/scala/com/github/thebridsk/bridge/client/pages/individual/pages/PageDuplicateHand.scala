@@ -94,6 +94,7 @@ object PageDuplicateHand {
       def create(props: Props): State = {
         IndividualDuplicateStore.getMatch() match {
           case Some(md) if md.id == props.page.dupid =>
+            logger.fine(s"PageDuplicateHand.State.create: md=${md}")
             md.getBoard(props.page.boardid) match {
               case Some(board) =>
                 board.getHand(props.page.handid) match {
@@ -129,9 +130,9 @@ object PageDuplicateHand {
 
     def getName(p: Int, players: List[String]) = {
       if (0 < p && p <= players.length) {
-        s"${p} ${players(p-1)}"
+        s"${p}: ${players(p-1)}"
       } else {
-        "${p}"
+        s"${p}"
       }
     }
 
@@ -168,12 +169,14 @@ object PageDuplicateHand {
           ),
           state.vals match {
             case Some((md, board, hand, res)) if md.id == props.page.dupid =>
+              logger.fine(s"""PageDuplicateHand.render md=${md}""")
               val newhand = state.newhand
               val players = md.players
               val north = getName(hand.north, players)
               val south = getName(hand.south, players)
               val east = getName(hand.east, players)
               val west = getName(hand.west, players)
+              logger.fine(s"""PageDuplicateHand.render n=${north} s=${south} e=${east} w=${west}""")
               val contract = Contract.create(
                 res,
                 Duplicate,
@@ -253,23 +256,31 @@ object PageDuplicateHand {
 
       val storeCallback: Callback = scope.modStateOption { (s, p) =>
         val newstate = State.create(p)
-        if (newstate.vals.isDefined == s.vals.isDefined) {
+        logger.fine(s"""PageDuplicateHand.storeCallback setting up new state from old=${s}\nand new=${newstate}""")
+        val ns = if (newstate.vals.isDefined == s.vals.isDefined) {
           newstate.vals match {
             case Some((nmd, nboard, nhand, nres)) =>
               s.vals match {
                 case Some((md, board, hand, res)) =>
-                  if (nres.equalsIgnoreModifyTime(res)) None
-                  else Some(newstate)
+                  if (md.equalsIgnoreModifyTime(nmd)) {
+                    logger.fine(s"""PageDuplicateHand.storeCallback nothing has changed""")
+                    None
+                  }
+                  else {
+                    logger.fine(s"""PageDuplicateHand.storeCallback generating new state""")
+                    Some(newstate.copy(vals = Some((nmd, nboard, nhand, res))))
+                  }
                 case None =>
                   Some(newstate)
               }
-              Some(newstate)
             case None =>
               Some(newstate)
           }
         } else {
           Some(newstate)
         }
+        logger.fine(s"""PageDuplicateHand.storeCallback returning ${ns}""")
+        ns
       }
 
       val didMount: Callback = scope.props >>= { (p) =>
@@ -295,8 +306,12 @@ object PageDuplicateHand {
       Callback {
         val props = cdu.currentProps
         val prevProps = cdu.prevProps
+
         if (prevProps.page != props.page) {
           IndividualController.monitor(props.page.dupid)
+          cdu.modState { s =>
+            State.create(props)
+          }.runNow()
         }
       }
 

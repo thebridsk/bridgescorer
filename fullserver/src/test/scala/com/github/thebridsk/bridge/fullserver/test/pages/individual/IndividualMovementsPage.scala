@@ -13,7 +13,7 @@ import com.github.thebridsk.bridge.server.test.util.HttpUtils
 import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 import java.net.URL
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ListDuplicatePage
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.ListDuplicatePage
 
 object IndividualMovementsPage {
 

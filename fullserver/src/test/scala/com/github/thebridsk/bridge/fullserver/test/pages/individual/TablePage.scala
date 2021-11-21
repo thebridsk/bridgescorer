@@ -13,6 +13,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.individual.ScoreboardPa
 import com.github.thebridsk.bridge.fullserver.test.pages.individual.ScoreboardPage.TableViewType
 import com.github.thebridsk.browserpages.Page.AnyPage
 import com.github.thebridsk.bridge.fullserver.test.pages.BaseHandPage
+import com.github.thebridsk.bridge.data.IndividualBoard
 
 object TablePage {
 
@@ -39,7 +40,7 @@ object TablePage {
     new TablePage(dupid, tableid, target)
   }
 
-  private val patternTable = """(M\d+)/table/(\d+)""".r
+  private val patternTable = """(I\d+)/table/(\d+)""".r
 
   /**
     * Get the table id
@@ -53,7 +54,7 @@ object TablePage {
   ): (String, String) = {
     val prefix = TestServer.getAppPageUrl("individual/match/")
     val cur = currentUrl
-    withClue(s"Unable to determine duplicate id: ${cur}") {
+    withClue(s"Unable to determine duplicate id from URL: ${cur}") {
       cur must startWith(prefix)
       cur.drop(prefix.length()) match {
         case patternTable(did, tid) => (did, tid)
@@ -119,7 +120,7 @@ class TablePage(dupid: String, tableid: String, target: TablePage.Target)(
         new TableEnterNamesPage(dupid, tableid, round.toString(), None)
       case Hands | Boards =>
         new ScoreboardPage(
-          Some(dupid),
+          dupid,
           TableViewType(tableid, round.toString())
         )
     }
@@ -134,9 +135,9 @@ class TablePage(dupid: String, tableid: String, target: TablePage.Target)(
       case EnterNames =>
         new TableEnterNamesPage(dupid, tableid, round.toString(), Some(board))
       case Hands =>
-        new HandPage
+        new HandPage(dupid, TableViewType(tableid, round.toString()), IndividualBoard.id(board).id, "")
       case Boards =>
-        new BoardPage
+        new BoardPage(dupid, TableViewType(tableid, round.toString()), IndividualBoard.id(board).id)
     }
   }
 
@@ -145,7 +146,7 @@ class TablePage(dupid: String, tableid: String, target: TablePage.Target)(
       pos: Position
   ): ScoreboardPage = {
     clickButton("Game")
-    new ScoreboardPage(Some(dupid), CompletedViewType)
+    new ScoreboardPage(dupid, CompletedViewType)
   }
 
   def clickInputStyle(implicit

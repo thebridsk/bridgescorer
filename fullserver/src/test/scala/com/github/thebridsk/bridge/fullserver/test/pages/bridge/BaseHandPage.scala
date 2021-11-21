@@ -20,6 +20,11 @@ import com.github.thebridsk.browserpages.GenericPage
 import com.github.thebridsk.browserpages.Element
 import org.scalatest.Assertion
 import scala.util.matching.Regex
+import com.github.thebridsk.bridge.data.bridge.North
+import com.github.thebridsk.bridge.data.bridge.South
+import com.github.thebridsk.bridge.data.bridge.East
+import com.github.thebridsk.bridge.data.bridge.West
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.ScoreboardPage
 
 object BaseHandPage {
 
@@ -730,7 +735,7 @@ abstract class BaseHandPage[T <: Page[T]](implicit
       patienceConfig: PatienceConfig,
       pos: Position
   ): BaseHandPage[T] with T = {
-    getElemById("Dealer").text mustBe name.trim
+    getElemById("Dealer").text mustBe name.trim()
     this
   }
 
@@ -740,6 +745,18 @@ abstract class BaseHandPage[T <: Page[T]](implicit
   ): Assertion = {
     withClue(s"Checking vulnerability of ${loc} for ${vul}") {
       getVulnerable(loc) mustBe vul.vul
+    }
+  }
+
+  def checkVulnerable(nsVul: Vulnerability, ewVul: Vulnerability)(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): Assertion = {
+    withClue(s"Checking vulnerability ns ${nsVul} ew ${ewVul}") {
+      getVulnerable(North) mustBe nsVul.vul
+      getVulnerable(South) mustBe nsVul.vul
+      getVulnerable(East) mustBe ewVul.vul
+      getVulnerable(West) mustBe ewVul.vul
     }
   }
 }

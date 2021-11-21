@@ -27,6 +27,7 @@ import org.scalajs.dom.raw.File
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
+import com.github.thebridsk.bridge.data.DuplicatePicture
 
 /**
   * A component page that shows and allows entering of the results of playing a hand.
@@ -79,7 +80,7 @@ object PageDuplicateHand {
       * will cause State to leak.
       */
     case class State(
-        vals: Option[(MatchDuplicate, Board, DuplicateHand, Hand)],
+        vals: Option[(MatchDuplicate, Board, DuplicateHand, Option[DuplicatePicture], Hand)],
         newhand: Boolean,
         errormsg: Option[String] = None
     )
@@ -111,7 +112,8 @@ object PageDuplicateHand {
                           true
                         )
                     }
-                    State(Some((md, board, hand, res)), newhand, None)
+                    val pic = DuplicateStore.getPicture(md.id, props.page.boardid, props.page.handid)
+                    State(Some((md, board, hand, pic, res)), newhand, None)
                   case None => State(None, false, Some("Did not find hand"))
                 }
               case None => State(None, false, Some("Did not find board"))
@@ -152,7 +154,7 @@ object PageDuplicateHand {
             case Some(msg) => <.p(msg)
             case None =>
               state.vals match {
-                case Some((md, board, hand, res)) if md.id == props.page.dupid =>
+                case Some((md, board, hand, pic, res)) if md.id == props.page.dupid =>
                   val newhand = state.newhand
                   val (north, south, east, west) = {
                     var n = "Unknown"
@@ -264,10 +266,10 @@ object PageDuplicateHand {
         val newstate = State.create(p)
         if (newstate.vals.isDefined == s.vals.isDefined) {
           newstate.vals match {
-            case Some((nmd, nboard, nhand, nres)) =>
+            case Some((nmd, nboard, nhand, npic, nres)) =>
               s.vals match {
-                case Some((md, board, hand, res)) =>
-                  if (nres.equalsIgnoreModifyTime(res)) None
+                case Some((md, board, hand, pic, res)) =>
+                  if (nres.equalsIgnoreModifyTime(res)) Some(newstate)
                   else Some(newstate)
                 case None =>
                   Some(newstate)

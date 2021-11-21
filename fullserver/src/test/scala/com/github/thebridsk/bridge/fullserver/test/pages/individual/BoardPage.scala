@@ -20,11 +20,9 @@ import com.github.thebridsk.bridge.fullserver.test.pages.individual.TablePage.Ha
 import com.github.thebridsk.bridge.data.bridge.ContractSuit
 import com.github.thebridsk.bridge.data.bridge.ContractDoubled
 import com.github.thebridsk.bridge.data.bridge.Vulnerability
-import com.github.thebridsk.bridge.data.bridge.Vul
-import com.github.thebridsk.bridge.data.bridge.NotVul
 import com.github.thebridsk.browserpages.Element
-import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HomePage
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.HandPicture
+import com.github.thebridsk.bridge.data.IndividualBoard
 
 object BoardPage {
 
@@ -35,7 +33,8 @@ object BoardPage {
       patienceConfig: PatienceConfig,
       pos: Position
   ): BoardPage = {
-    new BoardPage
+    val (dupid, viewtype, boardid) = findIds
+    new BoardPage(dupid, viewtype, boardid)
   }
 
   def goto(dupid: String, director: Boolean, boardId: String)(implicit
@@ -44,7 +43,9 @@ object BoardPage {
       pos: Position
   ): BoardPage = {
     go to urlFor(dupid, director, boardId)
-    new BoardPage
+    val viewtype = if (director) ScoreboardPage.DirectorViewType
+                   else ScoreboardPage.CompletedViewType
+    new BoardPage(dupid, viewtype, boardId)
   }
 
   def goto(dupid: String, tableId: Int, roundId: Int, boardId: String)(implicit
@@ -53,7 +54,7 @@ object BoardPage {
       pos: Position
   ): BoardPage = {
     go to urlFor(dupid, tableId, roundId, boardId)
-    new BoardPage
+    new BoardPage(dupid, TableViewType(tableId.toString(), roundId.toString()), boardId)
   }
 
   def urlFor(
@@ -150,7 +151,15 @@ trait PageWithBoardButtons {
   )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage
 }
 
-class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
+class BoardPage(
+  val dupid: String,
+  val viewtype: ViewType,
+  val boardId: String
+)(
+  implicit
+    val webDriver: WebDriver,
+    pageCreated: SourcePosition
+)
     extends Page[BoardPage]
     with PageWithBoardButtons
     with HandPicture[BoardPage] {
@@ -416,10 +425,12 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
     * @param pos
     * @return all the rows.  Each element is a row, a list of the cells in a row
     */
-  def getRows(implicit pos: Position): List[List[Element]] = {
-    findElemsByXPath(
-      divViewBoardPrefix + """/table/body/tr/td"""
-    ).grouped(13).toList
+  def getRows(implicit pos: Position): List[Hand] = {
+    val rows = findElemsByXPath(
+      divViewBoardPrefix + """/table/tbody/tr/td"""
+    ).grouped(13).toList.map(l => getHand(l))
+    log.fine(s"BoardPage.getRows: ${rows}")
+    rows
   }
 
   /**
@@ -429,9 +440,11 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
   private def getHandRow(player: Int)(implicit pos: Position): Option[Hand] = {
     val p = player.toString()
     val rows = getRows
-    rows.map { l => getHand(l) }.find { h =>
+    val r = rows.find { h =>
       h.contains(p)
     }
+    log.fine(s"BoardPage.getHandRow(${player}): ${r}")
+    r
   }
 
   def checkHandNotPlayed(n: Int, s: Int, e: Int, w: Int)(implicit pos: Position): BoardPage = {
@@ -499,7 +512,7 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
   )(implicit pos: Position): BoardPage = {
     getHandRow(n) match {
       case Some(h) =>
-        withClue(s"Hand results for players ${n},${s},${e},${w},: ${h}") {
+        withClue(s"Hand results for players ${n},${s},${e},${w}, nsPoint=${nsPoints}, ewPoint=${ewPoints}: ${h}") {
           h.north mustBe n.toString()
           h.south mustBe s.toString()
           h.east mustBe e.toString()
@@ -556,8 +569,8 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       down,
       s"${nsScore}",
       s"${-nsScore}",
-      s"${nsMP}",
-      s"${ewMP}",
+      f"${nsMP}%1.0f",
+      f"${ewMP}%1.0f",
       picture = ""
     )
   }
@@ -593,29 +606,31 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
   )(implicit patienceConfig: PatienceConfig, pos: Position): BoardPage = {
     val allplayed =
       b.other.find(oh => oh.isInstanceOf[OtherHandNotPlayed]).isEmpty
-    b.other.foreach { oh =>
-      oh match {
-        case OtherHandNotPlayed(tableid, roundid, boardid) =>
-          val ob = allhands.getBoard(tableid, roundid, boardid)
-          checkHandNotPlayed(ob.hand.north, ob.hand.south,ob.hand.east, ob.hand.west)
-        case OtherHandPlayed(
-              tableid,
-              roundid,
-              boardid,
-              nsMP,
-              ewMP,
-              nsIMP,
-              ewIMP
-            ) =>
-          val ob = allhands.getBoard(tableid, roundid, boardid)
-          if (!allplayed && checkmarks) {
-            checkHandPlayedWithCheckmarks(ob.hand.north, ob.hand.south,ob.hand.east, ob.hand.west)
-          } else {
-            val eh = ob.hand.copy(nsMP = nsMP, ewMP = ewMP)
-            checkHandScores(eh)
-          }
-        case PlayerNotPlayingHand(boardid, player) =>
-          checkPlayerNeverPlays(player)
+    eventually {
+      b.other.foreach { oh =>
+        oh match {
+          case OtherHandNotPlayed(tableid, roundid, boardid) =>
+            val ob = allhands.getBoard(tableid, roundid, boardid)
+            checkHandNotPlayed(ob.hand.north, ob.hand.south,ob.hand.east, ob.hand.west)
+          case OtherHandPlayed(
+                tableid,
+                roundid,
+                boardid,
+                nsMP,
+                ewMP,
+                nsIMP,
+                ewIMP
+              ) =>
+            val ob = allhands.getBoard(tableid, roundid, boardid)
+            if (!allplayed && checkmarks) {
+              checkHandPlayedWithCheckmarks(ob.hand.north, ob.hand.south,ob.hand.east, ob.hand.west)
+            } else {
+              val eh = ob.hand.copy(nsMP = nsMP, ewMP = ewMP)
+              checkHandScores(eh)
+            }
+          case PlayerNotPlayingHand(boardid, player) =>
+            checkPlayerNeverPlays(player)
+        }
       }
     }
     this
@@ -685,7 +700,8 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
   )(implicit patienceConfig: PatienceConfig, pos: Position): HandPage =
     eventually {
       click on id(s"""Hand_${nplayer}""")
-      new HandPage
+
+      new HandPage(dupid, viewtype, boardId, s"p${nplayer}")
     }
 
   def clickBoardButton(
@@ -699,7 +715,7 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
     eventually {
       click on id(s"""Board_B${board}""")
       findIds._3 mustBe s"""B${board}"""
-      new BoardPage
+      new BoardPage(dupid, viewtype, IndividualBoard.id(board).id)
     }
 
   def clickUnplayedBoard(
@@ -710,7 +726,7 @@ class BoardPage(implicit val webDriver: WebDriver, pageCreated: SourcePosition)
       val b = findElemById(s"""Board_B${board}""")
       b.scrollToElement
       b.enter
-      new HandPage
+      new HandPage(dupid, viewtype, IndividualBoard.id(board).id, "")
     }
 
   def clickTableButton(

@@ -17,6 +17,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.LightDarkAddOn
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage
 import com.github.thebridsk.bridge.fullserver.test.pages.chicago.EnterNamesPage
 import com.github.thebridsk.bridge.fullserver.test.pages.rubber
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.{ListDuplicatePage => IListDuplicatePage}
 import org.scalatest.Assertion
 
 object HomePage {
@@ -95,6 +96,14 @@ class HomePage(implicit webDrivr: WebDriver, pageCreated: SourcePosition)
   ): ListDuplicatePage = {
     clickButton("Duplicate")
     new ListDuplicatePage(None)(webDriver, pos)
+  }
+
+  def clickListIndividualButton(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): IListDuplicatePage = {
+    clickButton("Individual")
+    new IListDuplicatePage(None)(webDriver, pos)
   }
 
   def clickNewDuplicateButton(implicit
