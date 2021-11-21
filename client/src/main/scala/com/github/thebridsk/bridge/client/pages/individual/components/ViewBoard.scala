@@ -21,6 +21,7 @@ import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.client.pages.hand.Picture
 import com.github.thebridsk.bridge.client.pages.hand.HandStyles.handStyles
 import com.github.thebridsk.bridge.client.pages.individual.styles.IndividualStyles.dupStyles
+import com.github.thebridsk.bridge.data.util.Strings
 
 /**
   * A component to show the results of playing a board.
@@ -161,17 +162,21 @@ object ViewBoard {
           <.td(if (props.useIMPs) hand.showNSIMP else hand.showNSMP),
           <.td(if (props.useIMPs) hand.showEWIMP else hand.showEWMP),
           <.td(
-            props.pictures
-              .find(dp => dp.boardId == hand.hand.board && dp.handId == hand.hand.id)
-              .whenDefined { dp =>
-                <.button(
-                  ^.`type` := "button",
-                  handStyles.footerButton,
-                  ^.onClick --> backend.doShowPicture(dp.url),
-                  ^.id := "ShowPicture_" + hand.hand.id.id,
-                  Photo()
-                )
-              }
+            if (hand.scorehand.isEmpty) ""
+            else if (hand.hide) Strings.checkmark
+            else {
+              props.pictures
+                .find(dp => dp.boardId == hand.hand.board && dp.handId == hand.hand.id)
+                .whenDefined { dp =>
+                  <.button(
+                    ^.`type` := "button",
+                    handStyles.footerButton,
+                    ^.onClick --> backend.doShowPicture(dp.url),
+                    ^.id := "ShowPicture_" + hand.hand.id.id,
+                    Photo()
+                  )
+                }
+            }
           )
         )
 

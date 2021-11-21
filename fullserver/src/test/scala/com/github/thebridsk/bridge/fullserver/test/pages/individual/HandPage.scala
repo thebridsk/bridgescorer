@@ -733,6 +733,14 @@ class AllHandsInMatch(
       .sorted
   }
 
+  def getHandsInTableRound(table: Int, round: Int): List[HandsOnBoard] = {
+    hands
+      .filter(h => h.round == round && h.table == table)
+      .sortWith { (l,r) =>
+        l.board < r.board
+      }
+  }
+
   def getBoard(table: Int, round: Int, board: Int): HandsOnBoard =
     hands.find(hob =>
       hob.board == board && hob.table == table && hob.round == round
@@ -766,6 +774,17 @@ class AllHandsInMatch(
             case None => Some(hob)
           }
       }
+  }
+
+  /**
+    * Get the latest HandsOnBoard upto and including the specified round
+    * @param toRound
+    * @param board
+    * @return the boards that are played in the round
+    */
+  def getHandsInRound(round: Int): List[HandsOnBoard] = {
+    hands
+      .filter { h => h.round == round }
   }
 
   def getPlayerScoreToRound(

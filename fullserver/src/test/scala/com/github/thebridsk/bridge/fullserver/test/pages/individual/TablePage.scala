@@ -73,7 +73,11 @@ object TablePage {
 
 }
 
-class TablePage(dupid: String, tableid: String, target: TablePage.Target)(
+class TablePage(
+    val dupid: String,
+    val tableid: String,
+    val target: TablePage.Target
+)(
     implicit
     webDriver: WebDriver,
     pageCreated: SourcePosition

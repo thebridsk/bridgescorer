@@ -195,7 +195,7 @@ class ScoreboardPage(
           case ScoreboardPage.DirectorViewType =>
             help mustBe "Director's Scoreboard"
           case ScoreboardPage.TableViewType(table, round) =>
-            help must fullyMatch regex (s"""Table $table Scoreboard, Round $round, Teams .+ and .+""")
+            help must fullyMatch regex (s"""Table $table Scoreboard, Round $round""")
         }
         did
       }

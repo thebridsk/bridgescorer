@@ -36,6 +36,9 @@ import com.github.thebridsk.bridge.fullserver.test.pages.individual.OtherHandNot
 import com.github.thebridsk.bridge.fullserver.test.pages.individual.BoardPage
 import com.github.thebridsk.bridge.data.IndividualBoard
 import org.openqa.selenium.WebDriver
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import scala.concurrent.Await
+import com.github.thebridsk.bridge.data.Table
 
 
 object IndividualTest {
@@ -93,7 +96,7 @@ object IndividualTest {
         1, 1, 1,
         EnterHand(
           8, 1, 5, 7,
-          110, 0, 0, 0,
+          110, 0, 0, 0,  // neither vul
           1, Spades, NotDoubled, North, Made, 2, NotVul
         )
       ),
@@ -102,7 +105,7 @@ object IndividualTest {
         1, 1, 1,
         EnterHand(
           8, 1, 5, 7,
-          110, 2, 0, 1,
+          110, 2, 0, 1,  // neither vul
           1, Spades, NotDoubled, North, Made, 2, NotVul
         )
       ),
@@ -113,7 +116,7 @@ object IndividualTest {
         2, 1, 2,
         EnterHand(
           2, 6, 4, 3,
-          110, 0, 0, 0,
+          110, 0, 0, 0,  // ns vul
           1, Spades, NotDoubled, North, Made, 2, Vul
         )
       ),
@@ -122,7 +125,7 @@ object IndividualTest {
         2, 1, 2,
         EnterHand(
           2, 6, 4, 3,
-          110, 1, 1, 0,
+          110, 1, 1, 0,  // ns vul
           1, Spades, NotDoubled, North, Made, 2, Vul
         )
       ),
@@ -134,7 +137,7 @@ object IndividualTest {
         1, 1, 2,
         EnterHand(
           8, 1, 5, 7,
-          110, 1, 1, 0,
+          110, 1, 1, 0,  // ns vul
           1, Spades, NotDoubled, North, Made, 2, Vul
         )
       ),
@@ -147,7 +150,7 @@ object IndividualTest {
         2, 1, 1,
         EnterHand(
           2, 6, 4, 3,
-          80, 0, 2, -1,
+          80, 0, 2, -1,  // neither vul
           1, Spades, NotDoubled, North, Made, 1, NotVul
         )
       ),
@@ -157,9 +160,353 @@ object IndividualTest {
     ),
   )
 
+  val allrounds: List[Int] = 1::2::3::4::5::6::7::Nil
+
   lazy val allHands: AllHandsInMatch = new AllHandsInMatch(
     firstRoundHands.map { h => h.getForCheck }:::
     List(
+      HandsOnBoard(
+        1, 1, 3,
+        EnterHand(
+          8, 1, 5, 7,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 1, 3, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 1, 3,
+        EnterHand(
+          2, 6, 4, 3,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 1, 3, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 2, 4,
+        EnterHand(
+          8, 2, 6, 1,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 2, 4, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 2, 4,
+        EnterHand(
+          3, 7, 5, 4,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 2, 4, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 2, 5,
+        EnterHand(
+          8, 2, 6, 1,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 2, 5, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 2, 5,
+        EnterHand(
+          3, 7, 5, 4,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 2, 5, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 2, 6,
+        EnterHand(
+          8, 2, 6, 1,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 2, 6, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 2, 6,
+        EnterHand(
+          3, 7, 5, 4,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 2, 6, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 3, 7,
+        EnterHand(
+          8, 3, 7, 2,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 3, 7, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 3, 7,
+        EnterHand(
+          4, 1, 6, 5,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 3, 7, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 3, 8,
+        EnterHand(
+          8, 3, 7, 2,
+          400, 1, 1, 0,  // neither vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 3, 8, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 3, 8,
+        EnterHand(
+          4, 1, 6, 5,
+          400, 1, 1, 0,  // neither vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 3, 8, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 3, 9,
+        EnterHand(
+          8, 3, 7, 2,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 3, 9, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 3, 9,
+        EnterHand(
+          4, 1, 6, 5,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 3, 9, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 4, 10,
+        EnterHand(
+          8, 4, 1, 3,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 4, 10, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 4, 10,
+        EnterHand(
+          5, 2, 7, 6,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 4, 10, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 4, 11,
+        EnterHand(
+          8, 4, 1, 3,
+          400, 1, 1, 0,  // neither vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 4, 11, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 4, 11,
+        EnterHand(
+          5, 2, 7, 6,
+          400, 1, 1, 0,  // neither vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 4, 11, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 4, 12,
+        EnterHand(
+          8, 4, 1, 3,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 4, 12, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 4, 12,
+        EnterHand(
+          5, 2, 7, 6,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 4, 12, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 5, 13,
+        EnterHand(
+          8, 5, 2, 4,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 5, 13, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 5, 13,
+        EnterHand(
+          6, 3, 1, 7,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 5, 13, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 5, 14,
+        EnterHand(
+          8, 5, 2, 4,
+          400, 1, 1, 0,  // neither vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 5, 14, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 5, 14,
+        EnterHand(
+          6, 3, 1, 7,
+          400, 1, 1, 0,  // neither vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 5, 14, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 5, 15,
+        EnterHand(
+          8, 5, 2, 4,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 5, 15, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 5, 15,
+        EnterHand(
+          6, 3, 1, 7,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 5, 15, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 6, 16,
+        EnterHand(
+          8, 6, 3, 5,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 6, 16, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 6, 16,
+        EnterHand(
+          7, 4, 2, 1,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 6, 16, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 6, 17,
+        EnterHand(
+          8, 6, 3, 5,
+          400, 1, 1, 0,  // neither vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 6, 17, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 6, 17,
+        EnterHand(
+          7, 4, 2, 1,
+          400, 1, 1, 0,  // neither vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 6, 17, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 6, 18,
+        EnterHand(
+          8, 6, 3, 5,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 6, 18, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 6, 18,
+        EnterHand(
+          7, 4, 2, 1,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 6, 18, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 7, 19,
+        EnterHand(
+          8, 7, 4, 6,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(2, 7, 19, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 7, 19,
+        EnterHand(
+          1, 5, 3, 2,
+          400, 1, 1, 0,  // ew vul
+          3, NoTrump, NotDoubled, North, Made, 3, NotVul
+        ),
+        OtherHandPlayed(1, 7, 19, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 7, 20,
+        EnterHand(
+          8, 7, 4, 6,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 7, 20, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 7, 20,
+        EnterHand(
+          1, 5, 3, 2,
+          600, 1, 1, 0,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 7, 20, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        1, 7, 21,
+        EnterHand(
+          8, 7, 4, 6,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(2, 7, 21, 1, 1, 0, 0)
+      ),
+      HandsOnBoard(
+        2, 7, 21,
+        EnterHand(
+          1, 5, 3, 2,
+          600, 1, 1, 0,  // ns vul
+          3, NoTrump, NotDoubled, North, Made, 3, Vul
+        ),
+        OtherHandPlayed(1, 7, 21, 1, 1, 0, 0)
+      ),
     ),
     players,
     BoardSetsPage.getBoardSet(boardset),
@@ -246,6 +593,10 @@ class IndividualTest
 
   it should "go to the home page" in {
     tcpSleep(15)
+    withClue("allHands must have all rounds defined in allrounds") {
+      allHands.rounds.sorted mustBe allrounds.sorted
+    }
+
     waitForFutures(
       "Starting browsers",
       CodeBlock {
@@ -350,7 +701,7 @@ class IndividualTest
     rounds = IndividualMovementsPage.getRoundsFromMovement(movement)
 
     waitForFutures(
-      "Starting browsers",
+      "got to matches",
       CodeBlock {
         import SessionDirector._
         captureLogsOnError {
@@ -398,7 +749,7 @@ class IndividualTest
   it should "allow players names to be entered at both tables" in {
     tcpSleep(60)
     waitForFutures(
-      "Entering Names",
+      "allow players names to be entered at both tables",
       CodeBlock {
         import SessionTable1._
         var sk = TablePage
@@ -428,199 +779,197 @@ class IndividualTest
         sk.enterPlayer(West, getPlayerName(3))
         sk.setScorekeeper(North)
         val hand = sk.clickOK.asInstanceOf[HandPage].validate
-      },
-      // CodeBlock {
-      //   import SessionComplete._
-      //   // test for fix https://github.com/thebridsk/bridgescorer/pull/290
-      //   // and https://github.com/thebridsk/bridgescorer/pull/299 either will fix
-      //   // browser not being updated anymore.
-      //   // The following code will setup the condition of the browser not
-      //   // updating.  One of the following test cases will fail.
-      //   val sb = ScoreboardPage.current
-      //   val menu = sb.clickMainMenu.validate
-      //   eventually { menu.findElemById("Summary") }
-      //   val sum = menu.clickSummary.validate
-      //   sum.clickDuplicate(dupid.get).validate
-      // }
+      }
     )
   }
 
-  // it should "have all the players set in the server" in {
-  //   val f = TestServer.backend.individualduplicates.read(dupid.map{ s => IndividualDuplicate.id(s)}.get)
-  //   Await.result(f, Duration(10, "seconds")) match {
-  //     case Right(v) =>
-  //       v.id.id mustBe dupid.get
-  //       v.players mustBe players
-  //     case Left(v) =>
-  //       fail(s"Did not find IndividualDuplicate object with id ${dupid}")
-  //   }
-  // }
+  it should "have all the players set in the server" in {
+    val f = TestServer.backend.individualduplicates.read(dupid.map{ s => IndividualDuplicate.id(s)}.get)
+    Await.result(f, Duration(10, "seconds")) match {
+      case Right(v) =>
+        v.id.id mustBe dupid.get
+        v.players mustBe players
+      case Left(v) =>
+        fail(s"Did not find IndividualDuplicate object with id ${dupid}")
+    }
+  }
 
   it should "play the first hand in round 1" in {
     tcpSleep(60)
     waitForFutures(
-      "Entering Names",
+      "play the first hand in round 1",
       CodeBlock {
         import SessionTable1._
 
-        enterHand(HandPage.current.validate, firstRoundHands(0).getForCheckFirstRound)
-
-        // val frh = firstRoundHands(0)
-        // val hp = HandPage.current.validate
-        // hp.dupid mustBe dupid.get
-        // hp.viewtype mustBe ScoreboardPage.TableViewType("1", "1")
-        // hp.board mustBe "B1"
-        // hp.hand mustBe "p8"
-        // hp.getPlayer(North).toString() mustBe getPlayerTextInHand(8)
-        // hp.getPlayer(South).toString() mustBe getPlayerTextInHand(1)
-        // hp.getPlayer(East).toString() mustBe getPlayerTextInHand(5)
-        // hp.getPlayer(West).toString() mustBe getPlayerTextInHand(7)
-        // hp.checkVulnerable(NotVul, NotVul)
-
-        // hp.withClueAndScreenShot(
-        //   screenshotDir,
-        //   "EnterR1T1B1",
-        //   "Enter R1T1B1"
-        // ) {
-        //   val bp = hp.onlyEnterHand(
-        //             frh.getForCheckFirstRound,
-        //             allHands.getBoardFromBoardSet(frh.hob.board).get,
-        //             getPlayer(8),
-        //             getPlayer(1),
-        //             getPlayer(5),
-        //             getPlayer(7)
-        //           ).validate
-        //   bp.checkOthers(
-        //     frh.getForCheckFirstRound,
-        //     allHands
-        //   )
-        // }
+        enterHandAndCheckOther(HandPage.current.validate, firstRoundHands(0).getForCheckFirstRound)
       },
       CodeBlock {
         import SessionTable2._
 
-        enterHand(HandPage.current.validate, firstRoundHands(1).getForCheckFirstRound)
-
-        // val frh = firstRoundHands(1)
-        // val hp = HandPage.current.validate
-        // hp.dupid mustBe dupid.get
-        // hp.viewtype mustBe ScoreboardPage.TableViewType("2", "1")
-        // hp.board mustBe "B2"
-        // hp.hand mustBe "p2"
-        // hp.getPlayer(North).toString() mustBe getPlayerTextInHand(2)
-        // hp.getPlayer(South).toString() mustBe getPlayerTextInHand(6)
-        // hp.getPlayer(East).toString() mustBe getPlayerTextInHand(4)
-        // hp.getPlayer(West).toString() mustBe getPlayerTextInHand(3)
-        // hp.checkVulnerable(Vul, NotVul)
-
-        // hp.withClueAndScreenShot(
-        //   screenshotDir,
-        //   "EnterR1T2B2",
-        //   "Enter R1T2B2"
-        // ) {
-        //   val bp = hp.onlyEnterHand(
-        //             frh.getForCheckFirstRound,
-        //             allHands.getBoardFromBoardSet(frh.hob.board).get,
-        //             getPlayer(2),
-        //             getPlayer(6),
-        //             getPlayer(4),
-        //             getPlayer(3)
-        //           ).validate
-        //   bp.checkOthers(
-        //     frh.getForCheckFirstRound,
-        //     allHands
-        //   )
-        // }
+        enterHandAndCheckOther(HandPage.current.validate, firstRoundHands(1).getForCheckFirstRound)
       },
     )
   }
 
-  it should "play the second hand in round 1" in {
+  it should s"check boards already played in round 1" in {
+    waitForFutures(
+      "check boards already played in round 1",
+      CodeBlock {
+        import SessionComplete._
+
+        val hands = firstRoundHands(0).getForCheckFirstRound :: firstRoundHands(1).getForCheckFirstRound :: Nil
+
+        val b = hands.head.board
+
+        val sp = ScoreboardPage.current.validate
+        val bp = sp.clickBoardToBoard(b).validate
+        val bp2 = validateBoardsInRound(bp, 1, true, hands)
+        bp2.clickScoreboard.validate
+      },
+      CodeBlock {
+        import SessionDirector._
+
+        val hands = firstRoundHands(0).getForCheckFirstRound :: firstRoundHands(1).getForCheckFirstRound :: Nil
+
+        val b = hands.head.board
+
+        val sp = ScoreboardPage.current.validate
+        val bp = sp.clickBoardToBoard(b).validate
+        val bp2 = validateBoardsInRound(bp, 1, false, hands)
+        bp2.clickScoreboard.validate
+      }
+    )
+  }
+
+  it should "play the remaining hand in round 1" in {
     tcpSleep(60)
     waitForFutures(
-      "Entering Names",
+      "play the remaining hand in round 1",
       CodeBlock {
         import SessionTable1._
 
-        enterHandFromBoard(firstRoundHands(2).getForCheckFirstRound)
-
-        // val boardp = BoardPage.current.validate
-        // val frh = firstRoundHands(2)
-        // frh.hob.table mustBe 1
-        // frh.hob.board mustBe 2
-        // val hp = boardp.clickBoardButton(frh.hob.board).validate
-
-        // hp.dupid mustBe dupid.get
-        // hp.viewtype mustBe ScoreboardPage.TableViewType("1", "1")
-        // hp.board mustBe "B2"
-        // hp.hand mustBe "p8"
-        // hp.getPlayer(North).toString() mustBe getPlayerTextInHand(8)
-        // hp.getPlayer(South).toString() mustBe getPlayerTextInHand(1)
-        // hp.getPlayer(East).toString() mustBe getPlayerTextInHand(5)
-        // hp.getPlayer(West).toString() mustBe getPlayerTextInHand(7)
-        // hp.checkVulnerable(Vul, NotVul)
-
-        // hp.withClueAndScreenShot(
-        //   screenshotDir,
-        //   "EnterR1T1B2",
-        //   "Enter R1T1B2"
-        // ) {
-        //   val bp = hp.onlyEnterHand(
-        //             frh.getForCheckFirstRound,
-        //             allHands.getBoardFromBoardSet(frh.hob.board).get,
-        //             getPlayer(8),
-        //             getPlayer(1),
-        //             getPlayer(5),
-        //             getPlayer(7)
-        //           ).validate
-        //   bp.checkOthers(
-        //     frh.getForCheckFirstRound,
-        //     allHands
-        //   )
-        // }
+        val hob = firstRoundHands(0).getForCheckFirstRound
+        val remaining = allHands.getHandsInTableRound(1, 1).filter(h => h.board != hob.board)
+        val bp = BoardPage.current.validate
+        val bp2 = enterRemainingHandsInRound(bp, 1, 1, remaining)
       },
       CodeBlock {
         import SessionTable2._
 
-        enterHandFromBoard(firstRoundHands(3).getForCheckFirstRound)
-
-        // val boardp = BoardPage.current.validate
-        // val frh = firstRoundHands(3)
-        // val hp = boardp.clickBoardButton(frh.hob.board).validate
-
-        // hp.dupid mustBe dupid.get
-        // hp.viewtype mustBe ScoreboardPage.TableViewType(s"${frh.hob.table}", s"${frh.hob.round}")
-        // hp.board mustBe IndividualBoard.id(frh.hob.board).id
-        // hp.hand mustBe s"p${frh.hob.hand.north}"
-        // hp.getPlayer(North).toString() mustBe getPlayerTextInHand(frh.hob.hand.north)
-        // hp.getPlayer(South).toString() mustBe getPlayerTextInHand(frh.hob.hand.south)
-        // hp.getPlayer(East).toString() mustBe getPlayerTextInHand(frh.hob.hand.east)
-        // hp.getPlayer(West).toString() mustBe getPlayerTextInHand(frh.hob.hand.west)
-        // hp.checkVulnerable(NotVul, NotVul)
-
-        // hp.withClueAndScreenShot(
-        //   screenshotDir,
-        //   s"EnterR${frh.hob.round}T${frh.hob.table}${IndividualBoard.id(frh.hob.board).id}",
-        //   s"EnterR${frh.hob.round}T${frh.hob.table}${IndividualBoard.id(frh.hob.board).id}"
-        // ) {
-        //   val bp = hp.onlyEnterHand(
-        //             frh.getForCheckFirstRound,
-        //             allHands.getBoardFromBoardSet(frh.hob.board).get,
-        //             getPlayer(frh.hob.hand.north),
-        //             getPlayer(frh.hob.hand.south),
-        //             getPlayer(frh.hob.hand.east),
-        //             getPlayer(frh.hob.hand.west)
-        //           ).validate
-        //   bp.checkOthers(
-        //     frh.getForCheckFirstRound,
-        //     allHands
-        //   )
-        // }
+        val hob = firstRoundHands(1).getForCheckFirstRound
+        val remaining = allHands.getHandsInTableRound(2, 1).filter(h => h.board != hob.board)
+        val bp = BoardPage.current.validate
+        val bp2 = enterRemainingHandsInRound(bp, 2, 1, remaining)
       },
     )
   }
 
-  def enterHand(hp: HandPage, hob: HandsOnBoard)(implicit webDriver: WebDriver) = {
+  it should s"check boards in round 1" in {
+    waitForFutures(
+      "check boards in round 1",
+      CodeBlock {
+        import SessionTable1._
+
+        val bp = BoardPage.current.validate
+        val bp2 = validateBoardsOnTableInRound(bp, 1, 1, true)
+      },
+      CodeBlock {
+        import SessionTable2._
+
+        val bp = BoardPage.current.validate
+        val bp2 = validateBoardsOnTableInRound(bp, 2, 1, true)
+      },
+      CodeBlock {
+        import SessionComplete._
+
+        val b = allHands.boards.head
+
+        val sp = ScoreboardPage.current.validate
+        val bp = sp.clickBoardToBoard(b).validate
+        val bp2 = validateBoardsInRound(bp, 1, true)
+        bp2.clickScoreboard.validate
+      },
+      CodeBlock {
+        import SessionDirector._
+
+        val b = allHands.boards.head
+
+        val sp = ScoreboardPage.current.validate
+        val bp = sp.clickBoardToBoard(b).validate
+        val bp2 = validateBoardsInRound(bp, 1, false)
+        bp2.clickScoreboard.validate
+      }
+    )
+  }
+
+  allrounds.tail.foreach { round =>
+    it should s"play hands in round ${round}" in {
+      waitForFutures(
+        s"play hands in round ${round}",
+        CodeBlock {
+          import SessionTable1._
+
+          val bp = BoardPage.current.validate
+          val tp = bp.clickTableButton(1).validate
+          val bp2 = enterHandInRound(tp, 1, round)
+        },
+        CodeBlock {
+          import SessionTable2._
+
+          val bp = BoardPage.current.validate
+          val tp = bp.clickTableButton(2).validate
+          val bp2 = enterHandInRound(tp, 2, round)
+        },
+      )
+    }
+    it should s"check boards in round ${round}" in {
+      waitForFutures(
+        s"check boards in round ${round}",
+        CodeBlock {
+          import SessionTable1._
+
+          val bp = BoardPage.current.validate
+          val bp2 = validateBoardsOnTableInRound(bp, 1, round, true)
+        },
+        CodeBlock {
+          import SessionTable2._
+
+          val bp = BoardPage.current.validate
+          val bp2 = validateBoardsOnTableInRound(bp, 2, round, true)
+        },
+        CodeBlock {
+          import SessionComplete._
+
+          val b = allHands.boards.head
+
+          val sp = ScoreboardPage.current.validate
+          val bp = sp.clickBoardToBoard(b).validate
+          val bp2 = validateBoardsInRound(bp, round, true)
+          bp2.clickScoreboard.validate
+        },
+        CodeBlock {
+          import SessionDirector._
+
+          val b = allHands.boards.head
+
+          val sp = ScoreboardPage.current.validate
+          val bp = sp.clickBoardToBoard(b).validate
+          val bp2 = validateBoardsInRound(bp, round, false)
+          bp2.clickScoreboard.validate
+        }
+      )
+    }
+  }
+
+  /**
+    * Enter the hand
+    *
+    * @param hp the HandPage currently showing
+    * @param hob the hand to play
+    * @param webDriver
+    * @return The BoardPage with the result of the entered hand
+    */
+  def enterHand(hp: HandPage, hob: HandsOnBoard)(implicit webDriver: WebDriver): BoardPage = {
 
     hp.dupid mustBe dupid.get
     hp.viewtype mustBe ScoreboardPage.TableViewType(s"${hob.table}", s"${hob.round}")
@@ -647,10 +996,6 @@ class IndividualTest
                     getPlayer(hob.hand.east),
                     getPlayer(hob.hand.west)
                   ).validate
-          bp.checkOthers(
-            hob,
-            allHands
-          )
           bp
         }
       case None =>
@@ -659,9 +1004,133 @@ class IndividualTest
 
   }
 
-  def enterHandFromBoard(hob: HandsOnBoard)(implicit webDriver: WebDriver) = {
+  /**
+    * Enter the hand and check the BoardPage results
+    *
+    * @param hp the HandPage currently showing
+    * @param hob the hand to play
+    * @param webDriver
+    * @return The BoardPage with the result of the entered hand
+    */
+  def enterHandAndCheckOther(hp: HandPage, hob: HandsOnBoard)(implicit webDriver: WebDriver): BoardPage = {
+    val bp = enterHand(hp, hob)
+    bp.checkOthers(
+      hob,
+      allHands
+    )
+    bp
+  }
+
+  /**
+    * Enter the hand.  The current page must be a TableView of a BoardPage in same round of the hand to play.
+    *
+    * @param hob the hand to play
+    * @param webDriver
+    * @return The BoardPage with the result of the entered hand
+    */
+  def enterHandFromBoard(hob: HandsOnBoard)(implicit webDriver: WebDriver): BoardPage = {
     val boardp = BoardPage.current.validate
     val hp = boardp.clickBoardButton(hob.board).validate
     enterHand(hp, hob)
+  }
+
+  /**
+    *
+    * @param tp - the current page, a Table Page
+    * @param table - the table, must be the same as tp is showing
+    * @param round - the round to play
+    * @return the board page with table view
+    */
+  def enterHandInRound(tp: TablePage, table: Int, round: Int)(implicit webDriver: WebDriver): BoardPage = {
+    tp.validate.tableid mustBe Table.id(table).id
+    val hands = allHands.getHandsInTableRound(table, round)
+
+    if (hands.length > 0) {
+      val tnp = tp.setTarget(TablePage.EnterNames).clickRound(round).asInstanceOf[TableEnterNamesPage].validate
+      val sp = tnp.setScorekeeper(North).clickOK.asInstanceOf[ScoreboardPage].validate
+
+      val hob1 = hands.head
+      val hp1 = sp.clickBoardToHand(hob1.board).validate
+      var bp = enterHand(hp1, hob1)
+      bp = enterRemainingHandsInRound(bp, table, round, hands.tail)
+      bp
+    } else {
+      fail(s"No hands played on table ${table} in round ${round}")
+    }
+
+  }
+
+  def enterRemainingHandsInRound(bp: BoardPage, table: Int, round: Int, remaining: List[HandsOnBoard])(implicit webDriver: WebDriver): BoardPage = {
+    var bb = bp
+    for (hob <- remaining) {
+      val hp = bb.clickBoardButton(hob.board).validate
+      bb = enterHand(hp, hob)
+    }
+    bb
+  }
+
+  /**
+    *
+    * @param tp - the current page, a Table Page
+    * @param table - the table, must be the same as tp is showing
+    * @param round - the round to play
+    * @param checkmarks - shows checkmarks for played hands if players haven't played yet
+    * @return the board page with table view
+    */
+  def validateBoardsOnTableInRound(bp: BoardPage, table: Int, round: Int, checkmarks: Boolean)(implicit webDriver: WebDriver): BoardPage = {
+    val hands = allHands.getHandsInTableRound(table, round)
+
+    var bb = bp
+    for (hob <- hands) {
+      if (bb.boardId != IndividualBoard.id(hob.board).id) {
+        bb = bb.clickPlayedBoard(hob.board).validate
+      }
+      bb = bb.checkHand(round, hob.board, allHands, checkmarks)
+      bb = bb.checkOthers(hob, allHands, checkmarks)
+    }
+    bb
+  }
+
+  /**
+    *
+    * @param tp - the current page, a Table Page, must not be on the first board in the round
+    * @param table - the table, must be the same as tp is showing
+    * @param round - the round to play
+    * @param checkmarks - shows checkmarks for played hands if players haven't played yet
+    * @return the board page with table view
+    */
+  def validateBoardsInRound(bp: BoardPage, round: Int, checkmarks: Boolean, hands: List[HandsOnBoard])(implicit webDriver: WebDriver): BoardPage = {
+
+    var bb = bp
+    for (hob <- hands) {
+      if (bb.boardId != IndividualBoard.id(hob.board).id) {
+        bb = bb.clickPlayedBoard(hob.board).validate
+      }
+      val allplayed =
+          hob.other.find(oh => oh.isInstanceOf[OtherHandNotPlayed]).isEmpty
+      log.fine(s"""validateBoardsInRound round=${round}, checkmarks=${checkmarks}, allplayed=${allplayed}, hob=${hob}""")
+      if (!allplayed && checkmarks) {
+        bb.takeScreenshot(screenshotDir)
+        bb = bb.checkHandPlayedWithCheckmarks(hob.hand.north, hob.hand.south, hob.hand.east, hob.hand.west)
+      } else {
+        bb = bb.checkHandScores(hob.hand)
+      }
+
+      bb = bb.checkOthers(hob, allHands, checkmarks)
+    }
+    bb
+  }
+
+  /**
+    *
+    * @param tp - the current page, a Table Page, must not be on the first board in the round
+    * @param table - the table, must be the same as tp is showing
+    * @param round - the round to play
+    * @param checkmarks - shows checkmarks for played hands if players haven't played yet
+    * @return the board page with table view
+    */
+  def validateBoardsInRound(bp: BoardPage, round: Int, checkmarks: Boolean)(implicit webDriver: WebDriver): BoardPage = {
+    val hands = allHands.getHandsInRound(round).distinctBy(hob => hob.board)
+    validateBoardsInRound(bp, round, checkmarks, hands)
   }
 }
