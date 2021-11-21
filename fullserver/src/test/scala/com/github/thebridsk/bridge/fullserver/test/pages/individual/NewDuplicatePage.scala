@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.{ MovementsPa
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.{ BoardSetsPage => TBoardSetsPage }
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.{ ScoreboardPage => TScoreboardPage }
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.{ DuplicateResultEditPage => TDuplicateResultEditPage }
+import com.github.thebridsk.browserpages.GenericPage
 
 object NewDuplicatePage {
 
@@ -24,7 +25,10 @@ object NewDuplicatePage {
       patienceConfig: PatienceConfig,
       pos: Position
   ): NewDuplicatePage = {
-    new NewDuplicatePage
+    currentUrl mustBe urlFor
+    val gp = GenericPage.current
+    val playI = gp.findButton(buttonPlayIndividual).containsClass("baseButtonSelected")
+    new NewDuplicatePage(playI)
   }
 
   def goto(implicit
@@ -33,7 +37,7 @@ object NewDuplicatePage {
       pos: Position
   ): NewDuplicatePage = {
     go to urlFor
-    new NewDuplicatePage
+    new NewDuplicatePage(false)
   }
 
   def urlFor: String = TestServer.getAppPageUrl("individual/new")
@@ -76,7 +80,7 @@ object NewDuplicatePage {
         r = false
       }
     } else {
-      if (!IndividualMovementsPage.movements.contains(movement)) {
+      if (!IndividualMovementsPage.movementsIndividual.contains(movement)) {
         log.warning(s"Unknown movement $movement")
         r = false
       }
@@ -84,9 +88,16 @@ object NewDuplicatePage {
     r
   }
 
+  val buttonPlayIndividual = "PlayIndividual"
+  val buttonPlayTeams = "PlayTeams"
+
+  val buttonsPlay = buttonPlayIndividual :: buttonPlayTeams :: Nil
 }
 
-class NewDuplicatePage(implicit
+class NewDuplicatePage(
+  playIndividual: Boolean
+)(
+  implicit
     webDriver: WebDriver,
     pageCreated: SourcePosition
 ) extends Page[NewDuplicatePage] {
@@ -102,23 +113,44 @@ class NewDuplicatePage(implicit
         currentUrl mustBe urlFor
 
         val buttons = TBoardSetsPage.boardsets.flatMap { b =>
-          s"ShowB_${b}" ::
-            TMovementsPage.movements.flatMap { m =>
-              if (m == "Howell3TableNoRelay" && b == "ArmonkBoards") Nil
-              else buttonName(b, m, false) :: Nil
-            } :::
-            IndividualMovementsPage.movements.flatMap { m =>
-              if (m == "Individual2Tables" && (b == "ArmonkBoards" || b == "Result")) Nil
-              else buttonName(b, m, true) :: Nil
+          s"ShowB_${b}" :: (
+            if (playIndividual) {
+              IndividualMovementsPage.movementsIndividual.flatMap { m =>
+                if (m == "Individual2Tables" && (b == "ArmonkBoards" || b == "Result")) Nil
+                else buttonName(b, m, true) :: Nil
+              }
+            } else {
+              TMovementsPage.movements.flatMap { m =>
+                if (m == "Howell3TableNoRelay" && b == "ArmonkBoards") Nil
+                else buttonName(b, m, false) :: Nil
+              }
             }
-
-        } ::: TMovementsPage.movements.map(m => s"ShowM${movType(false)}${m}") :::
-           IndividualMovementsPage.movements.map(m => s"ShowM${movType(true)}${m}")
+          )
+        } ::: (
+          if (playIndividual) {
+            IndividualMovementsPage.movementsIndividual.map(m => s"ShowM${movType(true)}${m}")
+          } else {
+            TMovementsPage.movements.map(m => s"ShowM${movType(false)}${m}")
+          }
+        ) :::
+           buttonsPlay
 
         findButtons(buttons: _*)
         this
       }
     }
+
+  def clickPlayIndividual(implicit patienceConfig: PatienceConfig, pos: Position): NewDuplicatePage = {
+    if (playIndividual) throw new Exception("Already in play individual")
+    clickButton(buttonPlayIndividual)
+    new NewDuplicatePage(true)
+  }
+
+  def clickPlayTeams(implicit patienceConfig: PatienceConfig, pos: Position): NewDuplicatePage = {
+    if (!playIndividual) throw new Exception("Already in play teams")
+    clickButton(buttonPlayTeams)
+    new NewDuplicatePage(false)
+  }
 
   def getNewButton(
       boardset: String,

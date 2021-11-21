@@ -298,8 +298,9 @@ class IndividualTest
         "trying to click first movement"
       ) {
         val mp = lp.clickMovements.validate
+        val mpi = mp.clickPlayIndividual.validate
           .takeScreenshot(screenshotDir, "MovementBefore")
-        val mp1 = mp.click(IndividualMovementsPage.movements.head).validate
+        val mp1 = mpi.click(IndividualMovementsPage.movementsIndividual.head).validate
         mp1.clickOK.validate
       }
     }
@@ -315,8 +316,9 @@ class IndividualTest
         "NewDuplicate",
         "clicking NewDuplicate button"
       ) {
-        dp.clickNewDuplicateButton.validate
-          .takeScreenshot(docsScreenshotDir, "DuplicateCreate")
+        val nd = dp.clickNewDuplicateButton.validate
+        nd.clickPlayIndividual.validate
+          .takeScreenshot(docsScreenshotDir, "IndividualCreate")
       }
     }
   }
@@ -325,7 +327,7 @@ class IndividualTest
     import SessionDirector._
     captureLogsOnError {
 
-      val curPage = NewDuplicatePage.current
+      val curPage = NewDuplicatePage.current.validate
 
       val boards = IndividualMovementsPage.getBoardsFromMovement(movement)
 

@@ -24,7 +24,6 @@ import com.github.thebridsk.bridge.data.bridge.North
 import com.github.thebridsk.bridge.data.bridge.South
 import com.github.thebridsk.bridge.data.bridge.East
 import com.github.thebridsk.bridge.data.bridge.West
-import com.github.thebridsk.bridge.fullserver.test.pages.individual.ScoreboardPage
 
 object BaseHandPage {
 

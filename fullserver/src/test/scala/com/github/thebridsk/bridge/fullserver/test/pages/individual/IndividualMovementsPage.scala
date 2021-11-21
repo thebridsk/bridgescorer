@@ -14,6 +14,7 @@ import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.server.test.util.HttpUtils.ResponseFromHttp
 import java.net.URL
 import com.github.thebridsk.bridge.fullserver.test.pages.individual.ListDuplicatePage
+import com.github.thebridsk.browserpages.GenericPage
 
 object IndividualMovementsPage {
 
@@ -24,7 +25,10 @@ object IndividualMovementsPage {
       patienceConfig: PatienceConfig,
       pos: Position
   ): IndividualMovementsPage = {
-    new IndividualMovementsPage(getCurrentMovement)
+    val curMov = getCurrentMovement
+    val gp = GenericPage.current
+    val playI = gp.findButton(buttonPlayIndividual).containsClass("baseButtonSelected")
+    new IndividualMovementsPage(curMov, playI)
   }
 
   def urlFor(movement: Option[String] = None): String =
@@ -41,11 +45,13 @@ object IndividualMovementsPage {
   ): IndividualMovementsPage = {
     val mov = Option(movement)
     go to urlFor(Option(movement))
-    new IndividualMovementsPage(mov)
+    new IndividualMovementsPage(mov, false)
   }
 
-  val movements: List[String] =
+  val movementsIndividual: List[String] =
     "Individual2Tables" :: Nil
+  val movementsTeams: List[String] =
+    "2TablesArmonk" :: Nil
 
   def getMovement(movement: String): Option[IndividualMovement] = {
     import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
@@ -88,15 +94,24 @@ object IndividualMovementsPage {
       }
     }
   }
+
+  val buttonOK = "OK"
+  val buttonPlayIndividual = "PlayIndividual"
+  val buttonPlayTeams = "PlayTeams"
+
+  val buttons = buttonOK::buttonPlayIndividual::buttonPlayTeams::Nil
 }
 
 class IndividualMovementsPage(
-    movement: Option[String] = None
+    movement: Option[String],
+    playIndividual: Boolean
 )(implicit
     webDriver: WebDriver,
     pageCreated: SourcePosition
 ) extends Page[IndividualMovementsPage] {
   import IndividualMovementsPage._
+
+  private def getMovements = if (playIndividual) movementsIndividual else movementsTeams
 
   def validate(implicit
       patienceConfig: PatienceConfig,
@@ -106,18 +121,33 @@ class IndividualMovementsPage(
       eventually {
         currentUrl mustBe urlFor(movement)
 
-        findButtons("OK" :: movements: _*)
+        findButton(buttonPlayIndividual).containsClass("baseButtonSelected") mustBe playIndividual
+        findButton(buttonPlayTeams).containsClass("baseButtonSelected") mustBe !playIndividual
+
+        findButtons("OK" :: getMovements: _*)
         this
       }
     }
 
+  def clickPlayIndividual(implicit patienceConfig: PatienceConfig, pos: Position): IndividualMovementsPage = {
+    if (playIndividual) throw new Exception("Already in play individual")
+    clickButton(buttonPlayIndividual)
+    new IndividualMovementsPage(None, true)
+  }
+
+  def clickPlayTeams(implicit patienceConfig: PatienceConfig, pos: Position): IndividualMovementsPage = {
+    if (!playIndividual) throw new Exception("Already in play teams")
+    clickButton(buttonPlayTeams)
+    new IndividualMovementsPage(None, false)
+  }
+
   def click(
       mov: String
   )(implicit patienceConfig: PatienceConfig, pos: Position): IndividualMovementsPage = {
-    if (!movements.contains(mov)) log.warning(s"Unknown movement mov")
+    if (!getMovements.contains(mov)) log.warning(s"Unknown movement mov")
 
     clickButton(mov)
-    new IndividualMovementsPage(Option(mov))
+    new IndividualMovementsPage(Option(mov), playIndividual)
   }
 
   def clickOK(implicit

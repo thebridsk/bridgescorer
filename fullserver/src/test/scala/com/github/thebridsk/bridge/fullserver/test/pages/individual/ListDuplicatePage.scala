@@ -16,7 +16,6 @@ import com.github.thebridsk.bridge.fullserver.test.pages.ServerURLAddOn
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.MatchDuplicate
 import scala.util.matching.Regex
-import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.MovementsPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardSetsPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.DuplicateResultPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.{ScoreboardPage => DScoreboardPage}
@@ -263,7 +262,7 @@ class ListDuplicatePage(
       pos: Position
   ): NewDuplicatePage = {
     clickButton("DuplicateCreate")
-    new NewDuplicatePage()(webDriver, pos)
+    new NewDuplicatePage(false)(webDriver, pos)
   }
 
   def clickBoardSets(implicit
@@ -279,7 +278,7 @@ class ListDuplicatePage(
       pos: Position
   ): IndividualMovementsPage = {
     clickButton("Movements")
-    new IndividualMovementsPage()(webDriver, pos)
+    new IndividualMovementsPage(None, false)(webDriver, pos)
   }
 
   // def clickStatistics(implicit

@@ -39,6 +39,7 @@ import com.github.thebridsk.bridge.data.MovementBase
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.CompleteScoreboardView
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateModule.PlayIndividualDuplicate
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.MovementView
+import com.github.thebridsk.bridge.clientcommon.react.Utils._
 
 /**
   * Component page to select the movement and boardsets used for a duplicate match.
@@ -130,17 +131,24 @@ object PageNewDuplicate {
         imovements: List[IndividualMovement] = List.empty,
         movements: List[MovementBase] = List.empty,
         msg: Option[String] = None,
+        playIndividual: Boolean = false
     ) {
+      def getTeamMovements: List[MovementBase] = tmovements
+      def getIndividualMovements: List[MovementBase] = imovements
+
+      def getPlayingMovements: List[MovementBase] = if (playIndividual) imovements else tmovements
+
+      def withPlayingIndividual(f: Boolean) = copy(playIndividual = f)
 
       def withBoardsets(l: List[BoardSet]) = copy(boardsets = l.sortWith((l,r) => l.short < r.short))
 
       def withMovements(l: List[Movement]) = {
         val a = (l:::imovements).sorted
-        copy(tmovements = l, movements = a)
+        copy(tmovements = l.sorted, movements = a)
       }
       def withIndividaulMovements(l: List[IndividualMovement]) = {
         val a = (l:::tmovements).sorted
-        copy(imovements = l, movements = a)
+        copy(imovements = l.sorted, movements = a)
       }
 
       def withBoardsetsAndMovements(
@@ -149,7 +157,7 @@ object PageNewDuplicate {
         imov: List[IndividualMovement]
       ) = {
         val a = (mov:::imov).sorted
-        copy(boardsets = bs, tmovements = mov, imovements = imov, movements = a)
+        copy(boardsets = bs, tmovements = mov.sorted, imovements = imov.sorted, movements = a)
       }
 
       def withMsg(m: String) = copy(msg = Some(m))
@@ -251,6 +259,8 @@ object PageNewDuplicate {
       val cancel: Callback = Callback {
         resultDuplicate.cancel()
       } >> scope.modState(s => s.clearMsg())
+
+      def setPlayingIndividual(f: Boolean): Callback = scope.modState(s => s.withPlayingIndividual(f))
 
       import scala.concurrent.ExecutionContext.Implicits.global
       def newDuplicate(
@@ -414,11 +424,25 @@ object PageNewDuplicate {
           ),
           <.div(
             dupStyles.pageNewDuplicate,
+            <.div(
+              AppButton(
+                "PlayIndividual",
+                "Play Individual",
+                state.playIndividual ?= baseStyles.buttonSelected,
+                ^.onClick --> setPlayingIndividual(true)
+              ),
+              AppButton(
+                "PlayTeams",
+                "Play Teams",
+                !state.playIndividual ?= baseStyles.buttonSelected,
+                ^.onClick --> setPlayingIndividual(false)
+              )
+            ),
             <.table(
               Header((props, state, this)),
               <.tbody(
                 state
-                  .movements
+                  .getPlayingMovements
                   .filter { mov => !mov.isDisabled }
                   .map { mov =>
                     Row.withKey(mov.nameAsString)((mov, props, state, this))
@@ -428,10 +452,10 @@ object PageNewDuplicate {
             ),
             <.div(
               <.h2("Show movements"),
-              if (state.movements.isEmpty) {
+              if (state.getPlayingMovements.isEmpty) {
                 <.p("No movements were found")
               } else {
-                state.movements
+                state.getPlayingMovements
                   .filter { m => !m.isDisabled }
                   .map { movement =>
                     movement match {

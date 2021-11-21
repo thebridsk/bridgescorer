@@ -127,16 +127,25 @@ object PageMovements {
         tmovements: List[Movement] = List.empty,
         imovements: List[IndividualMovement] = List.empty,
         movements: List[MovementBase] = List.empty,
-        msg: Option[String] = None
+        msg: Option[String] = None,
+        playIndividual: Boolean = false
     ) {
+      def getTeamMovements: List[MovementBase] = tmovements
+      def getIndividualMovements: List[MovementBase] = imovements
+
+      def getPlayingMovements: List[MovementBase] = if (playIndividual) imovements else tmovements
+
+      def withPlayingIndividual(f: Boolean) = {
+        copy(playIndividual = f, initialDisplay = if (f == playIndividual) initialDisplay else None)
+      }
 
       def withMovements(l: List[Movement]) = {
         val a = (l:::imovements).sorted
-        copy(tmovements = l, movements = a).updateInitialDisplay()
+        copy(tmovements = l.sorted, movements = a).updateInitialDisplay()
       }
       def withIndividaulMovements(l: List[IndividualMovement]) = {
         val a = (l:::tmovements).sorted
-        copy(imovements = l, movements = a).updateInitialDisplay()
+        copy(imovements = l.sorted, movements = a).updateInitialDisplay()
       }
 
       def withMovements(
@@ -144,7 +153,7 @@ object PageMovements {
         imov: List[IndividualMovement]
       ) = {
         val a = (mov:::imov).sorted
-        copy(tmovements = mov, imovements = imov, movements = a).updateInitialDisplay()
+        copy(tmovements = mov.sorted, imovements = imov.sorted, movements = a).updateInitialDisplay()
       }
 
       def setInitialDisplay(display: Option[MovementBase.Id]) = {
@@ -230,6 +239,8 @@ object PageMovements {
 
       private val movementTableRef = Ref[html.Element]
 
+      def setPlayingIndividual(f: Boolean): Callback = scope.modState(s => s.withPlayingIndividual(f))
+
       val cancel: Callback = Callback {
         // resultDuplicate.cancel()
       } >> scope.modState(s => s.clearMsg())
@@ -284,11 +295,25 @@ object PageMovements {
           ),
           <.div(
             dupStyles.pageMovements,
+            <.div(
+              AppButton(
+                "PlayIndividual",
+                "Individual",
+                state.playIndividual ?= baseStyles.buttonSelected,
+                ^.onClick --> setPlayingIndividual(true)
+              ),
+              AppButton(
+                "PlayTeams",
+                "Teams",
+                !state.playIndividual ?= baseStyles.buttonSelected,
+                ^.onClick --> setPlayingIndividual(false)
+              )
+            ),
             <.table(
               Header((props, state, this)),
               <.tbody(
                 state
-                  .movements
+                  .getPlayingMovements
                   .filter { mov => !mov.isDisabled }
                   .map { mov =>
                     Row.withKey(mov.nameAsString)(
