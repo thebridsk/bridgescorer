@@ -39,6 +39,10 @@ import org.openqa.selenium.WebDriver
 import com.github.thebridsk.bridge.data.IndividualDuplicate
 import scala.concurrent.Await
 import com.github.thebridsk.bridge.data.Table
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.HandViewType
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.HandDirectorView
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.HandCompletedView
+import com.github.thebridsk.bridge.fullserver.test.pages.individual.HandTableView
 
 
 object IndividualTest {
@@ -872,12 +876,16 @@ class IndividualTest
 
         val bp = BoardPage.current.validate
         val bp2 = validateBoardsOnTableInRound(bp, 1, 1, true)
+        val sp2 = bp2.clickScoreboard.validate
+        validateScoreboardToRound(sp2, 1, HandTableView(1, 1, 8, 1, 5, 7))
       },
       CodeBlock {
         import SessionTable2._
 
         val bp = BoardPage.current.validate
         val bp2 = validateBoardsOnTableInRound(bp, 2, 1, true)
+        val sp2 = bp2.clickScoreboard.validate
+        validateScoreboardToRound(sp2, 1, HandTableView(2, 1, 2, 6, 4, 3))
       },
       CodeBlock {
         import SessionComplete._
@@ -887,7 +895,8 @@ class IndividualTest
         val sp = ScoreboardPage.current.validate
         val bp = sp.clickBoardToBoard(b).validate
         val bp2 = validateBoardsInRound(bp, 1, true)
-        bp2.clickScoreboard.validate
+        val sp2 = bp2.clickScoreboard.validate
+        validateScoreboardToRound(sp2, 1, HandCompletedView)
       },
       CodeBlock {
         import SessionDirector._
@@ -897,7 +906,8 @@ class IndividualTest
         val sp = ScoreboardPage.current.validate
         val bp = sp.clickBoardToBoard(b).validate
         val bp2 = validateBoardsInRound(bp, 1, false)
-        bp2.clickScoreboard.validate
+        val sp2 = bp2.clickScoreboard.validate
+        validateScoreboardToRound(sp2, 1, HandDirectorView)
       }
     )
   }
@@ -909,15 +919,15 @@ class IndividualTest
         CodeBlock {
           import SessionTable1._
 
-          val bp = BoardPage.current.validate
-          val tp = bp.clickTableButton(1).validate
+          val sp = ScoreboardPage.current.validate
+          val tp = sp.clickTableButton(1).validate
           val bp2 = enterHandInRound(tp, 1, round)
         },
         CodeBlock {
           import SessionTable2._
 
-          val bp = BoardPage.current.validate
-          val tp = bp.clickTableButton(2).validate
+          val sp = ScoreboardPage.current.validate
+          val tp = sp.clickTableButton(2).validate
           val bp2 = enterHandInRound(tp, 2, round)
         },
       )
@@ -928,14 +938,22 @@ class IndividualTest
         CodeBlock {
           import SessionTable1._
 
+          val b = allHands.getHandsInTableRound(1, round).head
+
           val bp = BoardPage.current.validate
           val bp2 = validateBoardsOnTableInRound(bp, 1, round, true)
+          val sp2 = bp2.clickScoreboard.validate
+          validateScoreboardToRound(sp2, round, HandTableView(1, round, b.hand.north, b.hand.south, b.hand.east, b.hand.west))
         },
         CodeBlock {
           import SessionTable2._
 
+          val b = allHands.getHandsInTableRound(2, round).head
+
           val bp = BoardPage.current.validate
           val bp2 = validateBoardsOnTableInRound(bp, 2, round, true)
+          val sp2 = bp2.clickScoreboard.validate
+          validateScoreboardToRound(sp2, round, HandTableView(2, round, b.hand.north, b.hand.south, b.hand.east, b.hand.west))
         },
         CodeBlock {
           import SessionComplete._
@@ -945,7 +963,8 @@ class IndividualTest
           val sp = ScoreboardPage.current.validate
           val bp = sp.clickBoardToBoard(b).validate
           val bp2 = validateBoardsInRound(bp, round, true)
-          bp2.clickScoreboard.validate
+          val sp2 = bp2.clickScoreboard.validate
+          validateScoreboardToRound(sp2, round, HandCompletedView)
         },
         CodeBlock {
           import SessionDirector._
@@ -955,7 +974,8 @@ class IndividualTest
           val sp = ScoreboardPage.current.validate
           val bp = sp.clickBoardToBoard(b).validate
           val bp2 = validateBoardsInRound(bp, round, false)
-          bp2.clickScoreboard.validate
+          val sp2 = bp2.clickScoreboard.validate
+          validateScoreboardToRound(sp2, round, HandDirectorView)
         }
       )
     }
@@ -1088,6 +1108,8 @@ class IndividualTest
       bb = bb.checkHand(round, hob.board, allHands, checkmarks)
       bb = bb.checkOthers(hob, allHands, checkmarks)
     }
+    val sp = bb.clickScoreboard.validate
+
     bb
   }
 
@@ -1132,5 +1154,29 @@ class IndividualTest
   def validateBoardsInRound(bp: BoardPage, round: Int, checkmarks: Boolean)(implicit webDriver: WebDriver): BoardPage = {
     val hands = allHands.getHandsInRound(round).distinctBy(hob => hob.board)
     validateBoardsInRound(bp, round, checkmarks, hands)
+  }
+
+  def validateScoreboardToRound(
+    sp: ScoreboardPage,
+    round: Int,
+    viewtype: HandViewType
+  )(
+    implicit webDriver: WebDriver
+  ): ScoreboardPage = {
+    val (playerscores, places) = allHands.getScoreToRound(round, viewtype, false)
+    log.fine(s"""validateScoreboardToRound round ${round} viewtype ${viewtype}
+                |playerscores
+                |${playerscores.mkString("  ","\n  ","")}
+                |places
+                |${places.mkString("  ","\n  ","")}
+                |""".stripMargin)
+    val f = viewtype match {
+      case HandCompletedView => s"Director${round}"
+      case HandDirectorView => s"Complete${round}"
+      case HandTableView(table, round, north, south, east, west) => s"Table${table}_${round}"
+    }
+    sp.checkPlaceTable(screenshotDir, f, places:_*)
+    sp.checkTable(playerscores:_*)
+    sp
   }
 }

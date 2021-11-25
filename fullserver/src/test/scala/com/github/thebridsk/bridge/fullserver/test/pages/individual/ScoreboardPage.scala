@@ -23,7 +23,7 @@ object ScoreboardPage {
     def toString() = s"${index} ${name}"
     def toLabelString() = s"${index}: ${name}"
   }
-  case class PlaceEntry(place: Int, points: String, teams: List[Player])
+  case class PlaceEntry(place: Int, points: String, players: List[Player])
 
   def current(implicit
       webDriver: WebDriver,
@@ -395,9 +395,9 @@ class ScoreboardPage(
     */
   def getTable(implicit pos: Position): List[List[String]] = {
     val boards = getElemsByXPath(
-      """//table[@id='scoreboard']/thead/tr[2]/th"""
+      """//div[contains(concat(' ', @class, ' '), ' viewScoreboard ')]/table/thead/tr[2]/th"""
     ).size
-    getElemsByXPath("""//table[@id='scoreboard']/tbody/tr/td""")
+    getElemsByXPath("""//div[contains(concat(' ', @class, ' '), ' viewScoreboard ')]/table/tbody/tr/td""")
       .map(c => c.text)
       .grouped(boards + 3)
       .toList
@@ -421,6 +421,7 @@ class ScoreboardPage(
       teams: PlayerScore* /* ( Team, String, List[String] )* */
   )(implicit pos: Position): Unit = {
     val table = getTable
+    log.fine(s"""checkTable table is${table.mkString("\n  ","\n  ","")}""")
     teams.foreach {
       case PlayerScore(player, points, total, boardscores) =>
         withClue(
@@ -439,13 +440,24 @@ class ScoreboardPage(
   }
 
   /**
+    * @param screenshotDir
+    * @param table a string to identify the session, added to screenshot filename
     * @param team a Tuple4( teamnumber, players, points, boardscores )
     */
-  def checkPlaceTable(places: PlaceEntry*)(implicit pos: Position): Unit = {
+  def checkPlaceTable(
+    screenshotDir: String,
+    f: String,
+    places: PlaceEntry*
+  )(
+    implicit
+      pos: Position
+  ): Unit = {
     val table = getPlaceTable
     places.foreach {
       case PlaceEntry(place, points, players) =>
-        withClue(
+        withClueAndScreenShot(
+          screenshotDir,
+          s"CheckPlaceTable${f}",
           s"""working with place ${place} points ${points} teams ${players}"""
         ) {
           table.find(row => row(0) == place.toString()) match {

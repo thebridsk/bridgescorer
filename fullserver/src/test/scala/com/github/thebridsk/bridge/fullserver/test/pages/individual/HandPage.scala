@@ -608,12 +608,18 @@ case class HandsOnBoard(
     }
 
     if (player == hand.north || player == hand.south) {
+      HandPage.log.fine(
+        s"""Player ${player} played NS in ${hand}"""
+      )
       points(if (imp) hand.nsIMP else hand.nsMP)
     } else if (player == hand.east || player == hand.west) {
+      HandPage.log.fine(
+        s"""Player ${player} played EW in ${hand}"""
+      )
       points(if (imp) hand.ewIMP else hand.ewMP)
     } else {
       HandPage.log.fine(
-        s"""Board ${board} checking team ${player} viewtype ${viewtype} this ${this}"""
+        s"""Board ${board} checking player ${player} viewtype ${viewtype} this ${this}"""
       )
       other
         .find(oh =>
@@ -625,29 +631,36 @@ case class HandsOnBoard(
         )
         .map { oh =>
           HandPage.log.fine(
-            s"""Board ${board} team ${player} did not play, viewtype ${viewtype} this ${this}"""
+            s"""Board ${board} player ${player} did not play, viewtype ${viewtype} this ${this}"""
           )
           (0.0, Strings.xmark)
         } match {
-        case Some(r) => r
-        case None =>
-          val teamOHPs = other.flatMap(oh =>
-            oh match {
-              case ohp: OtherHandPlayed =>
-                val h = allHands.getBoard(ohp.table, ohp.round, ohp.board).hand
-                if (player == hand.north || player == hand.south)
-                  points(if (imp) ohp.nsIMP else ohp.nsMP) :: Nil
-                else if (player == hand.east || player == hand.west)
-                  points(if (imp) ohp.ewIMP else ohp.ewMP) :: Nil
-                else Nil
-              case _ => Nil
+          case Some(r) => r
+          case None =>
+            val teamOHPs = other.flatMap(oh =>
+              oh match {
+                case ohp: OtherHandPlayed =>
+                  val h = allHands.getBoard(ohp.table, ohp.round, ohp.board).hand
+                  if (player == h.north || player == h.south) {
+                    HandPage.log.fine(
+                      s"""Player ${player} played NS in ${ohp}"""
+                    )
+                    points(if (imp) ohp.nsIMP else ohp.nsMP) :: Nil
+                  } else if (player == h.east || player == h.west) {
+                    HandPage.log.fine(
+                      s"""Player ${player} played NS in ${ohp}"""
+                    )
+                    points(if (imp) ohp.ewIMP else ohp.ewMP) :: Nil
+                  }
+                  else Nil
+                case _ => Nil
+              }
+            )
+            teamOHPs.headOption match {
+              case Some(r) => r
+              case None    => (0, "")
             }
-          )
-          teamOHPs.headOption match {
-            case Some(r) => r
-            case None    => (0, "")
-          }
-      }
+        }
     }
   }
 
@@ -831,9 +844,9 @@ class AllHandsInMatch(
     val pes = scores
       .map { sc => (sc, ts.filter(t => t.total == sc).map(t => t.player)) }
       .foldLeft((1, List[PlaceEntry]())) { (p, v) =>
-        val (sc, teams) = v
+        val (sc, players) = v
         val (nextPlace, places) = p
-        (nextPlace + teams.size, PlaceEntry(nextPlace, sc, teams) :: places)
+        (nextPlace + players.size, PlaceEntry(nextPlace, sc, players) :: places)
       }
     (ts, pes._2)
   }
@@ -945,8 +958,39 @@ class AllHandsInMatch(
         fail(s"Oops fixHands has a problem at ${hob}, calculated ${calcboard}")
       }
     }
+    calc.logit
+    calc
+  }
 
-    this
+  def logit: Unit = {
+    val hnds = hands.sortWith { (l, r) =>
+      if (l.round < r.round) true
+      else if (l.round > r.round) false
+      else {
+        if (l.board < r.board) true
+        else if (l.board > r.board) false
+        else {
+          l.table < r.table
+        }
+      }
+    }
+
+    def toStrHob(hob: HandsOnBoard): String = {
+      def toStrOther(other: Seq[OtherHand]): String = {
+        other.mkString("\n    ", "\n    ", "")
+      }
+      s"""HandsOnBoard(table=${hob.table}, round=${hob.round}, board=${hob.board}, hand=${hob.hand})${toStrOther(hob.other)}"""
+    }
+
+    def toStr(hs: List[HandsOnBoard] ): String = {
+      hs.map { hob =>
+        toStrHob(hob)
+      }.mkString("  ", "\n  ", "")
+    }
+
+    HandPage.log.fine(
+      s"AllHandsInMatch\n${toStr(hnds)}"
+    )
   }
 
   /**

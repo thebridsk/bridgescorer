@@ -822,7 +822,7 @@ class AllHandsInMatch(
       }
     }
 
-    this
+    calc
   }
 
   /**
