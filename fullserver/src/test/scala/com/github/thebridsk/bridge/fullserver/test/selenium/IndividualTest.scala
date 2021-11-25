@@ -245,19 +245,19 @@ object IndividualTest {
         1, 3, 7,
         EnterHand(
           8, 3, 7, 2,
-          600, 1, 1, 0,  // both vul
-          3, NoTrump, NotDoubled, North, Made, 3, Vul
+          630, 2, 0, 1,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 4, Vul
         ),
-        OtherHandPlayed(2, 3, 7, 1, 1, 0, 0)
+        OtherHandPlayed(2, 3, 7, 0, 2, -1, 1)
       ),
       HandsOnBoard(
         2, 3, 7,
         EnterHand(
           4, 1, 6, 5,
-          600, 1, 1, 0,  // both vul
+          600, 0, 2, -1,  // both vul
           3, NoTrump, NotDoubled, North, Made, 3, Vul
         ),
-        OtherHandPlayed(1, 3, 7, 1, 1, 0, 0)
+        OtherHandPlayed(1, 3, 7, 2, 0, 1, -1)
       ),
       HandsOnBoard(
         1, 3, 8,
@@ -299,19 +299,19 @@ object IndividualTest {
         1, 4, 10,
         EnterHand(
           8, 4, 1, 3,
-          600, 1, 1, 0,  // both vul
+          600, 0, 2, -1,  // both vul
           3, NoTrump, NotDoubled, North, Made, 3, Vul
         ),
-        OtherHandPlayed(2, 4, 10, 1, 1, 0, 0)
+        OtherHandPlayed(2, 4, 10, 2, 0, 1, -1)
       ),
       HandsOnBoard(
         2, 4, 10,
         EnterHand(
           5, 2, 7, 6,
-          600, 1, 1, 0,  // both vul
-          3, NoTrump, NotDoubled, North, Made, 3, Vul
+          630, 2, 0, 1,  // both vul
+          3, NoTrump, NotDoubled, North, Made, 4, Vul
         ),
-        OtherHandPlayed(1, 4, 10, 1, 1, 0, 0)
+        OtherHandPlayed(1, 4, 10, 0, 2, -1, 1)
       ),
       HandsOnBoard(
         1, 4, 11,
@@ -788,6 +788,8 @@ class IndividualTest
   }
 
   it should "have all the players set in the server" in {
+    log.severe(s"TestServer.isServerStartedByTest = ${TestServer.isServerStartedByTest}")
+    assume(TestServer.isServerStartedByTest,"only when starting server in test")
     val f = TestServer.backend.individualduplicates.read(dupid.map{ s => IndividualDuplicate.id(s)}.get)
     Await.result(f, Duration(10, "seconds")) match {
       case Right(v) =>
@@ -921,14 +923,14 @@ class IndividualTest
 
           val sp = ScoreboardPage.current.validate
           val tp = sp.clickTableButton(1).validate
-          val bp2 = enterHandInRound(tp, 1, round)
+          val bp2 = enterHandInRound(tp, 1, round, false)
         },
         CodeBlock {
           import SessionTable2._
 
           val sp = ScoreboardPage.current.validate
           val tp = sp.clickTableButton(2).validate
-          val bp2 = enterHandInRound(tp, 2, round)
+          val bp2 = enterHandInRound(tp, 2, round, true)
         },
       )
     }
@@ -1055,15 +1057,18 @@ class IndividualTest
   }
 
   /**
+    * play all the hands in the round on the table
     *
     * @param tp - the current page, a Table Page
     * @param table - the table, must be the same as tp is showing
     * @param round - the round to play
+    * @param playReverse - if true, play high boards first
     * @return the board page with table view
     */
-  def enterHandInRound(tp: TablePage, table: Int, round: Int)(implicit webDriver: WebDriver): BoardPage = {
+  def enterHandInRound(tp: TablePage, table: Int, round: Int, playReverse: Boolean)(implicit webDriver: WebDriver): BoardPage = {
     tp.validate.tableid mustBe Table.id(table).id
-    val hands = allHands.getHandsInTableRound(table, round)
+    val ahands = allHands.getHandsInTableRound(table, round)
+    val hands = if (playReverse) ahands.reverse else ahands
 
     if (hands.length > 0) {
       val tnp = tp.setTarget(TablePage.EnterNames).clickRound(round).asInstanceOf[TableEnterNamesPage].validate

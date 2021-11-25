@@ -420,6 +420,7 @@ class ScoreboardPage(
   def checkTable(
       teams: PlayerScore* /* ( Team, String, List[String] )* */
   )(implicit pos: Position): Unit = {
+    log.fine(s"""checkTable teams is${teams.mkString("\n  ","\n  ","")}""")
     val table = getTable
     log.fine(s"""checkTable table is${table.mkString("\n  ","\n  ","")}""")
     teams.foreach {
@@ -452,7 +453,10 @@ class ScoreboardPage(
     implicit
       pos: Position
   ): Unit = {
+    log.fine(s"""checkPlaceTable places is${places.mkString("\n  ","\n  ","")}""")
     val table = getPlaceTable
+    log.fine(s"""checkPlaceTable table is${table.mkString("\n  ","\n  ","")}""")
+
     places.foreach {
       case PlaceEntry(place, points, players) =>
         withClueAndScreenShot(
