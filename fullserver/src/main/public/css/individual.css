@@ -89,6 +89,12 @@ table th {
 
 }
 */
+.pageMovements > div:nth-child(7) {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  padding: 10px 2px 2px 2px;
+}
 
 .pageTableNames {
   display: block;

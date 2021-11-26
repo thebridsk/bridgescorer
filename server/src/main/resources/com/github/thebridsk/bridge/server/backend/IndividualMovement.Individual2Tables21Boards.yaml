@@ -1,7 +1,7 @@
 ---
-name: "Individual2Tables"
-short: "Individual 2 Tables"
-description: "2 tables individual movement"
+name: "Individual2Tables21Boards"
+short: "Individual 2 Tables 21 Boards"
+description: "2 tables 21 boards individual movement"
 numberPlayers: 8
 hands:
   - table: 1
