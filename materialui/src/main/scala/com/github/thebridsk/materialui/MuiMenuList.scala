@@ -24,6 +24,9 @@ object MenuListProps extends PropsFactory[MenuListProps] {
     * @param disablePadding If true, vertical padding will be removed from the list.
     *                        Default: false
     * @param subheader The content of the subheader, normally ListSubheader.
+    * @param variant The variant to use. Use menu to prevent selected items from impacting the initial focus and
+    *                the vertical alignment relative to the anchor element.
+    *                Valid values: menu, selectedMenu
     * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
@@ -36,6 +39,7 @@ object MenuListProps extends PropsFactory[MenuListProps] {
       dense: js.UndefOr[Boolean] = js.undefined,
       disablePadding: js.UndefOr[Boolean] = js.undefined,
       subheader: js.UndefOr[js.Object] = js.undefined,
+      variant: js.UndefOr[MenuVariant] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
@@ -52,6 +56,7 @@ object MenuListProps extends PropsFactory[MenuListProps] {
 
     autoFocus.foreach(p.updateDynamic("autoFocus")(_))
     disableListWrap.foreach(p.updateDynamic("disableListWrap")(_))
+    variant.foreach(v => p.updateDynamic("variant")(v.value))
 
     p
   }
@@ -81,6 +86,9 @@ object MuiMenuList extends ComponentFactory[MenuListProps] {
     * @param disablePadding If true, vertical padding will be removed from the list.
     *                        Default: false
     * @param subheader The content of the subheader, normally ListSubheader.
+    * @param variant The variant to use. Use menu to prevent selected items from impacting the initial focus and
+    *                the vertical alignment relative to the anchor element.
+    *                Valid values: menu, selectedMenu
     * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     * @param children
@@ -93,6 +101,7 @@ object MuiMenuList extends ComponentFactory[MenuListProps] {
       dense: js.UndefOr[Boolean] = js.undefined,
       disablePadding: js.UndefOr[Boolean] = js.undefined,
       subheader: js.UndefOr[js.Object] = js.undefined,
+      variant: js.UndefOr[MenuVariant] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
@@ -106,6 +115,7 @@ object MuiMenuList extends ComponentFactory[MenuListProps] {
       dense = dense,
       disablePadding = disablePadding,
       subheader = subheader,
+      variant = variant,
       className = className,
       additionalProps = additionalProps
     )

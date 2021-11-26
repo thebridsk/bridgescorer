@@ -1,9 +1,9 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.main.MainNoArgs
 import com.github.thebridsk.bridge.data.bridge.BoardScore
 
-object TestIMPs extends Main {
+object TestIMPs extends MainNoArgs {
 
   def execute(): Int = {
 

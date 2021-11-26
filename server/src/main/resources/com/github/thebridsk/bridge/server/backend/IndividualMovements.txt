@@ -1,0 +1,7 @@
+# contains all the predefined sets of boards
+# any non-blank line that does not start with a # is a name of a resource
+# in the same package as this file.
+
+IndividualMovement.Individual2Tables14Boards.yaml
+IndividualMovement.Individual2Tables21Boards.yaml
+IndividualMovement.Individual3Tables.yaml

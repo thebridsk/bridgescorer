@@ -1,10 +1,10 @@
 package com.github.thebridsk.bridge.test.manual
 
-import com.github.thebridsk.utilities.main.Main
 import java.util.zip.ZipFile
 import java.io.File
+import com.github.thebridsk.utilities.main.MainNoArgs
 
-object InspectJars extends Main {
+object InspectJars extends MainNoArgs {
 
   class EnumerationIterator[A](e: java.util.Enumeration[A])
       extends Iterator[A] {

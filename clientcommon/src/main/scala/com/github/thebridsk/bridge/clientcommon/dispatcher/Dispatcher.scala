@@ -4,6 +4,7 @@ import flux.dispatcher.FluxDispatcher
 import scala.scalajs.js
 import flux.dispatcher.DispatchToken
 import com.github.thebridsk.utilities.logging.TraceMsg
+import com.github.thebridsk.bridge.data.ServerURL
 
 object Dispatcher extends Dispatcher {}
 
@@ -30,6 +31,9 @@ trait Dispatcher {
   def stopLogs(): Unit = dispatcher.dispatch(StopLogs())
   def startLogs(): Unit = dispatcher.dispatch(StartLogs())
   def clearLogs(): Unit = dispatcher.dispatch(ClearLogs())
+
+  def updateServerURL(urls: ServerURL): Unit =
+    dispatcher.dispatch(ActionUpdateServerURLs(urls))
 
   /**
     * Waits for the callbacks specified to be invoked before continuing execution of the current callback.

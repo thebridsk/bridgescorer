@@ -10,6 +10,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import SchemaBase.{log => _, _}
 import SchemaHand.{log => _}
 import SchemaDuplicate.{log => _, _}
+import SchemaIndividualDuplicate.{log => _, _}
 import SchemaRubber.{log => _, _}
 import SchemaChicago.{log => _, _}
 
@@ -137,6 +138,42 @@ object SchemaService {
             case Left((statusCode, msg)) =>
               throw new Exception(
                 s"Error getting duplicate ids: ${statusCode} ${msg.msg}"
+              )
+          }
+        }
+      ),
+      Field(
+        "individualduplicate",
+        OptionType(IndividualDuplicateType),
+        arguments = ArgIndividualDuplicateId :: Nil,
+        resolve = IndividualDuplicateAction.getDuplicate
+      ),
+      Field(
+        "individualduplicates",
+        ListType(IndividualDuplicateType),
+        resolve = ctx =>
+          ctx.value.individualduplicates.readAll().map { rall =>
+            rall match {
+              case Right(all) =>
+                all.values.toList.map { md =>
+                  ( ctx.value, md)
+                }
+              case Left((statusCode, msg)) =>
+                throw new Exception(
+                  s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}"
+                )
+            }
+          }
+      ),
+      Field(
+        "individualduplicateIds",
+        ListType(IndividualDuplicateIdType),
+        resolve = _.value.individualduplicates.readAll().map { rall =>
+          rall match {
+            case Right(all) => all.keys.toList
+            case Left((statusCode, msg)) =>
+              throw new Exception(
+                s"Error getting MatchDuplicates: ${statusCode} ${msg.msg}"
               )
           }
         }

@@ -11,16 +11,16 @@ object Properties {
   }
 
   val defaultScoreboardWidth: Int =
-    Pixels.getWidthWithBoarder("DefaultScoreboard")
+    Pixels.getWidthWithBorder("DefaultScoreboard")
   val defaultNumberOfBoards = 18
   val defaultScoreboardBoardWidth: Int =
-    Pixels.getWidthWithBoarder("DefaultScoreboardBoard")
+    Pixels.getWidthWithBorder("DefaultScoreboardBoard")
   val defaultScoreboardPlayersWidth: Int =
-    Pixels.getWidthWithBoarder("DefaultScoreboardPlayers")
+    Pixels.getWidthWithBorder("DefaultScoreboardPlayers")
   val defaultScoreboardNamesWidthWithoutName: Int =
     Pixels.getPaddingBorder("DefaultScoreboardNames")
   val defaultScoreboardTitleBoards: Int =
-    Pixels.getWidthWithBoarder("DefaultScoreboardTitleBoards")
+    Pixels.getWidthWithBorder("DefaultScoreboardTitleBoards")
 
   def getScoreboardWidth(boards: Int, names: String*): Int = {
     val nameLen =

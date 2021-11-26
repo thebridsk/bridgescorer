@@ -121,3 +121,11 @@
 .rubBelowLine {
   vertical-align: top;
 }
+
+.rubNamesPage table,
+.rubNamesPage th,
+.rubNamesPage td
+{
+  border: none;
+  background-color: var(--color-bg);
+}

@@ -162,7 +162,7 @@ import RestNestedPictureHand._
   * The REST API and all the methods are documented using
   * swagger annotations.
   */
-@Path("/rest/duplicates/{dupId}/pictures")
+@Path("/rest/duplicates/{dupId}/pictures/{boardId}/hands")
 @Tags(Array(new Tag(name = "Duplicate")))
 class RestNestedPictureHand(
     store: Store[MatchDuplicate.Id, MatchDuplicate],

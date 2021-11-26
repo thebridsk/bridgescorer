@@ -24,41 +24,24 @@ import com.github.thebridsk.bridge.data.DuplicatePicture
 import org.scalajs.dom.raw.File
 import org.scalajs.dom.raw.FormData
 
-/**
-  * @author werewolf
-  */
-
-//private object BridgeRestClientImplicitsPrickle {
-//  import prickle._
-//
-//  implicit object ConvertHand extends ResourceConverter[Hand] {
-//
-//    def toArray( s: String ) = Unpickle[Seq[Hand]].fromString(s).get.toArray
-//    def toR( s: String ) = Unpickle[Hand].fromString(s).get
-//
-//    def toString( r: Hand ) = Pickle.intoString(r)
-//  }
-//
-//  implicit object ConvertChicago extends ResourceConverter[MatchChicago] {
-//
-//    def toArray( s: String ) = Unpickle[Seq[MatchChicago]].fromString(s).get.toArray
-//    def toR( s: String ) = Unpickle[MatchChicago].fromString(s).get
-//
-//    def toString( r: MatchChicago ) = Pickle.intoString(r)
-//  }
-//
-//}
-
 import com.github.thebridsk.bridge.clientcommon.rest2.Implicits._
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.DuplicateSummary
+import com.github.thebridsk.bridge.data.bridge.individual.{ DuplicateSummary => IDuplicateSummary }
+import com.github.thebridsk.bridge.data.IndividualMovement
+import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.IndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
 
 object RestClientLogEntryV2 extends RestClient[LogEntryV2, String]("/v1/logger")
 
 object RestClientMovement
     extends RestClient[Movement, Movement.Id]("/v1/rest/movements")
+object RestClientIndividualMovement
+    extends RestClient[IndividualMovement, IndividualMovement.Id]("/v1/rest/individualmovements")
 object RestClientBoardSet
     extends RestClient[BoardSet, BoardSet.Id]("/v1/rest/boardsets")
 object RestClientBoardSetsAndMovements
@@ -213,6 +196,10 @@ object RestClientDuplicateSummary
     extends RestClient[DuplicateSummary, DuplicateSummary.Id](
       "/v1/rest/duplicatesummaries"
     )
+object RestClientIndividualDuplicateSummary
+    extends RestClient[IDuplicateSummary, IDuplicateSummary.Id](
+      "/v1/rest/individualduplicatesummaries"
+    )
 object RestClientLoggerConfig
     extends RestClient[LoggerConfig, String]("/v1/rest/loggerConfig")
 object RestClientServerURL
@@ -230,3 +217,89 @@ object RestClientTestBoardsetsAndMovements
 
 object RestClientDuplicatePlayerPlaces
     extends RestClient[PlayerPlaces, String]("/v1/rest/duplicateplaces")
+
+class RestClientIndividualDuplicateBoardHand(
+    parent: RestClientIndividualDuplicateBoard,
+    instance: String
+) extends RestClient[IndividualDuplicateHand, IndividualDuplicateHand.Id](
+      "hands",
+      Some(parent),
+      Some(instance)
+    )
+class RestClientIndividualDuplicateBoard(
+    parent: RestClient[IndividualDuplicate, _],
+    instance: String
+) extends RestClient[IndividualBoard, IndividualBoard.Id]("boards", Some(parent), Some(instance)) {
+  def handResource(boardid: IndividualBoard.Id) =
+    new RestClientIndividualDuplicateBoardHand(this, boardid.id)
+}
+class RestClientIndividualDuplicateBoardHandPicture(
+    parent: RestClientIndividualDuplicateBoardPicture,
+    instance: String
+) extends RestClient[IndividualDuplicatePicture, IndividualDuplicateHand.Id](
+      "hands",
+      Some(parent),
+      Some(instance)
+    ) {
+
+  /**
+    * @param id the north player that played the pictured hand
+    * @param file the File object.  This must have the filename set, only the extension is important.
+    * @param query
+    * @param headers
+    * @param timeout
+    */
+  def putPicture(
+      id: IndividualDuplicateHand.Id,
+      file: File,
+      query: Map[String, String] = Map.empty,
+      headers: Map[String, String] = Map.empty,
+      timeout: Duration = AjaxResult.defaultTimeout
+  ): RestResult[Unit] = {
+    val formData = new FormData
+    formData.append("picture", file)
+
+    AjaxResult
+      .put(
+        getURL(id, query),
+        data = formData,
+        timeout = timeout,
+        headers = headers
+      )
+      .recordFailure()
+  }
+}
+class RestClientIndividualDuplicateBoardPicture(
+    parent: RestClient[IndividualDuplicate, _],
+    instance: String
+) extends RestClient[IndividualDuplicatePicture, IndividualBoard.Id](
+      "pictures",
+      Some(parent),
+      Some(instance)
+    ) {
+  def handResource(boardid: IndividualBoard.Id) =
+    new RestClientIndividualDuplicateBoardHandPicture(this, boardid.id)
+}
+object RestClientIndividualDuplicate
+    extends RestClient[IndividualDuplicate, IndividualDuplicate.Id](
+      "/v1/rest/individualduplicates"
+    ) {
+  def boardResource(dupid: IndividualDuplicate.Id) =
+    new RestClientIndividualDuplicateBoard(this, dupid.id)
+  def pictureResource(dupid: IndividualDuplicate.Id) =
+    new RestClientIndividualDuplicateBoardPicture(this, dupid.id)
+
+  def createIndividualDuplicate(
+      hand: IndividualDuplicate,
+      default: Boolean = true,
+      boards: Option[BoardSet.Id] = None,
+      movement: Option[IndividualMovement.Id] = None,
+      timeout: Duration = AjaxResult.defaultTimeout
+  ): RestResult[IndividualDuplicate] = {
+    val query = Map[String, String]() ++
+      default.option("default" -> "true") ++
+      boards.map(b => "boards" -> b.id) ++
+      movement.map(m => "movements" -> m.id)
+    create(hand, query = query.toMap, timeout = timeout)
+  }
+}

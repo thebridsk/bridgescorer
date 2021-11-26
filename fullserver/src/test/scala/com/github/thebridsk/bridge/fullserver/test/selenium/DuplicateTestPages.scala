@@ -22,6 +22,7 @@ import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.NewDuplicateP
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.MovementsPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.BoardSetsPage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreboardPage
+import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.ScoreStyleIMP
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TablePage.EnterNames
 import com.github.thebridsk.bridge.fullserver.test.pages.duplicate.TableEnterScorekeeperPage
@@ -1299,7 +1300,10 @@ class DuplicateTestPages
       },
       CodeBlock {
         import SessionDirector._
-        HomePage.goto.validate.takeScreenshot(docsScreenshotDir, "HomePage")
+        captureLogsOnError {
+          HomePage.goto.validate.takeScreenshot(docsScreenshotDir, "HomePage")
+        }
+
       }
     )
 
@@ -1308,72 +1312,83 @@ class DuplicateTestPages
   it should "go to duplicate list page" in {
     import SessionDirector._
 
-    HomePage.current.clickListDuplicateButton.validate
+    captureLogsOnError {
+      HomePage.current.clickListDuplicateButton.validate
+    }
   }
 
   it should "go to boardsets page" in {
     import SessionDirector._
 
-    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
-    eventually {
-      lp.findElemById("BoardSets")
+    captureLogsOnError {
+
+      val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+      eventually {
+        lp.findElemById("BoardSets")
+      }
+      lp.clickBoardSets.validate
+        .click(BoardSetsPage.boardsets.head)
+        .validate
+        .clickOK
+        .validate
     }
-    lp.clickBoardSets.validate
-      .click(BoardSetsPage.boardsets.head)
-      .validate
-      .clickOK
-      .validate
   }
 
   it should "go to movements page" in {
     import SessionDirector._
 
-    val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
-    eventually {
-      lp.findElemById("Movements")
-    }
-    lp.withClueAndScreenShot(
-      screenshotDir,
-      "Movement",
-      "trying to click first movement"
-    ) {
-      val mp = lp.clickMovements.validate
-        .takeScreenshot(screenshotDir, "MovementBefore")
-      val mp1 = mp.click(MovementsPage.movements.head).validate
-      mp1.clickOK.validate
+    captureLogsOnError {
+
+      val lp = ListDuplicatePage.current.validate.clickMainMenu.validate
+      eventually {
+        lp.findElemById("Movements")
+      }
+      lp.withClueAndScreenShot(
+        screenshotDir,
+        "Movement",
+        "trying to click first movement"
+      ) {
+        val mp = lp.clickMovements.validate
+          .takeScreenshot(screenshotDir, "MovementBefore")
+        val mp1 = mp.click(MovementsPage.movements.head).validate
+        mp1.clickOK.validate
+      }
     }
   }
 
   it should "allow creating a new duplicate match" in {
     import SessionDirector._
+    captureLogsOnError {
 
-    val dp = ListDuplicatePage.current
-    dp.withClueAndScreenShot(
-      screenshotDir,
-      "NewDuplicate",
-      "clicking NewDuplicate button"
-    ) {
-      dp.clickNewDuplicateButton.validate
-        .takeScreenshot(docsScreenshotDir, "NewDuplicate")
+      val dp = ListDuplicatePage.current
+      dp.withClueAndScreenShot(
+        screenshotDir,
+        "NewDuplicate",
+        "clicking NewDuplicate button"
+      ) {
+        dp.clickNewDuplicateButton.validate
+          .takeScreenshot(docsScreenshotDir, "NewDuplicate")
+      }
     }
-
   }
 
   it should "create a new duplicate match" in {
     import SessionDirector._
+    captureLogsOnError {
 
-    val curPage = NewDuplicatePage.current
+      val curPage = NewDuplicatePage.current
 
-    val boards = MovementsPage.getBoardsFromMovement(movement)
+      val boards = MovementsPage.getBoardsFromMovement(movement)
 
-    testlog.info(s"Boards are $boards")
+      testlog.info(s"Boards are $boards")
 
-    dupid = curPage.click(boardset, movement).validate(boards).dupid
-    dupid mustBe Symbol("defined")
+      dupid = curPage.click(boardset, movement).validate(boards).dupid
+      dupid mustBe Symbol("defined")
 
-    testlog.info(s"Duplicate id is ${dupid.get}")
+      testlog.info(s"Duplicate id is ${dupid.get}")
 
-    allHands.boardsets mustBe Symbol("defined")
+      allHands.boardsets mustBe Symbol("defined")
+    }
   }
 
   var rounds: List[Int] = Nil
@@ -1387,32 +1402,44 @@ class DuplicateTestPages
       "Starting browsers",
       CodeBlock {
         import SessionDirector._
-        val menu = ScoreboardPage.current.clickMainMenu.validate
-        eventually {
-          menu.findElemById("Director")
+        captureLogsOnError {
+          val menu = ScoreboardPage.current.clickMainMenu.validate
+          eventually {
+            menu.findElemById("Director")
+          }
+          menu.clickDirectorButton.validate
         }
-        menu.clickDirectorButton.validate
       },
       CodeBlock {
         import SessionTable1._
-        ScoreboardPage
-          .goto(dupid.get)
-          .takeScreenshot(docsScreenshotDir, "ScoreboardFromTable")
-          .validate
-          .clickTableButton(1)
-          .validate(rounds)
-          .takeScreenshot(docsScreenshotDir, "TableRound1")
+        captureLogsOnError {
+          ScoreboardPage
+            .goto(dupid.get)
+            .takeScreenshot(docsScreenshotDir, "ScoreboardFromTable")
+            .validate
+            .clickTableButton(1)
+            .validate(rounds)
+            .takeScreenshot(docsScreenshotDir, "TableRound1")
+        }
       },
       CodeBlock {
         import SessionTable2._
-        TablePage.goto(dupid.get, "2", EnterNames).validate(rounds)
+        captureLogsOnError {
+          TablePage.goto(dupid.get, "2", EnterNames).validate(rounds)
+        }
       },
       CodeBlock {
         import SessionComplete._
-        val home = HomePage.goto.validate
-        val h2 = home.clickToLightDark(LightDarkAddOn.DarkTheme)
-        val sb = h2.clickListDuplicateButton.validate(dupid.get)
-        sb.clickDuplicate(dupid.get).validate
+        try {
+          val home = HomePage.goto.validate
+          val h2 = home.clickToLightDark(LightDarkAddOn.DarkTheme)
+          val sb = h2.clickListDuplicateButton.validate(dupid.get)
+          sb.clickDuplicate(dupid.get).validate
+        } catch {
+          case x: Exception =>
+            showLogs()
+            throw x
+        }
       }
     )
   }
@@ -2509,7 +2536,7 @@ class DuplicateTestPages
       CodeBlock {
         import SessionTable2._
         val sb = ScoreboardPage.current
-          .setScoreStyle(ScoreboardPage.ScoreStyleIMP)
+          .setScoreStyle(ScoreStyleIMP)
           .validate
         // Thread.sleep(500L)
         validateRound(sb, 2, 6, team4, team1, true)
@@ -2762,9 +2789,11 @@ class DuplicateTestPages
 
     val hpe = hp.clickLatestNewDuplicateButton(false).asInstanceOf[HomePage]
 
-    hpe.validatePopup(true)
+    eventually {
+      hpe.validatePopup(true)
 
-    hpe.getPopUpText mustBe "Did not find an unfinished duplicate match"
+      hpe.getPopUpText mustBe "Did not find an unfinished duplicate match"
+    }
 
     hpe.clickPopUpCancel
 
@@ -2846,6 +2875,7 @@ class DuplicateTestPages
         suggestions
       }.head
       val firsttext = firstsug.text
+      Thread.sleep(500)
       firstsug.click
       eventually {
         es.getScorekeeper mustBe firsttext
@@ -3073,7 +3103,7 @@ class DuplicateTestPages
     ) {
       val ldpurl = ldp.clickServerURL.validateServerURL
       val urls = ldpurl.getServerURLs
-      urls.length mustBe 1
+      urls.length must be >= 1
       ldpurl.checkForValidServerURLs
       ldpurl.clickServerURLOK.validate
     }

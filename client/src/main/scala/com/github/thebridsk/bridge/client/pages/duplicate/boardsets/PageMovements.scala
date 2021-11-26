@@ -138,9 +138,9 @@ object PageMovementsInternal {
     .build
 
   private[boardsets] val BoardHeader = ScalaComponent
-    .builder[(State, Int, Boolean)]("PageMovements.BoardHeader")
+    .builder[(Int, Boolean)]("PageMovements.BoardHeader")
     .render_P(props => {
-      val (state, table, relay) = props
+      val (table, relay) = props
       <.thead(
         <.tr(
           <.th(^.colSpan := (if (relay) 5 else 4), "Table " + table)
@@ -158,9 +158,9 @@ object PageMovementsInternal {
     .build
 
   private[boardsets] val BoardRow = ScalaComponent
-    .builder[(State, Movement, HandInTable, Boolean)]("PageMovements.BoardRow")
+    .builder[(Movement, HandInTable, Boolean)]("PageMovements.BoardRow")
     .render_P(props => {
-      val (state, movement, hit, relay) = props
+      val (movement, hit, relay) = props
       <.tr(
         <.td(hit.round),
         <.td(hit.ns),
@@ -176,14 +176,14 @@ object PageMovementsInternal {
     })
     .build
 
-  private[boardsets] val MovementTable = ScalaComponent
-    .builder[(State, Movement, Int)]("PageMovements.MovementTable")
+  val MovementTable = ScalaComponent
+    .builder[(Movement, Int)]("PageMovements.MovementTable")
     .render_P(props => {
-      val (state, htp, table) = props
+      val (htp, table) = props
       val relay = htp.matchHasRelay
       <.div(
         <.table(
-          BoardHeader((state, table, relay)),
+          BoardHeader((table, relay)),
           <.tbody(
             htp.hands
               .filter(h => h.table == table)
@@ -198,7 +198,7 @@ object PageMovementsInternal {
               })
               .map { h =>
                 BoardRow
-                  .withKey(s"${h.table}-${h.round}")((state, htp, h, relay))
+                  .withKey(s"${h.table}-${h.round}")((htp, h, relay))
               }
               .toTagMod
           )
@@ -342,7 +342,7 @@ object PageMovementsInternal {
                         .sorted
                         .map { table =>
                           MovementTable.withRef(movementTableRef)(
-                            (state, htp, table)
+                            (htp, table)
                           )
                         }
                         .toTagMod

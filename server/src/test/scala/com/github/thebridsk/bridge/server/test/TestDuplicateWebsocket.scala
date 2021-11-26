@@ -196,7 +196,7 @@ class TestDuplicateWebsocket
         mediaType mustBe MediaTypes.`application/json`
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe "http://example.com/duplicates/M1"
+            h.value() mustBe "http://example.com/v1/rest/duplicates/M1"
           case None =>
             fail("Location header was not found in response")
         }
@@ -339,7 +339,7 @@ class TestDuplicateWebsocket
         val md = responseAs[MatchDuplicate]
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe s"http://example.com/duplicates/${md.id.id}"
+            h.value() mustBe s"http://example.com/v1/rest/duplicates/${md.id.id}"
           case None =>
             fail("Location header was not found in response")
         }
@@ -699,7 +699,7 @@ class TestDuplicateWebsocket
         status mustBe Created
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe "http://example.com/duplicates/M1/boards/B2/hands/T3"
+            h.value() mustBe "http://example.com/v1/rest/duplicates/M1/boards/B2/hands/T3"
           case None =>
             fail("Location header was not found in response")
         }

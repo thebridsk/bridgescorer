@@ -2,7 +2,7 @@
 import sbt._
 import Keys._
 
-import sbtcrossproject.{crossProject, CrossType}
+import sbtcrossproject.CrossProject
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 import sbtcrossproject.CrossPlugin.autoImport._
 import scalajscrossproject.ScalaJSCrossPlugin.autoImport._
@@ -16,7 +16,7 @@ import BldVersion._
 
 object BldBridgeShared {
 
-  lazy val `bridgescorer-shared` = crossProject(JSPlatform, JVMPlatform).in(file("shared")).
+  lazy val `bridgescorer-shared` = CrossProject("shared", file("shared"))(JSPlatform, JVMPlatform).
     configure(commonSettings,buildInfo("com.github.thebridsk.bridge.data.version", "VersionShared")).
     settings(
       name := "bridgescorer-shared",

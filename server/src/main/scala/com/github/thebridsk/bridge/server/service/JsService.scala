@@ -66,17 +66,20 @@ trait JsService /* extends HttpService */ {
         None
     }
 
-  {
+
+  val optimizedVersion: Boolean = {
     val res = htmlResources.baseName + "/bridgescorer-client-opt.js.gz"
     val url = getClass.getClassLoader.getResource(res)
     if (url != null)
       logger.info("Found resource " + res + " at " + url.toString())
-    else {
-      val res1 = htmlResources.baseName + "/bridgescorer-client-fastopt.js.gz"
-      val url1 = getClass.getClassLoader.getResource(res)
-      if (url1 != null)
-        logger.info("Found resource " + res1 + " at " + url1.toString())
-    }
+    url!=null
+  }
+  val notOptimizedVersion: Boolean = {
+    val res1 = htmlResources.baseName + "/bridgescorer-client-fastopt.js.gz"
+    val url1 = getClass.getClassLoader.getResource(res1)
+    if (url1 != null)
+      logger.info("Found resource " + res1 + " at " + url1.toString())
+    url1!=null
   }
 
   private def safeJoinPaths(
@@ -115,17 +118,28 @@ trait JsService /* extends HttpService */ {
       }
     }
 
+  def getRootPage: Option[String] = {
+    if (optimizedVersion)
+      Some("/public/index.html")
+    else if (notOptimizedVersion)
+      Some("/public/index-fastopt.html")
+    else
+      None
+  }
+
   /**
     * The spray route for the html static files
     */
   val html: Route = {
     pathSingleSlash {
-      redirect("/public/index.html", StatusCodes.PermanentRedirect)
+      redirect("/public", StatusCodes.PermanentRedirect)
     } ~
       pathPrefix("public") {
         respondWithHeaders(cacheHeaders) {
           pathEndOrSingleSlash {
-            redirect("/public/index.html", StatusCodes.PermanentRedirect)
+            getRootPage
+              .map(redirect(_, StatusCodes.PermanentRedirect))
+              .getOrElse(complete(StatusCodes.NotFound, "Proper index page not found"))
           } ~
 //        reqRespLogging("public", Logging.DebugLevel) { getFromResourceDirectory(htmlResources.baseName) } ~
 //        reqRespLogging("publicgz", Logging.DebugLevel) {

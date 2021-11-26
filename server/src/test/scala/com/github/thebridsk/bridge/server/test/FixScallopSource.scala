@@ -1,6 +1,6 @@
 package com.github.thebridsk.bridge.server.test
 
-import com.github.thebridsk.utilities.main.Main
+import com.github.thebridsk.utilities.main.MainNoArgs
 import java.io.File
 import com.github.thebridsk.bridge.server.util.Version
 import java.nio.file.Files
@@ -11,7 +11,7 @@ import java.io.FileOutputStream
 import java.io.FileInputStream
 import scala.util.matching.Regex
 
-object FixScallopSource extends Main {
+object FixScallopSource extends MainNoArgs {
   // C:\Users\werewolf\.ivy2\cache\org.rogach\scallop_2.12\srcs
 
 //  scallop_2.12-3.1.1-sources.original.jar

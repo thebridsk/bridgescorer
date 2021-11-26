@@ -1,12 +1,12 @@
 package com.github.thebridsk.bridge.server.manualtest
 
-import com.github.thebridsk.utilities.main.Main
 import java.net.NetworkInterface
 
 import scala.jdk.CollectionConverters._
 import java.net.Inet4Address
+import com.github.thebridsk.utilities.main.MainNoArgs
 
-object GetIP extends Main {
+object GetIP extends MainNoArgs {
 
   def execute(): Int = {
     NetworkInterface.getNetworkInterfaces.asScala

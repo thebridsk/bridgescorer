@@ -55,8 +55,16 @@ trait JsonSupport {
     MatchDuplicate.idKeyReads
   implicit val idMatchDuplicateKeyWrites: KeyWrites[Id[IdMatchDuplicate]] =
     MatchDuplicate.idKeyWrites
+  implicit val idIndividualDuplicateKeyReads: KeyReads[Id[IdIndividualDuplicate]] =
+    IndividualDuplicate.idKeyReads
+  implicit val idIndividualDuplicateKeyWrites: KeyWrites[Id[IdIndividualDuplicate]] =
+    IndividualDuplicate.idKeyWrites
   implicit val idBoardKeyReads: KeyReads[Id[IdBoard]] = Board.idKeyReads
   implicit val idBoardKeyWrites: KeyWrites[Id[IdBoard]] = Board.idKeyWrites
+  implicit val idIndividualBoardKeyReads: KeyReads[Id[IdIndividualBoard]] = IndividualBoard.idKeyReads
+  implicit val idIndividualBoardKeyWrites: KeyWrites[Id[IdIndividualBoard]] = IndividualBoard.idKeyWrites
+  implicit val idIndividualDuplicateHandKeyReads: KeyReads[Id[IdIndividualDuplicateHand]] = IndividualDuplicateHand.idKeyReads
+  implicit val idIndividualDuplicateHandKeyWrites: KeyWrites[Id[IdIndividualDuplicateHand]] = IndividualDuplicateHand.idKeyWrites
   implicit val idTeamKeyReads: KeyReads[Id[IdTeam]] = Team.idKeyReads
   implicit val idTeamKeyWrites: KeyWrites[Id[IdTeam]] = Team.idKeyWrites
   implicit val idTableKeyReads: KeyReads[Id[IdTable]] = Table.idKeyReads
@@ -69,6 +77,10 @@ trait JsonSupport {
     Movement.idKeyReads
   implicit val idMovementKeyWrites: KeyWrites[Id[IdMovement]] =
     Movement.idKeyWrites
+  implicit val idIndividualMovementKeyReads: KeyReads[Id[IdIndividualMovement]] =
+    IndividualMovement.idKeyReads
+  implicit val idIndividualMovementKeyWrites: KeyWrites[Id[IdIndividualMovement]] =
+    IndividualMovement.idKeyWrites
   implicit val idMatchDuplicateResultKeyReads
       : KeyReads[Id[IdMatchDuplicateResult]] = MatchDuplicateResult.idKeyReads
   implicit val idMatchDuplicateResultKeyWrites
@@ -82,13 +94,20 @@ trait JsonSupport {
     DuplicateSummary.jsonFormat
   implicit val idMatchDuplicateFormat: Format[Id[IdMatchDuplicate]] =
     MatchDuplicate.jsonFormat
+  implicit val idIndividualDuplicateFormat: Format[Id[IdIndividualDuplicate]] =
+    IndividualDuplicate.jsonFormat
   implicit val idMatchDuplicateBoardFormat: Format[Id[IdBoard]] =
     Board.jsonFormat
+  implicit val idIndividualDuplicateBoardFormat: Format[Id[IdIndividualBoard]] =
+    IndividualBoard.jsonFormat
+  implicit val idIndividualDuplicateHandFormat: Format[Id[IdIndividualDuplicateHand]] =
+    IndividualDuplicateHand.jsonFormat
   implicit val idMatchDuplicateTeamFormat: Format[Id[IdTeam]] = Team.jsonFormat
   implicit val idMatchDuplicateTableFormat: Format[Id[IdTable]] =
     Table.jsonFormat
   implicit val idBoardSetFormat: Format[Id[IdBoardSet]] = BoardSet.jsonFormat
   implicit val idMovementFormat: Format[Id[IdMovement]] = Movement.jsonFormat
+  implicit val idIndividualMovementFormat: Format[Id[IdIndividualMovement]] = IndividualMovement.jsonFormat
   implicit val idMatchDuplicateResultFormat
       : Format[Id[IdMatchDuplicateResult]] = MatchDuplicateResult.jsonFormat
 
@@ -102,9 +121,12 @@ trait JsonSupport {
     Json.format[DuplicateHandV1]
   implicit val duplicateHandV2Format: OFormat[DuplicateHandV2] =
     Json.format[DuplicateHandV2]
+  implicit val individualDuplicateHandV1Format: OFormat[IndividualDuplicateHandV1] =
+    Json.format[IndividualDuplicateHandV1]
 //  implicit val boardFormat = Json.format[Board]
   implicit val boardv1Format: OFormat[BoardV1] = Json.format[BoardV1]
   implicit val boardv2Format: OFormat[BoardV2] = Json.format[BoardV2]
+  implicit val individualBoardV1Format: OFormat[IndividualBoardV1] = Json.format[IndividualBoardV1]
 //  implicit val duplicateFormat = Json.format[MatchDuplicate]
   implicit val duplicateV1Format: OFormat[MatchDuplicateV1] =
     Json.format[MatchDuplicateV1]
@@ -112,6 +134,9 @@ trait JsonSupport {
     Json.format[MatchDuplicateV2]
   implicit val duplicateV3Format: OFormat[MatchDuplicateV3] =
     Json.format[MatchDuplicateV3]
+
+  implicit val individualDuplicateV1Format: OFormat[IndividualDuplicateV1] =
+    Json.format[IndividualDuplicateV1]
   implicit val duplicateSummaryDetailsFormat: OFormat[DuplicateSummaryDetails] =
     Json.format[DuplicateSummaryDetails]
   implicit val duplicateSummaryEntryFormat: OFormat[DuplicateSummaryEntry] =
@@ -119,12 +144,21 @@ trait JsonSupport {
   implicit val bestMatchFormat: OFormat[BestMatch] = Json.format[BestMatch]
   implicit val duplicateSummaryFormat: OFormat[DuplicateSummary] =
     Json.format[DuplicateSummary]
+  implicit val iDuplicateSummaryDetailsFormat: OFormat[com.github.thebridsk.bridge.data.bridge.individual.IndividualDuplicateSummaryDetails] =
+    Json.format
+  implicit val iBestMatchFormat: OFormat[com.github.thebridsk.bridge.data.bridge.individual.BestMatch] = Json.format
+  implicit val iDuplicateSummaryEntryFormat: OFormat[com.github.thebridsk.bridge.data.bridge.individual.DuplicateSummaryEntry] =
+    Json.format
+  implicit val iDuplicateSummaryFormat: OFormat[com.github.thebridsk.bridge.data.bridge.individual.DuplicateSummary] =
+    Json.format
   implicit val boardTeamResultsFormat: OFormat[BoardTeamResults] =
     Json.format[BoardTeamResults]
   implicit val boardResultsFormat: OFormat[BoardResults] =
     Json.format[BoardResults]
   implicit val duplicatePictureFormat: OFormat[DuplicatePicture] =
     Json.format[DuplicatePicture]
+  implicit val individualDuplicatePictureFormat: OFormat[IndividualDuplicatePicture] =
+    Json.format[IndividualDuplicatePicture]
 //  implicit val duplicateResultFormat = Json.format[MatchDuplicateResult]
   implicit val duplicateResultV1Format: OFormat[MatchDuplicateResultV1] =
     Json.format[MatchDuplicateResultV1]
@@ -152,6 +186,9 @@ trait JsonSupport {
   implicit val handInTableFormat: OFormat[HandInTable] =
     Json.format[HandInTable]
   implicit val movementFormat: OFormat[Movement] = Json.format[Movement]
+  implicit val individualhandInTableFormat: OFormat[IndividualHandInTable] =
+    Json.format[IndividualHandInTable]
+  implicit val individualmovementFormat: OFormat[IndividualMovement] = Json.format[IndividualMovement]
   implicit val loggerFormat: OFormat[LogEntryV2] = Json.format[LogEntryV2]
 //  implicit val boarsetsAndMovementsFormat = Json.format[BoardSetsAndMovementsV1]
   implicit val boarsetsAndMovementsV1Format: OFormat[BoardSetsAndMovementsV1] =

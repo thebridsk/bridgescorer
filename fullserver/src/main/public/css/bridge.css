@@ -309,9 +309,8 @@ label.baseRadioButton > span:nth-child(2) > span
 }
 
 .baseNormal {
-  color: var(--color-fg);
   background-color: var(--color-default-button);
-  /* background-color: var(--color-bg); */
+  color: var(--color-fg-default-button);
 }
 
 .baseRequired {
@@ -408,6 +407,7 @@ label.baseRadioButton > span:nth-child(2) > span
   padding-top: 10px;
   width: 100%;
   max-width: 1050px;
+  margin:0 auto;
 }
 
 .baseDivFooterLeft {
@@ -535,6 +535,21 @@ label.baseRadioButton > span:nth-child(2) > span
 
 .rootInfoPageDiv {
   font-size: x-large;
+}
+
+.rootInfoPageDiv > table {
+  border-spacing: 0px;
+  font-size: larger;
+  border: 1px solid var(--color-table-border);
+  margin: 5px;
+}
+.rootInfoPageDiv > table td {
+  font-size: larger;
+  border: 1px solid var(--color-table-border);
+}
+.rootInfoPageDiv > table th {
+  font-size: larger;
+  border: 1px solid var(--color-table-border);
 }
 
 /*
@@ -837,15 +852,12 @@ body.touched .withTooltipBox:hover {
   padding-left: 5px !important;
 }
 
-.popupMenu {
-  z-index: 200;
-}
-.popupMenu > div > div
+.MuiList-root[role=menu]
 {
   color: var(--color-fg-default-button);
   background-color: var(--color-default-button);
 }
-.popupMenu > div > div li:hover
+.MuiList-root[role=menu] > li:hover
 {
   background-color: rgba(0, 0, 0, 0.2);
 }
@@ -937,13 +949,13 @@ body > div > div > div {
   text-shadow: 3px 3px 3px var(--color-appbar-title-shadow);
 }
 
-.lightDarkIcon1 {
+.lightDarkIconCurrent {
   fill: var(--color-bg)
 }
-.lightDarkIcon2 {
+.lightDarkIconNext {
   fill: var(--color-other-bg)
 }
-.lightDarkIcon3 {
+.lightDarkIconPrev {
   fill: var(--color-other2-bg)
 }
 
@@ -1103,4 +1115,10 @@ rw-cell-off-range
 button[disabled] {
   text-decoration: line-through;
   background: repeating-linear-gradient(-45deg, var(--color-table-cell-gray), var(--color-table-cell-gray) 5px, var(--color-bg) 5px, var(--color-bg) 10px);
+}
+
+#ServerURLPopupDiv {
+  display: inline;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 }

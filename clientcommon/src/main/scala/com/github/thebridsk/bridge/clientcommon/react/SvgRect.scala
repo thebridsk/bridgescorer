@@ -6,13 +6,22 @@ import com.github.thebridsk.color.Color
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 /**
-  * A skeleton component.
+  * A component that displays slices as rectangles.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * SvgRect( SvgRect.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * SvgRect(
+  *   height = 20,
+  *   width = 100,
+  *   borderColor = Color("black"),
+  *   slices = List(2,5,8),
+  *   colors = List(Color("red"), Color("green"), Color("blue"))
+  * )
+  * }}}
+  *
+  * @see See apply method for a description of all arguments.
+  *
   *
   * @author werewolf
   */
@@ -21,7 +30,11 @@ object SvgRect {
   import ReactColor._
 
   /**
-    * Makes a rectangle where the slices are vertical.
+    * Properties for SvgRect component.
+    *
+    * slices, colors, and sliceTitles must all be the same size.
+    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+    *
     * @param height the height of the rectangle
     * @param width the width of the rectangle
     * @param borderColor
@@ -29,9 +42,6 @@ object SvgRect {
     * @param colors the colors of the slices, must be the same size array as slices.
     * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
     * @param sliceTitles the title of slices, will be flyover.
-    * Must be the same size array as slices.
-    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
-    * Must be the same size array as slices.
     */
   case class Props(
       height: Double,
@@ -46,6 +56,10 @@ object SvgRect {
 
   /**
     * Makes a rectangle where the slices are vertical.
+    *
+    * slices, colors, and sliceTitles must all be the same size.
+    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+    *
     * @param height the height of the rectangle
     * @param width the width of the rectangle
     * @param borderColor
@@ -53,9 +67,8 @@ object SvgRect {
     * @param colors the colors of the slices, must be the same size array as slices.
     * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
     * @param sliceTitles the title of slices, will be flyover.
-    * Must be the same size array as slices.
-    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
-    * Must be the same size array as slices.
+    *
+    * @return the unmounted react component.
     */
   def apply(
       height: Double,
@@ -81,6 +94,12 @@ object SvgRect {
     )
   }
 
+  /**
+    * Instantiate the component.
+    *
+    * @param props
+    * @return the unmounted react component.
+    */
   def apply(props: Props) =
     component(props) // scalafix:ok ExplicitResultTypes; ReactComponent
 

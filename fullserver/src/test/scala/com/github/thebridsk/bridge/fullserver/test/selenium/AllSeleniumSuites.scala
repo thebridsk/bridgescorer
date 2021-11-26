@@ -20,6 +20,7 @@ class AllSeleniumSuites
       new DuplicateTestPages2,
       new RubberTest,
       new DuplicateResultTest,
+      new IndividualTest,
       new SwaggerTest,
       new SwaggerTest2
     )

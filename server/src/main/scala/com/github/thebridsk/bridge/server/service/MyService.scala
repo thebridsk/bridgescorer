@@ -49,12 +49,13 @@ trait MyService
 
   override lazy val cacheDuration: Duration = Duration("0s")
 
+  def listenInterface: List[String] = List()
   def host = "loopback"
   def ports: ServerPort = ServerPort(None, None)
 
   val excptHandler: ExceptionHandler = ExceptionHandler {
     case x: IllegalArgumentException =>
-      log.warning(s"Illegal argument in request: ${x.getMessage()}")
+      log.warning(s"MyService: Illegal argument in request: ${x.getMessage()}")
       import UtilsPlayJson._
       complete(
         StatusCodes.BadRequest,
@@ -105,7 +106,9 @@ trait MyService
     .handleNotFound { complete(StatusCodes.NotFound, "Not here!myservice") }
     .result()
 
-  val serverService = new ServerService(totallyMissingHandler)
+  val serverService = new ServerService(totallyMissingHandler) {
+    val listenInterface = MyService.this.listenInterface
+  }
 
   val myRouteWithLoggingDebugging: RequestContext => Future[RouteResult] =
 //    logRequest(("topLevel", Logging.DebugLevel)) {
@@ -122,13 +125,18 @@ trait MyService
   /**
     * Spray routing which logs all requests and responses at the Debug level.
     */
-  val myRouteWithLogging: Route = handleExceptions(excptHandler) {
-    handleRejections(totallyMissingHandler) {
-//    logRequest(("topLevel", Logging.DebugLevel)) {
-//      logResult(("topLevel", Logging.DebugLevel)) {
-      logRouteWithIp
-//      }
-//    }
+  val myRouteWithLogging: Route = {
+    import CorsDirectives._
+    cors() {
+      handleExceptions(excptHandler) {
+        handleRejections(totallyMissingHandler) {
+          // logRequest(("topLevel", Logging.DebugLevel)) {
+          //   logResult(("topLevel", Logging.DebugLevel)) {
+          logRouteWithIp
+          //   }
+          // }
+        }
+      }
     }
   }
 
@@ -141,8 +149,8 @@ trait MyService
       pathPrefix("v1") {
         loggingRoute ~
           cors() {
-            logRequest("logRouteWithIp", Logging.DebugLevel) {
-              logResult("logRouteWithIp", Logging.DebugLevel) {
+            logRequest(s"logRouteWithIp from ${ip}", Logging.DebugLevel) {
+              logResult(s"logRouteWithIp from ${ip}", Logging.DebugLevel) {
 //            handleRejections(totallyMissingHandler) {
                 serverService.serverRoute
 //            }
@@ -359,6 +367,9 @@ trait MyService
       val r = s
         .addTagsItem(
           new Tag().name("Duplicate").description("Duplicate bridge operations")
+        )
+        .addTagsItem(
+          new Tag().name("IndividualDuplicate").description("Individual duplicate bridge operations")
         )
         .addTagsItem(
           new Tag().name("Chicago").description("Chicage bridge operations")

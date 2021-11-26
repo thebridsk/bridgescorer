@@ -109,18 +109,84 @@ object DropdownListComponentProperty {
 @js.native
 trait DropdownList extends js.Object
 
+/**
+  * Dropdown list react component.
+  *
+  * A wrapper for the DropdownList component in react-widgets npm package.
+  * https://jquense.github.io/react-widgets/api/DropdownList/
+  *
+  * Usage:
+  *
+  * {{{
+  * case class State(
+  *   val currentValue: String = ""
+  * )
+  *
+  * def onChange(newvalue: js.Any): Unit = {
+  *   scope.modState(_.copy(currentValue = newvalue.toString))
+  * }
+  *
+  * val data: js.Array(...)
+  *
+  * DropdownList(
+  *   value = state.currentValue,
+  *   data = data,
+  *   onChange = onChange _
+  * )
+  *
+  * }}}
+  *
+  * @see See [[apply]] for a description of parameters.
+  */
 object DropdownList {
-  val logger: Logger = Logger("bridge.DropdownList")
+  private val logger: Logger = Logger("bridge.DropdownList")
 
 //  @JSGlobal("ReactWidgets.DropdownList")
 //  @js.native
 //  object ReactWidgetsDropdownList extends js.Object
 
-  val component =
+  private val component =
     JsComponent[DropdownListComponentProperty, Children.None, Null](
       reactwidgets.DropdownList
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
+  /**
+    * Instantiate the react component
+    *
+    * @param defaultValue - The initial value of the value field.
+    * @param onChange - A callback fired when the current value changes.
+    * @param data - An array of possible values for the DropdownList.
+    *               Tip: When data is an array of objects consider
+    *               specifying textField and valueField as well.
+    *               Default value is the empty array.
+    * @param tabIndex - the tabindex attribute of the input field.
+    * @param name - The name attribute of the input field.
+    * @param messages - Custom messages.
+    * @param busy - Controls the loading/busy spinner visibility. Presentational only!
+    *               Useful for providing visual feedback while data is being loaded.
+    *               Default value is false.
+    * @param value - Controls the current value of the DropdownList.
+    * @param id - The id attribute of the input field.
+    * @param containerClassName - Adds a css class to the input container element.
+    * @param allowCreate - Enables the list option creation UI. onFilter will only
+    *                      the UI when actively filtering for a list item.
+    *                      Default value is false.
+    * @param disabled - true if the input field is disabled.  Default value is false.
+    * @param placeholder - Text to display in the input when the value is empty.
+    * @param valueField - A property name that provides the value of the data items.
+    *                     This value is used to uniquely distinigush items from others
+    *                     in the data list.
+    *                     Generally, valueField points to an Id field, or other unique identifier.
+    *                     When not provided, the referential identity of each data item is used.
+    * @param textField - A property name, or accessor function, that provides the text
+    *                    content of the data items. The DropdownList will filter data
+    *                    based on this value as well as use it as the default display
+    *                    value for list items and selected values.
+    *
+    * @return the unmounted react component
+    *
+    * @see See [[DropdownList]] for usage information.
+    */
   def apply(
       defaultValue: Option[String | js.Object] = None,
       onChange: Option[js.Any => Unit] = None,

@@ -16,7 +16,7 @@ import BldVersion._
 
 object BldBridgeClientCommon {
 
-  lazy val `bridgescorer-clientcommon` = project.in(file("clientcommon"))
+  lazy val `bridgescorer-clientcommon` = Project("clientcommon", file("clientcommon"))
     .configure( commonSettings, noTests(true) )
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(
@@ -38,6 +38,9 @@ object BldBridgeClientCommon {
             false
           }
         }),
+      scalacOptions in (Compile, doc) ++= Seq(
+        "-groups", "-implicits"
+      )
     )
 
 }

@@ -29,7 +29,11 @@ trait BridgeRouter[Page] {
     )
   }
 
+  def toPage(page: Page): Unit = {}
+
   def toRootPage(page: AppPage): Unit = {}
+
+  def onClickToRootPage(page: AppPage): TagMod = ^.onClick --> Callback { toRootPage(page) }
 
   /**
     * Returns the RouterCtl that is wrapped by this
@@ -84,6 +88,7 @@ class BridgeRouterBaseWithLogging[Page](ctl: RouterCtl[Page])
   def setOnLinkClick(page: Page): TagMod = ctl.setOnLinkClick(page)
   def home: TagMod = ^.onClick --> CallbackTo {}
 
+  override def toPage(page: Page): Unit = ctl.set(page).runNow()
 }
 
 /**

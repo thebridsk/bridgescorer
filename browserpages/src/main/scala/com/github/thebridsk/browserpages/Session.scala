@@ -4,17 +4,15 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.safari.SafariDriver
-import java.util.concurrent.TimeUnit
 import org.openqa.selenium.firefox.FirefoxProfile
 import org.openqa.selenium.Point
 import org.openqa.selenium.Dimension
 import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.edge.EdgeDriver
-import org.openqa.selenium.ie.InternetExplorerDriver
 import com.github.thebridsk.utilities.logging.Logger
 import org.openqa.selenium.chrome.ChromeDriverService
 import java.util.concurrent.atomic.AtomicLong
-import java.io.File
+// import java.io.File
 import org.openqa.selenium.remote.RemoteWebDriver
 import org.openqa.selenium.SessionNotCreatedException
 import scala.annotation.tailrec
@@ -28,7 +26,16 @@ import org.openqa.selenium.support.events.EventFiringWebDriver
 import org.openqa.selenium.support.events.WebDriverEventListener
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
-import org.openqa.selenium.firefox.ProfilesIni
+import org.openqa.selenium.logging.LogType
+import org.openqa.selenium.logging.LogEntries
+import java.net.URL
+import org.openqa.selenium.edge.EdgeOptions
+import org.openqa.selenium.safari.SafariOptions
+import org.openqa.selenium.remote.LocalFileDetector
+import java.time.Duration
+import java.io.File
+import java.util.concurrent.TimeUnit
+import org.openqa.selenium.UnsupportedCommandException
 
 class Session(name: String = "default") extends WebDriver {
   import Session._
@@ -41,6 +48,14 @@ class Session(name: String = "default") extends WebDriver {
     val f = getPropOrEnv("WebDriverDebug").getOrElse("")
     f.equalsIgnoreCase("true") || f.equals("1")
   }
+
+  val noSandbox: Boolean = {
+    val f = getPropOrEnv("ChromeNoSandbox").getOrElse("")
+    f.equalsIgnoreCase("true") || f.equals("1")
+  }
+
+  private var remoteSession: Boolean = false
+  def isRemote: Boolean = remoteSession
 
 //  private def firefoxOld = {
 //    val profile = new ProfilesIni();
@@ -74,66 +89,68 @@ class Session(name: String = "default") extends WebDriver {
     testlog.info(s"seleniumTesting profile size is ${l}")
   }
 
-  private def firefox = {
+  private def firefoxOptions(headless: Boolean = false) = {
 
-    val profile = new ProfilesIni();
+    // val profile = new ProfilesIni();
 
-    val fp = profile.getProfile("seleniumTesting");
-    assert(fp != null)
-    showFirefoxProfile(fp)
+    // val fp = profile.getProfile("seleniumTesting");
+    // assert(fp != null)
+    // showFirefoxProfile(fp)
 //    val fp = new FirefoxProfile();
 
     // need to start firefox as if by the following:
     //   firefox -new-instance -no-remote -P "seleniumTesting"
     val options = new FirefoxOptions()
-      .setProfile(fp)
-      .
+      // .setProfile(fp)
       // the following line gets rid of firefox starting on page "about:blank&utm_content=firstrun"
-      addPreference("browser.startup.homepage_override.mstone", "ignore")
+      .addPreference("browser.startup.homepage_override.mstone", "ignore")
       .addPreference("startup.homepage_welcome_url", "about:blank")
       .addPreference("startup.homepage_welcome_url.additional", "about:blank")
       .addPreference("browser.startup.homepage", "about:blank")
 
 //      options.addArguments( "-new-instance")
 
-    options.setLogLevel(FirefoxDriverLogLevel.TRACE)
+    options.setHeadless(headless)
 
+    options.setLogLevel(
+      if (debug) FirefoxDriverLogLevel.TRACE
+      else FirefoxDriverLogLevel.FATAL
+    )
+
+    options
+  }
+
+  private def firefox(headless: Boolean = false) = {
+    val options = firefoxOptions(headless)
     new FirefoxDriver(options)
   }
 
   private var chromeDriverService: Option[ChromeDriverService] = None
 
-  private def chrome(headless: Boolean) =
-    chromeCurrent(headless)
-//   chromeWithOptions(headless)
+  private def chromeOptions(headless: Boolean) = {
+      val options = new ChromeOptions
+      options.addArguments("disable-infobars")
 
-  private def chromeWithOptions(headless: Boolean): RemoteWebDriver = {
-    val logfile = new File(
-      "logs",
-      s"chromedriver.${Session.sessionCounter.incrementAndGet()}.log"
-    )
+      if (noSandbox) options.addArguments("no-sandbox")
 
-    val options = new ChromeOptions
-    // http://peter.sh/experiments/chromium-command-line-switches/
-    // and "chromedriver --help"
-    if (!debug) options.addArguments("silent")
-    else options.addArguments(s"""log-path=${logfile.toString}""", "verbose")
-//    options.addArguments("enable-automation=false")
-    options.addArguments("disable-infobars")
-    if (headless) {
-      options.addArguments("headless")
-      options.addArguments("window-size=1920,1080")
-    }
-//    options.AddArguments("no-sandbox")
-    options.addArguments("disable-extensions")
-    options.addArguments("whitelisted-ips=127.0.0.1")
-    val driver = new ChromeDriver(options);
-    driver
+      // options.addArguments("use-gl=swiftshader")
+      if (headless) {
+        options.addArguments("headless")
+        options.addArguments("window-size=1920,1080")
+      }
+      options.addArguments("disable-extensions")
+      options.setExperimentalOption("w3c", false)
+      options
   }
 
-  private def chromeCurrent(headless: Boolean) = {
+  private def chromeDriver(headless: Boolean) = {
+    new ChromeDriver(chromeOptions(headless))
+  }
+
+  private def chrome(headless: Boolean) = {
+
     // does not work
-//    val options = new ChromeOptions()
+//    val options = chromeOptions(headless)
 //    options.addArguments("--verbose", "--log-path=C:\\temp\\chrome_test.log")
 
     val logfile = new File(
@@ -159,14 +176,7 @@ class Session(name: String = "default") extends WebDriver {
     try {
       chromeDriverService = Some(service)
       service.start()
-      val options = new ChromeOptions
-      options.addArguments("disable-infobars")
-      // options.addArguments("use-gl=swiftshader")
-      if (headless) {
-        options.addArguments("headless")
-        options.addArguments("window-size=1920,1080")
-      }
-      options.addArguments("disable-extensions")
+      val options = chromeOptions(headless)
       testlog.fine("Starting remote driver for chrome")
       val dr = new ChromeDriver(service, options)
       testlog.fine("Started remote driver for chrome")
@@ -178,19 +188,29 @@ class Session(name: String = "default") extends WebDriver {
         chromeDriverService = None
         throw x
     }
+  }
 
+  private def useChromiumBasedEdge() = {
+    System.setProperty("webdriver.edge.edgehtml", "false")
+  }
+
+  private def edgeOptions = {
+    useChromiumBasedEdge()
+    new EdgeOptions
   }
 
   private def edge = {
-    new EdgeDriver
+    useChromiumBasedEdge()
+    // System.setProperty("webdriver.edge.driver", "msedgedriver.exe")
+    new EdgeDriver(edgeOptions)
   }
 
-  private def internetExplorer = {
-    new InternetExplorerDriver
+  private def safariOptions = {
+    new SafariOptions
   }
 
   private def safari = {
-    new SafariDriver
+    new SafariDriver(safariOptions)
   }
 
   /**
@@ -306,8 +326,11 @@ class Session(name: String = "default") extends WebDriver {
     wd
   }
 
+  private val implicitWait = Duration.ofSeconds(2)
+
   private def createSession(browser: Option[String] = None): Session =
     synchronized {
+      remoteSession = false
       webDriver =
         wrapWebDriver(browser.orElse(getPropOrEnv("DefaultWebDriver")) match {
           case None =>
@@ -316,7 +339,38 @@ class Session(name: String = "default") extends WebDriver {
             )
             defaultBrowser // default
           case Some(wd) =>
+            import Session.patternRemote
             wd.toLowerCase() match {
+              case patternRemote(browser,remoteurl) =>
+                val options = browser.toLowerCase match {
+                  case "chrome" =>
+                    testlog.fine("Using chrome")
+                    chromeOptions(false) // Chrome.webDriver
+                  case "chromeheadless" =>
+                    testlog.fine("Using chrome headless")
+                    chromeOptions(true) // Chrome.webDriver
+                  case "safari" =>
+                    testlog.fine("Using safari")
+                    safariOptions // Safari.webDriver
+                  case "firefox" =>
+                    testlog.fine("Using firefox")
+                    firefoxOptions(false) // Firefox.webDriver
+                  case "firefoxheadless" =>
+                    testlog.fine("Using firefox headless")
+                    firefoxOptions(true) // Firefox.webDriver
+                  case "edge" =>
+                    testlog.fine("Using edge")
+                    edgeOptions
+                  case _ =>
+                    testlog.fine("Unknown browser specified for remote, using default, chrome: " + wd)
+                    chromeOptions(false)
+                }
+                // https://www.selenium.dev/documentation/en/remote_webdriver/remote_webdriver_client/
+                val driver = new RemoteWebDriver(new URL(remoteurl), options)
+                // https://www.selenium.dev/documentation/en/remote_webdriver/remote_webdriver_client/#local-file-detector
+                driver.setFileDetector(new LocalFileDetector());
+                remoteSession = true
+                driver
               case "chrome" =>
                 testlog.fine("Using chrome")
                 chrome(false) // Chrome.webDriver
@@ -328,19 +382,19 @@ class Session(name: String = "default") extends WebDriver {
                 safari // Safari.webDriver
               case "firefox" =>
                 testlog.fine("Using firefox")
-                firefox // Firefox.webDriver
+                firefox(false) // Firefox.webDriver
+              case "firefoxheadless" =>
+                testlog.fine("Using firefox")
+                firefox(true) // Firefox.webDriver
               case "edge" =>
                 testlog.fine("Using edge")
                 edge
-              case "ie" =>
-                testlog.fine("Using internet explorer")
-                internetExplorer
-              case _ =>
-                testlog.fine("Unknown browser specified, using default: " + wd)
+              case lcwd =>
+                testlog.fine("Unknown browser specified, using default: " + lcwd)
                 defaultBrowser // default
             }
         })
-      sessionImplicitlyWait(2, TimeUnit.SECONDS)
+      sessionImplicitlyWait(implicitWait)
       this
     }
 
@@ -388,10 +442,14 @@ class Session(name: String = "default") extends WebDriver {
   def isSessionRunning: Boolean = synchronized { webDriver != null }
 
   def sessionImplicitlyWait(
-      time: Long,
-      unit: TimeUnit = TimeUnit.SECONDS
-  ): WebDriver.Timeouts =
-    webDriver.manage().timeouts().implicitlyWait(time, unit);
+      wait: Duration
+  ): WebDriver.Timeouts = {
+    // this is for selenium 4
+    // webDriver.manage().timeouts().implicitlyWait(wait)
+
+    // this works in selenium 3.141 and is deprecated in selenium 4
+    webDriver.manage().timeouts().implicitlyWait(wait.getSeconds(), TimeUnit.SECONDS)
+  }
 
   /**
     * Stop the browser webdriver
@@ -565,6 +623,62 @@ class Session(name: String = "default") extends WebDriver {
   def switchTo(): org.openqa.selenium.WebDriver.TargetLocator =
     webDriver.switchTo()
 
+  def getBrowserLogs() = manage().logs().get(LogType.BROWSER)
+
+  def showLogs(logType: String): Unit = {
+    testlog.info(s"Show logs for logtype: ${logType}")
+    val lt = try {
+      manage().logs().get(logType)
+    } catch {
+      case x: Exception =>
+        testlog.warning(s"Session ${name}: Error getting logs", x)
+        return
+    }
+    showLogs(lt)
+  }
+
+  def showLogs(logEntries: LogEntries): Unit = {
+    try {
+      import scala.jdk.CollectionConverters._
+      logEntries.iterator().asScala.foreach { le =>
+        testlog.severe(s"Session ${name}: ${le}")
+      }
+    } catch {
+      case x: Exception =>
+        testlog.warning(s"Session ${name}: Error getting logs", x)
+    }
+
+  }
+
+  def showLogs(): Unit = {
+    try {
+      val logs = manage().logs()
+      import scala.jdk.CollectionConverters._
+      val ty = logs.getAvailableLogTypes().asScala
+      testlog.info(s"Available logtypes: ${ty.mkString}")
+      ty.foreach { logtype =>
+        showLogs(logtype)
+      }
+    } catch {
+      case x: UnsupportedCommandException =>
+        testlog.warning(s"Unsupported command was sent to browser", x)
+    }
+  }
+
+  def captureLogsOnError[R](f: => R): R = {
+    try {
+      f
+    } catch {
+      case x: Exception =>
+        showLogs(LogType.BROWSER)
+        showLogs(LogType.CLIENT)
+        showLogs(LogType.DRIVER)
+        showLogs(LogType.SERVER)
+
+        throw x
+    }
+  }
+
 }
 
 object Session {
@@ -652,4 +766,6 @@ object Session {
     }
 
   val sessionCounter = new AtomicLong()
+
+  val patternRemote = """remote +([^ ]+) +(.*)""".r
 }

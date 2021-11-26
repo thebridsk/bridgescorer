@@ -19,6 +19,7 @@ import com.github.thebridsk.bridge.client.pages.ThankYouPage
 import com.github.thebridsk.bridge.client.pages.AboutPage
 import org.scalajs.dom.raw.File
 import com.github.thebridsk.bridge.data.Team
+import com.github.thebridsk.bridge.client.pages.TestPage
 
 object AppRouter {
 
@@ -28,6 +29,7 @@ object AppRouter {
 
   case object Home extends AppPage
   case object About extends AppPage
+  case object TestP extends AppPage
   case object ImportsList extends AppPage
   case object Export extends AppPage
   case object Info extends AppPage
@@ -85,10 +87,19 @@ trait Module {
   def gotoAppHome(): TagMod =
     varGotoAppHome match {
       case Some(f) =>
-        logger.info("DuplicateRouter: going to App home page")
+        logger.info("Module: going to App home page")
         f()
       case None =>
-        logger.warning("Du1plicateRouter: ignoring going to home")
+        logger.warning("Module: ignoring going to home")
+        ^.onClick --> Callback {}
+    }
+
+  def gotoRootPage(page: AppPage, suffix: String = ""): TagMod =
+    varAppRouter match {
+      case Some(r) =>
+        r.gotoRootPage(page, suffix)
+      case None =>
+        logger.warning(s"Module: ignoring going to root page $page")
         ^.onClick --> Callback {}
     }
 
@@ -130,6 +141,7 @@ class AppRouter(modules: Module*) {
         ShowChicagoHand ::
         ShowRubberHand ::
         LogView ::
+        TestP ::
         Nil
 
     root ::: modulepages
@@ -309,6 +321,9 @@ class AppRouter(modules: Module*) {
         | staticRoute("#log", LogView) ~> renderR((routerCtl) =>
           logit(LogPage(routerCtl))
         )
+        | staticRoute("#test", TestP) ~> renderR((routerCtl) =>
+          logit(TestPage(routerCtl))
+        )
         | moduleRoutes())
         .notFound(p =>
           logit {
@@ -361,6 +376,9 @@ class AppRouter(modules: Module*) {
     (r, c)
   }
 
+  /**
+    * @return an onClick TagMod that will go to the application home page when clicked.
+    */
   def gotoHome(): TagMod = {
     logger.info("AppRouter: setting up onClick for going home")
     fRouterCtl match {
@@ -374,6 +392,31 @@ class AppRouter(modules: Module*) {
     }
   }
 
+  /**
+    * go to the specified page
+    *
+    * @param page the router page object
+    * @param suffix the URI of the page.
+    */
+  def gotoRootPage(page: AppPage, suffix: String): TagMod = {
+    logger.info(s"""gotoRootPage going to $page, suffix="$suffix".""")
+    fRouterCtl match {
+      case Some(ctl) =>
+        ctl.setOnClick(page)
+      case None =>
+        ^.onClick --> Callback {
+          val window = document.defaultView
+          window.location.href = baseUrl.value + suffix
+        }
+    }
+  }
+
+  /**
+    * go immediately to the specified page
+    *
+    * @param page the router page object
+    * @param suffix the URI of the page, used if router is not set.
+    */
   def toRootPage(page: AppPage, suffix: String): Unit = {
     logger.info(s"""toRootPage going to $page, suffix="$suffix".""")
     fRouterCtl match {

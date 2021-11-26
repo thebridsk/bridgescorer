@@ -1,0 +1,1088 @@
+---
+id: "I1"
+players:
+- "Nick"
+- "Sam"
+- "Ethan"
+- "Wayne"
+- "Ellen"
+- "Wilma"
+- "Nora"
+- "Sally"
+teams: []
+boards:
+- id: "B1"
+  nsVul: false
+  ewVul: false
+  dealer: "N"
+  hands:
+  - id: "p2"
+    played:
+      id: "p2"
+      contractTricks: 1
+      contractSuit: "S"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 1
+      created: 1637882099504
+      updated: 1637882099504
+    table: "2"
+    round: 1
+    board: "B1"
+    north: 2
+    south: 6
+    east: 4
+    west: 3
+    created: 1637882086338
+    updated: 1637882099526
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 1
+      contractSuit: "S"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 2
+      created: 1637882094640
+      updated: 1637882094640
+    table: "1"
+    round: 1
+    board: "B1"
+    north: 8
+    south: 1
+    east: 5
+    west: 7
+    created: 1637882086338
+    updated: 1637882094648
+  created: 1637882086338
+  updated: 1637882099526
+- id: "B2"
+  nsVul: true
+  ewVul: false
+  dealer: "E"
+  hands:
+  - id: "p2"
+    played:
+      id: "p2"
+      contractTricks: 1
+      contractSuit: "S"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 2
+      created: 1637882094640
+      updated: 1637882094640
+    table: "2"
+    round: 1
+    board: "B2"
+    north: 2
+    south: 6
+    east: 4
+    west: 3
+    created: 1637882086338
+    updated: 1637882094653
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 1
+      contractSuit: "S"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 2
+      created: 1637882099371
+      updated: 1637882099371
+    table: "1"
+    round: 1
+    board: "B2"
+    north: 8
+    south: 1
+    east: 5
+    west: 7
+    created: 1637882086338
+    updated: 1637882099375
+  created: 1637882086338
+  updated: 1637882099375
+- id: "B3"
+  nsVul: false
+  ewVul: true
+  dealer: "S"
+  hands:
+  - id: "p2"
+    played:
+      id: "p2"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882101386
+      updated: 1637882101386
+    table: "2"
+    round: 1
+    board: "B3"
+    north: 2
+    south: 6
+    east: 4
+    west: 3
+    created: 1637882086338
+    updated: 1637882101394
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882101287
+      updated: 1637882101287
+    table: "1"
+    round: 1
+    board: "B3"
+    north: 8
+    south: 1
+    east: 5
+    west: 7
+    created: 1637882086338
+    updated: 1637882101290
+  created: 1637882086338
+  updated: 1637882101394
+- id: "B4"
+  nsVul: true
+  ewVul: true
+  dealer: "W"
+  hands:
+  - id: "p3"
+    played:
+      id: "p3"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882109992
+      updated: 1637882109992
+    table: "2"
+    round: 2
+    board: "B4"
+    north: 3
+    south: 7
+    east: 5
+    west: 4
+    created: 1637882086338
+    updated: 1637882109997
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882109881
+      updated: 1637882109881
+    table: "1"
+    round: 2
+    board: "B4"
+    north: 8
+    south: 2
+    east: 6
+    west: 1
+    created: 1637882086338
+    updated: 1637882109881
+  created: 1637882086338
+  updated: 1637882109997
+- id: "B5"
+  nsVul: true
+  ewVul: false
+  dealer: "N"
+  hands:
+  - id: "p3"
+    played:
+      id: "p3"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882111743
+      updated: 1637882111743
+    table: "2"
+    round: 2
+    board: "B5"
+    north: 3
+    south: 7
+    east: 5
+    west: 4
+    created: 1637882086338
+    updated: 1637882111749
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882111743
+      updated: 1637882111743
+    table: "1"
+    round: 2
+    board: "B5"
+    north: 8
+    south: 2
+    east: 6
+    west: 1
+    created: 1637882086338
+    updated: 1637882111745
+  created: 1637882086338
+  updated: 1637882111749
+- id: "B6"
+  nsVul: false
+  ewVul: true
+  dealer: "E"
+  hands:
+  - id: "p3"
+    played:
+      id: "p3"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882113589
+      updated: 1637882113589
+    table: "2"
+    round: 2
+    board: "B6"
+    north: 3
+    south: 7
+    east: 5
+    west: 4
+    created: 1637882086338
+    updated: 1637882113587
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882113698
+      updated: 1637882113698
+    table: "1"
+    round: 2
+    board: "B6"
+    north: 8
+    south: 2
+    east: 6
+    west: 1
+    created: 1637882086338
+    updated: 1637882113701
+  created: 1637882086338
+  updated: 1637882113701
+- id: "B7"
+  nsVul: true
+  ewVul: true
+  dealer: "S"
+  hands:
+  - id: "p4"
+    played:
+      id: "p4"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882122545
+      updated: 1637882122545
+    table: "2"
+    round: 3
+    board: "B7"
+    north: 4
+    south: 1
+    east: 6
+    west: 5
+    created: 1637882086338
+    updated: 1637882122543
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 4
+      created: 1637882122674
+      updated: 1637882122674
+    table: "1"
+    round: 3
+    board: "B7"
+    north: 8
+    south: 3
+    east: 7
+    west: 2
+    created: 1637882086338
+    updated: 1637882122685
+  created: 1637882086338
+  updated: 1637882122685
+- id: "B8"
+  nsVul: false
+  ewVul: false
+  dealer: "W"
+  hands:
+  - id: "p4"
+    played:
+      id: "p4"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882124411
+      updated: 1637882124411
+    table: "2"
+    round: 3
+    board: "B8"
+    north: 4
+    south: 1
+    east: 6
+    west: 5
+    created: 1637882086338
+    updated: 1637882124408
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882124537
+      updated: 1637882124537
+    table: "1"
+    round: 3
+    board: "B8"
+    north: 8
+    south: 3
+    east: 7
+    west: 2
+    created: 1637882086338
+    updated: 1637882124539
+  created: 1637882086338
+  updated: 1637882124539
+- id: "B9"
+  nsVul: false
+  ewVul: true
+  dealer: "N"
+  hands:
+  - id: "p4"
+    played:
+      id: "p4"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882126193
+      updated: 1637882126193
+    table: "2"
+    round: 3
+    board: "B9"
+    north: 4
+    south: 1
+    east: 6
+    west: 5
+    created: 1637882086338
+    updated: 1637882126189
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882126334
+      updated: 1637882126334
+    table: "1"
+    round: 3
+    board: "B9"
+    north: 8
+    south: 3
+    east: 7
+    west: 2
+    created: 1637882086338
+    updated: 1637882126334
+  created: 1637882086338
+  updated: 1637882126334
+- id: "B10"
+  nsVul: true
+  ewVul: true
+  dealer: "E"
+  hands:
+  - id: "p5"
+    played:
+      id: "p5"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 4
+      created: 1637882135350
+      updated: 1637882135350
+    table: "2"
+    round: 4
+    board: "B10"
+    north: 5
+    south: 2
+    east: 7
+    west: 6
+    created: 1637882086338
+    updated: 1637882135345
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882135350
+      updated: 1637882135350
+    table: "1"
+    round: 4
+    board: "B10"
+    north: 8
+    south: 4
+    east: 1
+    west: 3
+    created: 1637882086338
+    updated: 1637882135351
+  created: 1637882086338
+  updated: 1637882135351
+- id: "B11"
+  nsVul: false
+  ewVul: false
+  dealer: "S"
+  hands:
+  - id: "p5"
+    played:
+      id: "p5"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882137312
+      updated: 1637882137312
+    table: "2"
+    round: 4
+    board: "B11"
+    north: 5
+    south: 2
+    east: 7
+    west: 6
+    created: 1637882086338
+    updated: 1637882137311
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882137194
+      updated: 1637882137194
+    table: "1"
+    round: 4
+    board: "B11"
+    north: 8
+    south: 4
+    east: 1
+    west: 3
+    created: 1637882086338
+    updated: 1637882137188
+  created: 1637882086338
+  updated: 1637882137311
+- id: "B12"
+  nsVul: true
+  ewVul: false
+  dealer: "W"
+  hands:
+  - id: "p5"
+    played:
+      id: "p5"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882139074
+      updated: 1637882139074
+    table: "2"
+    round: 4
+    board: "B12"
+    north: 5
+    south: 2
+    east: 7
+    west: 6
+    created: 1637882086338
+    updated: 1637882139061
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882139213
+      updated: 1637882139213
+    table: "1"
+    round: 4
+    board: "B12"
+    north: 8
+    south: 4
+    east: 1
+    west: 3
+    created: 1637882086338
+    updated: 1637882139210
+  created: 1637882086338
+  updated: 1637882139210
+- id: "B13"
+  nsVul: true
+  ewVul: true
+  dealer: "N"
+  hands:
+  - id: "p6"
+    played:
+      id: "p6"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882149438
+      updated: 1637882149438
+    table: "2"
+    round: 5
+    board: "B13"
+    north: 6
+    south: 3
+    east: 1
+    west: 7
+    created: 1637882086338
+    updated: 1637882149441
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882149582
+      updated: 1637882149582
+    table: "1"
+    round: 5
+    board: "B13"
+    north: 8
+    south: 5
+    east: 2
+    west: 4
+    created: 1637882086338
+    updated: 1637882149587
+  created: 1637882086338
+  updated: 1637882149587
+- id: "B14"
+  nsVul: false
+  ewVul: false
+  dealer: "E"
+  hands:
+  - id: "p6"
+    played:
+      id: "p6"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882151546
+      updated: 1637882151546
+    table: "2"
+    round: 5
+    board: "B14"
+    north: 6
+    south: 3
+    east: 1
+    west: 7
+    created: 1637882086338
+    updated: 1637882151550
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882151678
+      updated: 1637882151678
+    table: "1"
+    round: 5
+    board: "B14"
+    north: 8
+    south: 5
+    east: 2
+    west: 4
+    created: 1637882086338
+    updated: 1637882151684
+  created: 1637882086338
+  updated: 1637882151684
+- id: "B15"
+  nsVul: true
+  ewVul: false
+  dealer: "S"
+  hands:
+  - id: "p6"
+    played:
+      id: "p6"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882153647
+      updated: 1637882153647
+    table: "2"
+    round: 5
+    board: "B15"
+    north: 6
+    south: 3
+    east: 1
+    west: 7
+    created: 1637882086338
+    updated: 1637882153650
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882153798
+      updated: 1637882153798
+    table: "1"
+    round: 5
+    board: "B15"
+    north: 8
+    south: 5
+    east: 2
+    west: 4
+    created: 1637882086338
+    updated: 1637882153802
+  created: 1637882086338
+  updated: 1637882153802
+- id: "B16"
+  nsVul: false
+  ewVul: true
+  dealer: "W"
+  hands:
+  - id: "p7"
+    played:
+      id: "p7"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882165221
+      updated: 1637882165221
+    table: "2"
+    round: 6
+    board: "B16"
+    north: 7
+    south: 4
+    east: 2
+    west: 1
+    created: 1637882086338
+    updated: 1637882165216
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882165222
+      updated: 1637882165222
+    table: "1"
+    round: 6
+    board: "B16"
+    north: 8
+    south: 6
+    east: 3
+    west: 5
+    created: 1637882086338
+    updated: 1637882165230
+  created: 1637882086338
+  updated: 1637882165230
+- id: "B17"
+  nsVul: false
+  ewVul: false
+  dealer: "N"
+  hands:
+  - id: "p7"
+    played:
+      id: "p7"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882167391
+      updated: 1637882167391
+    table: "2"
+    round: 6
+    board: "B17"
+    north: 7
+    south: 4
+    east: 2
+    west: 1
+    created: 1637882086338
+    updated: 1637882167391
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882167513
+      updated: 1637882167513
+    table: "1"
+    round: 6
+    board: "B17"
+    north: 8
+    south: 6
+    east: 3
+    west: 5
+    created: 1637882086338
+    updated: 1637882167515
+  created: 1637882086338
+  updated: 1637882167515
+- id: "B18"
+  nsVul: true
+  ewVul: false
+  dealer: "E"
+  hands:
+  - id: "p7"
+    played:
+      id: "p7"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882169696
+      updated: 1637882169696
+    table: "2"
+    round: 6
+    board: "B18"
+    north: 7
+    south: 4
+    east: 2
+    west: 1
+    created: 1637882086338
+    updated: 1637882169694
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882169831
+      updated: 1637882169831
+    table: "1"
+    round: 6
+    board: "B18"
+    north: 8
+    south: 6
+    east: 3
+    west: 5
+    created: 1637882086338
+    updated: 1637882169833
+  created: 1637882086338
+  updated: 1637882169833
+- id: "B19"
+  nsVul: false
+  ewVul: true
+  dealer: "S"
+  hands:
+  - id: "p1"
+    played:
+      id: "p1"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882182655
+      updated: 1637882182655
+    table: "2"
+    round: 7
+    board: "B19"
+    north: 1
+    south: 5
+    east: 3
+    west: 2
+    created: 1637882086338
+    updated: 1637882182657
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: false
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882182508
+      updated: 1637882182508
+    table: "1"
+    round: 7
+    board: "B19"
+    north: 8
+    south: 7
+    east: 4
+    west: 6
+    created: 1637882086338
+    updated: 1637882182505
+  created: 1637882086338
+  updated: 1637882182657
+- id: "B20"
+  nsVul: true
+  ewVul: true
+  dealer: "W"
+  hands:
+  - id: "p1"
+    played:
+      id: "p1"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882185078
+      updated: 1637882185078
+    table: "2"
+    round: 7
+    board: "B20"
+    north: 1
+    south: 5
+    east: 3
+    west: 2
+    created: 1637882086338
+    updated: 1637882185074
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: true
+      madeContract: true
+      tricks: 3
+      created: 1637882184887
+      updated: 1637882184887
+    table: "1"
+    round: 7
+    board: "B20"
+    north: 8
+    south: 7
+    east: 4
+    west: 6
+    created: 1637882086338
+    updated: 1637882184883
+  created: 1637882086338
+  updated: 1637882185074
+- id: "B21"
+  nsVul: true
+  ewVul: false
+  dealer: "N"
+  hands:
+  - id: "p1"
+    played:
+      id: "p1"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882187341
+      updated: 1637882187341
+    table: "2"
+    round: 7
+    board: "B21"
+    north: 1
+    south: 5
+    east: 3
+    west: 2
+    created: 1637882086338
+    updated: 1637882187342
+  - id: "p8"
+    played:
+      id: "p8"
+      contractTricks: 3
+      contractSuit: "N"
+      contractDoubled: "N"
+      declarer: "N"
+      nsVul: true
+      ewVul: false
+      madeContract: true
+      tricks: 3
+      created: 1637882187206
+      updated: 1637882187206
+    table: "1"
+    round: 7
+    board: "B21"
+    north: 8
+    south: 7
+    east: 4
+    west: 6
+    created: 1637882086338
+    updated: 1637882187201
+  created: 1637882086338
+  updated: 1637882187342
+boardset: "StandardBoards"
+movement: "Individual2Tables"
+created: 1637882086338
+updated: 1637882187342

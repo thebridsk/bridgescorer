@@ -19,18 +19,62 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair
 import org.rogach.scallop.ScallopOption
 import scala.collection.mutable
 import scala.util.matching.Regex
+import com.github.thebridsk.utilities.main.MainConf
 
-object Suggestion200 extends Main {
+class Suggestion200Conf extends MainConf {
+  import Suggestion200.cmdName
 
-  val log: Logger = Logger(Suggestion200.getClass.getName)
+  import com.github.thebridsk.utilities.main.Converters._
 
   val defaultPlayers: List[String] =
     List("A", "B", "C", "D", "E", "F", "G", "H")
 
+  banner(s"""
+            |Will run a number of rounds to show the suggestions
+            |
+            |Syntax:
+            |  ${cmdName} options
+            |Options:""".stripMargin)
+
+  val optionStore: ScallopOption[Path] = opt[Path](
+    "store",
+    short = 's',
+    descr = "The store directory, default is none",
+    argName = "dir",
+    default = None
+  )
+  val optionRounds: ScallopOption[Int] = opt[Int](
+    "rounds",
+    short = 'r',
+    descr = "The number of 105 match rounds to evaluate, default is 2",
+    argName = "rounds",
+    default = Some(2)
+  )
+
+  val optionNeverPair: ScallopOption[List[String]] = opt[List[String]](
+    "neverpair",
+    short = 'n',
+    descr = "never pair players.  Value is player1,player2",
+    argName = "pair",
+    default = None
+  )
+
+  val optionNames: ScallopOption[List[String]] = trailArg[List[String]](
+    "names",
+    descr = s"The 8 names to use, default ${defaultPlayers.mkString(",")}",
+    validate = _.length == 8,
+    required = false,
+    default = Some(defaultPlayers)
+  )
+
+}
+
+object Suggestion200 extends Main[Suggestion200Conf] {
+
+  val log: Logger = Logger(Suggestion200.getClass.getName)
+
   val playedMatches: mutable.ArrayBuffer[DuplicateSummary] =
     collection.mutable.ArrayBuffer[DuplicateSummary]()
-
-  import com.github.thebridsk.utilities.main.Converters._
 
   val cmdName: String = {
     ((getClass.getClassLoader match {
@@ -65,45 +109,9 @@ object Suggestion200 extends Main {
     }
   }
 
-  banner(s"""
-Will run a number of rounds to show the suggestions
-
-Syntax:
-  ${cmdName} options
-Options:""")
-
-  val optionStore: ScallopOption[Path] = opt[Path](
-    "store",
-    short = 's',
-    descr = "The store directory, default is none",
-    argName = "dir",
-    default = None
-  )
-  val optionRounds: ScallopOption[Int] = opt[Int](
-    "rounds",
-    short = 'r',
-    descr = "The number of 105 match rounds to evaluate, default is 2",
-    argName = "rounds",
-    default = Some(2)
-  )
-
-  val optionNeverPair: ScallopOption[List[String]] = opt[List[String]](
-    "neverpair",
-    short = 'n',
-    descr = "never pair players.  Value is player1,player2",
-    argName = "pair",
-    default = None
-  )
-
-  val optionNames: ScallopOption[List[String]] = trailArg[List[String]](
-    "names",
-    descr = s"The 8 names to use, default ${defaultPlayers.mkString(",")}",
-    validate = _.length == 8,
-    required = false,
-    default = Some(defaultPlayers)
-  )
-
   val patternPair: Regex = """([^,]+),([^,]+)""".r
+
+  import config._
 
   def execute(): Int = {
     val neverPair = optionNeverPair.toOption.map(lnp =>

@@ -307,10 +307,6 @@ object DuplicateRouter {
     def tableid: Table.Id = Table.id(stableid)
     val round: Int
 
-    def editPlayers: Boolean = false
-
-    def setEditPlayers(flag: Boolean): TableTeamView
-
     def toNextView: DuplicatePage
     def toTableView: TableView
   }
@@ -321,23 +317,6 @@ object DuplicateRouter {
       TableRoundScoreboardView(sdupid, stableid, round)
     def toTableView: TableView = TableView(sdupid, stableid)
 
-    def setEditPlayers(flag: Boolean): TableTeamView =
-      if (flag) TableTeamByRoundEditView(sdupid, stableid, round) else this
-  }
-
-  case class TableTeamByRoundEditView(
-      sdupid: String,
-      stableid: String,
-      round: Int
-  ) extends TableTeamView {
-    def toNextView: TableRoundScoreboardView =
-      TableRoundScoreboardView(sdupid, stableid, round)
-    def toTableView: TableView = TableView(sdupid, stableid)
-
-    override def editPlayers: Boolean = true
-
-    def setEditPlayers(flag: Boolean): TableTeamView =
-      if (flag) this else TableTeamByRoundEditView(sdupid, stableid, round)
   }
 
   case class TableTeamByBoardView(
@@ -350,25 +329,6 @@ object DuplicateRouter {
     def toNextView: TableBoardView =
       TableBoardView(sdupid, stableid, round, sboardid)
     def toTableView: TableView = TableView(sdupid, stableid)
-    def setEditPlayers(flag: Boolean): TableTeamView =
-      if (flag) TableTeamByBoardEditView(sdupid, stableid, round, sboardid)
-      else this
-  }
-
-  case class TableTeamByBoardEditView(
-      sdupid: String,
-      stableid: String,
-      round: Int,
-      sboardid: String
-  ) extends TableTeamView {
-    def boardid: Board.Id = Board.id(sboardid)
-    def toNextView: TableBoardView =
-      TableBoardView(sdupid, stableid, round, sboardid)
-    def toTableView: TableView = TableView(sdupid, stableid)
-    override def editPlayers: Boolean = true
-    def setEditPlayers(flag: Boolean): TableTeamView =
-      if (flag) this
-      else TableTeamByBoardEditView(sdupid, stableid, round, sboardid)
   }
 
   case class TableRoundScoreboardView(
@@ -505,8 +465,6 @@ object DuplicateRouter {
     DirectorBoardView("M1", "1") ::
     TableTeamByRoundView("M1", "1", 1) ::
     TableTeamByBoardView("M1", "1", 1, "1") ::
-    TableTeamByRoundEditView("M1", "1", 1) ::
-    TableTeamByBoardEditView("M1", "1", 1, "1") ::
     BoardSetSummaryView ::
     BoardSetView("ArmonkBoards") ::
     BoardSetNewView ::
@@ -641,13 +599,6 @@ object DuplicateRouter {
         | dynamicRouteCT(
           ("match" / string("[a-zA-Z0-9]+") / "table" / string(
             "[a-zA-Z0-9]+"
-          ) / "round" / int / "boards" / string("[a-zA-Z0-9]+") / "editteams")
-            .caseClass[TableTeamByBoardEditView]
-        )
-          ~> dynRenderR((p, routerCtl) => PageTableTeams(routerCtl, p))
-        | dynamicRouteCT(
-          ("match" / string("[a-zA-Z0-9]+") / "table" / string(
-            "[a-zA-Z0-9]+"
           ) / "round" / int / "boards" / string(
             "[a-zA-Z0-9]+"
           ) / "hands" / string("[a-zA-Z0-9]+")).caseClass[TableHandView]
@@ -664,12 +615,6 @@ object DuplicateRouter {
           ("match" / string("[a-zA-Z0-9]+") / "table" / string(
             "[a-zA-Z0-9]+"
           ) / "round" / int / "teams").caseClass[TableTeamByRoundView]
-        )
-          ~> dynRenderR((p, routerCtl) => PageTableTeams(routerCtl, p))
-        | dynamicRouteCT(
-          ("match" / string("[a-zA-Z0-9]+") / "table" / string(
-            "[a-zA-Z0-9]+"
-          ) / "round" / int / "editteams").caseClass[TableTeamByRoundEditView]
         )
           ~> dynRenderR((p, routerCtl) => PageTableTeams(routerCtl, p))
         | dynamicRouteCT(

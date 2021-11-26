@@ -169,7 +169,7 @@ class EditNamesPage(
       pos: Position
   ): List[String] = {
     getElemsByXPath(
-      """//div[contains(concat(' ', @class, ' '), ' chiDivEditNamesPage ')]/table/tbody/tr/td[2]/div/div/input"""
+      """//div[contains(concat(' ', @class, ' '), ' chiDivEditNamesPage ')]/table/tbody/tr/td[2]/div/div/div/input"""
     ).map(e => e.attribute("value").getOrElse(""))
   }
 

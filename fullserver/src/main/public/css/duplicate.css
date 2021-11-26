@@ -1292,3 +1292,30 @@
   font-size: x-large;
   font-weight: bold;
 }
+
+.rootHomeDiv table {
+  border: 1px none var(--color-table-border);
+}
+.rootHomeDiv table > caption {
+  border: 2px none var(--color-table-border);
+  border-bottom: 0px none var(--color-table-border);
+}
+.rootHomeDiv table > tbody > tr:nth-child(2n+1) {
+  background-color: var(--color-bg);
+}
+.rootHomeDiv table > tbody > tr > td {
+  border: 1px none var(--color-table-border);
+}
+.rootHomeDiv table th {
+  border: 1px none var(--color-table-border);
+}
+
+.dupDivTableNamesPage table,
+.dupDivTableNamesPage th,
+.dupDivTableNamesPage td,
+.dupDivTableNamesPage tr:nth-child(2n+1),
+.dupDivTableNamesPage tbody
+{
+  border: none;
+  background-color: var(--color-bg);
+}

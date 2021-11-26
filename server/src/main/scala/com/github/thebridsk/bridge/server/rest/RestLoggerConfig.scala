@@ -16,9 +16,6 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Result
-import scala.util.Success
-import scala.util.Failure
-import com.github.thebridsk.bridge.server.backend.resource.Implicits
 import java.util.concurrent.atomic.AtomicInteger
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -36,7 +33,59 @@ object RestLoggerConfig {
   private val pclientid = new AtomicInteger()
 
   def nextClientId: Some[String] = Some(pclientid.incrementAndGet().toString())
+
+  def serverURL(ports: ServerPort, includeLocalhost: Boolean = false): ServerURL = {
+    import java.net.NetworkInterface
+    import scala.jdk.CollectionConverters._
+    import java.net.Inet4Address
+
+    val x = NetworkInterface.getNetworkInterfaces.asScala
+      .filter { x =>
+        x.isUp() && !x.isLoopback()
+      }
+      .flatMap { ni =>
+        ni.getInetAddresses.asScala
+      }
+      .filter { x =>
+        x.isInstanceOf[Inet4Address]
+      }
+      .map { x =>
+        getURLs(x.getHostAddress, ports).toList
+      }
+      .flatten
+      .toList
+    val local = Option.when(includeLocalhost)(getURLs("localhost", ports).toList).getOrElse(List())
+
+    ServerURL(x:::local)
+
+  }
+
+  /**
+    * Get the URLs for an interface
+    * @param interface the interface IP address for the URLs
+    * @return A list of URLs
+    */
+  def getURLs(interface: String, ports: ServerPort): Iterable[String] = {
+    val httpsURL = ports.httpsPort match {
+      case Some(port) =>
+        if (port == 443) Some("https://" + interface + "/")
+        else Some("https://" + interface + ":" + port + "/")
+      case None => None
+    }
+    val httpURL = ports.httpPort match {
+      case Some(port) =>
+        if (port == 80) Some("http://" + interface + "/")
+        else Some("http://" + interface + ":" + port + "/")
+      case None if (httpsURL.isEmpty) => Some("http://" + interface + ":8080/")
+      case None                       => None
+    }
+
+    httpURL ++ httpsURL
+  }
+
 }
+
+import RestLoggerConfig._
 
 /**
   * Rest API implementation for the logger config
@@ -230,7 +279,7 @@ trait RestLoggerConfig extends HasActorSystem {
   def xxxgetServerURL(): Unit = {}
   val getServerURL: Route = pathEndOrSingleSlash {
     get {
-      val serverurl = List(serverURL())
+      val serverurl = List(serverURL(ports))
       complete(StatusCodes.OK, serverurl)
     }
   }
@@ -276,100 +325,59 @@ trait RestLoggerConfig extends HasActorSystem {
         r match {
           case Right(bs) =>
             Result(bs.values.toList.sortWith((l, r) => l.name < r.name))
-          case Left(error) => Result(error)
+          case Left(error) =>
+            log.fine(s"Error querying all boardsets, ignoring: ${error._2.msg}")
+            Result(List.empty)
         }
       }
       val fmv = restService.movements.readAll().map { r =>
         r match {
           case Right(mv) =>
             Result(mv.values.toList.sortWith((l, r) => l.name < r.name))
-          case Left(error) => Result(error)
+          case Left(error) =>
+            log.fine(s"Error querying all movements, ignoring: ${error._2.msg}")
+            Result(List.empty)
         }
       }
-      import Implicits._
-      onComplete(fbs) {
-        case Success(rbs) =>
-          onComplete(fmv) {
-            case Success(rmv) =>
-              if (rbs.isOk && rmv.isOk) {
-                val bm =
-                  List(
-                    BoardSetsAndMovements(
-                      rbs.getOrElse(List()),
-                      rmv.getOrElse(List())
-                    )
-                  )
-                complete(StatusCodes.OK, bm)
-              } else {
-                val (code, msg) = rbs.left.getOrElse(
-                  rmv.left.getOrElse(
-                    (
-                      StatusCodes.InternalServerError,
-                      RestMessage("Unknown error")
-                    )
-                  )
-                )
-                complete(code, msg)
-              }
-            case Failure(ex) =>
-              RestLoggerConfig.log
-                .info("Exception getting boardsets and movements: ", ex)
-              complete(StatusCodes.InternalServerError, "Internal server error")
-          }
-        case Failure(ex) =>
-          RestLoggerConfig.log
-            .info("Exception getting boardsets and movements: ", ex)
-          complete(StatusCodes.InternalServerError, "Internal server error")
+      val fimv = restService.individualMovements.readAll().map { r =>
+        r match {
+          case Right(mv) =>
+            Result(mv.values.toList.sortWith((l, r) => l.name < r.name))
+          case Left(error) =>
+            log.fine(s"Error querying all individual movements, ignoring: ${error._2.msg}")
+            Result(List.empty)
+        }
       }
 
+      val r =
+      for {
+        rbs <- fbs.recover{
+          case x: Exception =>
+            log.fine(s"Exception querying all boardsets", x)
+            Result(List.empty)
+        }
+        rmv <- fmv.recover{
+          case x: Exception =>
+            log.fine(s"Exception querying all movements", x)
+            Result(List.empty)
+        }
+        rimv <- fimv.recover{
+          case x: Exception =>
+            log.fine(s"Exception querying all individual movements", x)
+            Result(List.empty)
+        }
+      } yield {
+        Result(
+          List(
+            BoardSetsAndMovements(
+              rbs.getOrElse(List()),
+              rmv.getOrElse(List()),
+              rimv.getOrElse(List())
+            )
+          )
+        )
+      }
+      resourceList(r)
     }
-  }
-
-  def serverURL(): ServerURL = {
-    import java.net.NetworkInterface
-    import scala.jdk.CollectionConverters._
-    import java.net.Inet4Address
-
-    val x = NetworkInterface.getNetworkInterfaces.asScala
-      .filter { x =>
-        x.isUp() && !x.isLoopback()
-      }
-      .flatMap { ni =>
-        ni.getInetAddresses.asScala
-      }
-      .filter { x =>
-        x.isInstanceOf[Inet4Address]
-      }
-      .map { x =>
-        getURLs(x.getHostAddress).toList
-      }
-      .flatten
-      .toList
-
-    ServerURL(x)
-
-  }
-
-  /**
-    * Get the URLs for an interface
-    * @param interface the interface IP address for the URLs
-    * @return A list of URLs
-    */
-  def getURLs(interface: String): Iterable[String] = {
-    val httpsURL = ports.httpsPort match {
-      case Some(port) =>
-        if (port == 443) Some("https://" + interface + "/")
-        else Some("https://" + interface + ":" + port + "/")
-      case None => None
-    }
-    val httpURL = ports.httpPort match {
-      case Some(port) =>
-        if (port == 80) Some("http://" + interface + "/")
-        else Some("http://" + interface + ":" + port + "/")
-      case None if (httpsURL.isEmpty) => Some("http://" + interface + ":8080/")
-      case None                       => None
-    }
-
-    httpURL ++ httpsURL
   }
 }

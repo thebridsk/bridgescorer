@@ -16,7 +16,7 @@ import scala.math.Ordering.Double.TotalOrdering
   * @author werewolf
   */
 object Table {
-  import TableInternal._
+  import Internal._
 
   class Sorter[T](implicit val ordering: Ordering[T]) {
 
@@ -235,189 +235,188 @@ object Table {
       )
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-}
+  protected object Internal {
+    import Utils._
 
-object TableInternal {
-  import Table._
-  import Utils._
-
-  val log: Logger = Logger("bridge.Table")
-
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause State to leak.
-    */
-  case class State(currentSort: Option[String], ascending: Boolean = false) {
+    val log: Logger = Logger("bridge.Table")
 
     /**
-      * If a new column is selected, then the sorting is set and ascending is set to the value in the column object.
-      * If the same column is selected, then the ascending is toggled or sorting is turned off.
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause State to leak.
       */
-    def setOrToggleSort(col: SortableColumn[_]): State = {
-      val (newcs, newas) =
-        if (col.initialSortOnSelectAscending) {
-          currentSort match {
-            case Some(b) if b == col.id =>
-              if (ascending) (Some(col.id), false)
-              else (None, true)
-            case _ =>
-              (Some(col.id), true)
-          }
-        } else {
-          currentSort match {
-            case Some(b) if b == col.id =>
-              if (ascending) (None, true)
-              else (Some(col.id), true)
-            case _ =>
-              (Some(col.id), false)
-          }
-        }
+    case class State(currentSort: Option[String], ascending: Boolean = false) {
 
-      copy(currentSort = newcs, ascending = newas)
-    }
-
-    def isCurrentSort(i: Int): Boolean =
-      currentSort.map(b => b == i).getOrElse(false)
-  }
-
-  private[react] val TableHeader = ScalaComponent
-    .builder[(Props, State, Backend)]("TableHeader")
-    .render_P { args =>
-      val (props, state, backend) = args
-      <.thead(
-        props.header.whenDefined,
-        <.tr(
-          props.shownColumns.map { cc =>
-            cc match {
-              case c: SortableColumn[_] =>
-                val selected = Some(c.id) == state.currentSort
-                <.th(
-                  AppButton(
-                    c.id,
-                    TagMod(
-                      c.name,
-                      selected ?= s""" ${if (state.ascending) {
-                        Strings.upArrowHead
-                      } else {
-                        Strings.downArrowHead
-                      }}"""
-                    ),
-                    BaseStyles.highlight(selected = selected),
-                    ^.onClick --> backend.setOrToggleSort(c)
-                  )
-                )
-              case c: ColumnBase =>
-                <.th(c.name)
+      /**
+        * If a new column is selected, then the sorting is set and ascending is set to the value in the column object.
+        * If the same column is selected, then the ascending is toggled or sorting is turned off.
+        */
+      def setOrToggleSort(col: SortableColumn[_]): State = {
+        val (newcs, newas) =
+          if (col.initialSortOnSelectAscending) {
+            currentSort match {
+              case Some(b) if b == col.id =>
+                if (ascending) (Some(col.id), false)
+                else (None, true)
+              case _ =>
+                (Some(col.id), true)
             }
-          }.toTagMod
-        )
-      )
-    }
-    .build
-
-  private[react] val TableRow = ScalaComponent
-    .builder[(Props, State, Backend, Row)]("TableRow")
-    .render_P { args =>
-      val (props, state, backend, row) = args
-      <.tr(
-        row
-          .zip(props.columns)
-          .filter(e => !e._2.hidden)
-          .map { entry =>
-            val (r, col) = entry
-            <.td(col.getData(r))
+          } else {
+            currentSort match {
+              case Some(b) if b == col.id =>
+                if (ascending) (None, true)
+                else (Some(col.id), true)
+              case _ =>
+                (Some(col.id), false)
+            }
           }
-          .toTagMod
-      )
+
+        copy(currentSort = newcs, ascending = newas)
+      }
+
+      def isCurrentSort(i: Int): Boolean =
+        currentSort.map(b => b == i).getOrElse(false)
     }
-    .build
 
-  class SortOrder(col: Int, cols: List[ColumnBase])(implicit sorter: Sorter[_])
-      extends Ordering[Row] {
-    def compare(l: Row, r: Row): Int = sorter.compare(cols, l, r, col)
-  }
-
-  class ReverseSortOrder(col: Int, cols: List[ColumnBase])(implicit
-      sorter: Sorter[_]
-  ) extends Ordering[Row] {
-    def compare(l: Row, r: Row): Int = sorter.compare(cols, r, l, col)
-  }
-
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
-
-    def setOrToggleSort(col: SortableColumn[_]): Callback =
-      scope.modState(s => s.setOrToggleSort(col))
-
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-      log.fine(s"Table columns=${props.columns}")
-      val rows = state.currentSort
-        .map { sortid =>
-          props.columns.indexWhere { c =>
-            if (c.isInstanceOf[SortableColumn[_]])
-              c.asInstanceOf[SortableColumn[_]].id == sortid
-            else false
-          } match {
-            case sort if sort < 0 =>
-              props.rows
-            case sort =>
-              props.columns(sort) match {
-                case sortColumn: SortableColumn[_] =>
-                  val sorter = sortColumn.sorter
-                  implicit val ordering =
-                    if (state.ascending)
-                      new SortOrder(sort, props.columns)(sorter)
-                    else new ReverseSortOrder(sort, props.columns)(sorter)
-                  val data = if (sortColumn.useAdditionalDataWhenSorting) {
-                    props.rows ::: props.additionalRows
-                      .map(f => f())
-                      .getOrElse(List())
-                  } else {
-                    props.rows
-                  }
-                  data.sorted
-                case _ =>
-                  props.rows
+    private[react] val TableHeader = ScalaComponent
+      .builder[(Props, State, Backend)]("TableHeader")
+      .render_P { args =>
+        val (props, state, backend) = args
+        <.thead(
+          props.header.whenDefined,
+          <.tr(
+            props.shownColumns.map { cc =>
+              cc match {
+                case c: SortableColumn[_] =>
+                  val selected = Some(c.id) == state.currentSort
+                  <.th(
+                    AppButton(
+                      c.id,
+                      TagMod(
+                        c.name,
+                        selected ?= s""" ${if (state.ascending) {
+                          Strings.upArrowHead
+                        } else {
+                          Strings.downArrowHead
+                        }}"""
+                      ),
+                      BaseStyles.highlight(selected = selected),
+                      ^.onClick --> backend.setOrToggleSort(c)
+                    )
+                  )
+                case c: ColumnBase =>
+                  <.th(c.name)
               }
+            }.toTagMod
+          )
+        )
+      }
+      .build
+
+    private[react] val TableRow = ScalaComponent
+      .builder[(Props, State, Backend, Row)]("TableRow")
+      .render_P { args =>
+        val (props, state, backend, row) = args
+        <.tr(
+          row
+            .zip(props.columns)
+            .filter(e => !e._2.hidden)
+            .map { entry =>
+              val (r, col) = entry
+              <.td(col.getData(r))
+            }
+            .toTagMod
+        )
+      }
+      .build
+
+    class SortOrder(col: Int, cols: List[ColumnBase])(implicit sorter: Sorter[_])
+        extends Ordering[Row] {
+      def compare(l: Row, r: Row): Int = sorter.compare(cols, l, r, col)
+    }
+
+    class ReverseSortOrder(col: Int, cols: List[ColumnBase])(implicit
+        sorter: Sorter[_]
+    ) extends Ordering[Row] {
+      def compare(l: Row, r: Row): Int = sorter.compare(cols, r, l, col)
+    }
+
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause Backend to leak.
+      */
+    class Backend(scope: BackendScope[Props, State]) {
+
+      def setOrToggleSort(col: SortableColumn[_]): Callback =
+        scope.modState(s => s.setOrToggleSort(col))
+
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+        log.fine(s"Table columns=${props.columns}")
+        val rows = state.currentSort
+          .map { sortid =>
+            props.columns.indexWhere { c =>
+              if (c.isInstanceOf[SortableColumn[_]])
+                c.asInstanceOf[SortableColumn[_]].id == sortid
+              else false
+            } match {
+              case sort if sort < 0 =>
+                props.rows
+              case sort =>
+                props.columns(sort) match {
+                  case sortColumn: SortableColumn[_] =>
+                    val sorter = sortColumn.sorter
+                    implicit val ordering =
+                      if (state.ascending)
+                        new SortOrder(sort, props.columns)(sorter)
+                      else new ReverseSortOrder(sort, props.columns)(sorter)
+                    val data = if (sortColumn.useAdditionalDataWhenSorting) {
+                      props.rows ::: props.additionalRows
+                        .map(f => f())
+                        .getOrElse(List())
+                    } else {
+                      props.rows
+                    }
+                    data.sorted
+                  case _ =>
+                    props.rows
+                }
+            }
           }
-        }
-        .getOrElse(props.rows)
-      <.table(
-        baseStyles.tableComponent,
-        props.caption.whenDefined { c => <.caption(c) },
-        TableHeader((props, state, this)),
-        (props.footer.isDefined || props.totalRows.isDefined) ?= <.tfoot(
-          props.totalRows.map { tpds =>
-            tpds.zipWithIndex.map { entry =>
+          .getOrElse(props.rows)
+        <.table(
+          baseStyles.tableComponent,
+          props.caption.whenDefined { c => <.caption(c) },
+          TableHeader((props, state, this)),
+          (props.footer.isDefined || props.totalRows.isDefined) ?= <.tfoot(
+            props.totalRows.map { tpds =>
+              tpds.zipWithIndex.map { entry =>
+                val (row, i) = entry
+                val x = TableRow.withKey(s"T$i")((props, state, this, row))
+                x
+              }.toTagMod
+            }.whenDefined,
+            props.footer.whenDefined
+          ),
+          <.tbody(
+            rows.zipWithIndex.map { entry =>
               val (row, i) = entry
-              val x = TableRow.withKey(s"T$i")((props, state, this, row))
+              val x = TableRow.withKey(i)((props, state, this, row))
               x
             }.toTagMod
-          }.whenDefined,
-          props.footer.whenDefined
-        ),
-        <.tbody(
-          rows.zipWithIndex.map { entry =>
-            val (row, i) = entry
-            val x = TableRow.withKey(i)((props, state, this, row))
-            x
-          }.toTagMod
+          )
         )
-      )
+      }
     }
+
+    private[react] val component = ScalaComponent
+      .builder[Props]("Table")
+      .initialStateFromProps { props => State(props.initialSort) }
+      .backend(new Backend(_))
+      .renderBackend
+      .build
   }
 
-  private[react] val component = ScalaComponent
-    .builder[Props]("Table")
-    .initialStateFromProps { props => State(props.initialSort) }
-    .backend(new Backend(_))
-    .renderBackend
-    .build
 }

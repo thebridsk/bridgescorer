@@ -14,10 +14,14 @@ import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import SchemaBase.{log => _}
 import SchemaHand.{log => _}
 import SchemaDuplicate.{log => _, _}
+import SchemaIndividualDuplicate.{log => _, _}
 import SchemaRubber.{log => _, _}
 import SchemaChicago.{log => _, _}
 import SchemaService.{log => _, _}
 import scala.util.Using
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.server.backend.resource.Updator
+import com.github.thebridsk.bridge.server.backend.resource.Result
 
 object SchemaMutation {
 
@@ -81,6 +85,26 @@ object SchemaMutation {
     )
   )
 
+  val MutationIndividualDuplicateType: ObjectType[BridgeService, (BridgeService, IndividualDuplicate)] = ObjectType(
+    "MutationIndividualDuplicate",
+    fields[BridgeService, (BridgeService, IndividualDuplicate)](
+      Field(
+        "id",
+        IndividualDuplicateIdType,
+        Some("The id of the import store"),
+        resolve = _.value._2.id
+      ),
+      Field(
+        "updatePlayers",
+        ListType(StringType),
+        Some("The player names"),
+        arguments = ArgIndividualDuplicatePlayers :: Nil,
+        resolve = IndividualDuplicateMutationAction.updatePlayer
+      )
+    )
+  )
+
+
   val MutationType: ObjectType[BridgeService, BridgeService] = ObjectType(
     "Mutation",
     fields[BridgeService, BridgeService](
@@ -92,9 +116,62 @@ object SchemaMutation {
         ),
         arguments = ArgImportId :: Nil,
         resolve = ServiceAction.getImportFromRoot
+      ),
+      Field(
+        "individualduplicate",
+        OptionType(MutationIndividualDuplicateType),
+        description = Some(
+          "Selecting the individual duplicate match.  returns null if not found."
+        ),
+        arguments = ArgIndividualDuplicateId :: Nil,
+        resolve = IndividualDuplicateAction.getDuplicate
       )
     )
   )
+
+}
+
+import SchemaMutation.log
+
+object IndividualDuplicateMutationAction {
+
+  def updatePlayer(
+      ctx: Context[BridgeService, (BridgeService, IndividualDuplicate)]
+  ): Future[List[String]] = {
+    val updatePlayers = ctx arg ArgIndividualDuplicatePlayers
+    val bs = ctx.value._1
+    val dup = ctx.value._2
+
+    log.fine(s"In updatePlayer, updatePlayers=${updatePlayers}")
+
+    bs.individualduplicates.select(dup.id).update(
+      new Updator[IndividualDuplicate, IndividualDuplicate, IndividualDuplicate] {
+
+        def updater(value: IndividualDuplicate): Result[(IndividualDuplicate, IndividualDuplicate)] = {
+          val newdup = updatePlayers.players.foldLeft(value) { (ac, v) =>
+            ac.updatePlayer(v.i, v.name)
+          }
+          log.fine(s"In updatePlayer, updatePlayers=${updatePlayers}, value=${value}, newdup=${newdup}")
+          Result((newdup, newdup))
+        }
+
+        def responder(resp: Result[(IndividualDuplicate, IndividualDuplicate)]): Result[IndividualDuplicate] = {
+          resp.map(e => e._1)
+        }
+      }
+    ).map { rdup =>
+      rdup match {
+        case Right(d) =>
+          val r = d.players
+          log.fine(s"In updatePlayer, updatePlayers=${updatePlayers}, returning ${r}")
+          r
+        case Left((statusCode, msg)) =>
+          throw new Exception(
+            s"Error updating ${dup.id.id} from store ${bs.id}: ${statusCode} ${msg.msg}"
+          )
+      }
+    }
+  }
 
 }
 

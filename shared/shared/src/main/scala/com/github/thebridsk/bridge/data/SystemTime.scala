@@ -17,6 +17,19 @@ object SystemTime {
   def setTimekeeper(t: SystemTime): Unit = {
     timekeeper = t
   }
+
+  val UseCurrent: Timestamp = -1
+
+  def defaultTime(created: Timestamp, updated: Timestamp): (Timestamp,Timestamp) = {
+    if (created == UseCurrent || updated == UseCurrent) {
+      val t = currentTimeMillis()
+      val c = if (created == UseCurrent) t else created
+      val u = if (updated == UseCurrent) t else updated
+      (c,u)
+    } else {
+      (created,updated)
+    }
+  }
 }
 
 trait SystemTime {

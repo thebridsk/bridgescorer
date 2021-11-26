@@ -12,6 +12,7 @@ import com.github.thebridsk.bridge.server.backend.resource.PersistentSupport
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.data.VersionedInstance
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.MatchRubber
@@ -25,6 +26,9 @@ import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.server.backend.resource.IdSupport
 import com.github.thebridsk.bridge.data.HasId
 import com.github.thebridsk.bridge.server.backend.resource.NestedResources
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
 
 class GenericIdCacheStoreSupport[TId, VType <: VersionedInstance[
   VType,
@@ -75,6 +79,21 @@ class MatchDuplicateCacheStoreSupport(
       MatchDuplicate,
       "MatchDuplicate",
       "/duplicates",
+      readOnly,
+      useIdFromValue,
+      dontUpdateTime
+    )
+
+class IndividualDuplicateCacheStoreSupport(
+    readOnly: Boolean,
+    useIdFromValue: Boolean = false,
+    dontUpdateTime: Boolean = false
+)(implicit
+    instanceJson: VersionedInstanceJson[IndividualDuplicate.Id, IndividualDuplicate]
+) extends GenericIdCacheStoreSupport(
+      IndividualDuplicate,
+      "IndividualDuplicate",
+      "/individualduplicates",
       readOnly,
       useIdFromValue,
       dontUpdateTime
@@ -208,6 +227,19 @@ class MovementCacheStoreSupport(
       dontUpdateTime
     ) {}
 
+class IndividualMovementCacheStoreSupport(
+    readOnly: Boolean,
+    dontUpdateTime: Boolean = false
+)(implicit
+    instanceJson: VersionedInstanceJson[IndividualMovement.Id, IndividualMovement]
+) extends GenericIdFromInstanceCacheStoreSupport(
+      IndividualMovement,
+      "IndividualMovement",
+      "/individualmovements",
+      readOnly,
+      dontUpdateTime
+    ) {}
+
 object DuplicateTeamsNestedResource
     extends NestedResourceSupport[MatchDuplicate, Team.Id, Team] {
   val resourceURI = "teams"
@@ -320,6 +352,62 @@ object DuplicateBoardsNestedResource
   }
 }
 
+object IndividualDuplicateBoardsNestedResource
+    extends NestedResourceSupport[IndividualDuplicate, IndividualBoard.Id, IndividualBoard] {
+  val resourceURI = "boards"
+
+  def getResources(
+      parent: IndividualDuplicate,
+      parentResource: String
+  ): Result[Map[IndividualBoard.Id, IndividualBoard]] =
+    Result(parent.boards.map(t => t.id -> t).toMap)
+
+  def getResource(
+      parent: IndividualDuplicate,
+      parentResource: String,
+      id: IndividualBoard.Id
+  ): Result[IndividualBoard] =
+    parent
+      .getBoard(id)
+      .map(t => Result(t))
+      .getOrElse(notFound(parentResource, id))
+
+  def updateResources(
+      parent: IndividualDuplicate,
+      parentResource: String,
+      map: Map[IndividualBoard.Id, IndividualBoard]
+  ): Result[IndividualDuplicate] =
+    Result(parent.setBoards(map.values.toList))
+
+  def updateResource(
+      parent: IndividualDuplicate,
+      parentResource: String,
+      id: IndividualBoard.Id,
+      value: IndividualBoard
+  ): Result[(IndividualDuplicate, IndividualBoard)] = {
+    val t = value.setId(id, false)
+    Result((parent.updateBoard(t), t))
+  }
+
+  def createResource(
+      parent: IndividualDuplicate,
+      parentResource: String,
+      value: IndividualBoard
+  ): Result[(IndividualDuplicate, IndividualBoard)] =
+    Result((parent.updateBoard(value), value))
+
+  def deleteResource(
+      parent: IndividualDuplicate,
+      parentResource: String,
+      id: IndividualBoard.Id
+  ): Result[(IndividualDuplicate, IndividualBoard)] = {
+    parent
+      .getBoard(id)
+      .map(t => Result((parent.deleteBoard(id), t)))
+      .getOrElse(notFound(parentResource, id))
+  }
+}
+
 object DuplicateHandsNestedResource
     extends NestedResourceSupport[Board, Team.Id, DuplicateHand] {
   val resourceURI = "hands"
@@ -369,6 +457,62 @@ object DuplicateHandsNestedResource
       parentResource: String,
       id: Team.Id
   ): Result[(Board, DuplicateHand)] = {
+    parent
+      .getHand(id)
+      .map(t => Result((parent.deleteHand(id), t)))
+      .getOrElse(notFound(parentResource, id))
+  }
+}
+
+object IndividualDuplicateHandsNestedResource
+    extends NestedResourceSupport[IndividualBoard, IndividualDuplicateHand.Id, IndividualDuplicateHand] {
+  val resourceURI = "hands"
+
+  def getResources(
+      parent: IndividualBoard,
+      parentResource: String
+  ): Result[Map[IndividualDuplicateHand.Id, IndividualDuplicateHand]] =
+    Result(parent.hands.map(t => t.id -> t).toMap)
+
+  def getResource(
+      parent: IndividualBoard,
+      parentResource: String,
+      id: IndividualDuplicateHand.Id
+  ): Result[IndividualDuplicateHand] =
+    parent
+      .getHand(id)
+      .map(t => Result(t))
+      .getOrElse(notFound(parentResource, id))
+
+  def updateResources(
+      parent: IndividualBoard,
+      parentResource: String,
+      map: Map[IndividualDuplicateHand.Id, IndividualDuplicateHand]
+  ): Result[IndividualBoard] =
+    Result(parent.setHands(map.values.toList))
+
+  def updateResource(
+      parent: IndividualBoard,
+      parentResource: String,
+      id: IndividualDuplicateHand.Id,
+      value: IndividualDuplicateHand
+  ): Result[(IndividualBoard, IndividualDuplicateHand)] = {
+    val t = value.setId(id, false)
+    Result((parent.updateHand(t), t))
+  }
+
+  def createResource(
+      parent: IndividualBoard,
+      parentResource: String,
+      value: IndividualDuplicateHand
+  ): Result[(IndividualBoard, IndividualDuplicateHand)] =
+    Result((parent.updateHand(value), value))
+
+  def deleteResource(
+      parent: IndividualBoard,
+      parentResource: String,
+      id: IndividualDuplicateHand.Id
+  ): Result[(IndividualBoard, IndividualDuplicateHand)] = {
     parent
       .getHand(id)
       .map(t => Result((parent.deleteHand(id), t)))
@@ -634,12 +778,29 @@ object BridgeNestedResources {
       r.nestedResource(DuplicateTeamsNestedResource)
   }
 
+  implicit class WrapIndividualDuplicateResource(
+      private val r: Resource[IndividualDuplicate.Id, IndividualDuplicate]
+  ) extends AnyVal {
+    def resourceBoards(implicit
+        execute: ExecutionContext
+    ): NestedResources[IndividualDuplicate.Id, IndividualDuplicate, IndividualBoard.Id, IndividualBoard] =
+      r.nestedResource(IndividualDuplicateBoardsNestedResource)
+  }
+
   implicit class WrapBoardResource(private val r: Resource[Board.Id, Board])
       extends AnyVal {
     def resourceHands(implicit
         execute: ExecutionContext
     ): NestedResources[Board.Id, Board, Team.Id, DuplicateHand] =
       r.nestedResource(DuplicateHandsNestedResource)
+  }
+
+  implicit class WrapIndividualBoardResource(private val r: Resource[IndividualBoard.Id, IndividualBoard])
+      extends AnyVal {
+    def resourceHands(implicit
+        execute: ExecutionContext
+    ): NestedResources[IndividualBoard.Id, IndividualBoard, IndividualDuplicateHand.Id, IndividualDuplicateHand] =
+      r.nestedResource(IndividualDuplicateHandsNestedResource)
   }
 
   implicit class WrapMatchChicagoResource(
@@ -688,6 +849,13 @@ class BridgeResources(
       useIdFromValue,
       dontUpdateTime
     )
+  implicit val individualDuplicateCacheStoreSupport
+      : IndividualDuplicateCacheStoreSupport =
+    new IndividualDuplicateCacheStoreSupport(
+      readOnly,
+      useIdFromValue,
+      dontUpdateTime
+    )
   implicit val matchDuplicateResultCacheStoreSupport
       : MatchDuplicateResultCacheStoreSupport =
     new MatchDuplicateResultCacheStoreSupport(
@@ -703,6 +871,8 @@ class BridgeResources(
     new BoardSetCacheStoreSupport(readOnly, dontUpdateTime)
   implicit val movementCacheStoreSupport: MovementCacheStoreSupport =
     new MovementCacheStoreSupport(readOnly, dontUpdateTime)
+  implicit val individualMovementCacheStoreSupport: IndividualMovementCacheStoreSupport =
+    new IndividualMovementCacheStoreSupport(readOnly, dontUpdateTime)
 
 }
 

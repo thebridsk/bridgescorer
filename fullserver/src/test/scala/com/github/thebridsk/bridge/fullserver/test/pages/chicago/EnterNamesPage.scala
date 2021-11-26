@@ -97,7 +97,7 @@ object EnterNamesPage {
     }
   }
 
-  private def toInputName(loc: PlayerPosition) = loc.name
+  private def toInputName(loc: PlayerPosition) = s"Combo_${loc.name}"
   val sittingOutInputName = "Extra"
   val fastRotationCheckboxName = "Quintet"
   val simpleRotationRadioBoxName = "Simple"

@@ -25,8 +25,7 @@ import MyReleaseVersion._
 
 object BldBridgeFullServer {
 
-  lazy val `bridgescorer-fullserver`: Project = project
-    .in(file("fullserver"))
+  lazy val `bridgescorer-fullserver`: Project = Project("fullserver", file("fullserver"))
     .configure(
       commonSettings
     )
@@ -41,6 +40,9 @@ object BldBridgeFullServer {
       Compile / run / fork := true,
       server := {
         (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs""").value
+      },
+      serverhelp := {
+        (run in Compile).toTask(""" --help""").value
       },
       serverssl := {
         (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs --certificate ../server/key/examplebridgescorekeeper.jks --certpassword abcdef --https 8443 --cacert ../server/key/examplebridgescorekeeperca.crt""").value

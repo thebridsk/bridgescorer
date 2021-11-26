@@ -82,6 +82,7 @@ object ModalProps extends PropsFactory[ModalProps] {
     *                    It signals that the open={true} property took effect.
     * @param open If true, the modal is open.
     * @param className css class name to add to element
+    * @param onClick a click handler
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: ModalProps](
@@ -106,9 +107,10 @@ object ModalProps extends PropsFactory[ModalProps] {
       onRendered: js.UndefOr[() => Unit] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
+      onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
-    val p = get(props, additionalProps)
+    val p = get(props, additionalProps, onClick)
 
     backdropComponent.foreach(p.updateDynamic("backdropComponent")(_))
     backdropProps.foreach(p.updateDynamic("backdropProps")(_))
@@ -197,6 +199,7 @@ object MuiModal extends ComponentFactory[ModalProps] {
     * @param onRendered Callback fired once the children has been mounted into the container.
     *                    It signals that the open={true} property took effect.
     * @param open If true, the modal is open.
+    * @param onClick a click handler
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
@@ -219,6 +222,7 @@ object MuiModal extends ComponentFactory[ModalProps] {
       onEscapeKeyDown: js.UndefOr[() => Unit] = js.undefined,
       onRendered: js.UndefOr[() => Unit] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
+      onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
       children: CtorType.ChildArg*
@@ -242,6 +246,7 @@ object MuiModal extends ComponentFactory[ModalProps] {
       onEscapeKeyDown = onEscapeKeyDown,
       onRendered = onRendered,
       open = open,
+      onClick = onClick,
       additionalProps = additionalProps
     )
     val x = f(p) _

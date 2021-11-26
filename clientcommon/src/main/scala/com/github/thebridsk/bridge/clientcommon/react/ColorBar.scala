@@ -8,18 +8,24 @@ import com.github.thebridsk.color.Color
 import com.github.thebridsk.color.Colors
 
 /**
-  * A skeleton component.
+  * A Color bar component.
+  *
+  * A color bar contains 1 or more squares,
+  * the colors in the square are in a sequence.
+  *
+  * The sequences can be created in the HSL space with a constant hue.
+  * In this case there are two hues, one for the left the other for the right.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * AppButton( AppButton.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * ColorBar( AppButton.Props( ... ) )
+  * }}}
   *
   * @author werewolf
   */
 object ColorBar {
-  import ColorBarInternal._
+  import Internal._
 
   /**
     * Props for ColorBar
@@ -43,7 +49,11 @@ object ColorBar {
   object Props {
 
     /**
-      * Create a Props object.
+      * Create a props object for a color bar with the specified sequences defined by
+      * the hue, min lightness, number of boxes, direction of sequence.
+      * An optional middle box may also be specified.
+      * Flyover titles may also be specified for each box.
+      *
       * The first four parameters are for the left color boxes,
       * the second four are for the right color boxes.
       * @param hue1
@@ -58,6 +68,8 @@ object ColorBar {
       * @param titles1 the titles of the left boxes, if specified, must have leftColors.length titles.  None means no titles.
       * @param titles2 the titles of the right boxes, if specified, must have rightColors.length titles.  None means no titles.
       * @param whiteTitle the title of the white box.  None means no title.
+      *
+      * @return the Props object.
       */
     def create(
         hue1: Double,
@@ -87,11 +99,14 @@ object ColorBar {
   /**
     * ColorBar with white in the middle, and hue1 on left and hue2 on right, with dark on the outside.
     * No flyover text on the color bar.
-    * @param hue1
+    *
+    * @param hue1 the hue on the left
     * @param minLightness1 the minimum lightness [0 - 100]
-    * @param hue2
+    * @param hue2 the hue on the right
     * @param minLightness2 the minimum lightness [0 - 100]
     * @param n the number of boxes for hue1 and hue2
+    *
+    * @return the Props object.
     */
   def apply(
       hue1: Double,
@@ -121,13 +136,16 @@ object ColorBar {
   /**
     * ColorBar with white in the middle, and hue1 on left and hue2 on right, with dark on the outside.
     * Titles will show as flyover text.  No title for the middle white box.
-    * @param hue1
+    *
+    * @param hue1 the hue on the left
     * @param minLightness1 the minimum lightness [0 - 100]
-    * @param hue2
+    * @param hue2 the hue on the right
     * @param minLightness2 the minimum lightness [0 - 100]
     * @param n the number of boxes for hue1 and hue2
     * @param titles1 the titles of the left boxes, must have n titles.
     * @param titles2 the titles of the right boxes, must have n titles.
+    *
+    * @return the Props object.
     */
   def apply(
       hue1: Double,
@@ -159,14 +177,17 @@ object ColorBar {
   /**
     * ColorBar with white in the middle, and hue1 on left and hue2 on right, with dark on the outside.
     * Titles will show as flyover text.
-    * @param hue1
+    *
+    * @param hue1 the hue on the left
     * @param minLightness1 the minimum lightness [0 - 100]
-    * @param hue2
+    * @param hue2 the hue on the right
     * @param minLightness2 the minimum lightness [0 - 100]
     * @param n the number of boxes for hue1 and hue2
     * @param titles1 the titles of the left boxes, must have n titles.
     * @param titles2 the titles of the right boxes, must have n titles.
     * @param whiteTitle
+    *
+    * @return the Props object.
     */
   def apply(
       hue1: Double,
@@ -197,20 +218,28 @@ object ColorBar {
   }
 
   /**
-    * ColorBar with hue1 on the left, optional white in the middle, and hue2 on the right.
-    * Optional titles can be specified, and will show as flyover text.
-    * @param hue1
+    * Create a color bar with the specified sequences defined by
+    * the hue, min lightness, number of boxes, direction of sequence.
+    * An optional middle box may also be specified.
+    * Flyover titles may also be specified for each box.
+    *
+    * The first four parameters are for the left color boxes,
+    * the second four are for the right color boxes.
+    *
+    * @param hue1 the hue on the left
     * @param minLightness1 the minimum lightness [0 - 100]
     * @param n1 the number of boxes for hue1
     * @param darkToLight1 left boxes should be dark to light if true.
-    * @param hue2
+    * @param hue2 the hue on the right
     * @param minLightness2 the minimum lightness [0 - 100]
     * @param n2 the number of boxes for hue2
     * @param darkToLight2 right boxes should be dark to light if true.
     * @param middle the optional middle color
-    * @param titles1 the titles of the left boxes, if specified, must have n1 titles.
-    * @param titles2 the titles of the right boxes, if specified, must have n2 titles.
-    * @param whiteTitle the title of the white box.
+    * @param titles1 the titles of the left boxes, if specified, must have leftColors.length titles.  None means no titles.
+    * @param titles2 the titles of the right boxes, if specified, must have rightColors.length titles.  None means no titles.
+    * @param whiteTitle the title of the white box.  None means no title.
+    *
+    * @return the react component.
     */
   def apply(
       hue1: Double,
@@ -245,14 +274,16 @@ object ColorBar {
   }
 
   /**
-    * ColorBar with hue1 on the left, optional white in the middle, and hue2 on the right.
-    * Optional titles can be specified, and will show as flyover text.
+    * A color bar with the specified colors on the left, middle, and right.
+    *
     * @param leftColors list of colors for left of middle
     * @param rightColors list of colors for right of middle
     * @param middle the optional middle color
     * @param leftTitles the titles of the left boxes, if specified, must have leftColors.length titles.
     * @param rightTitles the titles of the right boxes, if specified, must have rightColors.length titles.
     * @param whiteTitle the title of the white box.
+    *
+    * @return the react component.
     */
   def create(
       leftColors: Seq[Color],
@@ -275,9 +306,12 @@ object ColorBar {
   }
 
   /**
-    * Simple ColorBar
-    * @param colors
-    * @param titles
+    * Simple ColorBar with the specified colors and flyover titles.
+    *
+    * @param colors the colors for the squares.
+    * @param titles optional, the titles for the squares.
+    *
+    * @return the react component.
     */
   def simple(
       colors: Seq[Color],
@@ -286,68 +320,67 @@ object ColorBar {
     component(Props(colors, Nil, None, titles, None, None))
   }
 
-}
+  protected object Internal {
 
-object ColorBarInternal {
-  import ColorBar._
+    import BaseStyles._
+    import com.github.thebridsk.color.Colors._
+    import ReactColor._
 
-  import BaseStyles._
-  import com.github.thebridsk.color.Colors._
-  import ReactColor._
-
-  private def box(color: Color, title: Option[TagMod]): VdomNode = {
-    Tooltip(
-      <.div(
-        ^.flex := "0 0 auto",
-        ^.width := "20px",
-        ^.height := "20px",
-        ^.backgroundColor := color
-      ),
-      title
-    )
-  }
-
-  private def bar(
-      hue: Double,
-      minLightness: Double,
-      n: Int,
-      darkToLight: Boolean,
-      titles: Option[List[TagMod]]
-  ): TagMod = {
-    val cols = colorsExcludeEnd(hue, minLightness, n)
-    val c = if (darkToLight) cols else cols.reverse
-    bar(c, titles)
-  }
-
-  private def bar(cols: Seq[Color], titles: Option[Seq[TagMod]]): TagMod = {
-    val ts =
-      titles.map(t => t.map(ti => Some(ti))).getOrElse(cols.map(cols => None))
-    cols
-      .zip(ts)
-      .map { entry =>
-        val (cc, t) = entry
-        box(cc, t)
-      }
-      .toTagMod
-  }
-
-  private[react] val component = ScalaComponent
-    .builder[Props]("ColorBar")
-    .stateless
-    .noBackend
-    .render_P(props => {
-
-      <.div(
-        baseStyles.colorbar,
-        ^.display := "flex",
-        ^.flexDirection := "row",
-        ^.flexWrap := "nowrap",
-        ^.justifyContent := "center",
-        ^.border := "none",
-        bar(props.leftColors, props.leftTitles),
-        props.middle.whenDefined(c => box(c, props.whiteTitle)),
-        bar(props.rightColors, props.rightTitles)
+    private def box(color: Color, title: Option[TagMod]): VdomNode = {
+      Tooltip(
+        <.div(
+          ^.flex := "0 0 auto",
+          ^.width := "20px",
+          ^.height := "20px",
+          ^.backgroundColor := color
+        ),
+        title
       )
-    })
-    .build
+    }
+
+    private def bar(
+        hue: Double,
+        minLightness: Double,
+        n: Int,
+        darkToLight: Boolean,
+        titles: Option[List[TagMod]]
+    ): TagMod = {
+      val cols = colorsExcludeEnd(hue, minLightness, n)
+      val c = if (darkToLight) cols else cols.reverse
+      bar(c, titles)
+    }
+
+    private def bar(cols: Seq[Color], titles: Option[Seq[TagMod]]): TagMod = {
+      val ts =
+        titles.map(t => t.map(ti => Some(ti))).getOrElse(cols.map(cols => None))
+      cols
+        .zip(ts)
+        .map { entry =>
+          val (cc, t) = entry
+          box(cc, t)
+        }
+        .toTagMod
+    }
+
+    private[react] val component = ScalaComponent
+      .builder[Props]("ColorBar")
+      .stateless
+      .noBackend
+      .render_P(props => {
+
+        <.div(
+          baseStyles.colorbar,
+          ^.display := "flex",
+          ^.flexDirection := "row",
+          ^.flexWrap := "nowrap",
+          ^.justifyContent := "center",
+          ^.border := "none",
+          bar(props.leftColors, props.leftTitles),
+          props.middle.whenDefined(c => box(c, props.whiteTitle)),
+          bar(props.rightColors, props.rightTitles)
+        )
+      })
+      .build
+  }
+
 }

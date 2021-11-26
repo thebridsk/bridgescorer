@@ -7,34 +7,56 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.PieChart.Props
 
 /**
-  * A skeleton component.
+  * A component that displays as a pie chart or a square.
+  *
+  * The square is used if the size is less than zero.
+  *
+  * The slices are sized proportional to their size.
+  * The slices are colored and may have titles.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * PieChartOrSquareForZero( PieChartOrSquareForZero.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * import com.github.thebridsk.color.Color
+  *
+  * PieChart(
+  *   slices = List(1,1,1),
+  *   colors = List(Color("red"), Color("green"), Color("blue"))
+  *   size = 24
+  * )
+  * }}}
   *
   * @author werewolf
   */
 object PieChartOrSquareForZero {
 
+  /**
+    * The Properties
+    *
+    * @param piechartProps
+    */
   case class SquareProps(
       piechartProps: Props
   )
 
   /**
     * A pie chart.  The full circle will be used for the chart.
-    * if the size less than zero, then a square of size -size will be drawn.
-    * @param size the relative area of the circle.  If negative then a square of size -size is drawn.
-    * @param squareColor the color if a square is drawn
-    * @param slices the slices to carve up the circle.  The sum of the entries MUST NOT be 0
+    * If the size less than zero, then a square of size -size will be drawn.
+    *
+    * Slices, colors, and sliceTitles, if specified must all be the same size.
+    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+    *
+    * @param size if greater than zero then it is the diameter of the circle in px.
+    *             if less than zero then it is the negative size of the square in px.
+    * @param slices the slices to carve up the circle.  Each entry is the relative size of the slice.
     * @param colors the colors of the slices, must be the same size array as slices.
     * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
     * @param sliceTitles the title of slices, will be flyover.
-    * Must be the same size array as slices.
-    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
-    * Must be the same size array as slices.
+    * @param attrs attributes to add to the <svg> element
+    *
+    * @return the unmounted react component.
+    *
+    * @see See [[PieChart]] for usage.
     */
   def apply(
       size: Double,

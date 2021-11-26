@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 import org.scalatest.time.Span
 import org.scalatest.time.Millis
 import com.github.thebridsk.browserpages.Session
+import com.github.thebridsk.bridge.session.test.TestStartLogging
 
 /**
   * @author werewolf
@@ -14,6 +15,8 @@ import com.github.thebridsk.browserpages.Session
 class SessionTest extends AnyFlatSpec with Matchers {
 
   import Eventually.{patienceConfig => _, _}
+
+  TestStartLogging.startLogging()
 
   import scala.concurrent.duration._
 
@@ -34,6 +37,17 @@ class SessionTest extends AnyFlatSpec with Matchers {
   implicit def patienceConfig: PatienceConfig = defaultPatienceConfig
 
   behavior of "Session"
+
+  it should "match 'remote chrome http://localhost:4444' as a valid session string" in {
+    val s = "remote chrome http://localhost:4444"
+    s match {
+      case Session.patternRemote(browser,remoteurl) =>
+        browser mustBe "chrome"
+        remoteurl mustBe "http://localhost:4444"
+      case _ =>
+        fail(s"Not a valid session string: $s")
+    }
+  }
 
   it should "create a browser" in {
     TestSession.sessionStart().setPositionRelative(0, 0).setSize(1100, 900)

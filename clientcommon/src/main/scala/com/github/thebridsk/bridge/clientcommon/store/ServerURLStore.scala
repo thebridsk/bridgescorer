@@ -1,15 +1,16 @@
-package com.github.thebridsk.bridge.client.bridge.store
+package com.github.thebridsk.bridge.clientcommon.store
 
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.ServerURL
-import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateServerURLs
 import flux.dispatcher.DispatchToken
-import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerURL
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import japgolly.scalajs.react.vdom.html_<^._
+import com.github.thebridsk.bridge.clientcommon.dispatcher.ChangeListenable
+import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
+import com.github.thebridsk.bridge.clientcommon.dispatcher.ActionUpdateServerURLs
 
 object ServerURLStore extends ChangeListenable {
   val logger: Logger = Logger("bridge.ServerURLStore")
@@ -43,7 +44,7 @@ object ServerURLStore extends ChangeListenable {
   }
 
   private var dispatchToken: Option[DispatchToken] = Some(
-    BridgeDispatcher.register(dispatch _)
+    Dispatcher.register(dispatch _)
   )
 
   def dispatch(msg: Any): Unit =
@@ -64,7 +65,7 @@ object ServerURLStore extends ChangeListenable {
           .list()
           .recordFailure()
           .foreach(serverUrl => {
-            BridgeDispatcher.updateServerURL(serverUrl(0))
+            Dispatcher.updateServerURL(serverUrl(0))
             updateRequested = false
           })
       }

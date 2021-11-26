@@ -60,6 +60,15 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateRubberHand
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePicture
 import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictures
 import akka.stream.CompletionStrategy
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePictures
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicate
+import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicateHand
+import com.github.thebridsk.bridge.data.websocket.Protocol.StartMonitorIndividualDuplicate
+import com.github.thebridsk.bridge.data.websocket.Protocol.StopMonitorIndividualDuplicate
 
 object StoreMonitor {
   sealed trait ChatEvent
@@ -73,6 +82,11 @@ object StoreMonitor {
   case class NewParticipantSSEDuplicate(
       name: String,
       id: MatchDuplicate.Id,
+      subscriber: ActorRef
+  ) extends ChatEvent
+  case class NewParticipantSSEIndividualDuplicate(
+      name: String,
+      id: IndividualDuplicate.Id,
       subscriber: ActorRef
   ) extends ChatEvent
   case class NewParticipantSSEChicago(
@@ -178,6 +192,14 @@ abstract class BaseStoreMonitor[VId <: Comparable[
     dispatchToFiltered(Unsolicited(data))(DuplicateSubscription.filter(id))
   }
 
+  protected def dispatchToAllIndividualDuplicate(
+      id: IndividualDuplicate.Id,
+      data: ToBrowserMessage
+  ): Unit = {
+    log.debug(s"BaseStoreMonitor.dispatchToAllIndividualDuplicate(${id}): ${data}")
+    dispatchToFiltered(Unsolicited(data))(IndividualDuplicateSubscription.filter(id))
+  }
+
   protected def dispatchToAllChicago(
       id: MatchChicago.Id,
       data: ToBrowserMessage
@@ -232,6 +254,12 @@ abstract class BaseStoreMonitor[VId <: Comparable[
       add(new Subscription(name, subscriber))
       dispatchToAll(MonitorJoined(name, members))
       process(name, Send(StartMonitorDuplicate(dupid)))
+    case NewParticipantSSEIndividualDuplicate(name, dupid, subscriber) =>
+      log.info("(" + name + "): New monitor")
+      context.watch(subscriber)
+      add(new Subscription(name, subscriber))
+      dispatchToAll(MonitorJoined(name, members))
+      process(name, Send(StartMonitorIndividualDuplicate(dupid)))
     case NewParticipantSSEChicago(name, dupid, subscriber) =>
       log.info("(" + name + "): New monitor")
       context.watch(subscriber)
@@ -252,6 +280,7 @@ abstract class BaseStoreMonitor[VId <: Comparable[
       log.debug(s"Receive: ToBrowserMessage Sending to all ${msg}")
       msg match {
         case UpdateDuplicate(md)        => dispatchToAllDuplicate(md.id, msg)
+        case UpdateIndividualDuplicate(md) => dispatchToAllIndividualDuplicate(md.id, msg)
         case UpdateDuplicateHand(id, h) => dispatchToAllDuplicate(id, msg)
         case UpdateDuplicateTeam(id, t) => dispatchToAllDuplicate(id, msg)
         case UpdateChicago(md)          => dispatchToAllChicago(md.id, msg)
@@ -572,6 +601,192 @@ class DuplicateStoreMonitor(
           case None =>
         }
         Future(DuplexProtocol.Response(NoData(), seq))
+
+      case UpdateIndividualDuplicate(dup) =>
+        log.warning("UpdateIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicateHand(dupid, hand) =>
+        log.warning("UpdateIndividualDuplicateHand not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.warning("UpdateIndividualDuplicatePicture not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePictures(dupid, pictures) =>
+        log.warning("UpdateIndividualDuplicatePictures not implemented")
+        futureError("Unknown request", seq)
+      case StartMonitorIndividualDuplicate(dupid: IndividualDuplicate.Id) =>
+        log.warning("StartMonitorIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+      case StopMonitorIndividualDuplicate(dupid) =>
+        log.warning("StopMonitorIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+
+      case NoData(_) =>
+        log.debug("No data")
+        Future(DuplexProtocol.Response(NoData(), seq))
+      case StartMonitorSummary(_) =>
+        log.info("StartMonitorSummary not implemented")
+        futureError("Unknown request", seq)
+      case StopMonitorSummary(_) =>
+        log.info("StopMonitorSummary not implemented")
+        futureError("Unknown request", seq)
+
+      case StartMonitorChicago(_) =>
+        log.warning("StartMonitorChicago not implemented")
+        futureError("Unknown request", seq)
+      case StopMonitorChicago(_) =>
+        log.warning("StopMonitorChicago not implemented")
+        futureError("Unknown request", seq)
+      case x: UpdateChicago =>
+        log.warning("UpcateChicago not implemented")
+        futureError("Unknown request", seq)
+      case x: UpdateChicagoRound =>
+        log.warning("UpcateChicagoRound not implemented")
+        futureError("Unknown request", seq)
+      case x: UpdateChicagoHand =>
+        log.warning("UpcateChicagoHand not implemented")
+        futureError("Unknown request", seq)
+
+      case StartMonitorRubber(_) =>
+        log.warning("StartMonitorRubber not implemented")
+        futureError("Unknown request", seq)
+      case StopMonitorRubber(_) =>
+        log.warning("StopMonitorRubber not implemented")
+        futureError("Unknown request", seq)
+      case x: UpdateRubber =>
+        log.warning("UpdateRubber not implemented")
+        futureError("Unknown request", seq)
+      case x: UpdateRubberHand =>
+        log.warning("UpdateRubber not implemented")
+        futureError("Unknown request", seq)
+
+//      case _ =>
+//        log.warning("Unknown request "+msg)
+//        futureError("Unknown request", seq)
+    }
+
+    resp.map { r =>
+      log.info("ProcessProtocolMessage Response(" + seq + ") " + r); r
+    }
+  }
+
+}
+
+class IndividualDuplicateStoreMonitor(
+    system: ActorSystem,
+    store: Store[IndividualDuplicate.Id, IndividualDuplicate],
+    service: Service
+) extends BaseStoreMonitor[IndividualDuplicate.Id, IndividualDuplicate](
+      system,
+      store,
+      Protocol.UpdateIndividualDuplicate(_)
+    ) {
+
+  def processProtocolMessage(
+      sender: String,
+      seq: Int,
+      msg: Protocol.ToServerMessage,
+      ack: Boolean
+  ): Future[DuplexProtocol.DuplexMessage] = {
+    import BridgeNestedResources._
+    log.info("ProcessProtocolMessage(" + seq + ") " + msg)
+    val resp: Future[DuplexProtocol.DuplexMessage] = msg match {
+      case UpdateDuplicate(dup) =>
+        log.warning("UpdateDuplicate not implemented")
+        futureError("Unknown request", seq)
+      case UpdateDuplicateHand(dupid, hand) =>
+        log.warning("UpdateDuplicateHand not implemented")
+        futureError("Unknown request", seq)
+      case UpdateDuplicateTeam(dupid, team) =>
+        log.warning("UpdateDuplicateTeam not implemented")
+        futureError("Unknown request", seq)
+      case UpdateDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.warning("UpdateDuplicatePicture not implemented")
+        futureError("Unknown request", seq)
+      case UpdateDuplicatePictures(dupid, pictures) =>
+        log.warning("UpdateDuplicatePictures not implemented")
+        futureError("Unknown request", seq)
+      case StartMonitorDuplicate(dupid: MatchDuplicate.Id) =>
+        log.warning("StartMonitorDuplicate not implemented")
+        futureError("Unknown request", seq)
+      case StopMonitorDuplicate(dupid) =>
+        log.warning("StopMonitorDuplicate not implemented")
+        futureError("Unknown request", seq)
+
+      case UpdateIndividualDuplicate(dup) =>
+        log.debug("Updating the IndividualDuplicate object is not supported")
+        futureError("Updating the IndividualDuplicate object is not supported", seq)
+      case UpdateIndividualDuplicateHand(dupid, hand) =>
+        log.debug(s"UpdateIndividualDuplicateHand ${dupid} ${hand}")
+        store
+          .select(dupid)
+          .resourceBoards
+          .select(hand.board)
+          .resourceHands
+          .select(hand.id)
+          .update(hand)
+          .map { rh =>
+            dispatchToAllIndividualDuplicate(dupid, UpdateIndividualDuplicateHand(dupid, hand))
+            DuplexProtocol.Response(
+              if (ack) UpdateIndividualDuplicateHand(dupid, hand) else NoData(),
+              seq
+            )
+          }
+      case UpdateIndividualDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.debug(s"UpdateDuplicatePicture ${dupid} ${boardid} ${picture}")
+        futureError("Use REST API", seq)
+      case UpdateIndividualDuplicatePictures(dupid, pictures) =>
+        log.debug(s"UpdateDuplicatePictures ${dupid} ${pictures}")
+        futureError("Use REST API", seq)
+      case StartMonitorIndividualDuplicate(dupid: IndividualDuplicate.Id) =>
+        log.info(s"StartMonitorIndividualDuplicate ${dupid}")
+        val subid = get(sender) match {
+          case Some(sub) =>
+            add(new IndividualDuplicateSubscription(sub, dupid))
+            Some(sub)
+          case None =>
+            None
+        }
+        store.read(dupid).map { rd =>
+          val resp = rd match {
+            case Right(dup) =>
+              if (ack) {
+                log.info("Sending MatchDuplicate to " + sender + ": " + dup)
+                dispatchTo(
+                  DuplexProtocol.Unsolicited(UpdateIndividualDuplicate(dup)),
+                  sender
+                )
+                DuplexProtocol.Response(NoData(), seq)
+              } else {
+                DuplexProtocol.Response(UpdateIndividualDuplicate(dup), seq)
+              }
+            case _ =>
+              DuplexProtocol.Response(NoData(), seq)
+          }
+          service.restIndividualDuplicate.nestedPictures.getAllPictures(dupid).foreach {
+            ridp =>
+              ridp match {
+                case Right(idp) =>
+                  val ldp = idp.toList
+                  if (!ldp.isEmpty) {
+                    val data = UpdateIndividualDuplicatePictures(dupid, ldp)
+                    dispatchTo(DuplexProtocol.Unsolicited(data), sender)
+                  }
+                case Left(err) =>
+                  log.warning("Error getting all pictures in monitor: ${err}")
+              }
+          }
+          resp
+        }
+      case StopMonitorIndividualDuplicate(dupid) =>
+        log.info(s"StopMonitorIndividualDuplicate ${dupid}")
+        get(sender) match {
+          case Some(sub) =>
+            add(sub.getSubscription())
+          case None =>
+        }
+        Future(DuplexProtocol.Response(NoData(), seq))
+
       case NoData(_) =>
         log.debug("No data")
         Future(DuplexProtocol.Response(NoData(), seq))
@@ -663,6 +878,26 @@ class ChicagoStoreMonitor(
       case StopMonitorDuplicate(dupid) =>
         log.warning("StopMonitorDuplicate not implemented")
         futureError("Unknown request", seq)
+
+      case UpdateIndividualDuplicate(dup) =>
+        log.warning("UpdateIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicateHand(dupid, hand) =>
+        log.warning("UpdateIndividualDuplicateHand not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.warning("UpdateIndividualDuplicatePicture not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePictures(dupid, pictures) =>
+        log.warning("UpdateIndividualDuplicatePictures not implemented")
+        futureError("Unknown request", seq)
+      case StartMonitorIndividualDuplicate(dupid: IndividualDuplicate.Id) =>
+        log.warning("StartMonitorIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+      case StopMonitorIndividualDuplicate(dupid) =>
+        log.warning("StopMonitorIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+
       case NoData(_) =>
         log.debug("No data")
         Future(DuplexProtocol.Response(NoData(), seq))
@@ -803,6 +1038,26 @@ class RubberStoreMonitor(
       case StopMonitorDuplicate(dupid) =>
         log.warning("StopMonitorDuplicate not implemented")
         futureError("Unknown request", seq)
+
+      case UpdateIndividualDuplicate(dup) =>
+        log.warning("UpdateIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicateHand(dupid, hand) =>
+        log.warning("UpdateIndividualDuplicateHand not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePicture(dupid, boardid, handid, picture) =>
+        log.warning("UpdateIndividualDuplicatePicture not implemented")
+        futureError("Unknown request", seq)
+      case UpdateIndividualDuplicatePictures(dupid, pictures) =>
+        log.warning("UpdateIndividualDuplicatePictures not implemented")
+        futureError("Unknown request", seq)
+      case StartMonitorIndividualDuplicate(dupid: IndividualDuplicate.Id) =>
+        log.warning("StartMonitorIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+      case StopMonitorIndividualDuplicate(dupid) =>
+        log.warning("StopMonitorIndividualDuplicate not implemented")
+        futureError("Unknown request", seq)
+
       case NoData(_) =>
         log.debug("No data")
         Future(DuplexProtocol.Response(NoData(), seq))
@@ -907,6 +1162,25 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
       case None => None
     }
   }
+  private def getIndividualDuplicateId(
+      ccd: ChangeContextData
+  ): Option[IndividualDuplicate.Id] = {
+    (ccd match {
+      case cc: CreateChangeContext => Some(cc.newValue)
+      case uc: UpdateChangeContext => Some(uc.newValue)
+      case dc: DeleteChangeContext => None // can't happen here
+    }) match {
+      case Some(fdata) =>
+        fdata match {
+          case md: IndividualDuplicate      => Some(md.id)
+          case b: Board                     => None
+          case h: DuplicateHand             => None
+          case pict: UpdateIndividualDuplicatePicture => Some(pict.dupid)
+          case _                            => None
+        }
+      case None => None
+    }
+  }
   private def getChicagoRound(ccd: ChangeContextData): Option[String] = {
     (ccd match {
       case cc: CreateChangeContext => Some(cc.newValue)
@@ -991,6 +1265,19 @@ class Listener(log: LoggingAdapter, actor: ActorRef) extends StoreListener {
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicateTeam($t)")
             getDuplicateId(changes.head).foreach { mdid =>
               actor ! UpdateDuplicateTeam(mdid, t)
+            }
+          case md: IndividualDuplicate =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicate($md)")
+            actor ! UpdateIndividualDuplicate(md)
+          case b: IndividualBoard =>
+          // log.debug(s"StoreMonitor.Listener.update: Ignoring $b")
+          case pict: UpdateIndividualDuplicatePicture =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with $pict")
+            actor ! pict
+          case h: IndividualDuplicateHand =>
+            // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateDuplicateHand($h)")
+            getIndividualDuplicateId(changes.head).foreach { mdid =>
+              actor ! UpdateIndividualDuplicateHand(mdid, h)
             }
           case mc: MatchChicago =>
             // log.debug(s"StoreMonitor.Listener.update: notifying actor with UpdateChicago($mc)")

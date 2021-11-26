@@ -14,7 +14,6 @@ import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Table
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
-import com.github.thebridsk.bridge.clientcommon.react.ComboboxOrInput
 import com.github.thebridsk.bridge.data.util.Strings
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableTeamView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.TableTeamByBoardView
@@ -26,7 +25,6 @@ import com.github.thebridsk.bridge.data.MatchPlayerPosition
 import com.github.thebridsk.bridge.data.maneuvers.TableManeuvers
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.data.bridge._
-import scala.scalajs.js.JSConverters._
 import com.github.thebridsk.bridge.clientcommon.react.Button
 import com.github.thebridsk.bridge.client.pages.hand.PageHand
 import com.github.thebridsk.bridge.client.pages.hand.{Properties => HProperties}
@@ -38,19 +36,36 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.data.DuplicateHandV2
-
-import scala.scalajs.js
+import com.github.thebridsk.bridge.client.pages.duplicate.components.EnterScorekeeper
+import com.github.thebridsk.bridge.client.components.EnterName
+import com.github.thebridsk.bridge.client.pages.duplicate.components.SelectScorekeeper
 
 /**
-  * Shows the team x board table and has a totals column that shows the number of points the team has.
+  * Component that allows the players to be identified at a table for a round.
   *
-  * The ScoreboardView object will identify which MatchDuplicate to look at.
+  * If all players are unknown, the first round, then first a scorekeeper pages is shown
+  * to enter the scorekeeper and position, then a page to enter the remaining players.
+  *
+  * If only one team is unknown, then an page is shown that allows the entering of the names
+  * of the team.
+  *
+  * If both teams are known, then a page is shown where the scorekeeper can be selected, followed
+  * by positioning of the opponents.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * PageTableTeams( routerCtl: BridgeRouter[DuplicatePage], page: BaseBoardViewWithPerspective )
-  * </code></pre>
+  * {{{
+  * // one of
+  * val page = TableTeamByRoundView(id, tableid, round)
+  * val page = TableTeamByRoundEditView(id, tableid, round)
+  * val page = TableTeamByBoardView(id, tableid, round, board)
+  * val page = TableTeamByBoardEditView(id, tableid, round, board)
+  *
+  * PageTableTeams(
+  *   routerCtl = ...,
+  *   page = page
+  * )
+  * }}}
   *
   * @author werewolf
   */
@@ -161,13 +176,8 @@ object PageTableTeamsInternal {
       players: TableManeuvers, // the current positions of the players
       scorekeeperPosition: Option[PlayerPosition],
       scorekeeperName: Option[String],
-      scorekeeperSet: Boolean,
-      nameSuggestions: Option[List[String]] = None // known names from server
+      scorekeeperSet: Boolean
   ) {
-
-    def getSuggestions: js.Array[String] =
-      nameSuggestions.getOrElse(List()).toJSArray
-    def gettingNames = nameSuggestions.isEmpty
 
     def isEnteringMissingNames =
       enteringMissingNames // ( players.areNSPlayersValid != players.areEWPlayersValid )
@@ -254,9 +264,6 @@ object PageTableTeamsInternal {
       )
     }
 
-    def updateNames(list: List[String]): State =
-      copy(nameSuggestions = Some(list))
-
     def logState(comment: String): State = {
       logger.fine(s"""${comment}: ${this}""")
       this
@@ -271,7 +278,6 @@ object PageTableTeamsInternal {
         nsTeam: Team.Id,
         ewTeam: Team.Id,
         players: Option[TableManeuvers] = None,
-        suggestions: Option[List[String]] = None
     ): State = {
 
       new State(
@@ -285,8 +291,7 @@ object PageTableTeamsInternal {
         players.getOrElse(originalNames.tableManeuvers),
         None,
         None,
-        false,
-        suggestions
+        false
       )
     }
 
@@ -618,8 +623,8 @@ object PageTableTeamsInternal {
           showpos
         ) = args
 
-        val busy = state.gettingNames
-        val names = state.getSuggestions
+        val busy = NamesStore.isBusy
+        val names = NamesStore.getNames
         val team = state.getTeam(nsew)
         val playername = state.players.find(nsew)
 
@@ -648,21 +653,27 @@ object PageTableTeamsInternal {
                 .toTagMod
             ).toTagMod
           } else {
-            <.div(
-              dupStyles.inputTableNames,
-              ComboboxOrInput(
-                setPlayer,
-                noNull(playername),
-                names,
-                "startsWith",
-                tabindex,
-                "I_" + nsew.pos,
-                msgEmptyList = "No suggested names",
-                msgEmptyFilter = "No names matched",
-                busy = busy
-              ),
-              BaseStyles.highlight(required = !playerValid(playername))
+            EnterName(
+              "I_" + nsew.pos,
+              playername,
+              tabindex,
+              setPlayer
             )
+            // <.div(
+            //   dupStyles.inputTableNames,
+            //   Combobox.create(
+            //     setPlayer,
+            //     noNull(playername),
+            //     names,
+            //     "startsWith",
+            //     tabindex,
+            //     "I_" + nsew.pos,
+            //     msgEmptyList = "No suggested names",
+            //     msgEmptyFilter = "No names matched",
+            //     busy = busy
+            //   ),
+            //   BaseStyles.highlight(required = !playerValid(playername))
+            // )
           }
         )
       })
@@ -830,7 +841,6 @@ object PageTableTeamsInternal {
     val reset: Callback = scope.modState((s, props) =>
       State
         .create(props)
-        .copy(nameSuggestions = s.nameSuggestions)
         .logState("PageTableTeams.Backend.reset")
     )
 
@@ -862,7 +872,7 @@ object PageTableTeamsInternal {
             score.tables.get(props.page.tableid) match {
               case Some(rounds) =>
                 val readonly =
-                  state.originalNames.isAllValid && !props.page.editPlayers
+                  state.originalNames.isAllValid
                 rounds.find { r =>
                   r.round == props.page.round
                 } match {
@@ -877,7 +887,7 @@ object PageTableTeamsInternal {
                       <.div(
                         dupStyles.divTableNamesPage,
                         <.p(
-                          "Round " + props.page.round + " not found on Table " + props.page.tableid.toNumber
+                          s"Round ${props.page.round} not found on Table ${props.page.tableid.toNumber}"
                         ),
                         <.p(
                           Button(
@@ -897,7 +907,7 @@ object PageTableTeamsInternal {
                   header(props, "../help/duplicate/enterscorekeepername.html"),
                   <.div(
                     dupStyles.divTableNamesPage,
-                    <.p("Table " + props.page.tableid.toNumber + " not found"),
+                    <.p(s"Table ${props.page.tableid.toNumber} not found"),
                     <.p(
                       Button(
                         baseStyles.footerButton,
@@ -1062,11 +1072,15 @@ object PageTableTeamsInternal {
         props: Props,
         state: State
     ): (Callback, Boolean, TagMod, Option[String], Option[String]) = {
-      val valid =
+      val validSelection =
         state.scorekeeperName.isDefined && state.scorekeeperPosition.isDefined
-      val (div, helppage, errormsg) = {
-        if (state.names.isAllValid) renderSelectScorekeeper(props, state, valid)
-        else renderEnterScorekeeper(props, state, valid)
+      val (valid, (div, helppage, errormsg)) = {
+        if (state.names.isAllValid) {
+          val valid = validSelection && state.players.isPlayerValidDuplicate(state.scorekeeperName.get, state.scorekeeperPosition.get)
+          (valid, renderSelectScorekeeper(props, state, valid))
+        } else {
+          (validSelection, renderEnterScorekeeper(props, state, validSelection))
+        }
       }
 
       (setScorekeeper, valid, div, helppage, errormsg)
@@ -1077,54 +1091,22 @@ object PageTableTeamsInternal {
         state: State,
         valid: Boolean
     ): (TagMod, Option[String], Option[String]) = {
-      val names = state.getSuggestions
-      val busy = state.gettingNames
       val playername = state.scorekeeperName.getOrElse("")
       val np = noNull(playername)
       val errormsg =
         if (valid) None
         else if (state.scorekeeperName.isEmpty)
           Some("Please enter scorekeeper's name")
-        else if (state.scorekeeperPosition.isEmpty)
+        else // if (state.scorekeeperPosition.isEmpty)
           Some("Please select scorekeeper's position")
-        else Some("Unknown error")
+//        else Some("Unknown error")
       (
-        <.div(
-          <.h1("Enter scorekeeper:"),
-          <.div(
-            dupStyles.inputTableNames,
-            ComboboxOrInput(
-              setScorekeeperName,
-              np,
-              names,
-              "startsWith",
-              1,
-              "Scorekeeper",
-              msgEmptyList = "No suggested names",
-              msgEmptyFilter = "No names matched",
-              busy = busy
-            ),
-            BaseStyles.highlight(required = state.scorekeeperName.isEmpty)
-          ),
-          <.h1("Enter scorekeeper's position:"),
-          (North :: South :: East :: West :: Nil)
-            .map(pos => {
-              val selected = state.scorekeeperPosition match {
-                case Some(sk) => sk == pos
-                case None     => false
-              }
-              Button(
-                baseStyles.footerButton,
-                "SK_" + pos.pos,
-                pos.name,
-                ^.onClick --> setScorekeeperPosition(pos),
-                BaseStyles.highlight(
-                  selected = selected,
-                  required = state.scorekeeperPosition.isEmpty
-                )
-              )
-            })
-            .toTagMod
+        EnterScorekeeper(
+          name = np,
+          setScoreKeeper = setScorekeeperName,
+          tabIndex = -1,
+          selected = state.scorekeeperPosition,
+          setScoreKeeperPosition = setScorekeeperPosition
         ),
         Some("../help/duplicate/enterscorekeepername.html"),
         errormsg
@@ -1146,56 +1128,26 @@ object PageTableTeamsInternal {
         if (valid) None
         else if (state.scorekeeperName.isEmpty)
           Some("Please select scorekeeper")
-        else if (state.scorekeeperPosition.isEmpty)
+        else // if (state.scorekeeperPosition.isEmpty)
           Some("Please select scorekeeper's position")
-        else Some("Unknown error")
+        // else Some("Unknown error")
+
       (
-        <.div(
-          <.h1("Enter scorekeeper:"),
-          state.players.sortedPlayers
-            .map(p => {
-              val selected = state.scorekeeperName match {
-                case Some(sk) => sk == p
-                case None     => false
-              }
-              AppButton(
-                "P_" + p,
-                p,
-                bwidth,
-                ^.onClick --> setScorekeeperName(p),
-                BaseStyles.highlight(
-                  selected = selected,
-                  required = state.scorekeeperName.isEmpty
-                )
-              )
-            })
-            .toTagMod,
-          <.h1("Enter scorekeeper's position:"),
-          state.scorekeeperName match {
-            case Some(sk) =>
-              val skpos = state.players.find(sk).get
-              val partner = state.players.partnerOfPosition(skpos)
-              (skpos :: partner :: Nil)
-                .map(pos => {
-                  val selected = state.scorekeeperPosition match {
-                    case Some(sk) => sk == pos
-                    case None     => false
-                  }
-                  Button(
-                    baseStyles.footerButton,
-                    "SK_" + pos.pos,
-                    pos.name,
-                    ^.onClick --> setScorekeeperPosition(pos),
-                    BaseStyles.highlight(
-                      selected = selected,
-                      required = state.scorekeeperPosition.isEmpty
-                    )
-                  )
-                })
-                .toTagMod
-            case None =>
-              EmptyVdom
-          }
+        SelectScorekeeper(
+          teams =
+            SelectScorekeeper.TeamData(
+              state.players.north :: state.players.south :: Nil,
+              North :: South :: Nil
+            ) ::
+            SelectScorekeeper.TeamData(
+              state.players.east :: state.players.west :: Nil,
+              East :: West :: Nil
+            ) ::
+            Nil,
+          selectedName = state.scorekeeperName,
+          setScoreKeeper = setScorekeeperName,
+          selectedPosition = state.scorekeeperPosition,
+          setScoreKeeperPosition = setScorekeeperPosition
         ),
         Some("../help/duplicate/selectscorekeepername.html"),
         errormsg
@@ -1359,15 +1311,9 @@ object PageTableTeamsInternal {
         }
       })
 
-    val namesCallback: Callback = scope.modState(s => {
-      val sug = NamesStore.getNames
-      s.copy(nameSuggestions = Some(sug))
-    })
-
     val didMount: Callback = scope.props >>= { (p) =>
       Callback {
         logger.info("PageTableTeams.didMount")
-        NamesStore.ensureNamesAreCached(Some(namesCallback))
         DuplicateStore.addChangeListener(storeCallback)
         Controller.monitor(p.page.dupid)
       }

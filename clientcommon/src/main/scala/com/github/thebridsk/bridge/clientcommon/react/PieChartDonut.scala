@@ -5,13 +5,24 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.color.Color
 
 /**
-  * A skeleton component.
+  * A PieChartDonut component.
+  *
+  * This generates a pie chart with a hole in the middle.
+  *
+  * The slices are sized proportional to their size.
+  * The slices are colored and may have titles.
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * PieChartDonut( PieChartDonut.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * import com.github.thebridsk.color.Color
+  *
+  * PieChartDonut(
+  *   slices = List(1,1,1),
+  *   colors = List(Color("red"), Color("green"), Color("blue"))
+  *   size = 24
+  * )
+  * }}}
   *
   * @author werewolf
   */
@@ -20,14 +31,14 @@ object PieChartDonut {
   import ReactColor._
 
   /**
-    * @param size the diameter of the circle
-    * @param slices the slices to carve up the circle.
+    * the slices, colors, and sliceTitles lists must be the same size.
+    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+    *
+    * @param size the diameter of the circle in px.
+    * @param slices the slices to carve up the circle.  Each entry is the relative size of the slice.
     * @param colors the colors of the slices, must be the same size array as slices.
     * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
     * @param sliceTitles the title of slices, will be flyover.
-    * Must be the same size array as slices.
-    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
-    * Must be the same size array as slices.
     */
   case class Props(
       size: Double,
@@ -38,15 +49,20 @@ object PieChartDonut {
   )
 
   /**
-    * A pie chart.  The full circle will be used for the chart.
-    * @param size the relative area of the circle
-    * @param slices the slices to carve up the circle.  The sum of the entries MUST NOT be 0
+    * A Donut chart.  The full circle will be used for the chart.
+    *
+    * Slices, colors, and sliceTitles, if specified must all be the same size.
+    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
+    *
+    * @param size the diameter of the circle in px.
+    * @param slices the slices to carve up the circle.  Each entry is the relative size of the slice.
     * @param colors the colors of the slices, must be the same size array as slices.
     * @param chartTitle the title of the chart, will be a flyover.  Ignored if sliceTitles is specified.
     * @param sliceTitles the title of slices, will be flyover.
-    * Must be the same size array as slices.
-    * If both chartTitle and sliceTitles is specified, then sliceTitles is used.
-    * Must be the same size array as slices.
+    *
+    * @return the unmounted react component.
+    *
+    * @see See [[PieChart]] for usage.
     */
   def apply(
       size: Double,

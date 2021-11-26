@@ -21,6 +21,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Tooltip
 import com.github.thebridsk.bridge.client.pages.Pixels
 import com.github.thebridsk.bridge.clientcommon.react.reactwidgets.Localizer
 import scala.scalajs.js
+import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateModule
 
 /**
   * @author werewolf
@@ -100,7 +101,7 @@ object Bridge { // need to figure out how to use new way to call main
         val sdiv = div.nodeName
         logger.info("Bridge Scorer Starting, rendering into " + sdiv)
         NamesStore.init()
-        AppRouter(ChicagoModule, DuplicateModule, RubberModule)
+        AppRouter(ChicagoModule, DuplicateModule, RubberModule, IndividualDuplicateModule)
           .router()
           .renderIntoDOM(div)
       } catch {

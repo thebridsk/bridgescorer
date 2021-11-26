@@ -93,8 +93,9 @@ case class MatchChicagoV3(
     } else {
       val time = SystemTime.currentTimeMillis()
       copy(
-        id = newId, /* created=if (forCreate) time; else created, */ updated =
-          time
+        id = newId,
+        // created=if (forCreate) time; else created,
+        updated = time
       )
     }
   }
@@ -127,7 +128,10 @@ case class MatchChicagoV3(
 
   def setRounds(rounds: Map[String, Round]): MatchChicago = {
     val rs = rounds.values.toList.sortBy(r => r.id.toInt)
-    copy(rounds = rs)
+    copy(
+      rounds = rs,
+      updated = SystemTime.currentTimeMillis()
+    )
   }
 
   def updateRound(round: Round): MatchChicago = {
@@ -141,7 +145,10 @@ case class MatchChicagoV3(
       }
     }
     if (found) {
-      copy(rounds = newrs)
+      copy(
+        rounds = newrs,
+        updated = SystemTime.currentTimeMillis()
+      )
     } else {
       throw new IllegalArgumentException(
         s"Round ${round.id} not found in match ${id}"
@@ -157,7 +164,10 @@ case class MatchChicagoV3(
       )
     }
     val newrs = rounds.take(last)
-    copy(rounds = newrs)
+    copy(
+      rounds = newrs,
+      updated = SystemTime.currentTimeMillis()
+    )
   }
 
   def modifyRound(r: Round): MatchChicagoV3 = {
@@ -243,7 +253,11 @@ case class MatchChicagoV3(
         (ac._1 ::: List(v._1), ac._2 || v._2)
       }
     if (modified || pmodified) {
-      Some(copy(rounds = rs, players = nps))
+      Some(copy(
+        rounds = rs,
+        players = nps,
+        updated = SystemTime.currentTimeMillis()
+      ))
     } else {
       None
     }
@@ -258,7 +272,10 @@ case class MatchChicagoV3(
     if (!isConvertableToChicago5)
       throw new IllegalArgumentException("Number of players must be 4")
     val np = players ::: List(extraPlayer)
-    copy(players = np)
+    copy(
+      players = np,
+      updated = SystemTime.currentTimeMillis()
+    )
   }
 
   def setGamesPerRound(ngamesPerRound: Int): MatchChicagoV3 =
@@ -320,7 +337,10 @@ case class MatchChicagoV3(
   @Schema(hidden = true)
   def setQuintet(simple: Boolean): MatchChicagoV3 = {
     if (gamesPerRound != 0 || !rounds.isEmpty) this
-    setGamesPerRound(1).copy(simpleRotation = simple)
+    setGamesPerRound(1).copy(
+      simpleRotation = simple,
+      updated = SystemTime.currentTimeMillis()
+    )
   }
 
   def convertToCurrentVersion: (Boolean, MatchChicago) = {

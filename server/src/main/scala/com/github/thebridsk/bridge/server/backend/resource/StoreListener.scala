@@ -16,6 +16,7 @@ import StoreListenerManager._
 
 trait StoreListenerManager {
   private var listeners = Set[StoreListener]()
+  private var lastSeq = -1
 
   def notify(f: StoreListener => Unit): Unit = {
     listeners.foreach(f)
@@ -31,14 +32,29 @@ trait StoreListenerManager {
 
   def notify(context: ChangeContext): Unit = {
     log.fine(s"Notifying change to ${listeners.size} listeners: $context")
-    context.getSpecificChange() match {
-      case Some(d) =>
-        d match {
-          case cc: CreateChangeContext => notify((l) => l.create(context))
-          case uc: UpdateChangeContext => notify((l) => l.update(context))
-          case dc: DeleteChangeContext => notify((l) => l.delete(context))
-        }
-      case None =>
+
+    def donotify() = {
+      context.getSpecificChange() match {
+        case Some(d) =>
+          d match {
+            case cc: CreateChangeContext => notify((l) => l.create(context))
+            case uc: UpdateChangeContext => notify((l) => l.update(context))
+            case dc: DeleteChangeContext => notify((l) => l.delete(context))
+          }
+        case None =>
+      }
     }
+
+    // val doit = synchronized {
+    //   if (lastSeq < context.getSeq()) {
+    //     lastSeq = context.getSeq()
+    //     true
+    //   } else {
+    //     false
+    //   }
+    // }
+    // if (doit) donotify()
+
+    donotify()
   }
 }

@@ -23,8 +23,7 @@ object BldBridgeClientApi {
 //    "com.github.thebridsk.bridge.clientapi.test.TestColor" ::
     Nil
 
-  lazy val `bridgescorer-clientapi` = project
-    .in(file("clientapi"))
+  lazy val `bridgescorer-clientapi` = Project("clientapi", file("clientapi"))
     .configure(
       commonSettings,
       noTests(true),

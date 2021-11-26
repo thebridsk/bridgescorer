@@ -70,8 +70,10 @@ object PageHand {
       honorsPlayer: Option[PlayerPosition] = None,
       helppage: Option[String] = None,
       picture: Option[String] = None,
-      supportPicture: Boolean = false
-  ) = // scalafix:ok ExplicitResultTypes; ReactComponent
+      supportPicture: Boolean = false,
+      playingDuplicate: Boolean = false
+  ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
+    logger.fine(s"PageHand.apply(): contract=$contract")
     component(
       Props(
         contract.withScoring,
@@ -86,9 +88,11 @@ object PageHand {
         honorsPlayer,
         helppage,
         picture,
-        supportPicture
+        supportPicture,
+        playingDuplicate
       )
     )
+  }
 
   /**
     * Constructor for entering a new hand
@@ -130,7 +134,8 @@ object PageHand {
       honorsPlayer: Option[PlayerPosition] = None,
       helppage: Option[String] = None,
       picture: Option[String] = None,
-      supportPicture: Boolean = false
+      supportPicture: Boolean = false,
+      playingDuplicate: Boolean = false
   ) = // scalafix:ok ExplicitResultTypes; ReactComponent
     apply(
       Contract(
@@ -166,7 +171,8 @@ object PageHand {
       honorsPlayer = honorsPlayer,
       helppage = helppage,
       picture = picture,
-      supportPicture = supportPicture
+      supportPicture = supportPicture,
+      playingDuplicate = playingDuplicate
     )
 
   var scorekeeper: PlayerPosition = North
@@ -198,7 +204,8 @@ object PageHandInternal {
       honorsPlayer: Option[PlayerPosition] = None,
       helppage: Option[String] = None,
       picture: Option[String] = None,
-      supportPicture: Boolean = false
+      supportPicture: Boolean = false,
+      playingDuplicate: Boolean = false
   )
 
   /**
@@ -422,10 +429,11 @@ object PageHandInternal {
     val kickRefresh = scope.forceUpdate
 
     val ok: Callback = scope.stateProps { (state, props) =>
+      val c = props.contract
       props.callbackWithHonors
         .map { cb =>
           cb(
-            state.currentcontract,
+            state.currentcontract.setPlayers(c.north, c.south, c.east, c.west),
             state.picture,
             state.removePicture,
             state.honors.getOrElse(0),
@@ -434,7 +442,7 @@ object PageHandInternal {
         }
         .getOrElse {
           props.callbackOk(
-            state.currentcontract,
+            state.currentcontract.setPlayers(c.north, c.south, c.east, c.west),
             state.picture,
             state.removePicture
           )
@@ -442,6 +450,8 @@ object PageHandInternal {
     }
 
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+      logger.fine(s"PageHand.render(): props.contract=${props.contract}")
+      logger.fine(s"PageHand.render(): props.currentcontract=${state.currentcontract}")
       if (state.changeScorekeeper) renderChangeScorekeeper(props, state)
       else renderHand(props, state)
     }
@@ -557,10 +567,10 @@ object PageHandInternal {
         SectionHeader(
           contract.scoringSystem,
           state.declarer,
-          contract.north,
-          contract.south,
-          contract.east,
-          contract.west,
+          props.contract.north,
+          props.contract.south,
+          props.contract.east,
+          props.contract.west,
           contract.nsVul,
           contract.ewVul,
           setDeclarer,

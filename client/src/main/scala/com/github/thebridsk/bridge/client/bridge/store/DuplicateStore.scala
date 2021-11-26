@@ -310,6 +310,7 @@ object DuplicateStore extends ChangeListenable {
               }
             case ActionUpdatePicture(dupid, boardid, handid, picture) =>
               val key = (boardid, handid)
+              logger.fine(s"Trying to update picture on ${monitoredId} with ${msg}")
               monitoredId.foreach { monitored =>
                 if (dupid == monitored) {
                   picture match {
@@ -322,6 +323,7 @@ object DuplicateStore extends ChangeListenable {
                 }
               }
             case ActionUpdatePictures(dupid, picts) =>
+              logger.fine(s"Trying to update pictures on ${monitoredId} with ${msg}")
               monitoredId.foreach { monitored =>
                 if (dupid == monitored) {
                   pictures = picts.map { p =>

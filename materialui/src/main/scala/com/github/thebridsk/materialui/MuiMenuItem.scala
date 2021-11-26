@@ -6,8 +6,6 @@ import scala.scalajs.js.annotation._
 
 @js.native
 trait MenuItemProps extends ListItemProps {
-  val onClick: js.UndefOr[(ReactEvent) => Unit] = js.native
-
 }
 object MenuItemProps extends PropsFactory[MenuItemProps] {
 
@@ -38,7 +36,7 @@ object MenuItemProps extends PropsFactory[MenuItemProps] {
     *                  Default: false
     * @param id the id attribute value of the element
     * @param className css class name to add to element
-    * @param onClick
+    * @param onClick the click handler
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: MenuItemProps](
@@ -76,6 +74,7 @@ object MenuItemProps extends PropsFactory[MenuItemProps] {
       selected,
       id,
       className,
+      onClick,
       additionalProps
     )
 

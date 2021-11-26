@@ -29,8 +29,6 @@ object PagePlayers {
       east: String,
       west: String,
       dealer: Option[PlayerPosition],
-      gotNames: Boolean = false,
-      names: List[String] = Nil,
       chicago5: Boolean = false,
       quintet: Boolean = false,
       simpleRotation: Boolean = false,

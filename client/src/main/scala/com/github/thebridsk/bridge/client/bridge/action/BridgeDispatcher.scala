@@ -14,10 +14,15 @@ import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
-import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Dispatcher
 import com.github.thebridsk.bridge.data.DuplicatePicture
 import com.github.thebridsk.bridge.data.Board
+import com.github.thebridsk.bridge.data.IndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
+import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.bridge.individual.{ DuplicateSummary => IDuplicateSummary }
+import com.github.thebridsk.bridge.data.IndividualMovement
 
 object BridgeDispatcher extends Dispatcher {
   val logger: Logger = Logger("bridge.BridgeDispatcher")
@@ -28,6 +33,13 @@ object BridgeDispatcher extends Dispatcher {
   }
 
   def stop(): Unit = dispatcher.dispatch(ActionStop())
+
+  def startIndividualDuplicate(dupid: IndividualDuplicate.Id): Unit = {
+    logger.info("Setting up store for IndividualDuplicate " + dupid)
+    dispatcher.dispatch(ActionStartIndividualDuplicate(dupid))
+  }
+
+  def stopIndividualDuplicate(): Unit = dispatcher.dispatch(ActionStopIndividualDuplicate())
 
   def updateDuplicateSummary(
       importId: Option[String],
@@ -79,6 +91,49 @@ object BridgeDispatcher extends Dispatcher {
       pictures: List[DuplicatePicture]
   ): Unit = dispatcher.dispatch(ActionUpdatePictures(dupid, pictures))
 
+  def updateIndividualDuplicateSummary(
+      importId: Option[String],
+      summary: List[IDuplicateSummary]
+  ): Unit = dispatcher.dispatch(ActionUpdateIndividualDuplicateSummary(importId, summary))
+
+  def updateIndividualDuplicateSummaryItem(
+      importId: Option[String],
+      summary: IDuplicateSummary
+  ): Unit =
+    dispatcher.dispatch(ActionUpdateIndividualDuplicateSummaryItem(importId, summary))
+
+  def updateIndividualDuplicateSummaryDemoMatch(
+      importId: Option[String],
+      summary: List[MatchDuplicate]
+  ): Unit =
+    dispatcher.dispatch(
+      ActionUpdateIndividualDuplicateSummaryDemoMatch(importId, summary)
+    )
+
+  def updateIndividualDuplicateSummaryDemoMatchItem(
+      importId: Option[String],
+      summary: MatchDuplicate
+  ): Unit =
+    dispatcher.dispatch(
+      ActionUpdateIndividualDuplicateSummaryDemoMatchItem(importId, summary)
+    )
+
+  def updateIndividualDuplicate(duplicate: IndividualDuplicate): Unit =
+    dispatcher.dispatch(ActionUpdateIndividualDuplicate(duplicate))
+  def updateIndividualDuplicateHand(dupid: IndividualDuplicate.Id, hand: IndividualDuplicateHand): Unit =
+    dispatcher.dispatch(ActionUpdateIndividualDuplicateHand(dupid, hand))
+  def updateIndividualPicture(
+      dupid: IndividualDuplicate.Id,
+      boardid: IndividualBoard.Id,
+      handid: IndividualDuplicateHand.Id,
+      picture: Option[IndividualDuplicatePicture]
+  ): Unit =
+    dispatcher.dispatch(ActionUpdateIndividualPicture(dupid, boardid, handid, picture))
+  def updateIndividualPictures(
+      dupid: IndividualDuplicate.Id,
+      pictures: List[IndividualDuplicatePicture]
+  ): Unit = dispatcher.dispatch(ActionUpdateIndividualPictures(dupid, pictures))
+
   def createBoardSet(boardSet: BoardSet): Unit =
     dispatcher.dispatch(ActionCreateBoardSet(boardSet))
   def deleteBoardSet(boardSetId: BoardSet.Id): Unit =
@@ -97,12 +152,22 @@ object BridgeDispatcher extends Dispatcher {
   def updateAllMovement(movements: List[Movement]): Unit =
     dispatcher.dispatch(ActionUpdateAllMovement(movements))
 
+  def createIndividualMovement(movement: IndividualMovement): Unit =
+    dispatcher.dispatch(ActionCreateIndividualMovement(movement))
+  def deleteIndividualMovement(movementId: IndividualMovement.Id): Unit =
+    dispatcher.dispatch(ActionDeleteIndividualMovement(movementId))
+  def updateIndividualMovement(movement: IndividualMovement): Unit =
+    dispatcher.dispatch(ActionUpdateIndividualMovement(movement))
+  def updateAllIndividualMovement(movements: List[IndividualMovement]): Unit =
+    dispatcher.dispatch(ActionUpdateAllIndividualMovement(movements))
+
   def updateAllBoardSetAndMovements(
       boardSets: List[BoardSet],
-      movements: List[Movement]
+      movements: List[Movement],
+      individualmovements: List[IndividualMovement]
   ): Unit =
     dispatcher.dispatch(
-      ActionUpdateAllBoardsetsAndMovement(boardSets, movements)
+      ActionUpdateAllBoardsetsAndMovement(boardSets, movements, individualmovements)
     )
 
   def updateChicagoSummary(
@@ -210,8 +275,5 @@ object BridgeDispatcher extends Dispatcher {
       callback: Option[MatchRubber => Unit] = None
   ): Unit =
     dispatcher.dispatch(ActionUpdateRubberHand(rubid, handid, hand, callback))
-
-  def updateServerURL(urls: ServerURL): Unit =
-    dispatcher.dispatch(ActionUpdateServerURLs(urls))
 
 }

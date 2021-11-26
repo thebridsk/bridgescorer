@@ -180,6 +180,10 @@ object Controller extends {
           BridgeDispatcher.updatePicture(dupid, boardid, handid, picture)
         case Protocol.UpdateDuplicatePictures(dupid, pictures) =>
           BridgeDispatcher.updatePictures(dupid, pictures)
+        case _: Protocol.UpdateIndividualDuplicate     =>
+        case _: Protocol.UpdateIndividualDuplicateHand =>
+        case _: Protocol.UpdateIndividualDuplicatePicture        =>
+        case _: Protocol.UpdateIndividualDuplicatePictures       =>
         case Protocol.NoData(_)                  =>
         case Protocol.UpdateChicago(_)           =>
         case Protocol.UpdateChicagoRound(_, _)   =>

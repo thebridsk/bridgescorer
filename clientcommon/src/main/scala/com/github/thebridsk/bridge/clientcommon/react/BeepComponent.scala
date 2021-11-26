@@ -12,39 +12,79 @@ import com.github.thebridsk.materialui.MuiMenuItem
 import com.github.thebridsk.bridge.clientcommon.logger.Info
 
 /**
-  * A skeleton component.
+  * A component that manages beeps by the application.
+  * This component can provide a MuiMenuItem that toggles the beep.
+  * This component has 2 buttons, to enable and disable the beep.
+  * Either or both these can be used.
   *
-  * To use, just code the following:
+  * When running on an iPad, the first beep must be enabled by a user event.
+  * Any beeps that are requested would not sound until one was initiated by
+  * a user event.
   *
-  * <pre><code>
-  * BeepComponent( BeepComponent.Props( ... ) )
-  * </code></pre>
+  * To use the 2 buttons:
+  *
+  * {{{
+  * def showButtons(): Boolean = { ... }
+  *
+  * BeepComponent(showButtons _)
+  * }}}
+  *
+  * The buttons will be in a div element.
+  * See the [[apply]] method for a description of the arguments.
+  *
+  * The component also has a menu item that allows the beep to be turned on and off.
+  *
+  * {{{
+  * def beepChanged(): Unit = { scope.withEffectsImpure.forceUpdate }
+  *
+  * BeepComponent.getMenuItem(beepChanged _)
+  * }}}
+  *
+  * See the [[getMenuItem]] method for a description of the arguments.
+  *
+  * To play a beep:
+  *
+  * {{{
+  * BeepComponent.beep()
+  * }}}
   *
   * @author werewolf
   */
 object BeepComponent {
-  import BeepComponentInternal._
+  import Internal._
 
   case class Props(alwaysShow: () => Boolean)
 
   private var playEnabled: Boolean = false
 
+  /**
+    * Create a component with 2 buttons, one to enable and the other to disable the beep.
+    *
+    * @param alwaysShow
+    * @return the react component
+    */
   def apply(alwaysShow: () => Boolean) =
     component(
       new Props(alwaysShow)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  private[react] def enableBeep() = {
+    /**
+      * Enable beep.  This will cause a beep.
+      */
+    def enableBeep() = {
     playEnabled = true
     log.info("Beep enabled")
     beep()
   }
 
-  private[react] def disableBeep() = {
+  def disableBeep() = {
     playEnabled = false
     log.info("Beep disabled")
   }
 
+  /**
+    * toggle the beep.  If the beep is enabled, then a beep will play.
+    */
   def toggleBeep(): Unit = {
     playEnabled = !playEnabled
     log.info(s"Beep playEnabled=$playEnabled")
@@ -53,6 +93,9 @@ object BeepComponent {
 
   def isPlayEnabled = playEnabled
 
+  /**
+    * Play the sound for the beep.
+    */
   def beep(): Unit = {
     if (playEnabled) {
       try {
@@ -69,11 +112,17 @@ object BeepComponent {
     }
   }
 
-  def toggle(cb: () => Unit)(e: ReactEvent): Unit = {
+  private def toggle(cb: () => Unit)(e: ReactEvent): Unit = {
     toggleBeep()
     cb()
   }
 
+  /**
+    * Get a MUI MenuItem component that toggles the beep
+    *
+    * @param cb a callback that is called when the menu item is clicked.
+    * @return the react component, MuiMenuItem
+    */
   def getMenuItem(cb: () => Unit): VdomNode = {
     MuiMenuItem(
       id = "Beep",
@@ -94,59 +143,59 @@ object BeepComponent {
       }
     )
   }
-}
 
-object BeepComponentInternal {
-  import BeepComponent._
+  protected object Internal {
 
-  val log: Logger = Logger("bridge.BeepComponent")
+    val log: Logger = Logger("bridge.BeepComponent")
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause State to leak.
-    */
-  case class State(displayButtons: Boolean = true)
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause State to leak.
+      */
+    case class State(displayButtons: Boolean = true)
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
+    /**
+      * Internal state for rendering the component.
+      *
+      * I'd like this class to be private, but the instantiation of component
+      * will cause Backend to leak.
+      */
+    class Backend(scope: BackendScope[Props, State]) {
 
-    val enablePlay: Callback = scope.modState(s => {
-      enableBeep()
-      s.copy(displayButtons = false)
-    })
+      val enablePlay: Callback = scope.modState(s => {
+        enableBeep()
+        s.copy(displayButtons = false)
+      })
 
-    val hideButtons: Callback = scope.modState(s => {
-      disableBeep()
-      s.copy(displayButtons = false)
-    })
+      val hideButtons: Callback = scope.modState(s => {
+        disableBeep()
+        s.copy(displayButtons = false)
+      })
 
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-      <.div(
-        (props.alwaysShow() || state.displayButtons) ?= <.span(
-          AppButton(
-            "enableBeep",
-            "Enable Beeps",
-            ^.onClick --> enablePlay,
-            BaseStyles.highlight(selected = isPlayEnabled)
-          ),
-          AppButton("disableBeep", "Disable Beeps", ^.onClick --> hideButtons)
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+        <.div(
+          (props.alwaysShow() || state.displayButtons) ?= <.span(
+            AppButton(
+              "enableBeep",
+              "Enable Beeps",
+              ^.onClick --> enablePlay,
+              BaseStyles.highlight(selected = isPlayEnabled)
+            ),
+            AppButton("disableBeep", "Disable Beeps", ^.onClick --> hideButtons)
+          )
         )
-      )
+      }
     }
-  }
 
-  private[react] val component = ScalaComponent
-    .builder[Props]("BeepComponent")
-    .initialStateFromProps { props => State() }
-    .backend(new Backend(_))
-    .renderBackend
-    .build
+    private[react] val component = ScalaComponent
+      .builder[Props]("BeepComponent")
+      .initialStateFromProps { props => State() }
+      .backend(new Backend(_))
+      .renderBackend
+      .build
+
+  }
 
 }

@@ -55,6 +55,10 @@ import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateDuplicatePictur
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.AttributeKey
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePictures
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicatePicture
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicate
+import com.github.thebridsk.bridge.data.websocket.Protocol.UpdateIndividualDuplicateHand
 
 class TestDuplicateRestSpec
     extends AnyFlatSpec
@@ -193,6 +197,26 @@ class TestDuplicateRestSpec
         case UpdateDuplicate(mp) =>
           assert(mat.equalsIgnoreModifyTime(mp))
           false
+        case upict: UpdateIndividualDuplicatePicture =>
+          testlog.debug(
+            "Ignored unexpected response from the monitor: " + upict
+          )
+          true
+        case upict: UpdateIndividualDuplicatePictures =>
+          testlog.debug(
+            "Ignored unexpected response from the monitor: " + upict
+          )
+          true
+        case uboard: UpdateIndividualDuplicateHand =>
+          testlog.debug(
+            "Ignored unexpected response from the monitor: " + uboard
+          )
+          true
+        case UpdateIndividualDuplicate(mp) =>
+          testlog.debug(
+            "Ignored unexpected response from the monitor: " + mp
+          )
+          true
         case uboard: UpdateChicagoRound =>
           testlog.debug(
             "Ignored unexpected response from the monitor: " + uboard
@@ -257,6 +281,28 @@ class TestDuplicateRestSpec
         testlog.debug("mat: " + mat)
         testlog.debug("mp : " + mp)
         assert(mat.equalsIgnoreModifyTime(mp))
+
+      case upict: UpdateIndividualDuplicatePicture =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + upict
+        )
+        true
+      case upict: UpdateIndividualDuplicatePictures =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + upict
+        )
+        true
+      case uboard: UpdateIndividualDuplicateHand =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + uboard
+        )
+        true
+      case UpdateIndividualDuplicate(mp) =>
+        testlog.debug(
+          "Ignored unexpected response from the monitor: " + mp
+        )
+        true
+
       case pj: MonitorJoined =>
         fail("Unexpected response from the monitor: " + pj)
       case pl: MonitorLeft =>
@@ -309,6 +355,14 @@ class TestDuplicateRestSpec
       case uboard: UpdateDuplicateHand =>
         fail("Unexpected response from the monitor: " + uboard)
       case UpdateDuplicate(mp) =>
+        fail("Unexpected response from the monitor: " + mp)
+      case upict: UpdateIndividualDuplicatePicture =>
+        fail("Unexpected response from the monitor: " + upict)
+      case upict: UpdateIndividualDuplicatePictures =>
+        fail("Unexpected response from the monitor: " + upict)
+      case uboard: UpdateIndividualDuplicateHand =>
+        fail("Unexpected response from the monitor: " + uboard)
+      case UpdateIndividualDuplicate(mp) =>
         fail("Unexpected response from the monitor: " + mp)
       case pl: MonitorLeft =>
         fail("Unexpected response from the monitor: " + pl)
@@ -363,6 +417,14 @@ class TestDuplicateRestSpec
         fail("Unexpected response from the monitor: " + uboard)
       case UpdateDuplicate(mp) =>
         fail("Unexpected response from the monitor: " + mp)
+      case upict: UpdateIndividualDuplicatePicture =>
+        fail("Unexpected response from the monitor: " + upict)
+      case upict: UpdateIndividualDuplicatePictures =>
+        fail("Unexpected response from the monitor: " + upict)
+      case uboard: UpdateIndividualDuplicateHand =>
+        fail("Unexpected response from the monitor: " + uboard)
+      case UpdateIndividualDuplicate(mp) =>
+        fail("Unexpected response from the monitor: " + mp)
       case pl: MonitorLeft =>
         testlog.debug("Got the left: " + pl)
       case pj: MonitorJoined =>
@@ -407,7 +469,7 @@ class TestDuplicateRestSpec
         mediaType mustBe MediaTypes.`application/json`
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe "http://example.com/duplicates/M1"
+            h.value() mustBe "http://example.com/v1/rest/duplicates/M1"
           case None =>
             fail("Location header was not found in response")
         }
@@ -856,7 +918,7 @@ class TestDuplicateRestSpec
         status mustBe Created
         header("Location") match {
           case Some(h) =>
-            h.value() mustBe "http://example.com/duplicates/M1/boards/B2/hands/T3"
+            h.value() mustBe "http://example.com/v1/rest/duplicates/M1/boards/B2/hands/T3"
           case None =>
             fail("Location header was not found in response")
         }

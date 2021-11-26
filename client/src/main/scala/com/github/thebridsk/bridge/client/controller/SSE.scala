@@ -106,7 +106,7 @@ class SSE[T <: Id[_]](urlprefix: String, listener: SECListener[T])
   private def esOnMessage(dupid: T)(me: MessageEvent): Unit = {
     import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
     try {
-      logger.fine(s"esOnMessage received ${me.data}")
+      logger.fine(s"esOnMessage received on ${urlprefix}: ${me.data}")
       resetESTimeout(dupid)
       me.data match {
         case s: String =>

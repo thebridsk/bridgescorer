@@ -45,6 +45,7 @@ object BldBridge {
         |  distribution:travis    run build that is run in Travis-CI
         |  distribution:travis1   run build that is run in step 1 in Travis-CI
         |  distribution:travis2   run build that is run in step 2 in Travis-CI
+        |  distribution:mydist    runs a clean build with alltests
         |  myrelease-with-defaults do a release using defaults
         |  bridgescalafix         run scalafix on all projects with semanticDB, runs bridgescorer-fullserver/test
         |Note, the following will fail:
@@ -95,12 +96,15 @@ object BldBridge {
         |  BuildForHelpOnly            if defined only tests that generate help images are run
         |  ReleaseFromBranch <branch>  current branch when release is executed, default "main"
         |  UseLogFilePrefix  <path>    prefix to use for logging when running tests
+        |  ChromeNoSandbox <bool>      use --no-sandbox when starting chrome, default is false
+        |  ParallelUtilsUseSerial <bool> use serial testing if true, default is false on windows and true on Mac and linux
+        |  WebDriverDebug <bool>       turn on chromedriver or geckodriver debugging, default is false
         |
         |Environment Variables when using server in tests
-        |  UseBridgeScorerURL              Override URL of server, default: http://localhost:8081
-        |  UseBridgeScorerScheme           Override schema of servr URL, default: http
-        |  UseBridgeScorerHost             Override host of server URL, default: localhost
-        |  UseBridgeScorerPort             Override port of server URL, default: 8081
+        |  TestServerStart                 indicates whether test starts the server, default: true
+        |  TestServerListen                the protocol, host and port the server listens on, default: http://localhost:8081
+        |  TestServerURL                   the URL to connect to the server, must end in "/", default: same as TestServerListen
+        |  TestServerFixHostInURL          fix the host in the TestServerURL, default: false
         |  UseWebsocketLogging             use websockets for client logging
         |  OptRemoteLogger <file>          the remote logger configuration to use
         |  OptBrowserRemoteLogging <name>  the name of the configuration to use for browsers
@@ -288,8 +292,7 @@ object BldBridge {
     action = releaseStepTaskAggregated(mydist in Distribution in bridgescorer) // publish release notes
   )
 
-  lazy val bridgescorer: Project = project
-    .in(file("."))
+  lazy val bridgescorer: Project = Project("root", file("."))
     .aggregate(
       BldBridgeShared.sharedJVM,
       BldBridgeShared.sharedJS,
@@ -304,6 +307,7 @@ object BldBridge {
       BldBrowserPages.browserpages,
       BldColor.colorJS,
       BldColor.colorJVM,
+      BldBridgeHelp.help,
       BldBridgeScoreKeeper.bridgescorekeeper,
       BldBridgeDemo.demo
     )
@@ -478,20 +482,20 @@ object BldBridge {
                   log.info("Publishing to " + f)
                   Some(f)
                 } else {
-                  throw new RuntimeException(
+                  log.info(
                     "DistributionDirectory directory does not exist: " + f
                   )
                   None
                 }
               } else {
-                throw new RuntimeException(
-                  "DistributionDirectory property does not exist in file ~/bridgescorer/config.properties"
+                log.info(
+                  s"DistributionDirectory property does not exist in file $configfile"
                 )
                 None
               }
             } else {
-              throw new RuntimeException(
-                "file ~/bridgescorer/config.properties does not exist"
+              log.info(
+                s"Distribution file, $configfile does not exist"
               )
               None
             }
@@ -522,7 +526,19 @@ object BldBridge {
             val sourcetestjar = new File(targetdir, testjar)
             val targettestjar = new File(distdir, testjar)
 
-            IO.listFiles(distdir, GlobFilter("*.jar")).foreach { jar =>
+            val (fileassemblysha, assemblysha) = (assemblysha256 in BldBridgeScoreKeeper.bridgescorekeeper).value
+            val (filetestassemblysha, testassemblysha) = (assemblysha256 in BldBridgeScoreKeeper.bridgescorekeeper in Test).value
+            val destassemblysha = new File(distdir, assemblysha)
+            val desttestassemblysha = new File(distdir, testassemblysha)
+
+            val copyfiles = Map(
+              sourceassemblyjar.toPath -> targetassemblyjar.toPath,
+              sourcetestjar.toPath -> targettestjar.toPath,
+              fileassemblysha.toPath -> destassemblysha.toPath,
+              filetestassemblysha.toPath -> desttestassemblysha.toPath
+            )
+
+            IO.listFiles(distdir, new PatternFilter(""".+?\.jar(\.sha256)?""".r.pattern)).foreach { jar =>
               {
                 log.info("Moving jar to save: " + jar)
                 IO.move(
@@ -532,22 +548,19 @@ object BldBridge {
               }
             }
 
-            log.info("Publishing " + assemblyjar + " to " + distdir)
-            Files.copy(
-              sourceassemblyjar.toPath,
-              targetassemblyjar.toPath,
-              StandardCopyOption.REPLACE_EXISTING
-            )
-            log.info("Publishing " + testjar + " to " + distdir)
-            Files.copy(
-              sourcetestjar.toPath,
-              targettestjar.toPath,
-              StandardCopyOption.REPLACE_EXISTING
-            )
+            copyfiles.foreach { e =>
+              val (s, t) = e
+              log.info("Publishing " + assemblyjar + " to " + distdir)
+              Files.copy(
+                s,
+                t,
+                StandardCopyOption.REPLACE_EXISTING
+              )
+            }
 
             log.info("Published to " + distdir)
           case None =>
-            throw new RuntimeException("DistributionDirectory is not set")
+            log.info("DistributionDirectory is not set")
         }
 
       },

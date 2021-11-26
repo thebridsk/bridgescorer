@@ -25,8 +25,7 @@ import MyReleaseVersion._
 
 object BldBridgeServer {
 
-  lazy val `bridgescorer-server`: Project = project
-    .in(file("server"))
+  lazy val `bridgescorer-server`: Project = Project("server", file("server"))
     .configure(
       commonSettings,
       buildInfo("com.github.thebridsk.bridge.server.version", "VersionServer")
@@ -43,6 +42,9 @@ object BldBridgeServer {
       Compile / run / fork := true,
       server := {
         (run in Compile).toTask(""" --logfile "../server/logs/server.sbt.%d.%u.log" start --cache 0s --store ../server/store --diagnostics ../server/logs""").value
+      },
+      serverhelp := {
+        (run in Compile).toTask(""" --help""").value
       },
 
       mainClass in Test := Some("org.scalatest.tools.Runner"),
@@ -129,7 +131,8 @@ object BldBridgeServer {
               s""" --truststore $trustprefix"""+
               """ -v"""+
               """ --nginx"""+
-              """ --clean"""
+              """ --clean"""+
+              """ --addmachineip"""
             ).value
             info
           }

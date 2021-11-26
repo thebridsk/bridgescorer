@@ -14,14 +14,13 @@ import com.github.thebridsk.utilities.logging.Logger
 import java.nio.file
 import org.rogach.scallop.ScallopOption
 import scala.util.matching.Regex
+import com.github.thebridsk.utilities.main.MainConf
 
 class Publish
 
-object Publish extends Main {
+class PublishConf extends MainConf {
 
   import com.github.thebridsk.utilities.main.Converters._
-
-  val log: Logger = Logger[Publish]()
 
   val optionJar: ScallopOption[Path] = trailArg[Path](
     name = "jar",
@@ -35,7 +34,15 @@ object Publish extends Main {
     default = Some("target/demo")
   )
 
+}
+
+object Publish extends Main[PublishConf] {
+
+  val log: Logger = Logger[Publish]()
+
   class Exit(msg: String) extends Exception(msg)
+
+  import config._
 
   def execute(): Int = {
     // println(ClassPath.showProperties())

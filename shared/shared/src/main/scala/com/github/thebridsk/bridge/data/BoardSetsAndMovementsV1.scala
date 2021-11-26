@@ -33,7 +33,17 @@ case class BoardSetsAndMovementsV1(
         required = true
       )
     )
-    movements: List[Movement]
+    movements: List[Movement],
+    @ArraySchema(
+      minItems = 0,
+      uniqueItems = true,
+      schema = new Schema(implementation = classOf[IndividualMovement]),
+      arraySchema = new Schema(
+        description = "All the individual movements known to the server.",
+        required = true
+      )
+    )
+    individualmovements: List[IndividualMovement]
 ) {
 
   def convertToCurrentVersion: BoardSetsAndMovementsV1 = this

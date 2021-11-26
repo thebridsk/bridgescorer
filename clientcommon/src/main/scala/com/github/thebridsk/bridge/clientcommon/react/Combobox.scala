@@ -3,6 +3,7 @@ package com.github.thebridsk.bridge.clientcommon.react
 import scala.scalajs.js
 import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 
 @js.native
 trait ComboboxComponentMessagesProperty extends js.Object {
@@ -13,9 +14,9 @@ trait ComboboxComponentMessagesProperty extends js.Object {
 
 object ComboboxComponentMessagesProperty {
   def apply(
-      msgOpen: Option[String] = None,
-      msgEmptyList: Option[String] = None,
-      msgEmptyFilter: Option[String] = None
+      msgOpen: js.UndefOr[String] = js.undefined,
+      msgEmptyList: js.UndefOr[String] = js.undefined,
+      msgEmptyFilter: js.UndefOr[String] = js.undefined
   ): ComboboxComponentMessagesProperty = {
     val p = js.Dynamic.literal()
 
@@ -49,18 +50,18 @@ trait ComboboxComponentProperty extends js.Object {
 
 object ComboboxComponentProperty {
   def apply(
-      defaultValue: Option[String] = None,
-      onChange: Option[js.Any => Unit] = None,
-      data: Option[js.Array[String]] = None,
-      filter: Option[String] = None,
-      tabIndex: Option[Int] = None,
-      name: Option[String] = None,
-      caseSensitive: Option[Boolean] = None,
-      messages: Option[ComboboxComponentMessagesProperty] = None,
-      busy: Option[Boolean] = None,
-      value: Option[String] = None,
-      id: Option[String] = None,
-      containerClassName: Option[String] = None
+      defaultValue: js.UndefOr[String] = js.undefined,
+      onChange: js.UndefOr[js.Any => Unit] = js.undefined,
+      data: js.UndefOr[js.Array[String]] = js.undefined,
+      filter: js.UndefOr[String] = js.undefined,
+      tabIndex:  js.UndefOr[Int] = js.undefined,
+      name: js.UndefOr[String] = js.undefined,
+      caseSensitive: js.UndefOr[Boolean] = js.undefined,
+      messages: js.UndefOr[ComboboxComponentMessagesProperty] = js.undefined,
+      busy: js.UndefOr[Boolean] = js.undefined,
+      value: js.UndefOr[String] = js.undefined,
+      id: js.UndefOr[String] = js.undefined,
+      containerClassName: js.UndefOr[String] = js.undefined
   ): ComboboxComponentProperty = {
     val p = js.Dynamic.literal()
 
@@ -80,53 +81,107 @@ object ComboboxComponentProperty {
     p.asInstanceOf[ComboboxComponentProperty]
   }
 }
-
 @js.native
 trait Combobox extends js.Object
 
+
+/**
+ * A Combobox component.
+ *
+ * This component has an input field and a dropdown list of suggestions.
+ *
+ * This wraps the Combobox component from react-widgets,
+ * https://jquense.github.io/react-widgets/api/Combobox/
+ *
+ * Usage:
+ *
+ * {{{
+ * def onChange( v: String ): Unit = {...}
+ * val data = js.Array("Henry", "Mahitha")
+ *
+ * Combobox(
+ *   onChange = onChange _,
+ *   data = data,
+ *   value = value,
+ *   filter = "startsWith",
+ *   name = "enterName"
+ * )
+ * }}}
+ *
+ * or
+ *
+ * {{{
+ * def onChange( v: String ): Callback = Callback {...}
+ * val data = js.Array("Ben", "Paul")
+ *
+ * Combobox.create(
+ *   onChange = onChange _,
+ *   data = data,
+ *   value = value,
+ *   filter = "startsWith",
+ *   name = "enterName"
+ * )
+ * }}}
+ *
+ * @see See the [[apply]] or [[create]] method for a description of the parameters.
+ *
+ */
 object Combobox {
-  val logger: Logger = Logger("bridge.Combobox")
+  import Internal._
 
-//  @JSGlobal("ReactWidgets.Combobox")
-//  @js.native
-//  object ReactWidgetsCombobox extends js.Object
-
-  val component = JsComponent[ComboboxComponentProperty, Children.None, Null](
-    reactwidgets.Combobox
-  ) // scalafix:ok ExplicitResultTypes; ReactComponent
-
+  /**
+    * Instantiate the component.
+    *
+    * @param defaultValue - default value if the component is uncontrolled.
+    * @param onChange - A callback fired when the current value changes.
+    * @param data - An array of possible values for the Combobox.
+    *               Tip: When data is an array of objects consider specifying textField and valueField as well
+    * @param filter - Enable and customize filtering behavior for the Combobox. Specify one of the built-in
+    *                 methods ("startsWith" "endsWith" "contains") or provide a function that returns true or false
+    *                 for each passed in item (analogous to the array.filter builtin)
+    *                 You can explicitly disable filtering by setting filter to false.
+    * @param tabIndex - the tabIndex attribute value for the input element.
+    * @param name - the name attribute value for the input element.
+    * @param caseSensitive - use case sensitive compare in filter.
+    * @param msgOpen - message to display??
+    * @param msgEmptyList - message to display if data is empty.
+    * @param msgEmptyFilter - message to display if no entry in data hits the filter.
+    * @param busy - Controls the loading/busy spinner visibility. Presentational only! Useful for providing visual feedback while data is being loaded.
+    * @param value - Controls the current value of the Combobox.
+    * @param id - the id attribute value for the input element.
+    * @param containerClassName - Adds a css class to the input container element.
+    * @return the react component
+    */
   def apply(
-      defaultValue: Option[String] = None,
-      onChange: Option[js.Any => Unit] = None,
-      data: Option[js.Array[String]] = None,
-      filter: Option[String] = None,
-      tabIndex: Option[Int] = None,
-      name: Option[String] = None,
-      caseSensitive: Option[Boolean] = None,
-      msgOpen: Option[String] = None,
-      msgEmptyList: Option[String] = None,
-      msgEmptyFilter: Option[String] = None,
-      busy: Option[Boolean] = None,
-      value: Option[String] = None,
-      id: Option[String] = None,
-      containerClassName: Option[String] = None
+      defaultValue: js.UndefOr[String] = js.undefined,
+      onChange: js.UndefOr[js.Any => Unit] = js.undefined,
+      data: js.UndefOr[js.Array[String]] = js.undefined,
+      filter: js.UndefOr[String] = js.undefined,
+      tabIndex: js.UndefOr[Int] = js.undefined,
+      name: js.UndefOr[String] = js.undefined,
+      caseSensitive: js.UndefOr[Boolean] = js.undefined,
+      msgOpen: js.UndefOr[String] = js.undefined,
+      msgEmptyList: js.UndefOr[String] = js.undefined,
+      msgEmptyFilter: js.UndefOr[String] = js.undefined,
+      busy: js.UndefOr[Boolean] = js.undefined,
+      value: js.UndefOr[String] = js.undefined,
+      id: js.UndefOr[String] = js.undefined,
+      containerClassName: js.UndefOr[String] = js.undefined
   ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
 
 //    logger.info("Combobox: msgEmptyList="+msgEmptyList+", msgEmptyFilter="+msgEmptyFilter)
 
-    val messages =
+    val messages: js.UndefOr[ComboboxComponentMessagesProperty] =
       if (
         msgOpen.isDefined || msgEmptyList.isDefined || msgEmptyFilter.isDefined
       ) {
-        Some(
-          ComboboxComponentMessagesProperty(
-            msgOpen,
-            msgEmptyList,
-            msgEmptyFilter
-          )
+        ComboboxComponentMessagesProperty(
+          msgOpen,
+          msgEmptyList,
+          msgEmptyFilter
         )
       } else {
-        None
+        js.undefined
       }
     val props = ComboboxComponentProperty(
       defaultValue,
@@ -144,5 +199,81 @@ object Combobox {
     )
 
     component(props)
+  }
+
+  /**
+    * Instantiate the component.
+    *
+    * @param defaultValue - default value if the component is uncontrolled.
+    *
+    * @param callback - A callback fired when the current value changes.
+    * @param value - Controls the current value of the Combobox.
+    * @param data - An array of possible values for the Combobox.
+    *               Tip: When data is an array of objects consider specifying textField and valueField as well
+    * @param filter - Enable and customize filtering behavior for the Combobox. Specify one of the built-in
+    *                 methods ("startsWith" "endsWith" "contains") or provide a function that returns true or false
+    *                 for each passed in item (analogous to the array.filter builtin)
+    *                 You can explicitly disable filtering by setting filter to false.
+    * @param tabIndex - the tabIndex attribute value for the input element.
+    * @param name - the name attribute value for the input element.
+    * @param caseSensitive - use case sensitive compare in filter.
+    * @param msgOpen - message to display??
+    * @param msgEmptyList - message to display if data is empty.
+    * @param msgEmptyFilter - message to display if no entry in data hits the filter.
+    * @param busy - Controls the loading/busy spinner visibility. Presentational only! Useful for providing visual feedback while data is being loaded.
+    * @param id - the id attribute value for the input element.
+    * @param containerClassName - Adds a css class to the input container element.
+    * @return the react component
+    */
+  def create(
+      callback: js.UndefOr[String => Callback] = js.undefined,
+      value: js.UndefOr[String] = js.undefined,
+      data: js.UndefOr[js.Array[String]] = js.undefined,
+      filter: js.UndefOr[String] = js.undefined,
+      tabIndex: js.UndefOr[Int] = js.undefined,
+      name: js.UndefOr[String] = js.undefined,
+      caseSensitive: js.UndefOr[Boolean] = js.undefined,
+      msgOpen: js.UndefOr[String] = js.undefined,
+      msgEmptyList: js.UndefOr[String] = js.undefined,
+      msgEmptyFilter: js.UndefOr[String] = js.undefined,
+      busy: js.UndefOr[Boolean] = js.undefined,
+      id: js.UndefOr[String] = js.undefined,
+      containerClassName: js.UndefOr[String] = js.undefined
+  ) = {  // scalafix:ok ExplicitResultTypes; ReactComponent
+
+    def comboboxCB(data: js.Any): Unit = {
+      val s = data.toString()
+      logger.fine(s"Combobox.comboboxCB data=$s")
+      callback.foreach(cb => cb(s).runNow())
+    }
+
+    Combobox(
+      onChange = comboboxCB _,
+      data = data,
+      filter = filter,
+      tabIndex = tabIndex,
+      name = name,
+      caseSensitive = caseSensitive,
+      msgOpen = msgOpen,
+      msgEmptyList = msgEmptyList,
+      msgEmptyFilter = msgEmptyFilter,
+      busy = busy,
+      value = value,
+      id = id,
+      containerClassName = containerClassName.orElse(BaseStyles.baseStyles.comboboxLightDarkClass)
+    )
+  }
+
+  protected object Internal {
+    val logger: Logger = Logger("bridge.Combobox")
+
+    // @JSGlobal("ReactWidgets.Combobox")
+    // @js.native
+    // object ReactWidgetsCombobox extends js.Object
+
+    val component = JsComponent[ComboboxComponentProperty, Children.None, Null](
+      reactwidgets.Combobox
+    ) // scalafix:ok ExplicitResultTypes; ReactComponent
+
   }
 }
