@@ -234,7 +234,7 @@ class TestGraphQL
     val importfile = (dirTemp / "import.zip")
     val r = Using.resource(new FileOutputStream(importfile.toString())) {
       file =>
-        val fut = store.export(file)
+        val fut = store.doExport(file)
         Await.result(fut, 60 seconds)
     }
 

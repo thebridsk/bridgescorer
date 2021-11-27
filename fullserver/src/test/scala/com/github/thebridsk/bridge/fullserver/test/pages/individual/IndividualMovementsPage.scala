@@ -49,7 +49,7 @@ object IndividualMovementsPage {
   }
 
   val movementsIndividual: List[String] =
-    "Individual2Tables" :: Nil
+    "Individual2Tables21Boards" :: Nil
   val movementsTeams: List[String] =
     "2TablesArmonk" :: Nil
 

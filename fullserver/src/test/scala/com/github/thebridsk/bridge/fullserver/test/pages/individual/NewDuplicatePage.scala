@@ -116,7 +116,7 @@ class NewDuplicatePage(
           s"ShowB_${b}" :: (
             if (playIndividual) {
               IndividualMovementsPage.movementsIndividual.flatMap { m =>
-                if (m == "Individual2Tables" && (b == "ArmonkBoards" || b == "Result")) Nil
+                if (m == "Individual2Tables21Boards" && (b == "ArmonkBoards" || b == "Result")) Nil
                 else buttonName(b, m, true) :: Nil
               }
             } else {

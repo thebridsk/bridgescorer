@@ -77,7 +77,7 @@ object IndividualTest {
     s"${i} ${getPlayerName(i)}"
   }
 
-  val movement = "Individual2Tables"
+  val movement = "Individual2Tables21Boards"
   val boardset = "StandardBoards"
 
   case class FirstRoundBoards(

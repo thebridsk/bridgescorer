@@ -126,7 +126,7 @@ trait ImportExport {
         val byteSource: Source[ByteString, Unit] = StreamConverters
           .asOutputStream()
           .mapMaterializedValue { os =>
-            restService.export(os, filt).onComplete { tr =>
+            restService.doExport(os, filt).onComplete { tr =>
               tr match {
                 case Success(Right(list)) =>
                   try {
@@ -350,7 +350,7 @@ trait ImportExport {
       val byteSource: Source[ByteString, Unit] = StreamConverters
         .asOutputStream()
         .mapMaterializedValue { os =>
-          restService.export(os, None, true).onComplete { tr =>
+          restService.doExport(os, None, true).onComplete { tr =>
             tr match {
               case Success(Right(list)) =>
                 try {

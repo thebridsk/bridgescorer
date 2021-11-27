@@ -2942,7 +2942,7 @@ class DuplicateTestPages
 //    eventually {menu.findElemById("Export")}
     val ep = hp.clickExport.validate
 
-    val f = ep.export
+    val f = ep.doExport
 
     importZipFile = Some(f)
 

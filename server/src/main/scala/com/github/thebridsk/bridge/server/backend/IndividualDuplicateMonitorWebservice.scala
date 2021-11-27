@@ -64,30 +64,30 @@ class IndividualDuplicateMonitorWebservice(
   val routews: Route =
     get {
       pathPrefix("individualduplicates" / "ws") {
-        // logRequestResult("routews", Logging.DebugLevel) {
-        // logResult("routews", Logging.DebugLevel) {
-        handleRejections(totallyMissingResourceHandler) {
-          pathEndOrSingleSlash {
-            extractClientIP { ip =>
-              {
-                // extractRequest { request =>
-                //   request.attributes.foreach { kv =>
-                //     println( s"routews: request attribute ${kv._1} = ${kv._2}")
-                //   }
-                //   request.headers.foreach { header =>
-                //     println( s"routews: request header ${header}")
-                //   }
-                handleWebSocketMessagesForProtocol(
-                  websocketMonitor(ip),
-                  Protocol.DuplicateBridge
-                )
-                // }
+        logRequestResult("routews", Logging.DebugLevel) {
+          logResult("routews", Logging.DebugLevel) {
+            handleRejections(totallyMissingResourceHandler) {
+              pathEndOrSingleSlash {
+                extractClientIP { ip =>
+                  {
+                    // extractRequest { request =>
+                    //   request.attributes.foreach { kv =>
+                    //     println( s"routews: request attribute ${kv._1} = ${kv._2}")
+                    //   }
+                    //   request.headers.foreach { header =>
+                    //     println( s"routews: request header ${header}")
+                    //   }
+                    handleWebSocketMessagesForProtocol(
+                      websocketMonitor(ip),
+                      Protocol.DuplicateBridge
+                    )
+                    // }
+                  }
+                }
               }
             }
           }
         }
-        // }
-        // }
       }
     }
   @Path("/sse/individualduplicates/{dupId}")
