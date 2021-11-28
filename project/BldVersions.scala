@@ -53,7 +53,7 @@ object BldVersion {
 
   lazy val vScalactic = "3.2.10"      // https://github.com/scalatest/scalatest
   lazy val vScalatest = "3.2.10"      // https://github.com/scalatest/scalatest
-  lazy val vScalatestSelenium = "3.2.9.0"  // https://github.com/scalatest/scalatestplus-selenium
+  lazy val vScalatestSelenium = "3.2.10.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.13.2"         // https://github.com/junit-team/junit4
 
   lazy val vSelenium3 = "3.141.59"      // https://github.com/SeleniumHQ/selenium
