@@ -6,7 +6,7 @@ import akka.event.Logging
 import akka.event.Logging._
 import akka.http.scaladsl.server.Directives._
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import javax.ws.rs.Path
+import jakarta.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
 import scala.util.Sorting
 import com.github.thebridsk.bridge.data.MatchDuplicate
@@ -23,9 +23,9 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.headers.Header
-import javax.ws.rs.POST
-import javax.ws.rs.PUT
-import javax.ws.rs.DELETE
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.PUT
+import jakarta.ws.rs.DELETE
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
 import scala.concurrent.Future
@@ -43,7 +43,7 @@ object RestDuplicateResult {
 import RestDuplicateResult._
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
-import javax.ws.rs.GET
+import jakarta.ws.rs.GET
 
 /**
   * Rest API implementation for the board resource.

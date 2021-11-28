@@ -18,7 +18,7 @@ val vEnvJsDomNodejs = "1.1.0"      // https://github.com/scala-js/scala-js-env-j
 
 val sbtScalaJsBundlerSuffix = if (vScalaJSDefault.startsWith("0.6.")) "-sjs06" else ""  // "" - for ScalaJS 1.0 "-sjs06" for ScalaJS 0.6
 
-val vSbtAssembly = "0.15.0"        // https://github.com/sbt/sbt-assembly
+val vSbtAssembly = "1.1.0"         // https://github.com/sbt/sbt-assembly
 val vSbtGit = "1.0.2"              // https://github.com/sbt/sbt-git
 val vSbtSCoverage = "1.9.2"        // https://github.com/scoverage/sbt-scoverage
 val vSbtBuildInfo = "0.10.0"       // https://github.com/sbt/sbt-buildinfo
@@ -31,7 +31,7 @@ val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJS
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
 val vSbtScalaJsBundler = "0.20.0"  // https://github.com/scalacenter/scalajs-bundler
-val vSbtWebScalajs = "1.1.0"       // https://github.com/vmunier/sbt-web-scalajs
+val vSbtWebScalajs = "1.2.0"       // https://github.com/vmunier/sbt-web-scalajs
 
 // not used:
 
@@ -40,7 +40,7 @@ val vSbtUniDoc = "0.3.3"           // https://github.com/sbt/sbt-unidoc
 val vSbtDigest = "1.1.1"           // https://github.com/sbt/sbt-digest
 val vSbtScalaFmt="2.4.4"           // https://github.com/scalameta/sbt-scalafmt
 val vBloop = "1.4.11"              // https://github.com/scalacenter/bloop
-val vSbtScalaFix="0.9.32"          // https://github.com/scalacenter/sbt-scalafix
+val vSbtScalaFix="0.9.33"          // https://github.com/scalacenter/sbt-scalafix
 
 // The following is needed to get rid of the message
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".

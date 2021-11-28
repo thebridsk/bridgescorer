@@ -18,9 +18,9 @@ import org.openqa.selenium.SessionNotCreatedException
 import scala.annotation.tailrec
 import org.openqa.selenium.firefox.FirefoxOptions
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel
-import java.util.Base64
-import java.io.StringWriter
-import java.io.PrintWriter
+// import java.util.Base64
+// import java.io.StringWriter
+// import java.io.PrintWriter
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.support.events.EventFiringWebDriver
 import org.openqa.selenium.support.events.WebDriverEventListener
@@ -75,18 +75,18 @@ class Session(name: String = "default") extends WebDriver {
 
   private def showFirefoxProfile(fp: FirefoxProfile): Unit = {
 
-    val jsonInBase64 = fp.toJson()
-    testlog.info(s"seleniumTesting profile is\n${jsonInBase64}")
+    // val jsonInBase64 = fp.toJson()  // this is private method
+    // testlog.info(s"seleniumTesting profile is\n${jsonInBase64}")
 
-    val decoder = Base64.getDecoder
+    // val decoder = Base64.getDecoder
 
-    val json = decoder.decode(jsonInBase64)
+    // val json = decoder.decode(jsonInBase64)
 
-    val sw = new StringWriter
-    val pw = new PrintWriter(sw)
+    // val sw = new StringWriter
+    // val pw = new PrintWriter(sw)
 
-    val l = json.length
-    testlog.info(s"seleniumTesting profile size is ${l}")
+    // val l = json.length
+    // testlog.info(s"seleniumTesting profile size is ${l}")
   }
 
   private def firefoxOptions(headless: Boolean = false) = {
@@ -445,10 +445,10 @@ class Session(name: String = "default") extends WebDriver {
       wait: Duration
   ): WebDriver.Timeouts = {
     // this is for selenium 4
-    // webDriver.manage().timeouts().implicitlyWait(wait)
+    webDriver.manage().timeouts().implicitlyWait(wait)
 
     // this works in selenium 3.141 and is deprecated in selenium 4
-    webDriver.manage().timeouts().implicitlyWait(wait.getSeconds(), TimeUnit.SECONDS)
+    // webDriver.manage().timeouts().implicitlyWait(wait.getSeconds(), TimeUnit.SECONDS)
   }
 
   /**

@@ -66,6 +66,8 @@ object BldBridgeScoreKeeper {
           MergeStrategy.rename
         case PathList("META-INF", "versions", "9", "module-info.class") =>
           MergeStrategy.rename
+        case PathList("META-INF", "versions", "11", "module-info.class") =>
+          MergeStrategy.rename
         case PathList("META-INF", "versions", "9") =>
           // selenium jar files have a file with this name,
           // that causes unzip errors with files in that directory
@@ -82,6 +84,10 @@ object BldBridgeScoreKeeper {
             rest @ _*
             ) =>
           MergeStrategy.discard
+        case PathList(
+            "META-INF",
+           "io.netty.versions.properties"
+          ) => MergeStrategy.discard
         case x =>
           superStrategy(x)
       }

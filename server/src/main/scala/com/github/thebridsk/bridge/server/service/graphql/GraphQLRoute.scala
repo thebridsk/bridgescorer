@@ -8,7 +8,7 @@ import com.github.thebridsk.bridge.server.backend.BridgeService
 import akka.http.scaladsl.server.Route
 import com.github.thebridsk.bridge.server.rest.UtilsPlayJson._
 import scala.util.Success
-import javax.ws.rs.Path
+import jakarta.ws.rs.Path
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLResponse
 import com.github.thebridsk.bridge.data.graphql.GraphQLProtocol.GraphQLRequest
@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import javax.ws.rs.POST
+import jakarta.ws.rs.POST
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
 

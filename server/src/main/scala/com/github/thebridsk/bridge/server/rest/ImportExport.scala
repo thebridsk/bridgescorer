@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.server.rest
 
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
-import javax.ws.rs.Path
+import jakarta.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.server.backend.BridgeService
 import akka.stream.scaladsl.Source
@@ -30,8 +30,8 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
-import javax.ws.rs.GET
-import javax.ws.rs.POST
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
 import com.github.thebridsk.bridge.server.backend.ImportStore.importStoreDotExtension
 import com.github.thebridsk.bridge.data.ImportStoreConstants
 import com.github.thebridsk.bridge.data.ImportStoreData
