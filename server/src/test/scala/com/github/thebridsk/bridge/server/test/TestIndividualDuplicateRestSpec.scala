@@ -498,7 +498,7 @@ class TestIndividualDuplicateRestSpec
       import scala.concurrent.duration._
       import scala.language.postfixOps
       val wsClient = WSProbe()
-      WS("/v1/individual/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
+      WS("/v1/individualduplicates/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
         .addAttributes(remoteAddress) ~> myRouteWithLogging ~>
         check {
           isWebSocketUpgrade mustBe true
@@ -563,7 +563,7 @@ class TestIndividualDuplicateRestSpec
       import scala.concurrent.duration._
       import scala.language.postfixOps
       val wsClient = WSProbe()
-      WS("/v1/individual/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
+      WS("/v1/individualduplicates/ws", wsClient.flow, Protocol.DuplicateBridge :: Nil)
         .addAttributes(remoteAddress) ~> myRouteWithLogging ~>
         check {
           isWebSocketUpgrade mustBe true

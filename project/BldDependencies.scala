@@ -92,10 +92,10 @@ object BldDependencies {
       // "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
       "org.sangria-graphql" %% "sangria-play-json" % vSangriaPlayJson withSources(),
 
-      "io.swagger.core.v3" % "swagger-core" % vSwagger withSources(),
-      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
-      "io.swagger.core.v3" % "swagger-models" % vSwagger withSources(),
-      "io.swagger.core.v3" % "swagger-jaxrs2" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-core-jakarta" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations-jakarta" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-models-jakarta" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-jaxrs2-jakarta" % vSwagger withSources(),
 
       "jakarta.ws.rs" % "jakarta.ws.rs-api" % vWsRsApi withSources(),
 
@@ -134,7 +134,7 @@ object BldDependencies {
 
   val bridgeScorerSharedDeps = Def.setting(Seq(
       "com.typesafe.play" %%% "play-json" % vPlayJson withSources(),
-      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations-jakarta" % vSwagger withSources(),
       "org.scalactic" %%% "scalactic" % vScalactic withSources()
       ))
 
@@ -160,7 +160,7 @@ object BldDependencies {
   val bridgeScorerClientDeps = Def.setting(Seq(
 
       "org.scala-js" %%%  "scalajs-dom"    % vScalajsdom withSources(),
-      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations-jakarta" % vSwagger withSources(),
 
       "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
       "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
@@ -171,7 +171,7 @@ object BldDependencies {
   val bridgeScorerClientApiDeps = Def.setting(Seq(
 
     "org.scala-js" %%%  "scalajs-dom"    % vScalajsdom withSources(),
-    "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
+    "io.swagger.core.v3" % "swagger-annotations-jakarta" % vSwagger withSources(),
 
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),

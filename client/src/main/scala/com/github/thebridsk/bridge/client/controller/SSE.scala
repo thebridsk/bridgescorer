@@ -3,9 +3,9 @@ package com.github.thebridsk.bridge.client.controller
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
-import org.scalajs.dom.raw.EventSource
-import org.scalajs.dom.raw.MessageEvent
-import org.scalajs.dom.raw.Event
+import org.scalajs.dom.EventSource
+import org.scalajs.dom.MessageEvent
+import org.scalajs.dom.Event
 import scala.scalajs.js.timers.SetTimeoutHandle
 import com.github.thebridsk.bridge.data.Id
 

@@ -17,7 +17,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react.Callback
 import com.github.thebridsk.bridge.client.pages.ThankYouPage
 import com.github.thebridsk.bridge.client.pages.AboutPage
-import org.scalajs.dom.raw.File
+import org.scalajs.dom.File
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.client.pages.TestPage
 
@@ -196,7 +196,7 @@ class AppRouter(modules: Module*) {
   }
 
   def logToServer: RouterConfig.Logger =
-    s => Callback { logger.fine(s"AppRouter: " + s) }
+    s => ( () => logger.fine(s"AppRouter: " + s))
 
   val moduleAllRoutes: Seq[RoutingRule[AppPage, Unit]] = modules.map(_.routes())
   def moduleRoutes(): RoutingRule[AppPage, Unit] = moduleAllRoutes.reduce(_ | _)

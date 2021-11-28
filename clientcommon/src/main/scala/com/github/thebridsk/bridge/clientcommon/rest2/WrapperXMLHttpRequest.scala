@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.clientcommon.rest2
 
 import scala.scalajs.js
-import org.scalajs.dom.raw.XMLHttpRequest
+import org.scalajs.dom.XMLHttpRequest
 
 trait WrapperXMLHttpRequest {
 

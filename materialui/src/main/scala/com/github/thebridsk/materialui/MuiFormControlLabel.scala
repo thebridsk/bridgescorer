@@ -5,7 +5,7 @@ import japgolly.scalajs.react.vdom._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.language.implicitConversions
-import japgolly.scalajs.react.{raw => Raw}
+import japgolly.scalajs.react.facade
 import scala.scalajs.js.UndefOr
 
 class LabelPlacement(val value: String) extends AnyVal
@@ -22,9 +22,9 @@ object LabelPlacement {
 @js.native
 protected trait FormControlLabelPropsPrivate extends js.Any {
   @JSName("control")
-  val controlInternal: js.UndefOr[Raw.React.Node] = js.native
+  val controlInternal: js.UndefOr[facade.React.Node] = js.native
   @JSName("label")
-  val labelInternal: js.UndefOr[Raw.React.Node] = js.native
+  val labelInternal: js.UndefOr[facade.React.Node] = js.native
   @JSName("labelPlacement")
   val labelPlacementInternal: js.UndefOr[String] = js.native
 }
@@ -36,10 +36,10 @@ trait FormControlLabelProps
     with FormControlLabelPropsPrivate {
   val checked: js.UndefOr[Boolean] = js.native
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
-  // val control: js.UndefOr[Raw.React.Element] = js.native
+  // val control: js.UndefOr[facade.React.Element] = js.native
   val disable: js.UndefOr[Boolean] = js.native
   val inputRef: js.UndefOr[js.Object] = js.native
-  // val label: js.UndefOr[Raw.React.Element] = js.native
+  // val label: js.UndefOr[facade.React.Element] = js.native
 //  val labelPlacement: js.UndefOr[String] = js.native
   val onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.native
   val value: js.UndefOr[js.Any] = js.native

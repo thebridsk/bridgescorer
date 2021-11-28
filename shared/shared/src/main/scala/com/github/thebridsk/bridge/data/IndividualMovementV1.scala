@@ -216,7 +216,7 @@ case class IndividualMovementV1(
 trait IdIndividualMovement extends IdMovementBase
 
 object IndividualMovementV1 extends HasId[IdIndividualMovement]("", true) {
-  def default: Id = IndividualMovement.id("2Tables")
+  def default: Id = IndividualMovement.id("Individual2Tables21Boards")
 }
 
 @Schema(

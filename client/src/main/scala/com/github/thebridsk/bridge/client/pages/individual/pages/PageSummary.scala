@@ -22,7 +22,6 @@ import com.github.thebridsk.bridge.client.bridge.store.IndividualDuplicateSummar
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.ImportSummaryView
 import com.github.thebridsk.bridge.client.controller.IndividualSummaryController
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.SummaryView
-import japgolly.scalajs.react.internal.Effect
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.client.pages.individual.components.DuplicateBridgeAppBar
 import com.github.thebridsk.materialui.MuiTypography
@@ -479,7 +478,7 @@ object PageSummary {
       } >>
         scope.forceUpdate
 
-      def summaryError(): Effect.Id[Unit] =
+      def summaryError(): Unit =
         scope.withEffectsImpure.modState(s =>
           s.withError("Error getting duplicate summary")
         )

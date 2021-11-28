@@ -32,6 +32,7 @@ import scala.util.Failure
 import scala.util.Success
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.utilities.logging.Logger
+import com.github.thebridsk.bridge.client.components.PlayerDiamond
 
 /**
   * A component that shows the players and their position at the table.
@@ -265,10 +266,10 @@ object PageTableNames {
                   }
                   <.div(
                     dupStyles.pageTableNames,
-                    <.div(
+                    PlayerDiamond(
                       order.getPlayerOrder(state.getScorekeeper).map { loc =>
                         player(loc)
-                      }.toTagMod
+                      }
                     ),
                     <.div(
                       baseStyles.divFooter,

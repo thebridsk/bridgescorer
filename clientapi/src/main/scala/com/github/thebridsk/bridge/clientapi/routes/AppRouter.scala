@@ -78,7 +78,7 @@ class AppRouter {
   }
 
   def logToServer: RouterConfig.Logger =
-    s => Callback { logger.fine(s"AppRouter: " + s) }
+    s => ( () => logger.fine(s"AppRouter: " + s))
 
   import scala.language.implicitConversions
   implicit def routerCtlToBridgeRouter[P](ctl: RouterCtl[P]): BridgeRouter[P] =

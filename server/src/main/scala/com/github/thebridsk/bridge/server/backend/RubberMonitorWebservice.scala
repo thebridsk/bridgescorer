@@ -7,14 +7,14 @@ import akka.http.scaladsl.server.Directive.addDirectiveApply
 import akka.stream.Materializer
 import akka.http.scaladsl.server.RejectionHandler
 import com.github.thebridsk.bridge.data.RestMessage
-import javax.ws.rs.Path
+import jakarta.ws.rs.Path
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.Content
-import javax.ws.rs.GET
+import jakarta.ws.rs.GET
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.server.backend.StoreMonitor.NewParticipantSSERubber
 import com.github.thebridsk.bridge.server.rest.Service

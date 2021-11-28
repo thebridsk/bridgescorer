@@ -6,6 +6,7 @@ import japgolly.scalajs.react.vdom.TagMod
 object IndividualStyles {
 
   def baseStyles = BaseStyles.baseStyles
+  def baseStyles2 = BaseStyles.baseStyles2
   def rootStyles = BaseStyles.rootStyles
   def tableStyles = BaseStyles.tableStyles
 

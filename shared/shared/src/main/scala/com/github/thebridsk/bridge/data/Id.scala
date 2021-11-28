@@ -33,7 +33,7 @@ case class Id[A] private[data] (
   override def equals(other: Any): Boolean = {
     // println(s"comparing $this and $other")
     other match {
-      case o: Id[A] =>
+      case o: Id[_] =>
         o.id == id && (o.classTag.runtimeClass eq classTag.runtimeClass)
       case _ => false
     }

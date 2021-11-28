@@ -57,6 +57,8 @@ class BaseStyles2 {
 
   val clsSelectPosition: TagMod = cls("selectPosition")
   val clsEnterNames: TagMod = cls("enterNames")
+
+  val viewPlayerDiamond: TagMod = cls("viewPlayerDiamond")
 }
 
 class BaseStyles {

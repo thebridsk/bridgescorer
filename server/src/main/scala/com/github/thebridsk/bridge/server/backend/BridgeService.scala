@@ -106,7 +106,7 @@ abstract class BridgeService(val id: String) {
     * @param filter the filter, None means everything
     * @return a future to a result that has a list of all the Ids of entities that are exported.
     */
-  def export(
+  def doExport(
       out: OutputStream,
       filter: Option[List[String]] = None,
       diagnostics: Boolean = false

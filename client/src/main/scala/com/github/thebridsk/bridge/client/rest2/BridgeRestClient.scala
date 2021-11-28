@@ -21,8 +21,8 @@ import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.duplicate.stats.PlayerPlaces
 import com.github.thebridsk.bridge.data.DuplicatePicture
-import org.scalajs.dom.raw.File
-import org.scalajs.dom.raw.FormData
+import org.scalajs.dom.File
+import org.scalajs.dom.FormData
 
 import com.github.thebridsk.bridge.clientcommon.rest2.Implicits._
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions

@@ -18,13 +18,10 @@ import org.openqa.selenium.SessionNotCreatedException
 import scala.annotation.tailrec
 import org.openqa.selenium.firefox.FirefoxOptions
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel
-import java.util.Base64
-import java.io.StringWriter
-import java.io.PrintWriter
+// import java.util.Base64
+// import java.io.StringWriter
+// import java.io.PrintWriter
 import org.openqa.selenium.WebDriverException
-import org.openqa.selenium.support.events.EventFiringWebDriver
-import org.openqa.selenium.support.events.WebDriverEventListener
-import org.openqa.selenium.support.events.AbstractWebDriverEventListener
 import org.openqa.selenium.UnhandledAlertException
 import org.openqa.selenium.logging.LogType
 import org.openqa.selenium.logging.LogEntries
@@ -34,15 +31,17 @@ import org.openqa.selenium.safari.SafariOptions
 import org.openqa.selenium.remote.LocalFileDetector
 import java.time.Duration
 import java.io.File
-import java.util.concurrent.TimeUnit
 import org.openqa.selenium.UnsupportedCommandException
+import org.openqa.selenium.support.events.WebDriverListener
+import java.lang.reflect.{InvocationTargetException, Method}
+import org.openqa.selenium.support.events.EventFiringDecorator
 
 class Session(name: String = "default") extends WebDriver {
   import Session._
 
-  implicit var webDriver: EventFiringWebDriver = null
+  implicit var webDriver: WebDriver = null
 
-  private var eventListener: WebDriverEventListener = null
+  private var eventListener: WebDriverListener = null
 
   val debug: Boolean = {
     val f = getPropOrEnv("WebDriverDebug").getOrElse("")
@@ -75,18 +74,18 @@ class Session(name: String = "default") extends WebDriver {
 
   private def showFirefoxProfile(fp: FirefoxProfile): Unit = {
 
-    val jsonInBase64 = fp.toJson()
-    testlog.info(s"seleniumTesting profile is\n${jsonInBase64}")
+    // val jsonInBase64 = fp.toJson()  // this is private method
+    // testlog.info(s"seleniumTesting profile is\n${jsonInBase64}")
 
-    val decoder = Base64.getDecoder
+    // val decoder = Base64.getDecoder
 
-    val json = decoder.decode(jsonInBase64)
+    // val json = decoder.decode(jsonInBase64)
 
-    val sw = new StringWriter
-    val pw = new PrintWriter(sw)
+    // val sw = new StringWriter
+    // val pw = new PrintWriter(sw)
 
-    val l = json.length
-    testlog.info(s"seleniumTesting profile size is ${l}")
+    // val l = json.length
+    // testlog.info(s"seleniumTesting profile size is ${l}")
   }
 
   private def firefoxOptions(headless: Boolean = false) = {
@@ -306,12 +305,16 @@ class Session(name: String = "default") extends WebDriver {
     testlog.warning(s"UnhandledAlertException on session ${name}: ${text}")
   }
 
-  private def wrapWebDriver(webDriver: WebDriver) = {
-    val wd = new EventFiringWebDriver(webDriver)
-
-    eventListener = new AbstractWebDriverEventListener {
-      override def onException(ex: Throwable, webDriver: WebDriver): Unit = {
-        findUnhandledAlertException(ex) match {
+  private def wrapWebDriver(wd: WebDriver): WebDriver = {
+    eventListener = new WebDriverListener {
+      override def onError(
+        target: Object,
+        method: Method,
+        args: Array[Object],
+        e: InvocationTargetException
+      ): Unit = {
+        val ex = e
+        findUnhandledAlertException(e.getTargetException()) match {
           case Some(unhandled) =>
             testlog.warning(
               s"UnhandledAlertException on session ${name}",
@@ -322,8 +325,8 @@ class Session(name: String = "default") extends WebDriver {
         }
       }
     }
-    wd.register(eventListener)
-    wd
+
+    new EventFiringDecorator(eventListener).decorate(wd)
   }
 
   private val implicitWait = Duration.ofSeconds(2)
@@ -445,10 +448,10 @@ class Session(name: String = "default") extends WebDriver {
       wait: Duration
   ): WebDriver.Timeouts = {
     // this is for selenium 4
-    // webDriver.manage().timeouts().implicitlyWait(wait)
+    webDriver.manage().timeouts().implicitlyWait(wait)
 
     // this works in selenium 3.141 and is deprecated in selenium 4
-    webDriver.manage().timeouts().implicitlyWait(wait.getSeconds(), TimeUnit.SECONDS)
+    // webDriver.manage().timeouts().implicitlyWait(wait.getSeconds(), TimeUnit.SECONDS)
   }
 
   /**
@@ -460,7 +463,6 @@ class Session(name: String = "default") extends WebDriver {
         if (eventListener != null) {
           val el = eventListener
           eventListener = null
-          webDriver.unregister(el)
         }
         webDriver.close()
         try {

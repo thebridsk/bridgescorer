@@ -21,8 +21,8 @@ import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.logger.Info
-import org.scalajs.dom.raw.Node
-import org.scalajs.dom.raw.Element
+import org.scalajs.dom.Node
+import org.scalajs.dom.Element
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 

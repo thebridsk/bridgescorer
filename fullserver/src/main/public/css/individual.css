@@ -100,33 +100,6 @@ table th {
   display: block;
   font-size: x-large;
 }
-.pageTableNames > div:first-child {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
-}
-.pageTableNames > div:first-child::after, .pageTableNames > div:first-child::before {
-  content: '';
-  width: 100%;
-  order: 1;
-}
-.pageTableNames > div:first-child > div:nth-child(n + 2) {
-  order: 1;
-}
-.pageTableNames > div:first-child > div:nth-child(n + 4) {
-  order: 2;
-}
-.pageTableNames > div:first-child > div {
-  margin: 20px 40px;
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-}
-.pageTableNames > div:first-child > div >div:first-child {
-  font-size: xx-large;
-}
 
 .pageAllTables {
   display: flex;

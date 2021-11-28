@@ -4,9 +4,9 @@ import org.scalajs.dom
 import dom.document
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.client.Bridge
-import org.scalajs.dom.raw.XMLHttpRequest
-import org.scalajs.dom.raw.Event
-import org.scalajs.dom.raw.{CSSStyleDeclaration, HTMLElement}
+import org.scalajs.dom.XMLHttpRequest
+import org.scalajs.dom.Event
+import org.scalajs.dom.{CSSStyleDeclaration, HTMLElement}
 import scala.util.matching.Regex
 
 /**

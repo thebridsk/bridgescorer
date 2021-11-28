@@ -1,8 +1,8 @@
 package com.github.thebridsk.bridge.clientcommon.fullscreen
 
 import scala.scalajs.js
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Document
+import org.scalajs.dom.Element
+import org.scalajs.dom.Document
 import org.scalajs.dom.document
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.dispatcher.Listenable

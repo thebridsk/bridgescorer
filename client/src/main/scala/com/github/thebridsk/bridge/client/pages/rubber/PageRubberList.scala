@@ -32,7 +32,6 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
-import japgolly.scalajs.react.internal.Effect
 
 /**
   * A skeleton component.
@@ -142,7 +141,7 @@ object PageRubberListInternal {
         scope.withEffectsImpure.props.routerCtl.set(RubberMatchView(chi.id.id))
       }
 
-    def setMessage(msg: String, info: Boolean = false): Effect.Id[Unit] =
+    def setMessage(msg: String, info: Boolean = false): Unit =
       scope.withEffectsImpure.modState(s =>
         s.copy(popupMsg = Some(msg), info = info)
       )
@@ -387,7 +386,7 @@ object PageRubberListInternal {
       } >> scope.forceUpdate
     }
 
-    def summaryError(): Effect.Id[Unit] =
+    def summaryError(): Unit =
       scope.withEffectsImpure.modState(s =>
         s.copy(popupMsg = Some("Error getting duplicate summary"))
       )

@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import javax.ws.rs.Path
+import jakarta.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.data.ServerVersion
@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
-import javax.ws.rs.GET
+import jakarta.ws.rs.GET
 import akka.http.scaladsl.server.Route
 
 case class ServerPort(httpPort: Option[Int], httpsPort: Option[Int])
