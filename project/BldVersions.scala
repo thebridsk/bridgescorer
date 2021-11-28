@@ -34,7 +34,7 @@ object BldVersion {
   lazy val vWsRsApi="3.0.0"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "1.1.2"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "3.38.0"       // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "4.1.2"        // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "2.0.0"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "2.0.0"     // https://github.com/japgolly/scalajs-react
 
@@ -80,7 +80,7 @@ object BldVersion {
 
   lazy val vWebPack = "4.44.2"          // https://www.npmjs.com/package/webpack
 
-  lazy val vJsDom = "16.4.0"           // https://www.npmjs.com/package/jsdom
+  lazy val vJsDom = "18.1.1"           // https://www.npmjs.com/package/jsdom
 
   // version 0.2.3 is hardcoded in sbt-scalajs-bundler
   // current is 1.1.3   0.2.4
@@ -100,8 +100,8 @@ object BldVersion {
   lazy val vSangriaPlayJson = "2.0.2"      // https://github.com/sangria-graphql/sangria-play-json
 
   // graphql, graphiql, and graphql-voyager must be updated together.
-  lazy val vGraphQL = "15.4.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
-  lazy val vGraphiQL = "1.2.0"              // https://www.npmjs.com/package/graphiql
+  lazy val vGraphQL = "16.0.1"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
+  lazy val vGraphiQL = "1.5.7"              // https://www.npmjs.com/package/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.31"  // https://www.npmjs.com/package/graphql-voyager
   lazy val vMaterialUIcore = "4.12.3"       // https://www.npmjs.com/package/@material-ui/core
   lazy val vMaterialUIicons = "4.11.2"      // https://www.npmjs.com/package/@material-ui/icons

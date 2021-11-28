@@ -160,7 +160,7 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     eventually {
       find(
         xpath(
-          "//h4[contains(concat(' ', normalize-space(@class), ' '), ' opblock-tag ')]/a/span[contains(text(), 'Duplicate')]"
+          "//h3[contains(concat(' ', normalize-space(@class), ' '), ' opblock-tag ')]/a/span[contains(text(), 'Duplicate')]"
         )
       )
     }
@@ -170,7 +170,7 @@ class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     implicit val webDriver = TestSession.webDriver
 
     val x = eventually { find(id("operations-Duplicate-getBoardsets")) }
-    val anchor = eventually { x.find(xpath("div/span[2]/a")) }
+    val anchor = eventually { x.find(xpath("div/button/span[2]/a")) }
     anchor.isDisplayed mustBe true
     anchor.text mustBe "/rest/boardsets"
 //    val anchor = eventually{
