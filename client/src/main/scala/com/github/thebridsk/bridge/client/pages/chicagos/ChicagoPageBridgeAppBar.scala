@@ -10,8 +10,8 @@ import com.github.thebridsk.utilities.logging.Logger
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react.vdom.VdomNode
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Node
+import org.scalajs.dom.Element
+import org.scalajs.dom.Node
 import scala.scalajs.js
 
 /**

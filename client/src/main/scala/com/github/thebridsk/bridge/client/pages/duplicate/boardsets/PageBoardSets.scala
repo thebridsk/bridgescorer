@@ -301,14 +301,20 @@ object PageBoardSets {
         s.copy(boardSets = boardsets)
       }
 
-      val scrollToCB: Callback = boardSetViewRef.get
-        .map { re =>
-          re.getDOMNode.toElement.map { el =>
-            el.scrollIntoView(false)
-          }
+      def scrollToBoardSetView: Unit = boardSetViewRef.foreach { ref =>
+        ref.getDOMNode.toElement.map { el =>
+          el.scrollIntoView(false)
         }
-        .asCallback
-        .void
+      }
+
+      // val scrollToCB: Callback = boardSetViewRef.get
+      //   .map { re =>
+      //     re.getDOMNode.toElement.map { el =>
+      //       el.scrollIntoView(false)
+      //     }
+      //   }
+      //   // .asCallback
+      //   .void
 
       val didMount: Callback = Callback {
         logger.info("PageBoardSets.didMount")
@@ -332,7 +338,7 @@ object PageBoardSets {
         val props = cdu.currentProps
         val prevProps = cdu.prevProps
         if (props.initialDisplay != prevProps.initialDisplay) {
-          cdu.backend.scrollToCB.runNow()
+          cdu.backend.scrollToBoardSetView
           cdu.backend.forceUpdate
         }
       }

@@ -392,17 +392,17 @@ object PageMovements {
         )
       }
 
-      val scrollToCB: Callback = movementTableRef.get
-        .map( re => re.scrollIntoView(false))
-        .asCallback
-        .void
+      def scrollToMovementsView: Unit = movementTableRef.foreach { el =>
+        el.scrollIntoView(false)
+      }
 
       val didMount: Callback = Callback {
         mounted = true
         logger.info("PageMovements.didMount")
         BoardSetStore.addChangeListener(storeCallback)
         BoardSetController.getBoardsetsAndMovements()
-      } >> scrollToCB
+        scrollToMovementsView
+      }
 
       val willUnmount: Callback = Callback {
         mounted = false
@@ -421,7 +421,7 @@ object PageMovements {
           cdu.modState{ s =>
             s.setInitialDisplay(props.initialDisplay)
           }.runNow()
-          cdu.backend.scrollToCB.runNow()
+          cdu.backend.scrollToMovementsView
         }
       }
 

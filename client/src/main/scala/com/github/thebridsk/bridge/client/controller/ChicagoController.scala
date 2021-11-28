@@ -31,7 +31,7 @@ import com.github.thebridsk.bridge.data.websocket.Protocol
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.bridge.clientcommon.pages.LocalStorage
 import scala.scalajs.js
-import org.scalajs.dom.raw.StorageEvent
+import org.scalajs.dom.StorageEvent
 import com.github.thebridsk.bridge.clientcommon.rest2.Result
 
 object ChicagoController {

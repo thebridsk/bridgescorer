@@ -11,7 +11,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.utilities.logging.Filter
 import com.github.thebridsk.utilities.logging.TraceMsg
-import org.scalajs.dom.raw.XMLHttpRequest
+import org.scalajs.dom.XMLHttpRequest
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import com.github.thebridsk.bridge.clientcommon.debug.LoggerStore
 import scala.util.matching.Regex

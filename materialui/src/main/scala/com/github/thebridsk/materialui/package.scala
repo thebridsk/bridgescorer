@@ -1,10 +1,10 @@
 package com.github.thebridsk
 
-import org.scalajs.dom.raw.Element
+import org.scalajs.dom.Element
 import scala.scalajs.js
 import scala.scalajs.js._
-import org.scalajs.dom.raw.Node
-import japgolly.scalajs.react.raw.React.Component
+import org.scalajs.dom.Node
+import japgolly.scalajs.react.facade.React.Component
 import japgolly.scalajs.react.component.Generic.UnmountedRaw
 import japgolly.scalajs.react.vdom.VdomNode
 

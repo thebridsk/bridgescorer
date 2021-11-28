@@ -33,8 +33,8 @@ import com.github.thebridsk.bridge.data.ImportStoreConstants
 import com.github.thebridsk.bridge.clientcommon.pages.ColorThemeStorage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
 import com.github.thebridsk.bridge.clientcommon.react.Utils
-import org.scalajs.dom.raw.FileList
-import org.scalajs.dom.raw.FormData
+import org.scalajs.dom.FileList
+import org.scalajs.dom.FormData
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import scala.util.Success
 import scala.util.Failure
@@ -43,7 +43,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.AjaxErrorReturn
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import com.github.thebridsk.bridge.data.RestMessage
 
-import org.scalajs.dom.raw.File
+import org.scalajs.dom.File
 import play.api.libs.json.Reads
 import scala.util.matching.Regex
 

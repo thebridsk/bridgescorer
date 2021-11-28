@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.clientcommon.logger
 
 import scala.collection.mutable.Queue
 
-import org.scalajs.dom.raw.WebSocket
+import org.scalajs.dom.WebSocket
 
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol

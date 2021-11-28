@@ -33,7 +33,6 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
-import japgolly.scalajs.react.internal.Effect
 
 /**
   * @author werewolf
@@ -244,7 +243,7 @@ object PageChicagoListInternal {
       )
     }
 
-    def setMessage(msg: String, info: Boolean = false): Effect.Id[Unit] =
+    def setMessage(msg: String, info: Boolean = false): Unit =
       scope.withEffectsImpure.modState(s =>
         s.copy(popupMsg = Some(msg), info = info)
       )
@@ -316,7 +315,7 @@ object PageChicagoListInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def summaryError(): Effect.Id[Unit] =
+    def summaryError(): Unit =
       scope.withEffectsImpure.modState(s =>
         s.copy(popupMsg = Some("Error getting duplicate summary"))
       )

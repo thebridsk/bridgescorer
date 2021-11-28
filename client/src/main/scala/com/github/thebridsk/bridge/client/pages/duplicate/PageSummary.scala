@@ -42,7 +42,6 @@ import com.github.thebridsk.materialui.icons
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
-import japgolly.scalajs.react.internal.Effect
 import play.api.libs.json.Reads
 
 /**
@@ -380,7 +379,7 @@ object PageSummary {
         resultGraphQL.cancel()
       } >> scope.modState(s => s.clearError())
 
-      def setMessage(msg: String, info: Boolean = false): Effect.Id[Unit] =
+      def setMessage(msg: String, info: Boolean = false): Unit =
         scope.withEffectsImpure.modState(s => s.withError(msg, info))
 
       def setMessageCB(msg: String): Callback =
@@ -460,7 +459,7 @@ object PageSummary {
 
       val forPrintCancel: Callback = forPrint(false)
 
-      def toggleRows(e: ReactEvent): Effect.Id[Unit] =
+      def toggleRows(e: ReactEvent): Unit =
         scope.withEffectsImpure.modState { (s, props) =>
           val n = s.showRows match {
             case Some(r) => None
@@ -1006,7 +1005,7 @@ object PageSummary {
       } >>
         scope.forceUpdate
 
-      def summaryError(): Effect.Id[Unit] =
+      def summaryError(): Unit =
         scope.withEffectsImpure.modState(s =>
           s.copy(workingOnNew = Some("Error getting duplicate summary"))
         )

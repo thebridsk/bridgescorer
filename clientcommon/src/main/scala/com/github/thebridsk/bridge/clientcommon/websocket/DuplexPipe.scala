@@ -7,7 +7,7 @@ import scala.collection.mutable.Queue
 import org.scalajs.dom.document
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.utilities.logging.Logger
-import org.scalajs.dom.raw.WebSocket
+import org.scalajs.dom.WebSocket
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryS
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 

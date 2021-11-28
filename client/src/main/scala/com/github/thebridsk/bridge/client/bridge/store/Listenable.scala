@@ -26,7 +26,7 @@ trait Listenable {
       "Adding " + event + " once callback" + ", had " + fListeners.size
     )
     var alreadyFired = false
-    val autoRemoveCb = Callback { () =>
+    val autoRemoveCb = Callback {
       removeListener(event, cb)
       if (!alreadyFired) {
         alreadyFired = true

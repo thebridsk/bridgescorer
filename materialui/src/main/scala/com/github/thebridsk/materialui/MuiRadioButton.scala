@@ -4,15 +4,15 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import japgolly.scalajs.react.{raw => Raw}
+import japgolly.scalajs.react.facade
 import scala.scalajs.js.UndefOr
 
 @js.native
 protected trait RadioPropsPrivate extends js.Any {
   @JSName("checkedIcon")
-  val checkedIconInternal: js.UndefOr[Raw.React.Node] = js.native
+  val checkedIconInternal: js.UndefOr[facade.React.Node] = js.native
   @JSName("icon")
-  val iconInternal: js.UndefOr[Raw.React.Node] = js.native
+  val iconInternal: js.UndefOr[facade.React.Node] = js.native
 }
 
 @js.native
@@ -21,12 +21,12 @@ trait RadioProps
     with StandardProps
     with RadioPropsPrivate {
   val checked: js.UndefOr[Boolean] = js.native
-  // val checkedIcon: js.UndefOr[Raw.React.Element] = js.native
+  // val checkedIcon: js.UndefOr[facade.React.Element] = js.native
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val color: js.UndefOr[ColorVariant] = js.native
   val disable: js.UndefOr[Boolean] = js.native
   val disableRipple: js.UndefOr[Boolean] = js.native
-  // val icon: js.UndefOr[Raw.React.Element] = js.native
+  // val icon: js.UndefOr[facade.React.Element] = js.native
   val id: js.UndefOr[String] = js.native
   val inputProps: js.UndefOr[js.Dictionary[String]] = js.native
   val inputRef: js.UndefOr[js.Object] = js.native

@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.clientcommon.react
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import japgolly.scalajs.react.vdom.html_<^._
-import org.scalajs.dom.raw.FileList
+import org.scalajs.dom.FileList
 import japgolly.scalajs.react.component.Js.UnmountedWithRoot
 
 /**

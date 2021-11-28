@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.clientcommon.pages
 
 import org.scalajs.dom.document
-import org.scalajs.dom.experimental.URL
+import org.scalajs.dom.URL
 import com.github.thebridsk.bridge.clientcommon.react.AppButtonLinkNewWindow
 
 object GotoPage {

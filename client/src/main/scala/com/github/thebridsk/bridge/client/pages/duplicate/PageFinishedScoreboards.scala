@@ -19,7 +19,6 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.data.DuplicateSummary
-import japgolly.scalajs.react.internal.Effect
 
 /**
   * A component page that shows final scoreboard view.
@@ -197,7 +196,7 @@ object PageFinishedScoreboards {
           }
         )
 
-      def gotMatch(md: MatchDuplicate): Effect.Id[Unit] = {
+      def gotMatch(md: MatchDuplicate): Unit = {
         logger.info("PageFinishedScoreboards.gotMatch: got " + md.id)
         if (mounted) {
           logger.finest("PageFinishedScoreboards.gotMatch: Is mounted ")
@@ -210,7 +209,7 @@ object PageFinishedScoreboards {
         }
       }
 
-      def gotMatchResult(md: MatchDuplicateResult): Effect.Id[Unit] = {
+      def gotMatchResult(md: MatchDuplicateResult): Unit = {
         logger.info("PageFinishedScoreboards.gotMatchResult: got " + md.id)
         if (mounted) {
           logger.finest("PageFinishedScoreboards.gotMatch: Is mounted ")

@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.clientcommon.react
 import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
-import org.scalajs.dom.raw.HTMLAudioElement
+import org.scalajs.dom.HTMLAudioElement
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles

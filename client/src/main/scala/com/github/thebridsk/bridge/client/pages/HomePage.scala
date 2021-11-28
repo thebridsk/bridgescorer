@@ -34,8 +34,8 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButtonLink
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.Bridge
-import org.scalajs.dom.raw.Node
-import org.scalajs.dom.raw.Element
+import org.scalajs.dom.Node
+import org.scalajs.dom.Element
 import com.github.thebridsk.bridge.client.routes.AppRouter
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
@@ -44,7 +44,6 @@ import _root_.com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
 import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
-import japgolly.scalajs.react.internal.Effect
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateModule.PlayIndividualDuplicate
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.{ SummaryView => ISummaryView }
 
@@ -123,7 +122,7 @@ object HomePage {
         newstate.copy(debugging = false, working = Some("Debugging not enabled"))
       }
 
-      val toggleUserSelect: ReactEvent => Effect.Id[Unit] = {
+      val toggleUserSelect: ReactEvent => Unit = {
         (event: ReactEvent) =>
           scope.withEffectsImpure.modState { s =>
             val newstate = s.copy(userSelect = !s.userSelect)
@@ -481,7 +480,7 @@ object HomePage {
           text: String,
           cb: Callback = Callback.empty,
           gotoDuplicateList: Boolean = false
-      ): Effect.Id[Unit] =
+      ): Unit =
         scope.withEffectsImpure.modState(
           s =>
             s.copy(working = Some(text), gotoDuplicateList = gotoDuplicateList),

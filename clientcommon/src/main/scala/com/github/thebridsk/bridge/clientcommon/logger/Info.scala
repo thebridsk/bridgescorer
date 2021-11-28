@@ -2,8 +2,8 @@ package com.github.thebridsk.bridge.clientcommon.logger
 
 import org.scalajs.dom.document
 import scala.scalajs.js
-import org.scalajs.dom.raw.HTMLElement
-import org.scalajs.dom.raw.Node
+import org.scalajs.dom.HTMLElement
+import org.scalajs.dom.Node
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import japgolly.scalajs.react.extra.router.BaseUrl

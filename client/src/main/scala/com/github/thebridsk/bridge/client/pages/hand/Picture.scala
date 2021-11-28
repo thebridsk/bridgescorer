@@ -5,8 +5,8 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
-import org.scalajs.dom.raw.FileReader
-import org.scalajs.dom.raw.File
+import org.scalajs.dom.FileReader
+import org.scalajs.dom.File
 
 /**
   * A skeleton component.

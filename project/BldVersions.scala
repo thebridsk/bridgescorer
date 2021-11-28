@@ -35,8 +35,8 @@ object BldVersion {
   lazy val vAkkaHttpCors = "1.1.2"     // https://github.com/lomigmegard/akka-http-cors
 
   lazy val vSwaggerUI = "3.38.0"       // https://www.npmjs.com/package/swagger-ui-dist
-  lazy val vScalajsdom = "1.2.0"       // https://github.com/scala-js/scala-js-dom
-  lazy val vScalaJsReact = "1.7.7"     // https://github.com/japgolly/scalajs-react
+  lazy val vScalajsdom = "2.0.0"       // https://github.com/scala-js/scala-js-dom
+  lazy val vScalaJsReact = "2.0.0"     // https://github.com/japgolly/scalajs-react
 
   lazy val vWebJarsReact = "17.0.2"    // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.6.1"     // https://www.npmjs.com/package/react-widgets

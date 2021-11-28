@@ -23,7 +23,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
-import org.scalajs.dom.raw.File
+import org.scalajs.dom.File
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicate
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.clientcommon.react.Utils._

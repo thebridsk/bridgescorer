@@ -2,8 +2,8 @@ package com.github.thebridsk.bridge.client
 
 import org.scalajs.dom.document
 import com.github.thebridsk.bridge.client.routes.AppRouter
-import org.scalajs.dom.raw.HTMLElement
-import org.scalajs.dom.raw.Node
+import org.scalajs.dom.HTMLElement
+import org.scalajs.dom.Node
 import com.github.thebridsk.bridge.data.js.SystemTimeJs
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoModule

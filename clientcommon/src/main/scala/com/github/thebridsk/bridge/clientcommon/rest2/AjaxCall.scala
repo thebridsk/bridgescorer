@@ -26,11 +26,11 @@ trait IAjaxCall {
 object AjaxCall extends IAjaxCall {
   val log: Logger = Logger("comm.AjaxCall")
 
-  val Done = dom.raw.XMLHttpRequest.DONE
-  val Loading = dom.raw.XMLHttpRequest.LOADING
-  val Unsent = dom.raw.XMLHttpRequest.UNSENT
-  val Opened = dom.raw.XMLHttpRequest.OPENED
-  val HeadersReceived = dom.raw.XMLHttpRequest.HEADERS_RECEIVED
+  val Done = dom.XMLHttpRequest.DONE
+  val Loading = dom.XMLHttpRequest.LOADING
+  val Unsent = dom.XMLHttpRequest.UNSENT
+  val Opened = dom.XMLHttpRequest.OPENED
+  val HeadersReceived = dom.XMLHttpRequest.HEADERS_RECEIVED
 
   def readyStateToString(readyState: Int): String = {
     val s = readyState match {
