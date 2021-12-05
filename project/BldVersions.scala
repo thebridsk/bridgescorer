@@ -56,15 +56,7 @@ object BldVersion {
   lazy val vScalatestSelenium = "3.2.10.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.13.2"         // https://github.com/junit-team/junit4
 
-  lazy val vSelenium3 = "3.141.59"      // https://github.com/SeleniumHQ/selenium
-  lazy val vSelenium4 = "4.1.0"         // https://github.com/SeleniumHQ/selenium
-  lazy val vSelenium = {
-    EnvProps.getProp("VersionSelenium", "") match {
-      case "4" => vSelenium4
-      case "3" => vSelenium3
-      case _ => vSelenium4
-    }
-  }
+  lazy val vSelenium = "4.1.0"         // https://github.com/SeleniumHQ/selenium
 
   lazy val vScallop = "4.1.0"          // https://github.com/scallop/scallop
   lazy val vSlf4j = "1.7.32"           // https://github.com/qos-ch/slf4j
@@ -103,7 +95,12 @@ object BldVersion {
   lazy val vGraphQL = "16.0.1"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
   lazy val vGraphiQL = "1.5.7"              // https://www.npmjs.com/package/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.31"  // https://www.npmjs.com/package/graphql-voyager
-  lazy val vMaterialUIcore = "4.12.3"       // https://www.npmjs.com/package/@material-ui/core
-  lazy val vMaterialUIicons = "4.11.2"      // https://www.npmjs.com/package/@material-ui/icons
+
+  lazy val vMaterialUIcore = "5.2.2"        // https://www.npmjs.com/package/@mui/material
+  lazy val vMaterialUIicons = "5.2.0"       // https://www.npmjs.com/package/@mui/icons-material
+  lazy val vEmotionReact = "11.7.0"         // https://www.npmjs.com/package/@emotion/react
+  lazy val vEmotionStyled = "11.6.0"        // https://www.npmjs.com/package/@emotion/styled
+
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
+  lazy val vJss = "10.8.2"                  // https://www.npmjs.com/package/jss
 }

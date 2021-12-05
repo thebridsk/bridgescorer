@@ -193,8 +193,12 @@ object BldDependencies {
       // "cldrjs" -> vCldrjs,
       // "cldr" -> vCldr,
       // "cldr-data" -> vCldrData,
-      "@material-ui/core" -> vMaterialUIcore,
-      "@material-ui/icons" -> vMaterialUIicons
+      // "@material-ui/core" -> vMaterialUIcore,
+      // "@material-ui/icons" -> vMaterialUIicons,
+      "@mui/material" -> vMaterialUIcore,
+      "@mui/icons-material" -> vMaterialUIicons,
+      "@emotion/react" -> vEmotionReact,
+      "@emotion/styled" -> vEmotionStyled,
   )
 
   val bridgeScorerClientApiNpmDeps = Seq(
@@ -213,9 +217,14 @@ object BldDependencies {
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
       "graphiql" -> vGraphiQL,
-      "@material-ui/core" -> vMaterialUIcore,
-      "@material-ui/icons" -> vMaterialUIicons,
-      "prop-types" -> vPropTypes
+      // "@material-ui/core" -> vMaterialUIcore,
+      // "@material-ui/icons" -> vMaterialUIicons,
+      "@mui/material" -> vMaterialUIcore,
+      "@mui/icons-material" -> vMaterialUIicons,
+      "@emotion/react" -> vEmotionReact,
+      "@emotion/styled" -> vEmotionStyled,
+      "prop-types" -> vPropTypes,
+      "jss" -> vJss,
   )
 
     // this is for SBT 1.0

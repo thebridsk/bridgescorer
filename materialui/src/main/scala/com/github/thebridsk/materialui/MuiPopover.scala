@@ -396,7 +396,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 
 object MuiPopover extends ComponentFactory[PopoverProps] {
   @js.native @JSImport(
-    "@material-ui/core/Popover",
+    "@mui/material/Popover",
     JSImport.Default
   ) private object Popover extends js.Any
 

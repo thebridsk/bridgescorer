@@ -112,7 +112,7 @@ object FormControlLabelProps extends PropsFactory[FormControlLabelProps] {
 
 object MuiFormControlLabel extends ComponentFactory[FormControlLabelProps] {
   @js.native @JSImport(
-    "@material-ui/core/FormControlLabel",
+    "@mui/material/FormControlLabel",
     JSImport.Default
   ) private object MList extends js.Any
 

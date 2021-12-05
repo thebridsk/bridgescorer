@@ -142,7 +142,7 @@ object CheckboxProps extends PropsFactory[CheckboxProps] {
 
 object MuiCheckbox extends ComponentFactory[CheckboxProps] {
   @js.native @JSImport(
-    "@material-ui/core/Checkbox",
+    "@mui/material/Checkbox",
     JSImport.Default
   ) private object MList extends js.Any
 

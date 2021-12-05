@@ -129,7 +129,7 @@ object PopperProps extends PropsFactory[PopperProps] {
 
 object MuiPopper extends ComponentFactory[PopperProps] {
   @js.native @JSImport(
-    "@material-ui/core/Popper",
+    "@mui/material/Popper",
     JSImport.Default
   ) private object Popper extends js.Any
 

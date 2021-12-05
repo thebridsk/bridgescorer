@@ -123,7 +123,7 @@ object RadioProps extends PropsFactory[RadioProps] {
 
 object MuiRadio extends ComponentFactory[RadioProps] {
   @js.native @JSImport(
-    "@material-ui/core/Radio",
+    "@mui/material/Radio",
     JSImport.Default
   ) private object MList extends js.Any
 

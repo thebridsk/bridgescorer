@@ -200,7 +200,7 @@ object ButtonProps extends PropsFactory[ButtonProps] {
 
 object MuiButton extends ComponentFactory[ButtonProps] {
   @js.native @JSImport(
-    "@material-ui/core/Button",
+    "@mui/material/Button",
     JSImport.Default
   ) private object Button extends js.Any
 
