@@ -9,6 +9,7 @@ import org.scalajs.dom.Node
 @js.native
 trait AutocompleteProps extends AdditionalProps with StandardProps {
   val options: js.UndefOr[js.Array[js.Any]] = js.undefined
+  val renderInput: js.UndefOr[js.Function1[js.Object, facade.React.Node]] = js.undefined
   val autoComplete: js.UndefOr[Boolean] = js.undefined
   val autoHighlight: js.UndefOr[Boolean] = js.undefined
   val autoSelect: js.UndefOr[Boolean] = js.undefined
@@ -46,10 +47,10 @@ trait AutocompleteProps extends AdditionalProps with StandardProps {
   val loadingText: js.UndefOr[js.Object /* Node */] = js.undefined
   val multiple: js.UndefOr[Boolean] = js.undefined
   val noOptionsText: js.UndefOr[js.Object /* Node */] = js.undefined
-  val onChange: js.UndefOr[js.Function4[SyntheticEvent[Node], js.Any, String, String, Unit]] = js.undefined
+  val onChange: js.UndefOr[js.Function4[SyntheticEvent[Node], js.Any, js.UndefOr[String], js.UndefOr[String], Unit]] = js.undefined
   val onClose: js.UndefOr[js.Function2[SyntheticEvent[Node], String, Unit]] = js.undefined
   val onHighlightChange: js.UndefOr[js.Function3[SyntheticEvent[Node], js.Any, String, Unit]] = js.undefined
-  val onInputChange: js.UndefOr[js.Function3[SyntheticEvent[Node], String, String, Unit]] = js.undefined
+  val onInputChange: js.UndefOr[js.Function3[SyntheticEvent[Node], String, js.UndefOr[String], Unit]] = js.undefined
   val onOpen: js.UndefOr[js.Function1[SyntheticEvent[Node], Unit]] = js.undefined
   val open: js.UndefOr[Boolean] = js.undefined
   val openOnFocus: js.UndefOr[Boolean] = js.undefined
@@ -237,8 +238,9 @@ object AutocompleteProps extends PropsFactory[AutocompleteProps] {
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: AutocompleteProps](
+      options: js.Array[js.Any],
+      renderInput: js.Function1[js.Object, facade.React.Node],
       props: js.UndefOr[P] = js.undefined,
-      options: js.UndefOr[js.Array[js.Any]] = js.undefined,
       autoComplete: js.UndefOr[Boolean] = js.undefined,
       autoHighlight: js.UndefOr[Boolean] = js.undefined,
       autoSelect: js.UndefOr[Boolean] = js.undefined,
@@ -276,10 +278,10 @@ object AutocompleteProps extends PropsFactory[AutocompleteProps] {
       loadingText: js.UndefOr[js.Object /* Node */] = js.undefined,
       multiple: js.UndefOr[Boolean] = js.undefined,
       noOptionsText: js.UndefOr[js.Object /* Node */] = js.undefined,
-      onChange: js.UndefOr[js.Function4[SyntheticEvent[Node], js.Any, String, String, Unit]] = js.undefined,
+      onChange: js.UndefOr[js.Function4[SyntheticEvent[Node], js.Any, js.UndefOr[String], js.UndefOr[String], Unit]] = js.undefined,
       onClose: js.UndefOr[js.Function2[SyntheticEvent[Node], String, Unit]] = js.undefined,
       onHighlightChange: js.UndefOr[js.Function3[SyntheticEvent[Node], js.Any, String, Unit]] = js.undefined,
-      onInputChange: js.UndefOr[js.Function3[SyntheticEvent[Node], String, String, Unit]] = js.undefined,
+      onInputChange: js.UndefOr[js.Function3[SyntheticEvent[Node], String, js.UndefOr[String], Unit]] = js.undefined,
       onOpen: js.UndefOr[js.Function1[SyntheticEvent[Node], Unit]] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
       openOnFocus: js.UndefOr[Boolean] = js.undefined,
@@ -305,6 +307,8 @@ object AutocompleteProps extends PropsFactory[AutocompleteProps] {
     className.foreach(p.updateDynamic("className")(_))
 
     props.foreach(p.updateDynamic("props")(_))
+    p.updateDynamic("options")(options)
+    p.updateDynamic("renderInput")(renderInput)
     options.foreach(p.updateDynamic("options")(_))
     autoComplete.foreach(p.updateDynamic("autoComplete")(_))
     autoHighlight.foreach(p.updateDynamic("autoHighlight")(_))
@@ -380,6 +384,9 @@ object MuiAutocomplete extends ComponentNoChildrenFactory[AutocompleteProps] {
   /**
     * @param classes Override or extend the styles applied to the component. See CSS API below for more details.
     * @param options Array of options.  These are the values for the autocomplete.
+    * @param renderInput Render the input.
+    *                    Signature:
+    *                      function(params: object) => ReactNode
     * @param autoComplete If true, the portion of the selected suggestion that has not been typed by the user,
     *                     known as the completion string, appears inline after the input cursor in the textbox.
     *                     The inline completion string is visually highlighted and has a selected state.
@@ -543,7 +550,8 @@ object MuiAutocomplete extends ComponentNoChildrenFactory[AutocompleteProps] {
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
-      options: js.UndefOr[js.Array[js.Any]] = js.undefined,
+      options: js.Array[js.Any],
+      renderInput: js.Function1[js.Object, facade.React.Node],
       autoComplete: js.UndefOr[Boolean] = js.undefined,
       autoHighlight: js.UndefOr[Boolean] = js.undefined,
       autoSelect: js.UndefOr[Boolean] = js.undefined,
@@ -581,10 +589,10 @@ object MuiAutocomplete extends ComponentNoChildrenFactory[AutocompleteProps] {
       loadingText: js.UndefOr[js.Object /* Node */] = js.undefined,
       multiple: js.UndefOr[Boolean] = js.undefined,
       noOptionsText: js.UndefOr[js.Object /* Node */] = js.undefined,
-      onChange: js.UndefOr[js.Function4[SyntheticEvent[Node], js.Any, String, String, Unit]] = js.undefined,
+      onChange: js.UndefOr[js.Function4[SyntheticEvent[Node], js.Any, js.UndefOr[String], js.UndefOr[String], Unit]] = js.undefined,
       onClose: js.UndefOr[js.Function2[SyntheticEvent[Node], String, Unit]] = js.undefined,
       onHighlightChange: js.UndefOr[js.Function3[SyntheticEvent[Node], js.Any, String, Unit]] = js.undefined,
-      onInputChange: js.UndefOr[js.Function3[SyntheticEvent[Node], String, String, Unit]] = js.undefined,
+      onInputChange: js.UndefOr[js.Function3[SyntheticEvent[Node], String, js.UndefOr[String], Unit]] = js.undefined,
       onOpen: js.UndefOr[js.Function1[SyntheticEvent[Node], Unit]] = js.undefined,
       open: js.UndefOr[Boolean] = js.undefined,
       openOnFocus: js.UndefOr[Boolean] = js.undefined,
@@ -605,6 +613,7 @@ object MuiAutocomplete extends ComponentNoChildrenFactory[AutocompleteProps] {
   ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: AutocompleteProps = AutocompleteProps(
       options = options,
+      renderInput = renderInput,
       autoComplete = autoComplete,
       autoHighlight = autoHighlight,
       autoSelect = autoSelect,
@@ -664,6 +673,6 @@ object MuiAutocomplete extends ComponentNoChildrenFactory[AutocompleteProps] {
       className = className,
       additionalProps = additionalProps,
     )
-    super.create(p)
+    f(p)
   }
 }

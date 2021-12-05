@@ -21,6 +21,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.bridge.client.components.EnterName
+import com.github.thebridsk.bridge.clientcommon.javascript.ObjectToString
 
 object ViewPlayersVeryFirstRound {
   import PagePlayers._
@@ -127,10 +128,7 @@ object ViewPlayersVeryFirstRound {
         )(e =>
           Callback {
             logger.fine(
-              s"TD clicked event=${e.asInstanceOf[js.Dictionary[js.Any]].map {
-                case (k, v) =>
-                  (k, v.toString)
-              }}"
+              s"TD clicked event=${ObjectToString.objToString(e)}"
             )
           }
         )
