@@ -6,6 +6,10 @@ import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles2
 import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
+import com.github.thebridsk.materialui.MuiAutocomplete
+import scala.scalajs.js
+import japgolly.scalajs.react.facade.SyntheticEvent
+import org.scalajs.dom.Node
 
 /**
   * Component to enter a name.  A combobox is displayed.
@@ -60,11 +64,34 @@ object EnterName {
 
     private def noNull(s: String) = Option(s).getOrElse("")
 
+    import scala.language.implicitConversions
+    implicit def toAny(s: String): js.Any = s
+    implicit def toUndefOrAny(s: String): js.UndefOr[js.Any] = {
+      val x: js.Any = s
+      val y: js.UndefOr[js.Any] = x
+      y
+    }
+    implicit def toUndefOrArrayAny(a: js.Array[String]): js.UndefOr[js.Array[js.Any]] = {
+      val x = js.Array[js.Any](a.map(t=>t))
+      val y: js.UndefOr[js.Array[js.Any]] = x
+      y
+    }
+
     class Backend(scope: BackendScope[Props, State]) {
       def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
         val n = noNull(props.name)
         <.div(
           baseStyles2.clsEnterNames,
+          BaseStyles.highlight(required = n.isEmpty),
+          // MuiAutocomplete(
+          //   autoComplete = true,
+          //   value = n,
+          //   id = props.id,
+          //   options = NamesStore.getNames,
+          //   freeSolo = true,
+          //   loading = NamesStore.isBusy,
+          //   onInputChange = onInputChange(props)
+          // )
           Combobox.create(
             props.onChange,
             n,
@@ -76,11 +103,18 @@ object EnterName {
             msgEmptyFilter = "No names matched",
             busy = NamesStore.isBusy,
             id = props.id
-          ),
-          BaseStyles.highlight(required = n.isEmpty)
-
+          )
         )
       }
+
+      def onInputChange(
+        props: Props
+      ): js.Function3[SyntheticEvent[Node], String, String, Unit] =
+        (
+          event: SyntheticEvent[Node],
+          value: String,
+          reason: String
+        ) => props.onChange(value).runNow()
 
       private val namesCallback = scope.forceUpdate
 

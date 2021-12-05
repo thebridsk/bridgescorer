@@ -79,7 +79,7 @@ object ToolbarProps extends PropsFactory[ToolbarProps] {
 
 object MuiToolbar {
   @js.native @JSImport(
-    "@material-ui/core/Toolbar",
+    "@mui/material/Toolbar",
     JSImport.Default
   ) private object Toolbar extends js.Any
 

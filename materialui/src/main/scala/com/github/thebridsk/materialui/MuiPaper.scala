@@ -52,7 +52,7 @@ object PaperProps extends PropsFactory[PaperProps] {
 
 object MuiPaper extends ComponentFactory[PaperProps] {
   @js.native @JSImport(
-    "@material-ui/core/Paper",
+    "@mui/material/Paper",
     JSImport.Default
   ) private object Paper extends js.Any
 

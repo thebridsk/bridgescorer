@@ -297,7 +297,7 @@ class RadioButton(
     try {
       find(
         PageBrowser.xpath(
-          """./parent::*/parent::*[contains(concat(' ', @class, ' '), ' Mui-checked ')]"""
+          """./parent::*[contains(concat(' ', @class, ' '), ' Mui-checked ')]"""
         )
       )
       true
@@ -309,7 +309,7 @@ class RadioButton(
   // def value: String = underlying.getAttribute("value")
 
   def label: Element =
-    find(PageBrowser.xpath("""./parent::*/parent::*/following-sibling::*"""))
+    find(PageBrowser.xpath("""./parent::*/following-sibling::*"""))
 
 }
 
@@ -319,39 +319,39 @@ object RadioButton {
       pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
-  ): List[Checkbox] = {
+  ): List[RadioButton] = {
     val el = PageBrowser.findAll(
       PageBrowser.xpath(
-        s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1]/span[1]/input"""
+        s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1]/input"""
       )
     )
-    el.map(e => new Checkbox(e.underlying))
+    el.map(e => new RadioButton(e.underlying))
   }
 
   def find(name: String)(implicit
       pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
-  ): Checkbox = {
+  ): RadioButton = {
     val el = PageBrowser.find(
       PageBrowser.xpath(
-        s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1]/span[1]/input[@id='${name}']"""
+        s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1]/input[@id='${name}']"""
       )
     )
-    new Checkbox(el.underlying)
+    new RadioButton(el.underlying)
   }
 
   def findAllChecked()(implicit
       pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig
-  ): List[Checkbox] = {
+  ): List[RadioButton] = {
     val el = PageBrowser.findAll(
       PageBrowser.xpath(
-        s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]/span[1]/input"""
+        s"""//label[contains(concat(' ', @class, ' '), ' baseRadioButton ')]/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]/input"""
       )
     )
-    el.map(e => new Checkbox(e.underlying))
+    el.map(e => new RadioButton(e.underlying))
   }
 
 }
@@ -375,7 +375,7 @@ class Checkbox(
     * This is needed because the input element is sometimes not clickable, but the label always seems to be.
     */
   private lazy val elemLabel = find(
-    PageBrowser.xpath("""./parent::*/parent::*/parent::label""")
+    PageBrowser.xpath("""./parent::*/parent::label""")
   )
 
   // click the label element instead, the input is not always clickable
@@ -397,7 +397,7 @@ class Checkbox(
     try {
       find(
         PageBrowser.xpath(
-          """./parent::*/parent::*[contains(concat(' ', @class, ' '), ' Mui-checked ')]"""
+          """./parent::*[contains(concat(' ', @class, ' '), ' Mui-checked ')]"""
         )
       )
       true
@@ -409,7 +409,7 @@ class Checkbox(
   // def value: String = underlying.getAttribute("value")
 
   def label: Element =
-    find(PageBrowser.xpath("""./parent::*/parent::*/following-sibling::*"""))
+    find(PageBrowser.xpath("""./parent::*/following-sibling::*"""))
 
 }
 
@@ -422,7 +422,7 @@ object Checkbox {
   ): List[Checkbox] = {
     val el = PageBrowser.findAll(
       PageBrowser.xpath(
-        s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1]/span[1]/input"""
+        s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1]/input"""
       )
     )
     el.map(e => new Checkbox(e.underlying))
@@ -435,7 +435,7 @@ object Checkbox {
   ): Checkbox = {
     val el = PageBrowser.find(
       PageBrowser.xpath(
-        s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1]/span[1]/input[@id='${name}']"""
+        s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1]/input[@id='${name}']"""
       )
     )
     new Checkbox(el.underlying)
@@ -448,7 +448,7 @@ object Checkbox {
   ): List[Checkbox] = {
     val el = PageBrowser.findAll(
       PageBrowser.xpath(
-        s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]/span[1]/input"""
+        s"""//label[contains(concat(' ', @class, ' '), ' baseCheckbox ')]/span[1][contains(concat(' ', @class, ' '), ' Mui-checked ')]/input"""
       )
     )
     el.map(e => new Checkbox(e.underlying))

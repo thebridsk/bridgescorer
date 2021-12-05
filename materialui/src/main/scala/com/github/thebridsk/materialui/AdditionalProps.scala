@@ -68,6 +68,18 @@ trait ComponentFactory[Props <: js.Object with AdditionalProps] {
 
 }
 
+trait ComponentNoChildrenFactory[Props <: js.Object with AdditionalProps] {
+
+  protected val f: Js.Component[Props, Null, CtorType.Props]
+
+  def create(
+      props: Props
+  ): Js.UnmountedWithRawType[Props, Null, Js.RawMounted[Props, Null]] = {
+    f(props)
+  }
+
+}
+
 trait FnComponentFactory[Props <: js.Object with AdditionalProps] {
 
   protected val f: JsFnComponent.Component[Props, CtorType.PropsAndChildren]

@@ -113,7 +113,7 @@ object ButtonBaseProps extends PropsFactory[ButtonBaseProps] {
 }
 
 // object MuiButtonBase extends ComponentFactory[ButtonBaseProps] {
-//   @js.native @JSImport("@material-ui/core/ButtonBase", JSImport.Default) private object ButtonBase
+//   @js.native @JSImport("@mui/material/ButtonBase", JSImport.Default) private object ButtonBase
 //       extends js.Any
 
 //   protected val f =

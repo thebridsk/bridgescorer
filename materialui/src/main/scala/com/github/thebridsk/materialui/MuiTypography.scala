@@ -206,7 +206,7 @@ object TypographyProps extends PropsFactory[TypographyProps] {
 
 object MuiTypography extends ComponentFactory[TypographyProps] {
   @js.native @JSImport(
-    "@material-ui/core/Typography",
+    "@mui/material/Typography",
     JSImport.Default
   ) private object Typography extends js.Any
 

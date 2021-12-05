@@ -141,7 +141,7 @@ object MenuProps extends PropsFactory[MenuProps] {
 object MuiMenu extends PropsFactory[MenuProps] {
 
   @js.native @JSImport(
-    "@material-ui/core/Menu",
+    "@mui/material/Menu",
     JSImport.Default
   ) private object Menu extends js.Any
 

@@ -158,7 +158,7 @@ object IconButtonProps extends PropsFactory[IconButtonProps] {
 
 object MuiIconButton extends ComponentFactory[IconButtonProps] {
   @js.native @JSImport(
-    "@material-ui/core/IconButton",
+    "@mui/material/IconButton",
     JSImport.Default
   ) private object IconButton extends js.Any
 

@@ -76,7 +76,7 @@ object BackdropProps extends PropsFactory[BackdropProps] {
 
 object MuiBackdrop extends ComponentFactory[BackdropProps] {
   @js.native @JSImport(
-    "@material-ui/core/Backdrop",
+    "@mui/material/Backdrop",
     JSImport.Default
   ) private object Backdrop extends js.Any
 

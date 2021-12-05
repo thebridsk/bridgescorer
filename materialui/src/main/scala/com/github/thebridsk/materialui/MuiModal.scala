@@ -138,7 +138,7 @@ object ModalProps extends PropsFactory[ModalProps] {
 
 object MuiModal extends ComponentFactory[ModalProps] {
   @js.native @JSImport(
-    "@material-ui/core/Modal",
+    "@mui/material/Modal",
     JSImport.Default
   ) private object Modal extends js.Any
 

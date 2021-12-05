@@ -44,7 +44,7 @@ object TouchRippleProps extends PropsFactory[TouchRippleProps] {
 }
 
 // object MuiTouchRipple extends ComponentFactory[TouchRippleProps] {
-//   @js.native @JSImport("@material-ui/core/TouchRipple", JSImport.Default) private object TouchRipple
+//   @js.native @JSImport("@mui/material/TouchRipple", JSImport.Default) private object TouchRipple
 //       extends js.Any
 
 //   protected val f =

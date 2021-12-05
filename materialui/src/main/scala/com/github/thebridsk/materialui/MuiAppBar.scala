@@ -100,7 +100,7 @@ object AppBarProps extends PropsFactory[AppBarProps] {
 
 object MuiAppBar extends ComponentFactory[AppBarProps] {
   @js.native @JSImport(
-    "@material-ui/core/AppBar",
+    "@mui/material/AppBar",
     JSImport.Default
   ) private object AppBar extends js.Any
 

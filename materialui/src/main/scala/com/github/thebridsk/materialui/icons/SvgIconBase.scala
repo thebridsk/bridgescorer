@@ -218,7 +218,7 @@ trait SvgIconBase extends ComponentFactory[SvgIconProps] {
 
 object MuiSvgIcon extends ComponentFactory[SvgIconProps] {
   @js.native @JSImport(
-    "@material-ui/core/SvgIcon",
+    "@mui/material/SvgIcon",
     JSImport.Default
   ) private object SvgIcon extends js.Any
 
