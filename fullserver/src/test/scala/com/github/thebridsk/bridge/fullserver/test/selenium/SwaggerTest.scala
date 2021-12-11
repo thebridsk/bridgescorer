@@ -19,6 +19,8 @@ import com.github.thebridsk.browserpages.Session
 import com.github.thebridsk.bridge.server.test.util.TestServer
 
 /**
+  * Test has a vulnerability, https://github.com/swagger-api/swagger-ui/issues/4872
+  *
   * @author werewolf
   */
 class SwaggerTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {

@@ -262,7 +262,7 @@ object PageNewDuplicate {
 
       def setPlayingIndividual(f: Boolean): Callback = scope.modState(s => s.withPlayingIndividual(f))
 
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
       def newDuplicate(
           movement: MovementBase,
           boards: Option[BoardSet] = None,

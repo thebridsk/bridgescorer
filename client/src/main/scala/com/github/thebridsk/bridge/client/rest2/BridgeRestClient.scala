@@ -26,7 +26,7 @@ import org.scalajs.dom.FormData
 
 import com.github.thebridsk.bridge.clientcommon.rest2.Implicits._
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.data.Round
 import com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.data.bridge.individual.{ DuplicateSummary => IDuplicateSummary }

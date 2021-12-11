@@ -4,15 +4,14 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles2
-import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.materialui.MuiAutocomplete
 import scala.scalajs.js
 import japgolly.scalajs.react.facade.SyntheticEvent
 import org.scalajs.dom.Node
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.javascript.ObjectToString
 import com.github.thebridsk.materialui.MuiTextField
+import com.github.thebridsk.materialui.MuiAutocomplete
 
 /**
   * Component to enter a name.  A combobox is displayed.
@@ -145,18 +144,6 @@ object EnterName {
             disablePortal = true,
             renderInput = renderInput(props, state)
           )
-          // Combobox.create(
-          //   props.onChange,
-          //   n,
-          //   NamesStore.getNames,
-          //   "startsWith",
-          //   props.tabIndex,
-          //   props.id,
-          //   msgEmptyList = "No suggested names",
-          //   msgEmptyFilter = "No names matched",
-          //   busy = NamesStore.isBusy,
-          //   id = props.id
-          // )
         )
       }
 

@@ -153,6 +153,7 @@ object BldDependencies {
 
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
+    "org.scala-js" %%% "scala-js-macrotask-executor" % vJsMacroTaskExecutor withSources(),
 
     "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
     ))

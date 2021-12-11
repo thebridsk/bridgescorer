@@ -28,7 +28,7 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.BoardSetEditView
 import scala.util.Success
 import scala.util.Failure
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.client.components.InputIntWithError
 
 /**

@@ -27,7 +27,7 @@ import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultHolder
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.rest2.WrapperXMLHttpRequest
 import com.github.thebridsk.bridge.clientcommon.react.AppButtonLink
@@ -535,7 +535,7 @@ object HomePage {
         resultDuplicateSummary.cancel()
       } >> scope.modState(s => s.copy(working = None))
 
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
       val newChicago: Callback = {
         setPopupTextCB(

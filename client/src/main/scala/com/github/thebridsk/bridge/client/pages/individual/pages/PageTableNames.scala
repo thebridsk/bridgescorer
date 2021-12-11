@@ -161,7 +161,7 @@ object PageTableNames {
           IndividualDuplicateStore.getMatch() match {
             case Some(md) if md.id == props.page.dupid =>
               state.table.foreach { table =>
-                import scala.concurrent.ExecutionContext.Implicits.global
+                import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
                 IndividualController.updatePlayers(
                   md,
                   state.players.zip(table.north::table.south::table.east::table.west::Nil)

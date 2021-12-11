@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.client.controller
 
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxCall
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import scala.util.Success
 import com.github.thebridsk.bridge.data.rest.JsonSupport
 import com.github.thebridsk.bridge.data.MatchDuplicate

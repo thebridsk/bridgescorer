@@ -21,7 +21,7 @@ class AllSeleniumSuites
       new RubberTest,
       new DuplicateResultTest,
       new IndividualTest,
-      new SwaggerTest,
+      // new SwaggerTest,   // see https://github.com/swagger-api/swagger-ui/issues/4872
       new SwaggerTest2
     )
     with BeforeAndAfterAll {

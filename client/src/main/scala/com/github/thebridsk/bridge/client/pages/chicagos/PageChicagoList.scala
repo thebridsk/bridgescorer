@@ -14,7 +14,7 @@ import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.SummaryVi
 import com.github.thebridsk.utilities.logging.Level
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultHolder
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ListViewBase
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ImportListView
@@ -113,7 +113,7 @@ object PageChicagoListInternal {
     } >> scope.modState(s => s.copy(popupMsg = None))
 
     val newChicago: Callback = {
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
       scope.modState(
         s => s.copy(popupMsg = Some("Creating a new Chicago match...")),
         Callback {
