@@ -211,7 +211,7 @@ object PageNewDuplicate {
         resultDuplicate.cancel()
       } >> scope.modState(s => s.copy(workingOnNew = None))
 
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
       def newDuplicate(
           default: Boolean = true,
           boards: Option[BoardSet.Id] = None,

@@ -6,7 +6,6 @@ import com.github.thebridsk.bridge.client.bridge.store.NamesStore
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles.baseStyles2
 import com.github.thebridsk.bridge.clientcommon.react.Combobox
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import com.github.thebridsk.materialui.MuiAutocomplete
 import scala.scalajs.js
 import japgolly.scalajs.react.facade.SyntheticEvent
 import org.scalajs.dom.Node
@@ -83,15 +82,6 @@ object EnterName {
         <.div(
           baseStyles2.clsEnterNames,
           BaseStyles.highlight(required = n.isEmpty),
-          // MuiAutocomplete(
-          //   autoComplete = true,
-          //   value = n,
-          //   id = props.id,
-          //   options = NamesStore.getNames,
-          //   freeSolo = true,
-          //   loading = NamesStore.isBusy,
-          //   onInputChange = onInputChange(props)
-          // )
           Combobox.create(
             props.onChange,
             n,

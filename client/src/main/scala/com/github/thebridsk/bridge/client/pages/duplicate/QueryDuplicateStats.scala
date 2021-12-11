@@ -16,7 +16,7 @@ import play.api.libs.json.Reads
 
 object QueryDuplicateStats {
   import JsonSupport._
-  import scala.concurrent.ExecutionContext.Implicits.global
+  import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
   val logger: Logger = Logger("bridge.QueryDuplicateStats")
 

@@ -6,7 +6,7 @@ import com.github.thebridsk.bridge.client.bridge.action.BridgeDispatcher
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.Movement
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientMovement
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientBoardSetsAndMovements
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxCall
 import scala.concurrent.duration.Duration

@@ -12,7 +12,7 @@ import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.NewDup
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.CompleteScoreboardView
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.FinishedScoreboardsView
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultHolder
 import com.github.thebridsk.bridge.data.MatchDuplicate

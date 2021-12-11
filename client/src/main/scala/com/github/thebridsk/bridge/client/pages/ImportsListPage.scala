@@ -7,7 +7,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.graphql.GraphQLClient
 import play.api.libs.json.JsDefined
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import play.api.libs.json.JsString
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsNull

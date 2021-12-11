@@ -24,7 +24,7 @@ import _root_.com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import scala.util.Success
 import scala.util.Failure
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
 /**
   * A skeleton component.

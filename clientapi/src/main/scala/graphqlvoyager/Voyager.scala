@@ -19,7 +19,7 @@ trait VoyagerComponentProperty extends js.Object {
 object VoyagerComponentProperty {
 
   def intro(graphqlUrl: String)(query: String): Promise[js.Object] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
+    import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
     val gql = new GraphQLBaseClient(graphqlUrl)
     val q = new Query[String](query, gql)
     val r: AjaxResult[GraphQLResponse] = q.execute(None)

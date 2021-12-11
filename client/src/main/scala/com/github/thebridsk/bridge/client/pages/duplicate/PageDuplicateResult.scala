@@ -91,7 +91,7 @@ object PageDuplicateResult {
 
       val actionDeleteOk: Callback = scope.props >>= { props =>
         Callback {
-          import scala.concurrent.ExecutionContext.Implicits.global
+          import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
           RestClientDuplicateResult
             .delete(props.page.dupid)
             .recordFailure()

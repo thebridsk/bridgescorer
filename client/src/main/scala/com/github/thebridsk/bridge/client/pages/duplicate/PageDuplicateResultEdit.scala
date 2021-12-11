@@ -250,7 +250,7 @@ object PageDuplicateResultEdit {
                 s"""Updating, state.played=${state.played} MDR: ${newmdr}"""
               )
               BridgeDispatcher.updateDuplicateResult(newmdr)
-              import scala.concurrent.ExecutionContext.Implicits.global
+              import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
               RestClientDuplicateResult
                 .update(newmdr.id, newmdr)
                 .recordFailure()

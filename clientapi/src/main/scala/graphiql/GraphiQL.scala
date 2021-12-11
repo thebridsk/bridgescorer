@@ -16,7 +16,7 @@ trait GraphiQLComponentProperty extends js.Object {
 object GraphiQLComponentProperty {
 
   def intro(graphqlUrl: String)(query: js.Object): Promise[js.Object] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
+    import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
     val gql = new GraphQLBaseClient(graphqlUrl)
     val r = gql.requestWithBody(query)
     import js.JSConverters._

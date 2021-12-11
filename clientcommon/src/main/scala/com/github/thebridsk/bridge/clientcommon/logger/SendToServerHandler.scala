@@ -16,7 +16,7 @@ object SendToServerHandler {
 class SendToServerHandler extends Handler with ServerHandler {
 
   def logIt(traceMsg: TraceMsg): Unit = {
-    import scala.concurrent.ExecutionContext.Implicits.global
+    import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 //    logger.info("sending to server: "+traceMsg )
     RestClientLogEntryV2
       .update("entry", traceMsgToLogEntryV2(traceMsg))

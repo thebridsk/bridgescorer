@@ -494,7 +494,7 @@ object PageScoreboard {
         }
       }
 
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
       val actionDelete: Callback = scope.modState(s => s.copy(deletePopup = true))
 

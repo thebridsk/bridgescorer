@@ -114,7 +114,7 @@ object PageStats {
       */
     class Backend(scope: BackendScope[Props, State]) {
 
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
       def onChange(filter: ViewPlayerFilter.Filter): Callback =
         scope.modState(s => s.copy(filter = filter))

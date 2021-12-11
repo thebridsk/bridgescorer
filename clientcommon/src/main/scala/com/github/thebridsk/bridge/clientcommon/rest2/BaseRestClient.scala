@@ -46,7 +46,7 @@ object Implicits {
 }
 
 import Implicits._
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
 object RestClientLogEntryV2 extends RestClient[LogEntryV2, String]("/v1/logger")
 object RestClientLoggerConfig
