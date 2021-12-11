@@ -311,12 +311,13 @@ object BridgeAppBarInternal {
                 )(
                   "About"
                 ),
-                MuiMenuItem(
-                  id = "SwaggerDocs",
-                  onClick = handleHelpGotoPageClick("/v1/docs") _
-                )(
-                  "Swagger Docs"
-                ),
+                // disabling because of vulnerability, https://github.com/swagger-api/swagger-ui/issues/4872
+                // MuiMenuItem(
+                //   id = "SwaggerDocs",
+                //   onClick = handleHelpGotoPageClick("/v1/docs") _
+                // )(
+                //   "Swagger Docs"
+                // ),
                 MuiMenuItem(
                   id = "SwaggerDocs2",
                   onClick = handleHelpGotoPageClick("/public/apidocs.html") _

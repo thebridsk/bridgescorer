@@ -34,13 +34,13 @@ object BldVersion {
   lazy val vWsRsApi="3.0.0"            // https://github.com/eclipse-ee4j/jaxrs-api
   lazy val vAkkaHttpCors = "1.1.2"     // https://github.com/lomigmegard/akka-http-cors
 
-  lazy val vSwaggerUI = "4.1.2"        // https://www.npmjs.com/package/swagger-ui-dist
+  lazy val vSwaggerUI = "4.1.3"        // https://www.npmjs.com/package/swagger-ui-dist
   lazy val vScalajsdom = "2.0.0"       // https://github.com/scala-js/scala-js-dom
   lazy val vScalaJsReact = "2.0.0"     // https://github.com/japgolly/scalajs-react
 
   lazy val vWebJarsReact = "17.0.2"    // https://www.npmjs.com/package/react
   lazy val vReactWidgets = "4.6.1"     // https://www.npmjs.com/package/react-widgets
-  lazy val vWebJarsFlux = "4.0.2"      // https://www.npmjs.com/package/flux
+  lazy val vWebJarsFlux = "4.0.3"      // https://www.npmjs.com/package/flux
   lazy val vReactWidgetsMoment = "4.0.30"  // https://www.npmjs.com/package/react-widgets-moment
   lazy val vMoment = "2.29.1"          // https://www.npmjs.com/package/moment
   lazy val vGlobalize = "1.6.0"               // https://www.npmjs.com/package/globalize
@@ -92,15 +92,17 @@ object BldVersion {
   lazy val vSangriaPlayJson = "2.0.2"      // https://github.com/sangria-graphql/sangria-play-json
 
   // graphql, graphiql, and graphql-voyager must be updated together.
-  lazy val vGraphQL = "16.0.1"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
-  lazy val vGraphiQL = "1.5.7"              // https://www.npmjs.com/package/graphiql
+  lazy val vGraphQL = "16.1.0"              // https://www.npmjs.com/package/graphql    co-req of graphql-voyager
+  lazy val vGraphiQL = "1.5.16"             // https://www.npmjs.com/package/graphiql
   lazy val vGraphQLVoyager = "1.0.0-rc.31"  // https://www.npmjs.com/package/graphql-voyager
 
-  lazy val vMaterialUIcore = "5.2.2"        // https://www.npmjs.com/package/@mui/material
-  lazy val vMaterialUIicons = "5.2.0"       // https://www.npmjs.com/package/@mui/icons-material
+  lazy val vMaterialUIcore = "5.2.3"        // https://www.npmjs.com/package/@mui/material
+  lazy val vMaterialUIicons = "5.2.1"       // https://www.npmjs.com/package/@mui/icons-material
   lazy val vEmotionReact = "11.7.0"         // https://www.npmjs.com/package/@emotion/react
   lazy val vEmotionStyled = "11.6.0"        // https://www.npmjs.com/package/@emotion/styled
 
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
-  lazy val vJss = "10.8.2"                  // https://www.npmjs.com/package/jss
+  lazy val vJss = "10.9.0"                  // https://www.npmjs.com/package/jss
+
+  lazy val vJsMacroTaskExecutor = "1.0.0"   // https://github.com/scala-js/scala-js-macrotask-executor
 }
