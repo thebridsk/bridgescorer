@@ -17,7 +17,7 @@ import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestion
 import com.github.thebridsk.bridge.data.duplicate.suggestion.Suggestion
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSuggestions
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.data.duplicate.suggestion.NeverPair

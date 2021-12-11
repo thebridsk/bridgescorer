@@ -13,7 +13,7 @@ import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultHolder
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.rest2.WrapperXMLHttpRequest
 //import com.github.thebridsk.bridge.clientapi.fastclick.FastClick
@@ -318,7 +318,7 @@ object HomePage {
       resultShutdown.cancel()
     } >> scope.modState(s => s.copy(working = None))
 
-    import scala.concurrent.ExecutionContext.Implicits.global
+    import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
     private var mounted = false
 

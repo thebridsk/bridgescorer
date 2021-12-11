@@ -92,7 +92,7 @@ object Init {
       f: () => Unit = noop _,
       controller: InitController = new InitController {}
   ): Unit = {
-    import scala.concurrent.ExecutionContext.Implicits.global
+    import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
     if (AjaxResult.isEnabled.getOrElse(false)) {
       RestClientLoggerConfig

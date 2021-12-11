@@ -24,7 +24,7 @@ import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import org.scalajs.dom.File
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientIndividualDuplicate
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.react.Utils._
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicatePage
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.BaseHandView

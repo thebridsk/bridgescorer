@@ -120,7 +120,7 @@ object Controller extends {
 
   }
 
-  import scala.concurrent.ExecutionContext.Implicits.global
+  import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
   /**
     * Create a duplicate match and start monitoring it

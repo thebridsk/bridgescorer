@@ -146,7 +146,7 @@ object NamesStore extends ChangeListenable {
         cb.foreach { _.runNow() }
       }
     } else {
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
       if (!busy) checkCallAgain {
         busy = true
         RestClientNames

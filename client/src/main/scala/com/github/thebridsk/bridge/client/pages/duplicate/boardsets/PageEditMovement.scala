@@ -26,7 +26,7 @@ import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.MovementEditView
 import scala.util.Success
 import scala.util.Failure
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.data.HandInTable
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.clientcommon.react.DropdownList

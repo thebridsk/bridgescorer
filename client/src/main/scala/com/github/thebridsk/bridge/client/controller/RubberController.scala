@@ -56,7 +56,7 @@ object RubberController {
 
   }
 
-  import scala.concurrent.ExecutionContext.Implicits.global
+  import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
   private var currentId = 0
 

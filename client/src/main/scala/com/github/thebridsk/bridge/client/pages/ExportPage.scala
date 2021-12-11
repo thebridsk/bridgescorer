@@ -9,7 +9,7 @@ import com.github.thebridsk.bridge.client.routes.AppRouter.Home
 import com.github.thebridsk.bridge.clientcommon.graphql.GraphQLClient
 import play.api.libs.json.JsDefined
 import play.api.libs.json.JsUndefined
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import play.api.libs.json.JsArray
 import com.github.thebridsk.bridge.clientcommon.react.AppButtonLink
 import com.github.thebridsk.bridge.clientcommon.react.CheckBox
