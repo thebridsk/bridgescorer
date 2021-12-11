@@ -101,27 +101,28 @@ trait MySwaggerService extends SwaggerHttpService {
       cors() {
         respondWithHeaders(swaggerCacheHeaders) {
           pathPrefix(apiVersionURISegment) {
-            logRequest(("topLevel", Logging.DebugLevel)) {
-              logResult(("topLevel", Logging.DebugLevel)) {
-                pathPrefix("docs") {
-                  pathEndOrSingleSlash {
-                    redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
-                  } ~
-                    path("index.html") {
-                      redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
-                    }
-                }
+            // removing because of vulnerability  https://github.com/swagger-api/swagger-ui/issues/4872
+            // logRequest(("topLevel", Logging.DebugLevel)) {
+            //   logResult(("topLevel", Logging.DebugLevel)) {
+            //     pathPrefix("docs") {
+            //       pathEndOrSingleSlash {
+            //         redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
+            //       } ~
+            //         path("index.html") {
+            //           redirect(getSwaggerURL(), StatusCodes.PermanentRedirect)
+            //         }
+            //     }
+            //   }
+            // } ~
+            pathPrefix(apiDocsPath) {
+              pathEndOrSingleSlash {
+                redirect(
+                  "/" + apiVersionURISegment + "/" + apiDocsPath + "/swagger.yaml",
+                  StatusCodes.PermanentRedirect
+                )
               }
             } ~
-              pathPrefix(apiDocsPath) {
-                pathEndOrSingleSlash {
-                  redirect(
-                    "/" + apiVersionURISegment + "/" + apiDocsPath + "/swagger.yaml",
-                    StatusCodes.PermanentRedirect
-                  )
-                }
-              } ~
-              routes
+            routes
           }
         }
       }

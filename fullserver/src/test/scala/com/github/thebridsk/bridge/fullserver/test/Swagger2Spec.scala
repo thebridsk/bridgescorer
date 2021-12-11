@@ -54,20 +54,21 @@ class Swagger2Spec
 
   behavior of "the Swagger Server api"
 
-  it should "return the /v1/docs/ should be a redirect" in {
-    Get("/v1/docs/").withAttributes(
-      remoteAddress
-    ) ~> myRouteWithLogging ~> check {
-      status mustBe PermanentRedirect
-      header("Location") match {
-        case Some(httpheader) =>
-          httpheader
-            .value() mustBe "/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl="
-        case None =>
-          fail("Did not get location header")
-      }
-    }
-  }
+  // disabled because of vulnerability https://github.com/swagger-api/swagger-ui/issues/4872
+  // it should "return the /v1/docs/ should be a redirect" in {
+  //   Get("/v1/docs/").withAttributes(
+  //     remoteAddress
+  //   ) ~> myRouteWithLogging ~> check {
+  //     status mustBe PermanentRedirect
+  //     header("Location") match {
+  //       case Some(httpheader) =>
+  //         httpheader
+  //           .value() mustBe "/public/swagger-ui-dist/index.html.gz?url=/v1/api-docs/swagger.yaml&validatorUrl="
+  //       case None =>
+  //         fail("Did not get location header")
+  //     }
+  //   }
+  // }
 
   def decodeResponse(response: HttpResponse): HttpResponse = {
     val decoder = response.encoding match {
