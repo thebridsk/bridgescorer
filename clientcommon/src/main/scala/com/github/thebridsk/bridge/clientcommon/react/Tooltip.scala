@@ -4,8 +4,8 @@ import scala.scalajs.js
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
-import org.scalajs.dom.raw.Event
-import org.scalajs.dom.raw.EventListenerOptions
+import org.scalajs.dom.Event
+import org.scalajs.dom.EventListenerOptions
 
 /**
   * Creates a tooltip that will show up when a mouse enters the element,

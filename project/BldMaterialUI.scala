@@ -34,11 +34,16 @@ object BldMaterialUI {
     "Place",
     "RadioButtonChecked",
     "RadioButtonUnchecked",
+    "Refresh",
+    "SettingsBrightness",
+    "Brightness7",
+    "Brightness4"
   )
 
   lazy val materialui = project.in(file("materialui")).
     configure( commonSettings ).
     enablePlugins(ScalaJSPlugin).
+    dependsOn(BldColor.colorJS).
     settings(
       libraryDependencies ++= materialUiDeps.value,
       sourceGenerators in Compile += Def.task {
@@ -64,7 +69,7 @@ object BldMaterialUI {
       |import com.github.thebridsk.materialui.icons.SvgIconProps
       |
       |object ${name} extends SvgIconBase {
-      |  @js.native @JSImport("@material-ui/icons/${name}", JSImport.Default)
+      |  @js.native @JSImport("@mui/icons-material/${name}", JSImport.Default)
       |  private object icon extends js.Any
       |  protected val f = JsComponent[SvgIconProps, Children.Varargs, Null](icon)
       |}

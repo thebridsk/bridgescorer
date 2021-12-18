@@ -36,7 +36,16 @@ object CreateBoardMovementForTest extends MainNoArgs {
 
     val m = Await.result(mf, Duration("30s"))
 
-    val bsm = BoardSetsAndMovements(b, m)
+    val imf = bs.individualMovements.readAll().map { r =>
+      r match {
+        case Right(movements) => movements.values.toList
+        case Left(err)        => List()
+      }
+    }
+
+    val im = Await.result(imf, Duration("30s"))
+
+    val bsm = BoardSetsAndMovements(b, m, im)
 
     val json = JsonSupport.writeJson(bsm)
 

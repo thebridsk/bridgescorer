@@ -18,10 +18,19 @@ case class DeleteChangeContext(
   * @param changes the list of changes made.  The most specific one is the last one.
   */
 class ChangeContext {
-
+  private var seq: Int = 0
   private var mchanges: List[ChangeContextData] = Nil
 
   def changes = mchanges
+
+  def setSeq(s: Int): ChangeContext = {
+    seq = s
+    this
+  }
+
+  def getSeq(): Int = {
+    seq
+  }
 
   def getSpecificChange(): Option[ChangeContextData] = {
     mchanges.lastOption
@@ -51,7 +60,7 @@ class ChangeContext {
     prepend(ChangeContext.delete(oldValue, parentField))
 
   override def toString(): String = {
-    "{ChangeContext " + changes + "}"
+    s"{ChangeContext seq=${seq} ${changes}}"
   }
 }
 

@@ -167,6 +167,7 @@ object TypographyProps extends PropsFactory[TypographyProps] {
     *                       Alternatively, you can use the component property. The default
     *                       mapping is the following:
     *                         { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', subtitle1: 'h6', subtitle2: 'h6', body1: 'p', body2: 'p',
+    * @param sx      The system prop that allows defining system overrides as well as additional CSS styles.
     * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
@@ -182,10 +183,11 @@ object TypographyProps extends PropsFactory[TypographyProps] {
       paragraph: js.UndefOr[Boolean] = js.undefined,
       variant: js.UndefOr[TextVariant] = js.undefined,
       variantMapping: js.UndefOr[Map[String, String]] = js.undefined,
+      sx: js.UndefOr[js.Dictionary[js.Any]] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
-    val p = get(props, additionalProps)
+    val p = get(props, additionalProps, sx = sx)
 
     align.foreach(v => p.updateDynamic("align")(v.value))
     classes.foreach(p.updateDynamic("classes")(_))
@@ -206,7 +208,7 @@ object TypographyProps extends PropsFactory[TypographyProps] {
 
 object MuiTypography extends ComponentFactory[TypographyProps] {
   @js.native @JSImport(
-    "@material-ui/core/Typography",
+    "@mui/material/Typography",
     JSImport.Default
   ) private object Typography extends js.Any
 
@@ -240,6 +242,7 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
     *                       Alternatively, you can use the component property. The default
     *                       mapping is the following:
     *                         { h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4', h5: 'h5', h6: 'h6', subtitle1: 'h6', subtitle2: 'h6', body1: 'p', body2: 'p',
+    * @param sx      The system prop that allows defining system overrides as well as additional CSS styles.
     * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
@@ -254,6 +257,7 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
       paragraph: js.UndefOr[Boolean] = js.undefined,
       variant: js.UndefOr[TextVariant] = js.undefined,
       variantMapping: js.UndefOr[Map[String, String]] = js.undefined,
+      sx: js.UndefOr[js.Dictionary[js.Any]] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
@@ -270,6 +274,7 @@ object MuiTypography extends ComponentFactory[TypographyProps] {
       paragraph = paragraph,
       variant = variant,
       variantMapping = variantMapping,
+      sx = sx,
       className = className,
       additionalProps = additionalProps
     )

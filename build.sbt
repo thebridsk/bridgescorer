@@ -21,6 +21,7 @@ lazy val materialui = BldMaterialUI.materialui
 lazy val redux = BldRedux.redux
 lazy val `bridgescorer-clientcommon` = BldBridgeClientCommon.`bridgescorer-clientcommon`
 lazy val `bridgescorer-clientapi` = BldBridgeClientApi.`bridgescorer-clientapi`
+lazy val `bridgescorer-clienttest` = BldBridgeClientTest.`bridgescorer-clienttest`
 lazy val `bridgescorer-client` = BldBridgeClient.`bridgescorer-client`
 
 lazy val help = BldBridgeHelp.help

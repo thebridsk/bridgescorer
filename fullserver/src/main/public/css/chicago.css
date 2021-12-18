@@ -249,3 +249,34 @@
 .chiDivEditNamesPage > table {
   margin-bottom: 10px;
 }
+
+.chiViewShowNewPosition table,
+.chiViewShowNewPosition th,
+.chiViewShowNewPosition td,
+.chiDivPageSelectSittingOut table,
+.chiDivPageSelectSittingOut th,
+.chiDivPageSelectSittingOut td,
+.chiDivPageSelectPos table,
+.chiDivPageSelectPos th,
+.chiDivPageSelectPos td,
+.chiViewPlayersFourthRound table,
+.chiViewPlayersFourthRound th,
+.chiViewPlayersFourthRound td,
+.chiViewPlayersThirdRound table,
+.chiViewPlayersThirdRound th,
+.chiViewPlayersThirdRound td,
+.chiViewPlayersSecondRound table,
+.chiViewPlayersSecondRound th,
+.chiViewPlayersSecondRound td,
+.chiViewPlayersVeryFirstRound table,
+.chiViewPlayersVeryFirstRound th,
+.chiViewPlayersVeryFirstRound td
+{
+  border: none;
+  background-color: var(--color-bg);
+}
+
+.chiViewPlayersVeryFirstRound > div > table > tbody > tr:first-child > td:last-child > div > label {
+  display: block;
+  text-align: left;
+}

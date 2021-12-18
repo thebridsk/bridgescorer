@@ -25,15 +25,16 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
   def resourceCreated[T](
       resName: String,
       f: Future[Result[(String, T)]],
-      successStatus: StatusCode = Created
+      successStatus: StatusCode = Created,
+      prefix: String = "/v1/rest"
   )(implicit marshaller: ToResponseMarshaller[T], writer: Writes[T]): Route =
     onComplete(f) {
       case Success(r) =>
         r match {
           case Right((id, l)) =>
             extractScheme { scheme =>
+              val rn = if (resName.startsWith("/")) s"${prefix}${resName}" else s"${prefix}/${resName}"
               headerValue(Service.extractHostPort) { host =>
-                val rn = if (resName.startsWith("/")) resName else "/" + resName
                 val hn =
                   if (host.endsWith("/")) host.substring(0, host.length - 1)
                   else host
@@ -51,8 +52,6 @@ object UtilsPlayJson extends BridgePlayJsonSupport {
                     if (scheme == "https" && p == 443) h
                     else if (scheme == "http" && p == 80) h
                     else s"${h}:${p}"
-                  val rn =
-                    if (resName.startsWith("/")) resName else "/" + resName
                   respondWithHeader(Location(s"${scheme}://${sp}${rn}/${id}")) {
                     complete(successStatus, l)
                   }

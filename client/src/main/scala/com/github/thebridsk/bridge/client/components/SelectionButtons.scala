@@ -47,12 +47,6 @@ object SelectionButtons {
 
     case class State()
 
-    /**
-      * Internal state for rendering the component.
-      *
-      * I'd like this class to be private, but the instantiation of component
-      * will cause Backend to leak.
-      */
     class Backend[T <: ButtonData](scope: BackendScope[Props[T], State]) {
       def render(props: Props[T], state: State) = { // scalafix:ok ExplicitResultTypes; React
         val width = Properties.maxLength(props.buttons.map(_.label):_*)
@@ -92,7 +86,7 @@ object SelectionButtons {
       }
     }
 
-    private[SelectionButtons] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props[ButtonData]]("SelectionButtons")
       .initialStateFromProps { props => State() }
       .backend(new Backend[ButtonData](_))

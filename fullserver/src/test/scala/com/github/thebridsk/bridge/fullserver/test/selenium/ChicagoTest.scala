@@ -677,27 +677,30 @@ class ChicagoTest
         new BridgeServiceFileStoreConverters(true).matchChicagoJson
       val (id, played) = new MatchChicagoCacheStoreSupport(false).fromJSON(json)
 
-      val created = played.created
-      val updated = played.updated
+      withClue(s"MatchChicago is $played") {
+        val created = played.created
+        val updated = played.updated
 
-      created must not be (0)
-      updated must not be (0)
-      created must be <= updated
+        created must not be (0)
+        updated must not be (0)
+        created must be <= updated
 
-      played.rounds.foreach(r => {
-        r.created must not be (0)
-        r.updated must not be (0)
-        r.created must be <= r.updated
-        assert(created - 100 <= r.created && r.created <= updated + 100)
-        assert(created - 100 <= r.updated && r.updated <= updated + 100)
-        r.hands.foreach(h => {
-          h.created must not be (0)
-          h.updated must not be (0)
-          h.created must be <= h.updated
-          assert(r.created - 100 <= h.created && h.created <= r.updated + 100)
-          assert(r.created - 100 <= h.updated && h.updated <= r.updated + 100)
+        played.rounds.foreach(r => {
+          r.created must not be (0)
+          r.updated must not be (0)
+          r.created must be <= r.updated
+          assert(created - 100 <= r.created && r.created <= updated + 100)
+          assert(created - 100 <= r.updated && r.updated <= updated + 100)
+          r.hands.foreach(h => {
+            h.created must not be (0)
+            h.updated must not be (0)
+            h.created must be <= h.updated
+            assert(r.created - 100 <= h.created && h.created <= r.updated + 100)
+            assert(r.created - 100 <= h.updated && h.updated <= r.updated + 100)
+          })
         })
-      })
+
+      }
 
     } finally {
       is.close()

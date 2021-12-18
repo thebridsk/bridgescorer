@@ -17,6 +17,15 @@ package object data {
   type DuplicateHand = DuplicateHandV2
   val DuplicateHand = DuplicateHandV2
 
+  type IndividualDuplicate = IndividualDuplicateV1
+  val IndividualDuplicate = IndividualDuplicateV1
+
+  type IndividualBoard = IndividualBoardV1
+  val IndividualBoard = IndividualBoardV1
+
+  type IndividualDuplicateHand = IndividualDuplicateHandV1
+  val IndividualDuplicateHand = IndividualDuplicateHandV1
+
   type MatchRubber = MatchRubberV1
   val MatchRubber = MatchRubberV1
 
@@ -25,6 +34,9 @@ package object data {
 
   type Movement = MovementV1
   val Movement = MovementV1
+
+  type IndividualMovement = IndividualMovementV1
+  val IndividualMovement = IndividualMovementV1
 
   type BoardSetsAndMovements = BoardSetsAndMovementsV1
   val BoardSetsAndMovements = BoardSetsAndMovementsV1

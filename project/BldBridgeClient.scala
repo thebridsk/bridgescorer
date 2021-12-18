@@ -28,8 +28,7 @@ object BldBridgeClient {
     "com.github.thebridsk.bridge.client.test.TestFairRotation" ::
     Nil
 
-  lazy val `bridgescorer-client` = project
-    .in(file("client"))
+  lazy val `bridgescorer-client` = Project("client", file("client"))
     .configure(
       commonSettings,
       buildInfo("com.github.thebridsk.bridge.client.version", "VersionClient")

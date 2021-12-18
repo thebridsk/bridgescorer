@@ -412,7 +412,7 @@ trait IdDuplicateSummary
 object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
   override def id(i: Int): Id = {
     throw new IllegalArgumentException(
-      "DuplicateSummary Ids can not be generated, must use MatchDuplicate.Id or MatchDuplicateResult.Id"
+      "DuplicateSummary Ids can not be generated, must use MatchDuplicate.Id, MatchDuplicateResult.Id, IndividualDuplicate.Id"
     )
   }
 
@@ -424,6 +424,8 @@ object DuplicateSummary extends HasId[IdDuplicateSummary]("") {
             MatchDuplicate.id(s).asInstanceOf[Id]
           case MatchDuplicateResult.prefix =>
             MatchDuplicateResult.id(s).asInstanceOf[Id]
+          case IndividualDuplicate.prefix =>
+            IndividualDuplicate.id(s).asInstanceOf[Id]
           case _ =>
             throw new IllegalArgumentException(
               s"DuplicateSummary Id syntax is not valid: ${s}"

@@ -27,7 +27,7 @@ import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.pages.HomePage
-import org.scalajs.dom.raw.File
+import org.scalajs.dom.File
 
 /**
   * A skeleton component.

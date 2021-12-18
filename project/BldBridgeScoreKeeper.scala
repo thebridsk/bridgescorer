@@ -66,6 +66,8 @@ object BldBridgeScoreKeeper {
           MergeStrategy.rename
         case PathList("META-INF", "versions", "9", "module-info.class") =>
           MergeStrategy.rename
+        case PathList("META-INF", "versions", "11", "module-info.class") =>
+          MergeStrategy.rename
         case PathList("META-INF", "versions", "9") =>
           // selenium jar files have a file with this name,
           // that causes unzip errors with files in that directory
@@ -82,13 +84,20 @@ object BldBridgeScoreKeeper {
             rest @ _*
             ) =>
           MergeStrategy.discard
+        case PathList(
+            "META-INF",
+           "io.netty.versions.properties"
+          ) => MergeStrategy.discard
         case x =>
           superStrategy(x)
       }
 
   lazy val bridgescorekeeper: Project = project
     .in(file("bridgescorekeeper"))
-    .configure( commonSettings, buildInfo("com.github.thebridsk.bridge.bridgescorer.version", "VersionBridgeScorer"))
+    .configure(
+      commonSettings,
+      buildInfo("com.github.thebridsk.bridge.bridgescorer.version", "VersionBridgeScorer")
+    )
     .dependsOn(BldBridgeFullServer.`bridgescorer-fullserver` % "test->test;compile->compile")
     .dependsOn(ProjectRef(uri("utilities"), "utilities-jvm"))
     .enablePlugins(WebScalaJSBundlerPlugin)
@@ -103,6 +112,7 @@ object BldBridgeScoreKeeper {
       mainClass in (Compile, run) := Some("com.github.thebridsk.bridge.server.Server"),
       mainClass in (Compile, packageBin) := Some("com.github.thebridsk.bridge.server.Server"),
       fork := true,
+      Test / fork := true,
 
       // testOptions in Test := Seq(),
 
@@ -136,17 +146,33 @@ object BldBridgeScoreKeeper {
         .replaceAll("[\\/]", "_")}.jar",
       assemblyJarName in (Test, assembly) := s"${name.value}-test-${version.value
         .replaceAll("[\\/]", "_")}.jar",
+
+      assemblysha256 := {
+        val targetdir = (crossTarget in Compile).value
+        val a = (assemblyJarName in assembly).value
+        val f = s"${a}.sha256"
+        (new File(targetdir, f), f)
+      },
+      assemblysha256 in Test := {
+        val targetdir = (crossTarget in Compile).value
+        val a = (assemblyJarName in (Test, assembly)).value
+        val f = s"${a}.sha256"
+        (new File(targetdir, f), f)
+      },
+
       assembly := {
         val log = streams.value.log
         val x = (assembly).value
-        val sha = Sha256.generate(x)
+        val shafile = assemblysha256.value
+        val sha = Sha256.generate(x, shafile._1)
         log.info(s"SHA-256: ${sha}")
         x
       },
       assembly in Test := {
         val log = streams.value.log
         val x = (assembly in Test).value
-        val sha = Sha256.generate(x)
+        val shafile = (assemblysha256 in Test).value
+        val sha = Sha256.generate(x, shafile._1)
         log.info(s"SHA-256: ${sha}")
         x
       },

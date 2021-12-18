@@ -52,7 +52,7 @@ object Popup {
       Props(display, content, id, clickaway)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  object Internal {
+  protected object Internal {
 
     val logger: Logger = Logger("bridge.Popup")
 
@@ -63,6 +63,7 @@ object Popup {
         import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
         val disp = ^.display.none.when(!props.display)
         <.div(
+          disp,
           props.id.whenDefined { i =>
             logger.info(s"""Popup.render setting id to $i""")
             ^.id := i

@@ -76,7 +76,7 @@ class ExportPage(implicit webDriver: WebDriver, pageCreated: SourcePosition)
     * @param file where to save the export.zip file
     * @param pos
     */
-  def export(implicit pos: Position): File = {
+  def doExport(implicit pos: Position): File = {
     val r = HttpUtils.getHttpAllBytesToFile(TestServer.getUrl("/v1/export"))
     if (r.status == 200) {
       r.contentdisposition match {

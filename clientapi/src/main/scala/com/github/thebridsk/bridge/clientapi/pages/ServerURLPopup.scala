@@ -6,7 +6,6 @@ import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerURL
-import scala.concurrent.ExecutionContext
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.utilities.logging.Logger
 
@@ -89,7 +88,7 @@ object ServerURLPopupInternal {
 
     def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; ReactComponent
       val content: Option[TagMod] = if (isShowServerURLPopup) {
-        implicit val ec = ExecutionContext.global
+        import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
         val item = if (BridgeDemo.isDemo) {
           Some(
             <.li(

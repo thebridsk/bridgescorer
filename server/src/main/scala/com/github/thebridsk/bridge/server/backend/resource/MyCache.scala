@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import com.github.thebridsk.utilities.logging.Logger
 import scala.concurrent.duration._
 import akka.http.caching.scaladsl.LfuCacheSettings
+import scala.concurrent.ExecutionContext
 
 class CreateKeyFailed[K](result: Result[K]) extends Exception
 
@@ -27,6 +28,8 @@ class MyCache[K, V](
     val cacheMaxCapacity: Int = 100,
     val cacheTimeToLive: Duration = Duration.Inf,
     val cacheTimeToIdle: Duration = Duration.Inf
+)(implicit
+    execute: ExecutionContext
 ) {
 
   val defaultCachingSettings: CachingSettings = CachingSettings("{}")
@@ -130,6 +133,8 @@ class MyCache[K, V](
             s"Cache update ${key} did not get a future to current value"
           )
       }
+      // val r = lfuCache.put(key, generateNewValue(oldv))
+      // log.finer(s"Cache update ${key} added new future to cache")
       lfuCache.remove(key)
       log.finer(s"Cache update ${key} removed old value from cache")
       val r = lfuCache.apply(key, () => generateNewValue(oldv))

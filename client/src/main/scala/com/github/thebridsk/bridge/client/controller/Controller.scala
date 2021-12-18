@@ -120,7 +120,7 @@ object Controller extends {
 
   }
 
-  import scala.concurrent.ExecutionContext.Implicits.global
+  import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
   /**
     * Create a duplicate match and start monitoring it
@@ -180,6 +180,10 @@ object Controller extends {
           BridgeDispatcher.updatePicture(dupid, boardid, handid, picture)
         case Protocol.UpdateDuplicatePictures(dupid, pictures) =>
           BridgeDispatcher.updatePictures(dupid, pictures)
+        case _: Protocol.UpdateIndividualDuplicate     =>
+        case _: Protocol.UpdateIndividualDuplicateHand =>
+        case _: Protocol.UpdateIndividualDuplicatePicture        =>
+        case _: Protocol.UpdateIndividualDuplicatePictures       =>
         case Protocol.NoData(_)                  =>
         case Protocol.UpdateChicago(_)           =>
         case Protocol.UpdateChicagoRound(_, _)   =>

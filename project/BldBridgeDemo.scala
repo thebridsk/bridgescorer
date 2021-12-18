@@ -23,7 +23,7 @@ object BldBridgeDemo {
 
   val demoTargetDir = settingKey[File]("The demo directory.")
 
-  lazy val demo: Project = project.in(file("demo"))
+  lazy val demo: Project = Project("demo", file("demo"))
     .configure( commonSettings )
     .dependsOn(BldBridgeScoreKeeper.bridgescorekeeper % "test->test" )
     .dependsOn(BldBridgeServer.`bridgescorer-server`)
@@ -45,6 +45,17 @@ object BldBridgeDemo {
           (run in Compile).toTask(s""" $jar $target""").value
         }
       }.value,
+
+      fork in Test := true,
+      javaOptions in Test ++= Seq(
+        "-Xmx4096M",
+        "-DDefaultWebDriver=" + useBrowser,
+        "-DSessionComplete=" + useBrowser,
+        "-DSessionDirector=" + useBrowser,
+        "-DSessionTable1=" + useBrowser,
+        "-DSessionTable2=" + useBrowser,
+        testProductionPage
+      ),
 
       publishDemo := {
         // val x = generateDemo.value

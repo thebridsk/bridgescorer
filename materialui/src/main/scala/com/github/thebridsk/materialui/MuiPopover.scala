@@ -1,7 +1,7 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
+import japgolly.scalajs.react.facade._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 //import com.github.thebridsk.materialui.util.{ JsNumber => _, _ }
@@ -396,7 +396,7 @@ object PopoverProps extends PropsFactory[PopoverProps] {
 
 object MuiPopover extends ComponentFactory[PopoverProps] {
   @js.native @JSImport(
-    "@material-ui/core/Popover",
+    "@mui/material/Popover",
     JSImport.Default
   ) private object Popover extends js.Any
 

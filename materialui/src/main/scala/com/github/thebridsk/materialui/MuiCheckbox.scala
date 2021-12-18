@@ -4,15 +4,15 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-import japgolly.scalajs.react.{raw => Raw}
+import japgolly.scalajs.react.facade
 import scala.scalajs.js.UndefOr
 
 @js.native
 protected trait CheckboxPropsPrivate extends js.Any {
   @JSName("checkedIcon")
-  val checkedIconInternal: js.UndefOr[Raw.React.Node] = js.native
+  val checkedIconInternal: js.UndefOr[facade.React.Node] = js.native
   @JSName("icon")
-  val iconInternal: js.UndefOr[Raw.React.Node] = js.native
+  val iconInternal: js.UndefOr[facade.React.Node] = js.native
   @JSName("indeterminateIcon")
   val indeterminateIconInternal: js.UndefOr[String] = js.native
 }
@@ -23,15 +23,15 @@ trait CheckboxProps
     with StandardProps
     with CheckboxPropsPrivate {
   val checked: js.UndefOr[Boolean] = js.native
-  // val checkedIcon: js.UndefOr[Raw.React.Element] = js.native
+  // val checkedIcon: js.UndefOr[facade.React.Element] = js.native
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val color: js.UndefOr[ColorVariant] = js.native
   val disable: js.UndefOr[Boolean] = js.native
   val disableRipple: js.UndefOr[Boolean] = js.native
-  // val icon: js.UndefOr[Raw.React.Element] = js.native
+  // val icon: js.UndefOr[facade.React.Element] = js.native
   val id: js.UndefOr[String] = js.native
   val indeterminate: js.UndefOr[Boolean] = js.native
-  // val indeterminateIcon: js.UndefOr[Raw.React.Element] = js.native
+  // val indeterminateIcon: js.UndefOr[facade.React.Element] = js.native
   val inputProps: js.UndefOr[js.Dictionary[String]] = js.native
   val inputRef: js.UndefOr[js.Object] = js.native
   val onChange: js.UndefOr[js.Function1[js.Object, Unit]] = js.native
@@ -142,7 +142,7 @@ object CheckboxProps extends PropsFactory[CheckboxProps] {
 
 object MuiCheckbox extends ComponentFactory[CheckboxProps] {
   @js.native @JSImport(
-    "@material-ui/core/Checkbox",
+    "@mui/material/Checkbox",
     JSImport.Default
   ) private object MList extends js.Any
 

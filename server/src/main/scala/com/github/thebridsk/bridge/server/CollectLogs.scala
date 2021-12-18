@@ -85,7 +85,7 @@ The server should NOT be running.
 
     val storeservice = BridgeService(store, diagnosticDirectory = diagDir)
 
-    val f = storeservice.export(
+    val f = storeservice.doExport(
       Files.newOutputStream(zipfile.jfile.toPath()),
       None,
       true

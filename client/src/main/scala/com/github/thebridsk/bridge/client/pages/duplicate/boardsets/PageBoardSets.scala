@@ -23,7 +23,7 @@ import _root_.com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import scala.util.Success
 import scala.util.Failure
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
 /**
   * Component to display a list of boardsets, and show the details of one boardset.
@@ -75,7 +75,7 @@ object PageBoardSets {
       Props(routerCtl, backpage, initialDisplay)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  object Internal {
+  protected object Internal {
 
     import com.github.thebridsk.bridge.clientcommon.react.Utils._
     import DuplicateStyles._
@@ -301,14 +301,20 @@ object PageBoardSets {
         s.copy(boardSets = boardsets)
       }
 
-      val scrollToCB: Callback = boardSetViewRef.get
-        .map { re =>
-          re.getDOMNode.toElement.map { el =>
-            el.scrollIntoView(false)
-          }
+      def scrollToBoardSetView: Unit = boardSetViewRef.foreach { ref =>
+        ref.getDOMNode.toElement.map { el =>
+          el.scrollIntoView(false)
         }
-        .asCallback
-        .void
+      }
+
+      // val scrollToCB: Callback = boardSetViewRef.get
+      //   .map { re =>
+      //     re.getDOMNode.toElement.map { el =>
+      //       el.scrollIntoView(false)
+      //     }
+      //   }
+      //   // .asCallback
+      //   .void
 
       val didMount: Callback = Callback {
         logger.info("PageBoardSets.didMount")
@@ -332,7 +338,7 @@ object PageBoardSets {
         val props = cdu.currentProps
         val prevProps = cdu.prevProps
         if (props.initialDisplay != prevProps.initialDisplay) {
-          cdu.backend.scrollToCB.runNow()
+          cdu.backend.scrollToBoardSetView
           cdu.backend.forceUpdate
         }
       }

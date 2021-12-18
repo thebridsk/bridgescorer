@@ -1,14 +1,14 @@
 package com.github.thebridsk.bridge.client.test
 
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Node
-import org.scalajs.dom.raw.Text
-import org.scalajs.dom.raw.DocumentType
-import org.scalajs.dom.raw.ProcessingInstruction
-import org.scalajs.dom.raw.CDATASection
-import org.scalajs.dom.raw.HTMLElement
+import org.scalajs.dom.Element
+import org.scalajs.dom.Node
+import org.scalajs.dom.Text
+import org.scalajs.dom.DocumentType
+import org.scalajs.dom.ProcessingInstruction
+import org.scalajs.dom.CDATASection
+import org.scalajs.dom.HTMLElement
 import japgolly.scalajs.react.test.Simulation
-import org.scalajs.dom.raw.HTMLInputElement
+import org.scalajs.dom.HTMLInputElement
 import scala.scalajs.js
 
 import japgolly.scalajs.react.test.SimEvent

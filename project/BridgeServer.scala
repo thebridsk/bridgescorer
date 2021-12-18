@@ -9,8 +9,22 @@ import java.nio.file.Files
 import java.io.IOException
 import java.net.SocketTimeoutException
 import scala.io.Source
+import java.net.InetAddress
 
-class BridgeServer( val assemblyJar: String, val port: String = "8082") {
+/**
+  * Manages the starting of the BridgeScoreKeeper server for testing.
+  *
+  * System properties and environment variables:
+  *
+  * - **TestServerListen** - the protocol, host and port to listen on.
+  *                          the port is ignored.  Syntax is a URL.
+  * - **TestServerURL**    - the base URL for the server.  Must end in "/"
+  *                          The default value is the **TestServerListen** value.
+  *
+  * @param assemblyJar the location and name of the bridgescorekeeper jar file
+  * @param port port to use when starting the server, overrides the value given in **TestServerListen** value.
+  */
+class BridgeServer( val assemblyJar: String, val port: Int = 8082) {
   import BridgeServer._
 
   var thread: Option[Thread] = None
@@ -31,7 +45,20 @@ class BridgeServer( val assemblyJar: String, val port: String = "8082") {
     thread = Some(new Thread("MoreTests Server") {
       override
       def run(): Unit = {
-        runjava( log, "-jar"::assemblyJar::"--logfile"::serverLogfile::"start"::"--port"::port::Nil, workingDirectory )
+        val hostname = testServerListen.getHost()
+        val ipAddr = InetAddress.getByName(hostname)
+        val interface = ipAddr.getHostAddress()
+        runjava(
+          log,
+          List(
+            "-jar", assemblyJar,
+            "--logfile", serverLogfile,
+            "start",
+            "--port", port.toString,
+            "--interface", interface
+          ),
+          workingDirectory
+        )
         lock.synchronized {
           done = true
           lock.notifyAll()
@@ -64,7 +91,7 @@ class BridgeServer( val assemblyJar: String, val port: String = "8082") {
   def stopServer( log: Logger ) = {
     thread.foreach { t => {
       if (t.isAlive()) {
-        val url = new URL(s"${getBaseUrl}/v1/shutdown?doit=yes")
+        val url = new URL(s"${getBaseUrl}v1/shutdown?doit=yes")
         val conn = url.openConnection().asInstanceOf[HttpURLConnection]
         conn.setRequestMethod("POST")
         conn.connect()
@@ -83,11 +110,112 @@ class BridgeServer( val assemblyJar: String, val port: String = "8082") {
     } }
   }
 
-  def getBaseUrl() = s"http://localhost:$port"
+  /**
+    * Normalize the URL.
+    *
+    * Add protocol http if none is specified,
+    * use port 8081 if none specified
+    *
+    * This must match same function in TestServer.scala
+    */
+  private def normalizeURL(url: String) = {
+    val u = new URL(url)
+    val port = {
+      val p = u.getPort()
+      if (p < 0) 8081
+      else p
+    }
+    new URL(
+      Option(u.getProtocol()).getOrElse("http"),
+      u.getHost(),
+      port,
+      u.getFile()
+    )
+  }
+
+  def getProp(name: String): Option[String] = {
+    sys.props.get(name) match {
+      case Some(s) =>
+        Some(s)
+      case None    =>
+        sys.env.get(name)
+          .map { s =>
+            s
+          }.orElse {
+            None
+          }
+    }
+  }
+
+  /**
+    * Get the value of a URL system property or environment variable.
+    *
+    * If both system property and environment variable is set, the
+    * system property value is used.
+    *
+    * Normalized the URL, this adds protocol http if none is specified,
+    * use port 8081 if none specified.
+    *
+    * Checks for protocol being http or https
+    *
+    * optionally checks the file part of the URL to make sure it ends in a "/"
+    *
+    * @param name the name of the environment variable or system property
+    * @param defaultValue the value to use if none is set
+    * @param ignoreFile if true, then don't check if file part ends in "/"
+    *
+    * @throws Exception if the URL is not valid.
+    *
+    * This must match same function in TestServer.scala
+    */
+  private def getPropURL(
+      name: String,
+      defaultValue: String,
+      ignoreFile: Boolean = false
+  ): URL = {
+    val v = getProp(name).getOrElse(defaultValue)
+    try {
+      val url = normalizeURL(v)
+      val protocol = url.getProtocol()
+      if (protocol != "http" && protocol != "https") {
+        throw new Exception(s"${name} must be http or https, found ${protocol}: ${testServerURL}")
+      }
+      if (!ignoreFile && url.getFile() != "/") {
+        throw new Exception(s"${name} must end in '/'")
+      }
+      url
+    } catch {
+      case x: Exception =>
+        throw new Exception(s"Value ${name} is not a valid URL: ${v}\n${x}",x)
+    }
+  }
+
+  private def endsInSlash( v: String ) = {
+    if (v.endsWith("/")) v
+    else s"$v/"
+  }
+
+  val testServerListen: URL = getPropURL("TestServerListen", "http://localhost:8081", true)
+  val testServerURL: URL = getPropURL("TestServerURL", endsInSlash(testServerListen.toString()))
+
+  val useServerListen: URL = new URL(
+    testServerListen.getProtocol(),
+    testServerListen.getHost(),
+    port,
+    testServerListen.getFile()
+  )
+  val useServerURL: URL = new URL(
+    testServerURL.getProtocol(),
+    testServerURL.getHost(),
+    port,
+    testServerURL.getFile()
+  )
+
+  def getBaseUrl(): String = useServerURL.toString()
 
   def getTestDefine() = {
     if (startedServer) {
-      s"-DUseBridgeScorerURL=${getBaseUrl}"::Nil
+      s"-DTestServerListen=${useServerListen}"::s"-DTestServerURL=${useServerURL}"::"-DTestServerStart=false"::Nil
     } else {
       Nil
     }

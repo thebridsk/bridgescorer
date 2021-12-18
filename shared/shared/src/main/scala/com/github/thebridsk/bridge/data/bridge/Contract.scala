@@ -109,6 +109,15 @@ case class Contract(
       west,
       dealer
     ).withScoring
+
+  def setPlayers(
+    n: String,
+    s: String,
+    e: String,
+    w: String
+  ): Contract = {
+    copy(north=n, south=s, east=e, west=w)
+  }
 }
 
 object Contract {

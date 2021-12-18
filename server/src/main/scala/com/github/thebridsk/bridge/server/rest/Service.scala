@@ -24,11 +24,17 @@ import com.github.thebridsk.bridge.server.backend.RubberMonitorWebservice
 import java.time.Instant
 import java.time.ZoneId
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.ValidationRejection
+import akka.event.LoggingAdapter
+import akka.event.Logging
+import com.github.thebridsk.bridge.server.backend.IndividualDuplicateMonitorWebservice
 
 //import akka.event.LoggingAdapter
 
 trait Service extends ImportExport {
   hasActorSystem: HasActorSystem =>
+
+  private lazy val log: LoggingAdapter = Logging(actorSystem, classOf[Service])
 
   def ports: ServerPort
 
@@ -63,10 +69,18 @@ trait Service extends ImportExport {
     classOf[RestNestedHand],
     classOf[RestNestedTeam],
     classOf[RestNestedPicture],
+    classOf[RestNestedPictureHand],
     classOf[RestSuggestion],
     classOf[RestNames],
     classOf[RestBoardSet],
     classOf[RestMovement],
+    classOf[RestIndividualMovement],
+    classOf[RestIndividualDuplicate],
+    classOf[RestIndividualDuplicateSummary],
+    classOf[RestNestedIndividualBoard],
+    classOf[RestNestedIndividualHand],
+    classOf[RestNestedPictureIndividual],
+    classOf[RestNestedPictureIndividualHand],
     classOf[DuplicateMonitorWebservice],
     classOf[ChicagoMonitorWebservice],
     classOf[RubberMonitorWebservice],
@@ -81,6 +95,14 @@ trait Service extends ImportExport {
     implicit override lazy val restService: BridgeService =
       hasActorSystem.restService
   }
+
+  object restIndividualMovement extends RestIndividualMovement {
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val restService: BridgeService =
+      hasActorSystem.restService
+  }
+
   object restBoardSet extends RestBoardSet {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
@@ -104,12 +126,22 @@ trait Service extends ImportExport {
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
   }
+  val restIndividualDuplicate: RestIndividualDuplicate = new RestIndividualDuplicate {
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val restService = hasActorSystem.restService
+  }
   val restDuplicateResult: RestDuplicateResult = new RestDuplicateResult {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
   }
   val restDuplicateSummary: RestDuplicateSummary = new RestDuplicateSummary {
+    implicit override lazy val actorSystem: ActorSystem =
+      hasActorSystem.actorSystem
+    implicit override lazy val restService = hasActorSystem.restService
+  }
+  val restIndividualDuplicateSummary: RestIndividualDuplicateSummary = new RestIndividualDuplicateSummary {
     implicit override lazy val actorSystem: ActorSystem =
       hasActorSystem.actorSystem
     implicit override lazy val restService = hasActorSystem.restService
@@ -132,6 +164,8 @@ trait Service extends ImportExport {
   }
   object duplicateMonitor
       extends DuplicateMonitorWebservice(totallyMissingResourceHandler, this)
+  object individualDuplicateMonitor
+      extends IndividualDuplicateMonitorWebservice(totallyMissingResourceHandler, this)
   object chicagoMonitor
       extends ChicagoMonitorWebservice(totallyMissingResourceHandler, this)
   object rubberMonitor
@@ -155,8 +189,14 @@ trait Service extends ImportExport {
       .newBuilder()
       .handle {
         case MalformedRequestContentRejection(errorMsg, ex) =>
-//      logger.warning("Oops: "+errorMsg, ex)
+          log.error(ex, s"Oops MalformedRequestContentRejection: ${errorMsg}")
           complete(StatusCodes.BadRequest, RestMessage(errorMsg))
+      }
+      .handle {
+        case ValidationRejection(msg, ex) =>
+          ex.map(log.error(_, s"Oops ValidationRejection: ${msg}")).
+             getOrElse(log.error(s"Oops ValidationRejection: ${msg}"))
+          complete(StatusCodes.BadRequest, "That wasn't valid! " + msg)
       }
       .handleAll[MethodRejection] { rejections =>
         val methods = rejections map (_.supported)
@@ -209,12 +249,15 @@ trait Service extends ImportExport {
               restLoggerConfig.route ~
                 restBoardSet.route ~ restMovement.route ~ restChicago.route ~
                 restDuplicate.route ~ restDuplicateResult.route ~ restDuplicateSummary.route ~
+                restIndividualDuplicateSummary.route ~
                 restNames.route ~ restRubber.route ~ restSuggestion.route ~
-                restDuplicatePlaces.route // ~ restMyLogging.route
+                restDuplicatePlaces.route ~ restIndividualMovement.route ~
+                restIndividualDuplicate.route // ~ restMyLogging.route
             }
           }
         } ~
           duplicateMonitor.route ~
+          individualDuplicateMonitor.route ~
           chicagoMonitor.route ~
           rubberMonitor.route ~
           importExportRoute

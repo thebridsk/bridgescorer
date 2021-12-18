@@ -56,7 +56,7 @@ object RubberController {
 
   }
 
-  import scala.concurrent.ExecutionContext.Implicits.global
+  import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
   private var currentId = 0
 
@@ -300,6 +300,10 @@ object RubberController {
         case Protocol.UpdateDuplicateTeam(rubid, team) =>
         case _: Protocol.UpdateDuplicatePicture        =>
         case _: Protocol.UpdateDuplicatePictures       =>
+        case _: Protocol.UpdateIndividualDuplicate     =>
+        case _: Protocol.UpdateIndividualDuplicateHand =>
+        case _: Protocol.UpdateIndividualDuplicatePicture        =>
+        case _: Protocol.UpdateIndividualDuplicatePictures       =>
         case Protocol.NoData(_)                        =>
         case Protocol.UpdateChicago(mc)                =>
         case Protocol.UpdateChicagoRound(mc, r)        =>

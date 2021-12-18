@@ -37,7 +37,8 @@ object AppRouter {
   case object PageTest extends AppPage // for debugging
   case object GraphQLAppPage extends AppPage
   case object ColorView extends AppPage
-  case object VoyagerView extends AppPage
+  case class VoyagerView( query: Map[String, String]) extends AppPage
+  object VoyagerViewDefault extends VoyagerView(Map())
   case object GraphiQLView extends AppPage
   case object LogView extends AppPage
 
@@ -67,7 +68,8 @@ class AppRouter {
         Info ::
         GraphQLAppPage ::
         ColorView ::
-        VoyagerView ::
+        VoyagerView(Map("url"->"/")) ::
+        VoyagerViewDefault ::
         GraphiQLView ::
         LogView ::
         Nil
@@ -76,7 +78,7 @@ class AppRouter {
   }
 
   def logToServer: RouterConfig.Logger =
-    s => Callback { logger.fine(s"AppRouter: " + s) }
+    s => ( () => logger.fine(s"AppRouter: " + s))
 
   import scala.language.implicitConversions
   implicit def routerCtlToBridgeRouter[P](ctl: RouterCtl[P]): BridgeRouter[P] =
@@ -111,7 +113,7 @@ class AppRouter {
           logit(InfoPage(routerCtl))
         )
         | staticRoute("#thankyou", ThankYou) ~> renderR((routerCtl) =>
-          logit(ThankYouPage())
+          logit(ThankYouPage(routerCtl))
         )
         | staticRoute("#graphql", GraphQLAppPage) ~> renderR((routerCtl) =>
           logit(GraphQLPage(routerCtl))
@@ -119,9 +121,14 @@ class AppRouter {
         | staticRoute("#color", ColorView) ~> renderR((routerCtl) =>
           logit(ColorPage(routerCtl))
         )
-        | staticRoute("#voyager", VoyagerView) ~> renderR((routerCtl) =>
-          logit(VoyagerPage(routerCtl))
+        // | staticRoute("#voyager", VoyagerViewDefault) ~> renderR((routerCtl) =>
+        //   logit(VoyagerPage(routerCtl,VoyagerViewDefault))
+        // )
+        | dynamicRouteCT(
+          ("#voyager" ~ queryToMap)
+            .caseClass[VoyagerView]
         )
+          ~> dynRenderR((p, routerCtl) => logit(VoyagerPage(routerCtl,p)))
         | staticRoute("#graphiql", GraphiQLView) ~> renderR((routerCtl) =>
           logit(GraphiQLPage(routerCtl))
         )

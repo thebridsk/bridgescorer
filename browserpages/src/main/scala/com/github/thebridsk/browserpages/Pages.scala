@@ -641,13 +641,13 @@ abstract class Page[+T <: Page[T]]()(implicit
     eventually { findDateTimePicker(name) }
   }
 
-  def findRadioButton(name: String)(implicit pos: Position): Checkbox = {
+  def findRadioButton(name: String)(implicit pos: Position): RadioButton = {
     RadioButton.find(name)
   }
 
   def getRadioButton(
       name: String
-  )(implicit patienceConfig: PatienceConfig, pos: Position): Checkbox = {
+  )(implicit patienceConfig: PatienceConfig, pos: Position): RadioButton = {
     eventually { findRadioButton(name) }
   }
 

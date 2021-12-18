@@ -8,6 +8,7 @@ import org.scalajs.sbtplugin.ScalaJSCrossVersion
 // import scalajsbundler.sbtplugin.ScalaJSBundlerPlugin.autoImport._
 import sbtbuildinfo.BuildInfoPlugin
 import sbtbuildinfo.BuildInfoPlugin.autoImport._
+import sbtassembly.AssemblyPlugin.autoImport._
 
 import scalafix.sbt.ScalafixPlugin.autoImport._
 
@@ -139,6 +140,8 @@ object BldCommonSettings {
 
   lazy val Distribution = config("distribution") describedAs("tasks for creating a distribution.")
 
+  val assemblysha256 = taskKey[(File, String)]("filename that has the sha256 of the assembly jar file")
+
   // The prereqs for the integration tests,
   // to run integration tests (integrationtests, moretests) without running prereqs, on command line issue:
   //   set prereqintegrationtests := {}
@@ -147,7 +150,7 @@ object BldCommonSettings {
   // defined with taskKey[Unit](desc) instead of TaskKey[Unit](name,desc).
   // The error is a type error, expecting a T got a Unit.
   //
-  val prereqintegrationtests = taskKey[Unit]( "Prereqs for unit tests on the assembly.jar file.") in Distribution
+  val prereqintegrationtests = taskKey[Unit]("Prereqs for unit tests on the assembly.jar file.") in Distribution
 
   val integrationtests = taskKey[Unit]("Runs integration tests on the assembly.jar file.") in Distribution
 
@@ -399,5 +402,4 @@ object BldCommonSettings {
     val s = m.map(p => addCommandAlias(p._1, p._2)).reduce(_ ++ _)
     proj.settings(s: _*)
   }
-
 }

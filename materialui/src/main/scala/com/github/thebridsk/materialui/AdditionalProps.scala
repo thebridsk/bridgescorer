@@ -43,11 +43,13 @@ trait PropsFactory[Props <: js.Object with AdditionalProps] {
   def get[P <: Props](
       props: js.UndefOr[P] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined,
-      onClick: js.UndefOr[ReactEvent => Unit] = js.undefined
+      onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
+      sx: js.UndefOr[js.Dictionary[js.Any]] = js.undefined,
   ): P = {
     val p = props.getOrElse(apply[P]())
     p.add(additionalProps)
     onClick.foreach(p.updateDynamic("onClick")(_))
+    sx.foreach(p.updateDynamic("sx")(_))
     p.asInstanceOf[P]
   }
 
@@ -64,6 +66,18 @@ trait ComponentFactory[Props <: js.Object with AdditionalProps] {
   ): Js.UnmountedWithRawType[Props, Null, Js.RawMounted[Props, Null]] = {
     val x = f(props) _
     x(children)
+  }
+
+}
+
+trait ComponentNoChildrenFactory[Props <: js.Object with AdditionalProps] {
+
+  protected val f: Js.Component[Props, Null, CtorType.Props]
+
+  def create(
+      props: Props
+  ): Js.UnmountedWithRawType[Props, Null, Js.RawMounted[Props, Null]] = {
+    f(props)
   }
 
 }

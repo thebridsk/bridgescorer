@@ -5,7 +5,7 @@ import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles
-import org.scalajs.dom.raw.Window
+import org.scalajs.dom.Window
 import scala.scalajs.js.Dynamic
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage

@@ -59,7 +59,7 @@ object AboutPageInternal {
   class Backend(scope: BackendScope[Props, State]) {
 
     val didMount: Callback = Callback {
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
       // make AJAX rest call here
       logger.finer("HomePage: Sending serverurl request to server")
       RestClientServerURL

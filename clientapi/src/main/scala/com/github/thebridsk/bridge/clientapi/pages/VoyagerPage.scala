@@ -8,91 +8,113 @@ import com.github.thebridsk.bridge.clientapi.routes.BridgeRouter
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
+import com.github.thebridsk.bridge.clientapi.routes.AppRouter.VoyagerView
 
 /**
-  * A skeleton component.
+  * Voyager page to show GraphQL documentation using
+  * [GraphQL Voyager](https://www.npmjs.com/package/graphql-voyager).
   *
   * To use, just code the following:
   *
-  * <pre><code>
-  * VoyagerPage( VoyagerPage.Props( ... ) )
-  * </code></pre>
+  * {{{
+  * val router: BridgeRouter[AppPage] = ...
+  *
+  * VoyagerPage(
+  *   router = router,
+  *   page = VoyagerViewDefault
+  * )
+  *
+  * VoyagerPage(
+  *   router = router,
+  *   page = VoyagerView(Map("url" -> "https://some.graphql.endpoint.example.com/graphql"))
+  * )
+  * }}}
+  *
+  * When this page is being displayed, the **url** query parameter on the page URL may be added or modified
+  * to point to a GraphQL endpoint.  The GraphQL endpoint MUST support
+  * the [introspection system](https://graphql.org/learn/introspection/).
+  *
+  * @see See the [[apply]] method for a description of the arguments.
+  * @see See https://www.npmjs.com/package/graphql-voyager for information about GraphQL Voyager
   *
   * @author werewolf
   */
 object VoyagerPage {
-  import VoyagerPageInternal._
+  import Internal._
 
-  case class Props(router: BridgeRouter[AppPage])
-
-  def apply(router: BridgeRouter[AppPage]) =
-    component(Props(router)) // scalafix:ok ExplicitResultTypes; ReactComponent
-
-}
-
-object VoyagerPageInternal {
-  import VoyagerPage._
+  case class Props(
+    router: BridgeRouter[AppPage],
+    page: VoyagerView
+  )
 
   /**
-    * Internal state for rendering the component.
+    * Instantiate the component.
     *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause State to leak.
+    * @param router the react router
+    * @param page a VoyagerView object.  The object contains a map that has an optional key, `url`.
+    *             If the key is present the value, a URL, must point to a GraphQL endpoint.
+    *
+    * @return the unmounted react component.
     */
-  case class State()
+  def apply(
+    router: BridgeRouter[AppPage],
+    page: VoyagerView
+  ) =
+    component(Props(router,page)) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  /**
-    * Internal state for rendering the component.
-    *
-    * I'd like this class to be private, but the instantiation of component
-    * will cause Backend to leak.
-    */
-  class Backend(scope: BackendScope[Props, State]) {
-    def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
-      <.div(
-        RootBridgeAppBar(
-          Seq(
-            MuiTypography(
-              variant = TextVariant.h6,
-              color = TextColor.inherit
-            )(
-              <.span(
-                " Voyager"
-              )
-            )
-          ),
-          None,
-          props.router
-        )(),
+  protected object Internal {
+
+    case class State()
+
+    class Backend(scope: BackendScope[Props, State]) {
+      def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; React
+        val url = props.page.query.get("url").getOrElse("/v1/graphql")
         <.div(
-          Voyager("/v1/graphql")
+          RootBridgeAppBar(
+            Seq(
+              MuiTypography(
+                variant = TextVariant.h6,
+                color = TextColor.inherit
+              )(
+                <.span(
+                  " Voyager"
+                )
+              )
+            ),
+            None,
+            props.router
+          )(),
+          <.div(
+            Voyager(url)
+          )
+  //        <.div(
+  //          AppButton( "Home", "Home",
+  //                     props.router.setOnClick(Home))
+  //        )
         )
-//        <.div(
-//          AppButton( "Home", "Home",
-//                     props.router.setOnClick(Home))
-//        )
-      )
+      }
+
+      private var mounted = false
+
+      val didMount: Callback = Callback {
+        mounted = true
+
+      }
+
+      val willUnmount: Callback = Callback {
+        mounted = false
+
+      }
     }
 
-    private var mounted = false
-
-    val didMount: Callback = Callback {
-      mounted = true
-
-    }
-
-    val willUnmount: Callback = Callback {
-      mounted = false
-
-    }
+    val component = ScalaComponent
+      .builder[Props]("VoyagerPage")
+      .initialStateFromProps { props => State() }
+      .backend(new Backend(_))
+      .renderBackend
+      .componentDidMount(scope => scope.backend.didMount)
+      .componentWillUnmount(scope => scope.backend.willUnmount)
+      .build
   }
 
-  private[pages] val component = ScalaComponent
-    .builder[Props]("VoyagerPage")
-    .initialStateFromProps { props => State() }
-    .backend(new Backend(_))
-    .renderBackend
-    .componentDidMount(scope => scope.backend.didMount)
-    .componentWillUnmount(scope => scope.backend.willUnmount)
-    .build
 }

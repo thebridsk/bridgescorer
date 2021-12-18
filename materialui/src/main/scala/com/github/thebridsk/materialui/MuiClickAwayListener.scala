@@ -87,7 +87,7 @@ object ClickAwayListenerProps extends PropsFactory[ClickAwayListenerProps] {
 
 object MuiClickAwayListener {
   @js.native @JSImport(
-    "@material-ui/core/ClickAwayListener",
+    "@mui/material/ClickAwayListener",
     JSImport.Default
   ) private object ClickAwayListener extends js.Any
 

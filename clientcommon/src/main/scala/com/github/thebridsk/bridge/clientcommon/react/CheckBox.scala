@@ -60,7 +60,7 @@ object CheckBox {
       Props(id, text, value, onclick)
     ) // scalafix:ok ExplicitResultTypes; ReactComponent
 
-  object Internal {
+  protected object Internal {
 
     def callback(cb: Callback): js.Function1[scala.scalajs.js.Object, Unit] =
       (event: js.Object) => cb.runNow()

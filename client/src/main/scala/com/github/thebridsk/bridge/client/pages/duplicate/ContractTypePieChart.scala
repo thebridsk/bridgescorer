@@ -6,6 +6,38 @@ import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip.IntLeg
 import com.github.thebridsk.bridge.clientcommon.react.PieChartWithTooltip
 import com.github.thebridsk.bridge.clientcommon.react.ColorBar
 
+/**
+  * A component that displays a piechart for types of contract with a tooltip.
+  *
+  * Slices:
+  * - partial
+  * - game
+  * - doubled to game
+  * - slam
+  * - grand slam
+  *
+  * The tooltip has an optional title, a bigger version of the piechart,
+  * and a legend, with an optional legend title.
+  *
+  * Usage:
+  * {{{
+  * ContractTypePieChart(
+  *   partial = 10,
+  *   game = 7,
+  *   slam = 1,
+  *   grandslam = 0,
+  *   passed = 1,
+  *   title = Some("player"),
+  *   legendtitle = Left(true),
+  *   size = 100,
+  *   sizeInLegend = 200,
+  *   minSize = 100,
+  *   doubledToGame = 1
+  * )
+  * }}}
+  *
+  * @see See [[apply]] method for a description of the arguments.
+  */
 object ContractTypePieChart {
 
   val ColorTypePartial: Color = Color.hsl(60, 100, 50.0) // yellow
@@ -15,7 +47,7 @@ object ContractTypePieChart {
   val ColorTypeGrandSlam = Color.Cyan
   val ColorTypePassed = TrickPieChart.colorTypePassed
 
-  object TrickLegendUtil extends IntLegendUtil[Color] {
+  private object TrickLegendUtil extends IntLegendUtil[Color] {
 
     def nameToTitle(name: Color): String = {
       if (name eq ColorTypePartial) "Partial"
@@ -30,20 +62,25 @@ object ContractTypePieChart {
   }
 
   /**
-    * @param partial
-    * @param game
-    * @param slam
-    * @param grandslam
-    * @param passed
-    * @param title
+    * Instantiate the component
+    *
+    * @param partial number of partial contracts
+    * @param game number of game contracts
+    * @param slam number of bid slams
+    * @param grandslam number of bid grand slams
+    * @param passed number of hands that were passed out
+    * @param title an optional title shown in the tooltip.
     * @param legendtitle an either legend title.
     *                    If Left(true), then "Total: <n>" is used.
     *                    If Left(false) then no title will be used.
     *                    If Right(title) then title will be used.
-    * @param size
-    * @param sizeInLegend
-    * @param minSize
-    * @param doubledToGame partial contracts that were doubled to game level
+    * @param size      The size of the piechart on the page, in px.
+    * @param sizeInLegend the size of the piechart in the legend in the tooltip, in px.
+    * @param minSize   The minimum height of the element containing the pie chart, in px.
+    * @param doubledToGame partial contracts that were doubled to game level.
+    *                      This includes doubled and redoubled contracts.
+    *
+    * @return the unmounted react component.
     */
   def apply(
       partial: Int,
@@ -84,6 +121,12 @@ object ContractTypePieChart {
 
   }
 
+  /**
+    *
+    * @param withDoubled - if true, included doubled to game contracts.
+    *
+    * @return a colorbar that has tool tips to identify the type of contract.
+    */
   def description(withDoubled: Boolean = false): TagMod = {
     val cs =
       ColorTypePassed :: ColorTypePartial :: ColorTypeDoubledToGame :: ColorTypeGame :: ColorTypeSlam :: ColorTypeGrandSlam :: Nil

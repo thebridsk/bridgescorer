@@ -11,7 +11,7 @@ import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import com.github.thebridsk.utilities.logging.Filter
 import com.github.thebridsk.utilities.logging.TraceMsg
-import org.scalajs.dom.raw.XMLHttpRequest
+import org.scalajs.dom.XMLHttpRequest
 import com.github.thebridsk.bridge.clientcommon.debug.DebugLoggerComponent
 import com.github.thebridsk.bridge.clientcommon.debug.LoggerStore
 import scala.util.matching.Regex
@@ -92,7 +92,7 @@ object Init {
       f: () => Unit = noop _,
       controller: InitController = new InitController {}
   ): Unit = {
-    import scala.concurrent.ExecutionContext.Implicits.global
+    import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 
     if (AjaxResult.isEnabled.getOrElse(false)) {
       RestClientLoggerConfig

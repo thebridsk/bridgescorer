@@ -65,7 +65,7 @@ object MenuListProps extends PropsFactory[MenuListProps] {
 
 object MuiMenuList extends ComponentFactory[MenuListProps] {
   @js.native @JSImport(
-    "@material-ui/core/MenuList",
+    "@mui/material/MenuList",
     JSImport.Default
   ) private object MenuList extends js.Any
 

@@ -6,7 +6,7 @@ import org.scalajs.dom.ext.Ajax.InputData
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import org.scalactic.source.Position
-import org.scalajs.dom.raw.XMLHttpRequest
+import org.scalajs.dom.XMLHttpRequest
 import com.github.thebridsk.bridge.data.RestMessage
 import scala.concurrent.CanAwait
 import scala.concurrent.duration.Duration

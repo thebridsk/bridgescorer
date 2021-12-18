@@ -5,7 +5,7 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.ServerURL
 import flux.dispatcher.DispatchToken
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientServerURL
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.demo.BridgeDemo
 import japgolly.scalajs.react.vdom.html_<^._
 import com.github.thebridsk.bridge.clientcommon.dispatcher.ChangeListenable

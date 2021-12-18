@@ -1,6 +1,6 @@
 ---
 name: "Mitchell3Table"
-short: "3 Table Mitchell, 2 winners"
+short: "Mitchell 3 Table, 2 winners"
 description: "3 tables, 18 hands, two teams (NS, EW) winner, local"
 numberTeams: 6
 hands:

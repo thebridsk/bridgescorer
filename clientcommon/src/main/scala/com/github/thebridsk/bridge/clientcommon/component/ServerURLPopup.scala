@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.clientcommon.component
 import japgolly.scalajs.react.vdom.html_<^._
 import japgolly.scalajs.react._
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import scala.concurrent.ExecutionContext
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.store.ServerURLStore
 
@@ -63,7 +62,7 @@ object ServerURLPopup {
       def render(props: Props, state: State) = { // scalafix:ok ExplicitResultTypes; ReactComponent
         val ok: Option[Callback] = Some(props.dismissCB)
         val content: Option[TagMod] = if (props.showURL) {
-          implicit val ec = ExecutionContext.global
+          import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
           Some(
             <.div(
               <.h1("Server URL"),

@@ -114,3 +114,8 @@ configs:
       appenders:
         - "console=ALL"
         - "server=ALL,bridge"
+    none:
+      loggers:
+        - "[root]=OFF"
+      appenders:
+        - "console=NONE"

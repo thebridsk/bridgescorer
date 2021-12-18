@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.client.test.utils
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
-import org.scalajs.dom.raw.Element
+import org.scalajs.dom.Element
 import scala.scalajs.js.annotation.JSBracketAccess
 
 @js.native

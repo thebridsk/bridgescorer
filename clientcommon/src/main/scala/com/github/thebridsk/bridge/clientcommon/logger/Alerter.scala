@@ -5,7 +5,7 @@ import java.io.StringWriter
 import java.io.PrintWriter
 import org.scalactic.source.Position
 import com.github.thebridsk.source._
-import org.scalajs.dom.raw.Event
+import org.scalajs.dom.Event
 import org.scalajs.dom
 
 trait Alerter {

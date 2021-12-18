@@ -8,39 +8,39 @@ name := "project-bridgescorer"
 
 // scalaVersion := "2.12.12"
 
-val vLog4j = "1.7.30"               // https://github.com/qos-ch/slf4j
-val vJGit = "5.10.0.202012080955-r" // https://github.com/eclipse/jgit
+val vLog4j = "1.7.32"               // https://github.com/qos-ch/slf4j
+val vJGit = "6.0.0.202111291000-r"  // https://github.com/eclipse/jgit
 
-val vCrossProject = "1.0.0"        // https://github.com/portable-scala/sbt-crossproject
+val vCrossProject = "1.1.0"        // https://github.com/portable-scala/sbt-crossproject
 // scala-react does not compile on scalajs 1.0 yet
-val vScalaJSDefault = "1.3.1"      // http://www.scala-js.org/
+val vScalaJSDefault = "1.8.0"      // http://www.scala-js.org/
 val vEnvJsDomNodejs = "1.1.0"      // https://github.com/scala-js/scala-js-env-jsdom-nodejs
 
 val sbtScalaJsBundlerSuffix = if (vScalaJSDefault.startsWith("0.6.")) "-sjs06" else ""  // "" - for ScalaJS 1.0 "-sjs06" for ScalaJS 0.6
 
-val vSbtAssembly = "0.15.0"        // https://github.com/sbt/sbt-assembly
-val vSbtGit = "1.0.0"              // https://github.com/sbt/sbt-git
-val vSbtSCoverage = "1.6.1"        // https://github.com/scoverage/sbt-scoverage
+val vSbtAssembly = "1.1.0"         // https://github.com/sbt/sbt-assembly
+val vSbtGit = "1.0.2"              // https://github.com/sbt/sbt-git
+val vSbtSCoverage = "1.9.2"        // https://github.com/scoverage/sbt-scoverage
 val vSbtBuildInfo = "0.10.0"       // https://github.com/sbt/sbt-buildinfo
 // v1.0.12 causes java.lang.NoSuchMethodError: sbtrelease.ReleaseStateTransformations$.commitNextVersion()Lsbtrelease/ReleasePlugin$autoImport$ReleaseStep;
 val vSbtRelease = "1.0.13"         // https://github.com/sbt/sbt-release
 val vSbtDependencyGraph = "0.9.2"  // https://github.com/jrudolph/sbt-dependency-graph
-val vSbtUpdates = "0.5.1"          // https://github.com/rtimush/sbt-updates
+val vSbtUpdates = "0.6.0"          // https://github.com/rtimush/sbt-updates
 
 val scalaJSVersion = Option(System.getenv("SCALAJS_VERSION")).getOrElse(vScalaJSDefault)
 
 val vSbtGzip = "1.0.2"             // https://github.com/sbt/sbt-gzip
 val vSbtScalaJsBundler = "0.20.0"  // https://github.com/scalacenter/scalajs-bundler
-val vSbtWebScalajs = "1.1.0"       // https://github.com/vmunier/sbt-web-scalajs
+val vSbtWebScalajs = "1.2.0"       // https://github.com/vmunier/sbt-web-scalajs
 
 // not used:
 
 val vSbtRevolver = "0.8.0"         // https://github.com/spray/sbt-revolver
 val vSbtUniDoc = "0.3.3"           // https://github.com/sbt/sbt-unidoc
 val vSbtDigest = "1.1.1"           // https://github.com/sbt/sbt-digest
-val vSbtScalaFmt="2.4.2"           // https://github.com/scalameta/sbt-scalafmt
-val vBloop = "1.4.6"               // https://github.com/scalacenter/bloop
-val vSbtScalaFix="0.9.24"          // https://github.com/scalacenter/sbt-scalafix
+val vSbtScalaFmt="2.4.5"           // https://github.com/scalameta/sbt-scalafmt
+val vBloop = "1.4.11"              // https://github.com/scalacenter/bloop
+val vSbtScalaFix="0.9.33"          // https://github.com/scalacenter/sbt-scalafix
 
 // The following is needed to get rid of the message
 //   SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".

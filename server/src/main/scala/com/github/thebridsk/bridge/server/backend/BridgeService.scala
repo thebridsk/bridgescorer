@@ -43,6 +43,9 @@ import com.github.thebridsk.utilities.version.VersionUtilities
 import scala.util.Using
 import java.io.FileInputStream
 import java.io.InputStream
+import com.github.thebridsk.bridge.data.IndividualMovement
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.bridge.individual.{ DuplicateSummary => IDuplicateSummary }
 
 /**
   * The backend trait for our service.
@@ -59,11 +62,13 @@ abstract class BridgeService(val id: String) {
 
   val chicagos: Store[MatchChicago.Id, MatchChicago]
   val duplicates: Store[MatchDuplicate.Id, MatchDuplicate]
+  val individualduplicates: Store[IndividualDuplicate.Id, IndividualDuplicate]
   val duplicateresults: Store[MatchDuplicateResult.Id, MatchDuplicateResult]
   val rubbers: Store[MatchRubber.Id, MatchRubber]
 
   val boardSets: Store[BoardSet.Id, BoardSet]
   val movements: Store[Movement.Id, Movement]
+  val individualMovements: Store[IndividualMovement.Id, IndividualMovement]
 
   /**
     * The import store.  Some some of the implementations support this, and will override this value.
@@ -101,7 +106,7 @@ abstract class BridgeService(val id: String) {
     * @param filter the filter, None means everything
     * @return a future to a result that has a list of all the Ids of entities that are exported.
     */
-  def export(
+  def doExport(
       out: OutputStream,
       filter: Option[List[String]] = None,
       diagnostics: Boolean = false
@@ -212,9 +217,15 @@ abstract class BridgeService(val id: String) {
 
   val defaultBoards = BoardSet.default
   val defaultMovement = Movement.default
+  val defaultIndividualBoards = BoardSet.standard
+  val defaultIndividualMovement = IndividualMovement.default
 
   def fillBoards(dup: MatchDuplicate): Future[Result[MatchDuplicate]] = {
     fillBoards(dup, defaultBoards, defaultMovement)
+  }
+
+  def fillBoards(dup: IndividualDuplicate): Future[Result[IndividualDuplicate]] = {
+    fillBoards(dup, defaultIndividualBoards, defaultIndividualMovement)
   }
 
   def fillBoards(
@@ -224,6 +235,39 @@ abstract class BridgeService(val id: String) {
   ): Future[Result[MatchDuplicate]] = {
 
     val fmv = movements.read(movement)
+    val fbb = boardSets.read(boardset)
+
+    fbb.flatMap { rbb =>
+      rbb match {
+        case Right(bb) =>
+          fmv.map { rmv =>
+            rmv match {
+              case Right(mv) =>
+                Result(dup.fillBoards(bb, mv))
+              case Left(error) =>
+                Result(
+                  StatusCodes.BadRequest,
+                  s"Movement $movement was not found"
+                )
+            }
+          }
+        case Left(error) =>
+          Result.future(
+            StatusCodes.BadRequest,
+            s"Boardset $boardset was not found"
+          )
+      }
+    }
+
+  }
+
+  def fillBoards(
+      dup: IndividualDuplicate,
+      boardset: BoardSet.Id,
+      movement: IndividualMovement.Id
+  ): Future[Result[IndividualDuplicate]] = {
+
+    val fmv = individualMovements.read(movement)
     val fbb = boardSets.read(boardset)
 
     fbb.flatMap { rbb =>
@@ -380,12 +424,28 @@ abstract class BridgeService(val id: String) {
           Result(error)
       }
     }
+    val n5 = individualduplicates.readAll().map { rd =>
+      rd match {
+        case Right(dups) =>
+          Result(
+            dups.values
+              .flatMap(_.players)
+              .filter(p => p.length() > 0)
+              .toList
+              .distinct
+          ).logit("getAllNames() on individualduplicates")
+        case Left(error) =>
+          BridgeServiceWithLogging.log
+            .fine(s"getAllNames() got error on individualduplicates.readAll $error")
+          Result(error)
+      }
+    }
 
     def compare(s1: String, s2: String) = {
       s1.toLowerCase() < s2.toLowerCase()
     }
 
-    val futures = List(n1, n2, n3, n4)
+    val futures = List(n1, n2, n3, n4, n5)
 
     (Future
       .foldLeft(futures)(List[String]()) { (ac, v) =>
@@ -429,6 +489,41 @@ abstract class BridgeService(val id: String) {
       fmdrs.map { mdrs =>
         Result((mds ::: mdrs).sortWith((one, two) => one.created > two.created))
       }
+    }
+  }
+
+  def getIndividualDuplicateSummaries(): Future[Result[List[IDuplicateSummary]]] = {
+    val fmds = duplicates.readAll().map { fmds =>
+      fmds match {
+        case Right(m) =>
+          m.values.map(md => IDuplicateSummary.create(md)).toList
+        case Left(r) =>
+          Nil
+      }
+    }
+    val fmids = individualduplicates.readAll().map { fmds =>
+      fmds match {
+        case Right(m) =>
+          m.values.map(md => IDuplicateSummary.create(md)).toList
+        case Left(r) =>
+          Nil
+      }
+    }
+    val fmdrs = duplicateresults.readAll().map { fmds =>
+      fmds match {
+        case Right(m) =>
+          m.values.map(md => IDuplicateSummary.create(md)).toList
+        case Left(r) =>
+          Nil
+      }
+    }
+
+    for {
+      mds <- fmds
+      mdrs <- fmdrs
+      mids <- fmids
+    } yield {
+      Result((mds ::: mdrs ::: mids).sortWith((one, two) => one.created > two.created))
     }
   }
 
@@ -650,6 +745,9 @@ class BridgeServiceInMemory(
   val duplicates: Store[MatchDuplicate.Id, MatchDuplicate] =
     InMemoryStore[MatchDuplicate.Id, MatchDuplicate](id)
 
+  val individualduplicates: Store[IndividualDuplicate.Id, IndividualDuplicate] =
+    InMemoryStore[IndividualDuplicate.Id, IndividualDuplicate](id)
+
   val duplicateresults: Store[MatchDuplicateResult.Id, MatchDuplicateResult] =
     InMemoryStore[MatchDuplicateResult.Id, MatchDuplicateResult](id)
 
@@ -669,6 +767,14 @@ class BridgeServiceInMemory(
       id,
       "/com/github/thebridsk/bridge/server/backend/",
       "Movements.txt",
+      self.getClass.getClassLoader
+    )
+
+  val individualMovements: Store[IndividualMovement.Id, IndividualMovement] =
+    MultiStore.createInMemoryAndResource[IndividualMovement.Id, IndividualMovement](
+      id,
+      "/com/github/thebridsk/bridge/server/backend/",
+      "IndividualMovements.txt",
       self.getClass.getClassLoader
     )
 

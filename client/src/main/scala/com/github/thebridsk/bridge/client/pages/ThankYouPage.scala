@@ -34,7 +34,7 @@ object ThankYouPageInternal {
       if (document.myIsFullscreen) document.myExitFullscreen()
     }
 
-  private[pages] val component = ScalaComponent
+  val component = ScalaComponent
     .builder[Props]("ThankYouPage")
     .stateless
     .noBackend
@@ -49,7 +49,7 @@ object ThankYouPageInternal {
         )(),
         <.div(
           rootStyles.thankYouDiv,
-          <.h1("Thank you for using the Bridge Scorer"),
+          <.h1("Thank you for using the Bridge ScoreKeeper"),
           <.p("You can now close this window"),
           <.p(TitleSuits.suitspan)
         )

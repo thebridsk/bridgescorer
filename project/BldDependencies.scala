@@ -92,10 +92,10 @@ object BldDependencies {
       // "org.sangria-graphql" %% "sangria-relay" % vSangria withSources(),
       "org.sangria-graphql" %% "sangria-play-json" % vSangriaPlayJson withSources(),
 
-      "io.swagger.core.v3" % "swagger-core" % vSwagger withSources(),
-      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
-      "io.swagger.core.v3" % "swagger-models" % vSwagger withSources(),
-      "io.swagger.core.v3" % "swagger-jaxrs2" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-core-jakarta" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations-jakarta" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-models-jakarta" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-jaxrs2-jakarta" % vSwagger withSources(),
 
       "jakarta.ws.rs" % "jakarta.ws.rs-api" % vWsRsApi withSources(),
 
@@ -134,7 +134,7 @@ object BldDependencies {
 
   val bridgeScorerSharedDeps = Def.setting(Seq(
       "com.typesafe.play" %%% "play-json" % vPlayJson withSources(),
-      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations-jakarta" % vSwagger withSources(),
       "org.scalactic" %%% "scalactic" % vScalactic withSources()
       ))
 
@@ -165,6 +165,7 @@ object BldDependencies {
 
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
+    "org.scala-js" %%% "scala-js-macrotask-executor" % vJsMacroTaskExecutor withSources(),
 
     "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
     ))
@@ -172,7 +173,7 @@ object BldDependencies {
   val bridgeScorerClientDeps = Def.setting(Seq(
 
       "org.scala-js" %%%  "scalajs-dom"    % vScalajsdom withSources(),
-      "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
+      "io.swagger.core.v3" % "swagger-annotations-jakarta" % vSwagger withSources(),
 
       "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
       "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
@@ -183,7 +184,7 @@ object BldDependencies {
   val bridgeScorerClientApiDeps = Def.setting(Seq(
 
     "org.scala-js" %%%  "scalajs-dom"    % vScalajsdom withSources(),
-    "io.swagger.core.v3" % "swagger-annotations" % vSwagger withSources(),
+    "io.swagger.core.v3" % "swagger-annotations-jakarta" % vSwagger withSources(),
 
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
@@ -205,8 +206,12 @@ object BldDependencies {
       // "cldrjs" -> vCldrjs,
       // "cldr" -> vCldr,
       // "cldr-data" -> vCldrData,
-      "@material-ui/core" -> vMaterialUIcore,
-      "@material-ui/icons" -> vMaterialUIicons
+      // "@material-ui/core" -> vMaterialUIcore,
+      // "@material-ui/icons" -> vMaterialUIicons,
+      "@mui/material" -> vMaterialUIcore,
+      "@mui/icons-material" -> vMaterialUIicons,
+      "@emotion/react" -> vEmotionReact,
+      "@emotion/styled" -> vEmotionStyled,
   )
 
   val bridgeScorerClientApiNpmDeps = Seq(
@@ -225,9 +230,15 @@ object BldDependencies {
       "graphql-voyager" -> vGraphQLVoyager,
       "graphql" -> vGraphQL,
       "graphiql" -> vGraphiQL,
-      "@material-ui/core" -> vMaterialUIcore,
-      "@material-ui/icons" -> vMaterialUIicons,
-      "prop-types" -> vPropTypes
+      // "@material-ui/core" -> vMaterialUIcore,
+      // "@material-ui/icons" -> vMaterialUIicons,
+      "@mui/material" -> vMaterialUIcore,
+      "@mui/styles" -> vMaterialUIcore,
+      "@mui/icons-material" -> vMaterialUIicons,
+      "@emotion/react" -> vEmotionReact,
+      "@emotion/styled" -> vEmotionStyled,
+      "prop-types" -> vPropTypes,
+      "jss" -> vJss,
   )
 
     // this is for SBT 1.0

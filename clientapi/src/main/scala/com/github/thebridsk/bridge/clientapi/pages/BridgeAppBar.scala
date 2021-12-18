@@ -12,8 +12,8 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.ColorVariant
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Node
+import org.scalajs.dom.Element
+import org.scalajs.dom.Node
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
@@ -311,12 +311,13 @@ object BridgeAppBarInternal {
                 )(
                   "About"
                 ),
-                MuiMenuItem(
-                  id = "SwaggerDocs",
-                  onClick = handleHelpGotoPageClick("/v1/docs") _
-                )(
-                  "Swagger Docs"
-                ),
+                // disabling because of vulnerability, https://github.com/swagger-api/swagger-ui/issues/4872
+                // MuiMenuItem(
+                //   id = "SwaggerDocs",
+                //   onClick = handleHelpGotoPageClick("/v1/docs") _
+                // )(
+                //   "Swagger Docs"
+                // ),
                 MuiMenuItem(
                   id = "SwaggerDocs2",
                   onClick = handleHelpGotoPageClick("/public/apidocs.html") _
@@ -343,7 +344,7 @@ object BridgeAppBarInternal {
                 ),
                 MuiMenuItem(
                   id = "Voyager",
-                  onClick = callbackPage(VoyagerView) _
+                  onClick = callbackPage(VoyagerView(Map())) _
                 )(
                   "Voyager"
                 ),

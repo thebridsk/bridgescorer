@@ -191,9 +191,14 @@ object MadeOrDown {
   def apply(made: Boolean): MadeOrDown = if (made) Made; else Down
 }
 
-sealed abstract case class Vulnerability(vul: Boolean)
+sealed abstract case class Vulnerability(vul: Boolean) {
+  def forScore: String = ""
+}
 
-object Vul extends Vulnerability(true)
+object Vul extends Vulnerability(true) {
+  override
+  def forScore: String = " Vul"
+}
 object NotVul extends Vulnerability(false)
 
 object Vulnerability {

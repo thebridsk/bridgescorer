@@ -51,7 +51,7 @@ class HelpTest extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     TestStartLogging.startLogging()
 
     waitForFutures(
-      "Stopping browsers and server",
+      "Starting browsers and server",
       CodeBlock {
         TestSession.sessionStart().setPositionRelative(0, 0).setSize(1100, 900)
       },

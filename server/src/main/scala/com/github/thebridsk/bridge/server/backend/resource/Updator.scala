@@ -21,6 +21,9 @@ trait Updator[V, T, R] {
     */
   def responder(resp: Result[(V, T)]): Result[R]
 
+  def setSeq(seq: Int): ChangeContext =
+    changeContext.setSeq(seq)
+
   /**
     * Add a change context to the request.
     * @param change

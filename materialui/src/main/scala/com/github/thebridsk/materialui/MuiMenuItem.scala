@@ -86,7 +86,7 @@ object MenuItemProps extends PropsFactory[MenuItemProps] {
 
 object MuiMenuItem extends ComponentFactory[MenuItemProps] {
   @js.native @JSImport(
-    "@material-ui/core/MenuItem",
+    "@mui/material/MenuItem",
     JSImport.Default
   ) private object MenuItem extends js.Any
 

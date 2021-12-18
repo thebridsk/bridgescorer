@@ -1,7 +1,7 @@
 package com.github.thebridsk.materialui
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.raw._
+import japgolly.scalajs.react.facade._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 import scala.scalajs.js.UndefOr
@@ -141,7 +141,7 @@ object MenuProps extends PropsFactory[MenuProps] {
 object MuiMenu extends PropsFactory[MenuProps] {
 
   @js.native @JSImport(
-    "@material-ui/core/Menu",
+    "@mui/material/Menu",
     JSImport.Default
   ) private object Menu extends js.Any
 

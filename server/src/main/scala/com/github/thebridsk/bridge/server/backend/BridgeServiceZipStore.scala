@@ -17,6 +17,8 @@ import com.github.thebridsk.bridge.server.backend.resource.ZipPersistentSupport
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import scala.concurrent.Future
 import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import com.github.thebridsk.bridge.data.IndividualMovement
+import com.github.thebridsk.bridge.data.IndividualDuplicate
 
 object BridgeServiceZipStore {
 
@@ -53,6 +55,8 @@ class BridgeServiceZipStore(
     ZipStore[MatchChicago.Id, MatchChicago](id, zipfile)
   val duplicates: ZipStore[MatchDuplicate.Id, MatchDuplicate] =
     ZipStore[MatchDuplicate.Id, MatchDuplicate](id, zipfile)
+  val individualduplicates: ZipStore[IndividualDuplicate.Id, IndividualDuplicate] =
+    ZipStore[IndividualDuplicate.Id, IndividualDuplicate](id, zipfile)
   val duplicateresults
       : ZipStore[MatchDuplicateResult.Id, MatchDuplicateResult] =
     ZipStore[MatchDuplicateResult.Id, MatchDuplicateResult](id, zipfile)
@@ -80,6 +84,19 @@ class BridgeServiceZipStore(
         new JavaResourcePersistentSupport(
           "/com/github/thebridsk/bridge/server/backend/",
           "Movements.txt",
+          self.getClass.getClassLoader
+        )
+      )
+    )
+
+  val individualMovements: MultiStore[IndividualMovement.Id, IndividualMovement] =
+    MultiStore[IndividualMovement.Id, IndividualMovement](
+      id,
+      List(
+        new ZipPersistentSupport(zipfile),
+        new JavaResourcePersistentSupport(
+          "/com/github/thebridsk/bridge/server/backend/",
+          "IndividualMovements.txt",
           self.getClass.getClassLoader
         )
       )

@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.server.rest
 import akka.http.scaladsl.server.Directives._
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import javax.ws.rs.Path
+import jakarta.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestions
 import com.github.thebridsk.bridge.data.duplicate.suggestion.DuplicateSuggestionsCalculation
@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
-import javax.ws.rs.POST
+import jakarta.ws.rs.POST
 import akka.http.scaladsl.server.Route
 
 /**

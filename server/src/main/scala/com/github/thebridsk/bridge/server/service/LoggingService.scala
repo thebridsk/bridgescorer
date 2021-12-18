@@ -3,7 +3,7 @@ package com.github.thebridsk.bridge.server.service
 import akka.event.Logging
 import akka.http.scaladsl.server.Directives._
 import com.github.thebridsk.bridge.server.util.HasActorSystem
-import javax.ws.rs.Path
+import jakarta.ws.rs.Path
 import akka.http.scaladsl.server.RejectionHandler
 import akka.http.scaladsl.model.StatusCodes
 import akka.util.ByteString
@@ -16,8 +16,8 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tags
 import io.swagger.v3.oas.annotations.tags.Tag
-import javax.ws.rs.GET
-import javax.ws.rs.POST
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
 import io.swagger.v3.oas.annotations.Parameter
 import akka.http.scaladsl.server.{RequestContext, Route, RouteResult}
 import scala.concurrent.Future

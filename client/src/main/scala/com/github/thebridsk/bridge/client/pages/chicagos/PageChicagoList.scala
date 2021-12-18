@@ -14,7 +14,7 @@ import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.SummaryVi
 import com.github.thebridsk.utilities.logging.Level
 import com.github.thebridsk.bridge.clientcommon.rest2.ResultHolder
 import com.github.thebridsk.bridge.clientcommon.rest2.RequestCancelled
-import scala.concurrent.ExecutionContext.Implicits.global
+import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ListViewBase
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ImportListView
@@ -33,7 +33,6 @@ import com.github.thebridsk.materialui.TextColor
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
-import japgolly.scalajs.react.internal.Effect
 
 /**
   * @author werewolf
@@ -114,7 +113,7 @@ object PageChicagoListInternal {
     } >> scope.modState(s => s.copy(popupMsg = None))
 
     val newChicago: Callback = {
-      import scala.concurrent.ExecutionContext.Implicits.global
+      import com.github.thebridsk.bridge.clientcommon.BridgeExecutionContext.global
       scope.modState(
         s => s.copy(popupMsg = Some("Creating a new Chicago match...")),
         Callback {
@@ -244,7 +243,7 @@ object PageChicagoListInternal {
       )
     }
 
-    def setMessage(msg: String, info: Boolean = false): Effect.Id[Unit] =
+    def setMessage(msg: String, info: Boolean = false): Unit =
       scope.withEffectsImpure.modState(s =>
         s.copy(popupMsg = Some(msg), info = info)
       )
@@ -316,7 +315,7 @@ object PageChicagoListInternal {
 
     val storeCallback = scope.forceUpdate
 
-    def summaryError(): Effect.Id[Unit] =
+    def summaryError(): Unit =
       scope.withEffectsImpure.modState(s =>
         s.copy(popupMsg = Some("Error getting duplicate summary"))
       )

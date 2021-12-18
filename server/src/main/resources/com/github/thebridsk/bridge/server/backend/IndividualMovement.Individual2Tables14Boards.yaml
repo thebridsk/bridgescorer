@@ -1,0 +1,104 @@
+---
+name: "Individual2Tables14Boards"
+short: "Individual 2 Tables 14 Boards"
+description: "2 tables 14 boards individual movement"
+numberPlayers: 8
+hands:
+  - table: 1
+    round: 1
+    north: 8
+    south: 1
+    east: 5
+    west: 7
+    boards: [1, 2]
+  - table: 1
+    round: 2
+    north: 8
+    south: 2
+    east: 6
+    west: 1
+    boards: [3, 4]
+  - table: 1
+    round: 3
+    north: 8
+    south: 3
+    east: 7
+    west: 2
+    boards: [5, 6]
+  - table: 1
+    round: 4
+    north: 8
+    south: 4
+    east: 1
+    west: 3
+    boards: [7, 8]
+  - table: 1
+    round: 5
+    north: 8
+    south: 5
+    east: 2
+    west: 4
+    boards: [9, 10]
+  - table: 1
+    round: 6
+    north: 8
+    south: 6
+    east: 3
+    west: 5
+    boards: [11, 12]
+  - table: 1
+    round: 7
+    north: 8
+    south: 7
+    east: 4
+    west: 6
+    boards: [13, 14]
+  - table: 2
+    round: 1
+    north: 2
+    south: 6
+    east: 4
+    west: 3
+    boards: [1, 2]
+  - table: 2
+    round: 2
+    north: 3
+    south: 7
+    east: 5
+    west: 4
+    boards: [3, 4]
+  - table: 2
+    round: 3
+    north: 4
+    south: 1
+    east: 6
+    west: 5
+    boards: [5, 6]
+  - table: 2
+    round: 4
+    north: 5
+    south: 2
+    east: 7
+    west: 6
+    boards: [7, 8]
+  - table: 2
+    round: 5
+    north: 6
+    south: 3
+    east: 1
+    west: 7
+    boards: [9, 10]
+  - table: 2
+    round: 6
+    north: 7
+    south: 4
+    east: 2
+    west: 1
+    boards: [11, 12]
+  - table: 2
+    round: 7
+    north: 1
+    south: 5
+    east: 3
+    west: 2
+    boards: [13, 14]

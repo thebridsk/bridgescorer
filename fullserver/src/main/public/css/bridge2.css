@@ -35,3 +35,31 @@
   -ms-user-select: none;
   font-size: x-large;
 }
+
+.viewPlayerDiamond {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+}
+.viewPlayerDiamond::after, .viewPlayerDiamond::before {
+  content: '';
+  width: 100%;
+  order: 1;
+}
+.viewPlayerDiamond > div:nth-child(n + 2) {
+  order: 1;
+}
+.viewPlayerDiamond > div:nth-child(n + 4) {
+  order: 2;
+}
+.viewPlayerDiamond > div {
+  margin: 20px 40px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.viewPlayerDiamond > div >div:first-child {
+  font-size: xx-large;
+}

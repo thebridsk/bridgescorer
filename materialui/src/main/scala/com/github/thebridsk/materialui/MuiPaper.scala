@@ -4,8 +4,23 @@ import japgolly.scalajs.react._
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
+case class PaperVariant(val value: String)
+
+object PaperVariant {
+  val elevation = new Variant("elevation")
+  val outlined = new Variant("outlined")
+
+  def apply(value: String) = new Variant(value)
+}
+
 @js.native
-trait PaperProps extends AdditionalProps with StandardProps {
+protected trait PaperPropsPrivate extends js.Any {
+  @JSName("variant")
+  val variantInternal: js.UndefOr[String] = js.native
+}
+
+@js.native
+trait PaperProps extends AdditionalProps with StandardProps with PaperPropsPrivate {
 
   val classes: js.UndefOr[js.Dictionary[String]] = js.native
   val component: js.UndefOr[String] = js.native
@@ -13,6 +28,14 @@ trait PaperProps extends AdditionalProps with StandardProps {
   val square: js.UndefOr[Boolean] = js.native
 }
 object PaperProps extends PropsFactory[PaperProps] {
+
+  implicit class WrapButtonProps(private val p: ButtonProps) extends AnyVal {
+
+    def variant: js.UndefOr[PaperVariant] = p.variantInternal.map(s => new PaperVariant(s))
+
+//    def variant_= (v: js.UndefOr[Variant]) = { p.variantInternal = v.map(pp => pp.value) }
+
+  }
 
   /**
     * @param p the object that will become the properties object
@@ -26,6 +49,10 @@ object PaperProps extends PropsFactory[PaperProps] {
     *                   Default 2
     * @param square If true, rounded corners are disabled.
     *                Default: false
+    * @param variant The variant to use.
+    *                Valid values: 'elevation', 'outlined', string
+    *                Default: 'elevation'
+    * @param sx      The system prop that allows defining system overrides as well as additional CSS styles.
     * @param className css class name to add to element
     * @param onClick the click handler
     * @param additionalProps a dictionary of additional properties
@@ -36,15 +63,18 @@ object PaperProps extends PropsFactory[PaperProps] {
       component: js.UndefOr[String] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
       square: js.UndefOr[Boolean] = js.undefined,
+      variant: js.UndefOr[PaperVariant] = js.undefined,
+      sx: js.UndefOr[js.Dictionary[js.Any]] = js.undefined,
       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): P = {
-    val p = get(props, additionalProps, onClick)
+    val p = get(props, additionalProps, onClick, sx)
     classes.foreach(p.updateDynamic("classes")(_))
     component.foreach(p.updateDynamic("component")(_))
     elevation.foreach(p.updateDynamic("elevation")(_))
     square.foreach(p.updateDynamic("square")(_))
+    variant.foreach(v => p.updateDynamic("variant")(v.value))
     className.map(p.updateDynamic("className")(_))
     p
   }
@@ -52,7 +82,7 @@ object PaperProps extends PropsFactory[PaperProps] {
 
 object MuiPaper extends ComponentFactory[PaperProps] {
   @js.native @JSImport(
-    "@material-ui/core/Paper",
+    "@mui/material/Paper",
     JSImport.Default
   ) private object Paper extends js.Any
 
@@ -72,6 +102,10 @@ object MuiPaper extends ComponentFactory[PaperProps] {
     *                   Default 2
     * @param square If true, rounded corners are disabled.
     *                Default: false
+    * @param variant The variant to use.
+    *                Valid values: 'elevation', 'outlined', string
+    *                Default: 'elevation'
+    * @param sx      The system prop that allows defining system overrides as well as additional CSS styles.
     * @param className css class name to add to element
     * @param onClick the click handler
     * @param additionalProps a dictionary of additional properties
@@ -81,6 +115,8 @@ object MuiPaper extends ComponentFactory[PaperProps] {
       component: js.UndefOr[String] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
       square: js.UndefOr[Boolean] = js.undefined,
+      variant: js.UndefOr[PaperVariant] = js.undefined,
+      sx: js.UndefOr[js.Dictionary[js.Any]] = js.undefined,
       onClick: js.UndefOr[ReactEvent => Unit] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
@@ -92,6 +128,8 @@ object MuiPaper extends ComponentFactory[PaperProps] {
       component = component,
       elevation = elevation,
       square = square,
+      variant = variant,
+      sx = sx,
       onClick = onClick,
       className = className,
       additionalProps = additionalProps

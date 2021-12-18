@@ -7,8 +7,8 @@ import com.github.thebridsk.materialui.icons
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
-import org.scalajs.dom.raw.Element
-import org.scalajs.dom.raw.Node
+import org.scalajs.dom.Element
+import org.scalajs.dom.Node
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.component.MyMenu
 import com.github.thebridsk.materialui.MuiMenuItem
@@ -30,7 +30,6 @@ import com.github.thebridsk.bridge.client.routes.AppRouter.ShowChicagoHand
 import com.github.thebridsk.bridge.client.routes.AppRouter.ShowRubberHand
 import com.github.thebridsk.bridge.clientcommon.pages.GotoPage
 import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
-import japgolly.scalajs.react.internal.Effect
 import com.github.thebridsk.materialui.AnchorOrigin
 import com.github.thebridsk.materialui.AnchorOriginHorizontalValue
 import com.github.thebridsk.materialui.AnchorOriginVerticalValue
@@ -261,7 +260,7 @@ object RootBridgeAppBar {
         gotoPage(uri)
       }
 
-      val toggleUserSelect: ReactEvent => Effect.Id[Unit] = {
+      val toggleUserSelect: ReactEvent => Unit = {
         (event: ReactEvent) =>
           scope.withEffectsImpure.modState { s =>
             val newstate = s.copy(userSelect = !s.userSelect)
@@ -439,7 +438,7 @@ object RootBridgeAppBar {
       }
     }
 
-    private[pages] val component = ScalaComponent
+    val component = ScalaComponent
       .builder[Props]("RootBridgeAppBar")
       .initialStateFromProps { props =>
         State()

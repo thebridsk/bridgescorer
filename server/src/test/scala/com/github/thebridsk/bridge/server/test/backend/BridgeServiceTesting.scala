@@ -26,6 +26,11 @@ import com.github.thebridsk.bridge.server.backend.resource.Implicits._
 import scala.reflect.io.File
 import com.github.thebridsk.bridge.data.BoardSet
 import com.github.thebridsk.bridge.data.Movement
+import com.github.thebridsk.bridge.data.IndividualDuplicate
+import com.github.thebridsk.bridge.data.IndividualDuplicateHand
+import com.github.thebridsk.bridge.data.IndividualBoard
+import com.github.thebridsk.bridge.data.IndividualMovement
+import com.github.thebridsk.bridge.data.SystemTime
 
 object BridgeServiceTesting {
   val testingMatch: MatchDuplicateV3 = {
@@ -124,6 +129,75 @@ object BridgeServiceTesting {
       time
     )
 
+  }
+
+  val testingIndividualMatch: IndividualDuplicate = {
+    val time = SystemTime.currentTimeMillis()
+    IndividualDuplicate(
+      IndividualDuplicate.id(1),
+      List("Nancy", "Sam", "Ellen", "Wayne", "Norman", "Sally", "Ethan", "Wilma"),
+      List(),
+      List(
+        IndividualBoard(
+          IndividualBoard.id(1),
+          false,
+          false,
+          "N",
+          List(
+            IndividualDuplicateHand(
+              Some(
+                Hand.create(
+                  "p8",
+                  7,
+                  Spades.suit,
+                  Doubled.doubled,
+                  North.pos,
+                  false,
+                  false,
+                  true,
+                  7
+                )
+              ),
+              Table.id(1),1,IndividualBoard.id(1),
+              8,1,5,7
+            ),
+            IndividualDuplicateHand(
+              None,
+              Table.id(2),1,IndividualBoard.id(1),
+              2,6,4,3
+            )
+          )
+        ),
+        IndividualBoard(
+          IndividualBoard.id(2),
+          false,
+          false,
+          "N",
+          List(
+            IndividualDuplicateHand(
+              None,
+              Table.id(1),1,IndividualBoard.id(2),
+              8,1,5,7
+            ),
+            IndividualDuplicateHand(
+              None,
+              Table.id(2),1,IndividualBoard.id(2),
+              2,6,4,3
+            )
+          )
+        ),
+        IndividualBoard(
+          IndividualBoard.id(3),
+          false, true,
+          "S",
+          List()
+        )
+      ),
+      BoardSet.id(""),
+      IndividualMovement.id(""),
+      time,
+      time
+    )
   }
 }
 

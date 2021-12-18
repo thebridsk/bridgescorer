@@ -3,7 +3,7 @@
 //import japgolly.scalajs.react.vdom.html_<^._
 //import japgolly.scalajs.react.test._
 //import japgolly.scalajs.react._
-//import org.scalajs.dom.raw.HTMLInputElement
+//import org.scalajs.dom.HTMLInputElement
 //import japgolly.scalajs.react.extra.LogLifecycle
 //import org.scalatest.flatspec.AnyFlatSpec
 //import org.scalatest.matchers.must.Matchers

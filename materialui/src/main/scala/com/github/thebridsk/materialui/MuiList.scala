@@ -55,7 +55,7 @@ object ListProps extends PropsFactory[ListProps] {
 
 object MuiList extends ComponentFactory[ListProps] {
   @js.native @JSImport(
-    "@material-ui/core/List",
+    "@mui/material/List",
     JSImport.Default
   ) private object MList extends js.Any
 

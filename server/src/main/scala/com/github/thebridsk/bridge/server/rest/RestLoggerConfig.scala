@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import com.github.thebridsk.bridge.server.util.HasActorSystem
 import com.github.thebridsk.bridge.server.backend.BridgeService
-import javax.ws.rs.Path
+import jakarta.ws.rs.Path
 import com.github.thebridsk.bridge.data.RestMessage
 import com.github.thebridsk.bridge.data.ServerURL
 import com.github.thebridsk.bridge.data.ServerVersion
@@ -16,16 +16,13 @@ import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.data.BoardSetsAndMovements
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.github.thebridsk.bridge.server.backend.resource.Result
-import scala.util.Success
-import scala.util.Failure
-import com.github.thebridsk.bridge.server.backend.resource.Implicits
 import java.util.concurrent.atomic.AtomicInteger
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.ArraySchema
-import javax.ws.rs.GET
+import jakarta.ws.rs.GET
 import akka.http.scaladsl.server.Route
 
 case class ServerPort(httpPort: Option[Int], httpsPort: Option[Int])
@@ -328,52 +325,59 @@ trait RestLoggerConfig extends HasActorSystem {
         r match {
           case Right(bs) =>
             Result(bs.values.toList.sortWith((l, r) => l.name < r.name))
-          case Left(error) => Result(error)
+          case Left(error) =>
+            log.fine(s"Error querying all boardsets, ignoring: ${error._2.msg}")
+            Result(List.empty)
         }
       }
       val fmv = restService.movements.readAll().map { r =>
         r match {
           case Right(mv) =>
             Result(mv.values.toList.sortWith((l, r) => l.name < r.name))
-          case Left(error) => Result(error)
+          case Left(error) =>
+            log.fine(s"Error querying all movements, ignoring: ${error._2.msg}")
+            Result(List.empty)
         }
       }
-      import Implicits._
-      onComplete(fbs) {
-        case Success(rbs) =>
-          onComplete(fmv) {
-            case Success(rmv) =>
-              if (rbs.isOk && rmv.isOk) {
-                val bm =
-                  List(
-                    BoardSetsAndMovements(
-                      rbs.getOrElse(List()),
-                      rmv.getOrElse(List())
-                    )
-                  )
-                complete(StatusCodes.OK, bm)
-              } else {
-                val (code, msg) = rbs.left.getOrElse(
-                  rmv.left.getOrElse(
-                    (
-                      StatusCodes.InternalServerError,
-                      RestMessage("Unknown error")
-                    )
-                  )
-                )
-                complete(code, msg)
-              }
-            case Failure(ex) =>
-              RestLoggerConfig.log
-                .info("Exception getting boardsets and movements: ", ex)
-              complete(StatusCodes.InternalServerError, "Internal server error")
-          }
-        case Failure(ex) =>
-          RestLoggerConfig.log
-            .info("Exception getting boardsets and movements: ", ex)
-          complete(StatusCodes.InternalServerError, "Internal server error")
+      val fimv = restService.individualMovements.readAll().map { r =>
+        r match {
+          case Right(mv) =>
+            Result(mv.values.toList.sortWith((l, r) => l.name < r.name))
+          case Left(error) =>
+            log.fine(s"Error querying all individual movements, ignoring: ${error._2.msg}")
+            Result(List.empty)
+        }
       }
 
+      val r =
+      for {
+        rbs <- fbs.recover{
+          case x: Exception =>
+            log.fine(s"Exception querying all boardsets", x)
+            Result(List.empty)
+        }
+        rmv <- fmv.recover{
+          case x: Exception =>
+            log.fine(s"Exception querying all movements", x)
+            Result(List.empty)
+        }
+        rimv <- fimv.recover{
+          case x: Exception =>
+            log.fine(s"Exception querying all individual movements", x)
+            Result(List.empty)
+        }
+      } yield {
+        Result(
+          List(
+            BoardSetsAndMovements(
+              rbs.getOrElse(List()),
+              rmv.getOrElse(List()),
+              rimv.getOrElse(List())
+            )
+          )
+        )
+      }
+      resourceList(r)
     }
   }
 }

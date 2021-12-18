@@ -1,6 +1,6 @@
 package com.github.thebridsk.bridge.clientcommon.websocket
 
-import org.scalajs.dom.raw._
+import org.scalajs.dom._
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.CommAlerter
 
