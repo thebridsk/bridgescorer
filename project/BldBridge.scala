@@ -185,6 +185,7 @@ object BldBridge {
         scalafixScalaBinaryVersion,
         cleanKeepGlobs in BldBridgeClient.`bridgescorer-client`,
         cleanKeepGlobs in BldBridgeClientApi.`bridgescorer-clientapi`,
+        cleanKeepGlobs in BldBridgeClientTest.`bridgescorer-clienttest`,
       )
     )
 
@@ -301,6 +302,7 @@ object BldBridge {
       BldBridgeClientCommon.`bridgescorer-clientcommon`,
       BldBridgeClient.`bridgescorer-client`,
       BldBridgeClientApi.`bridgescorer-clientapi`,
+      BldBridgeClientTest.`bridgescorer-clienttest`,
       BldBridgeServer.`bridgescorer-server`,
       BldBridgeFullServer.`bridgescorer-fullserver`,
       BldBridgeRotation.rotationJVM,
@@ -347,6 +349,7 @@ object BldBridge {
           MyNpm.checkForNpmUpdates in Compile in BldBridgeClient.`bridgescorer-client`,
           MyNpm.checkForNpmUpdates in Test in BldBridgeClient.`bridgescorer-client`,
           MyNpm.checkForNpmUpdates in Compile in BldBridgeClientApi.`bridgescorer-clientapi`,
+          MyNpm.checkForNpmUpdates in Compile in BldBridgeClientTest.`bridgescorer-clienttest`,
           // MyNpm.checkForNpmUpdates in Test in BldBridgeClientApi.`bridgescorer-clientapi`,
           dependencyUpdates.all(allProjects),
           dependencyUpdates,

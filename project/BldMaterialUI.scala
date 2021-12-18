@@ -34,11 +34,16 @@ object BldMaterialUI {
     "Place",
     "RadioButtonChecked",
     "RadioButtonUnchecked",
+    "Refresh",
+    "SettingsBrightness",
+    "Brightness7",
+    "Brightness4"
   )
 
   lazy val materialui = project.in(file("materialui")).
     configure( commonSettings ).
     enablePlugins(ScalaJSPlugin).
+    dependsOn(BldColor.colorJS).
     settings(
       libraryDependencies ++= materialUiDeps.value,
       sourceGenerators in Compile += Def.task {

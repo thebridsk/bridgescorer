@@ -221,6 +221,7 @@ object BldDependencies {
       // "@material-ui/core" -> vMaterialUIcore,
       // "@material-ui/icons" -> vMaterialUIicons,
       "@mui/material" -> vMaterialUIcore,
+      "@mui/styles" -> vMaterialUIcore,
       "@mui/icons-material" -> vMaterialUIicons,
       "@emotion/react" -> vEmotionReact,
       "@emotion/styled" -> vEmotionStyled,

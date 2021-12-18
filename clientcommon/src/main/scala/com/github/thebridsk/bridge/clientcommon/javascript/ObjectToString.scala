@@ -17,19 +17,23 @@ object ObjectToString {
       "<null>"
     } else {
       val i = s"\n${indent}"
-      js.Object.keys(obj.asInstanceOf[js.Object]).map { key =>
-        val v = obj.selectDynamic(key)
-        val sv = if (js.isUndefined(v) || v == null) {
-          "<undefined>"
-        } else {
-          js.typeOf(v) match {
-            case "object"   => s"object${dynToString(v, indent+"  ", depth-1)}"
-            case "function" => "<function>"
-            case _          => v.toString()
+      val keys = js.Object.keys(obj.asInstanceOf[js.Object])
+      if (keys.isEmpty) ""
+      else {
+        keys.map { key =>
+          val v = obj.selectDynamic(key)
+          val sv = if (js.isUndefined(v) || v == null) {
+            "<undefined>"
+          } else {
+            js.typeOf(v) match {
+              case "object"   => s"object${dynToString(v, indent+"  ", depth-1)}"
+              case "function" => "<function>"
+              case _          => v.toString()
+            }
           }
-        }
-        s"${key}: ${sv}"
-      }.mkString(i, i, "")
+          s"${key}: ${sv}"
+        }.mkString(i, i, "")
+      }
     }
   }
 }

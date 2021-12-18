@@ -24,7 +24,9 @@ protected trait AppBarPropsPrivate extends js.Any {
 }
 
 @js.native
-trait AppBarProps extends PaperProps with AppBarPropsPrivate {}
+trait AppBarProps extends PaperProps with AppBarPropsPrivate {
+}
+
 object AppBarProps extends PropsFactory[AppBarProps] {
 
   implicit class WrapAppBarProps(private val p: AppBarProps) extends AnyVal {
@@ -53,6 +55,8 @@ object AppBarProps extends PropsFactory[AppBarProps] {
     * @param color The color of the component. It supports those theme colors
     *               that make sense for this component.
     *               Default: primary
+    * @param enableColorOnDark If true, the color prop is applied in dark mode.
+    *                          Default: false
     * @param position The positioning type. The behavior of the different options
     *                  is described in the MDN web docs. Note: sticky is not
     *                  universally supported and will fall back to static when
@@ -67,17 +71,24 @@ object AppBarProps extends PropsFactory[AppBarProps] {
     *                   Default 2
     * @param square If true, rounded corners are disabled.
     *                Default: false
+    * @param variant The variant to use.
+    *                Valid values: 'elevation', 'outlined', string
+    *                Default: 'elevation'
+    * @param sx      The system prop that allows defining system overrides as well as additional CSS styles.
     * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply[P <: AppBarProps](
       props: js.UndefOr[P] = js.undefined,
       color: js.UndefOr[ColorVariant] = js.undefined,
+      enableColorOnDark: js.UndefOr[Boolean] = js.undefined,
       position: js.UndefOr[Position] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
       square: js.UndefOr[Boolean] = js.undefined,
+      variant: js.UndefOr[PaperVariant] = js.undefined,
+      sx: js.UndefOr[js.Dictionary[js.Any]] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   ): AppBarProps = {
@@ -87,11 +98,14 @@ object AppBarProps extends PropsFactory[AppBarProps] {
       component = component,
       elevation = elevation,
       square = square,
+      variant = variant,
+      sx = sx,
       className = className,
       additionalProps = additionalProps
     )
 
     color.foreach(v => p.updateDynamic("color")(v.value))
+    enableColorOnDark.foreach(p.updateDynamic("enableColorOnDark")(_))
     position.foreach(v => p.updateDynamic("position")(v.value))
 
     p
@@ -113,6 +127,8 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
     * @param color The color of the component. It supports those theme colors
     *               that make sense for this component.
     *               Default: primary
+    * @param enableColorOnDark If true, the color prop is applied in dark mode.
+    *                          Default: false
     * @param position The positioning type. The behavior of the different options
     *                  is described in the MDN web docs. Note: sticky is not
     *                  universally supported and will fall back to static when
@@ -127,16 +143,23 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
     *                   Default 2
     * @param square If true, rounded corners are disabled.
     *                Default: false
+    * @param variant The variant to use.
+    *                Valid values: 'elevation', 'outlined', string
+    *                Default: 'elevation'
+    * @param sx      The system prop that allows defining system overrides as well as additional CSS styles.
     * @param className css class name to add to element
     * @param additionalProps a dictionary of additional properties
     */
   def apply(
       color: js.UndefOr[ColorVariant] = js.undefined,
+      enableColorOnDark: js.UndefOr[Boolean] = js.undefined,
       position: js.UndefOr[Position] = js.undefined,
       classes: js.UndefOr[js.Dictionary[String]] = js.undefined,
       component: js.UndefOr[String] = js.undefined,
       elevation: js.UndefOr[Double] = js.undefined,
       square: js.UndefOr[Boolean] = js.undefined,
+      variant: js.UndefOr[PaperVariant] = js.undefined,
+      sx: js.UndefOr[js.Dictionary[js.Any]] = js.undefined,
       className: js.UndefOr[String] = js.undefined,
       additionalProps: js.UndefOr[js.Dictionary[js.Any]] = js.undefined
   )(
@@ -144,11 +167,14 @@ object MuiAppBar extends ComponentFactory[AppBarProps] {
   ) = { // scalafix:ok ExplicitResultTypes; ReactComponent
     val p: AppBarProps = AppBarProps(
       color = color,
+      enableColorOnDark = enableColorOnDark,
       position = position,
       classes = classes,
       component = component,
       elevation = elevation,
       square = square,
+      variant = variant,
+      sx = sx,
       className = className,
       additionalProps = additionalProps
     )

@@ -12,7 +12,11 @@ object ColorVariant {
   val inherit = new ColorVariant("inherit")
   val primary = new ColorVariant("primary")
   val secondary = new ColorVariant("secondary")
-  val values: List[ColorVariant] = List(default, inherit, primary, secondary)
+  val transparent = new ColorVariant("transparent")
+
+  val values: List[ColorVariant] = List(default, inherit, primary, secondary, transparent)
+
+  def apply(value: String) = new ColorVariant(value)
 
   implicit def toJsAny(cv: ColorVariant): js.Any = cv.value
 }
