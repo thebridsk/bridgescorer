@@ -149,8 +149,7 @@ object BldDependencies {
       "com.github.japgolly.scalajs-react" %%% "test" % vScalaJsReact % "test" withSources()
       ))
 
-
-  val reduxDeps = Def.setting(Seq(
+  val reduxDeps = Def.setting(scalatestDeps.value ++ Seq(
 
     "com.github.japgolly.scalajs-react" %%% "core"          % vScalaJsReact withSources(),
     "com.github.japgolly.scalajs-react" %%% "extra"         % vScalaJsReact withSources(),
@@ -300,6 +299,6 @@ object BldDependencies {
 
   val reduxTestNpmDeps = Seq(
     "redux" -> vRedux,
-    "redux-thunk" -> vReduxThunk
+    "redux-thunk" -> vReduxThunk,
   )
 }

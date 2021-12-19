@@ -42,10 +42,10 @@ import com.github.thebridsk.bridge.clientcommon.pages.BaseStyles._
 import com.github.thebridsk.bridge.clientcommon.store.ServerURLStore
 import _root_.com.github.thebridsk.bridge.data.DuplicateSummary
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateSummary
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.client.pages.info.InfoPage
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateModule.PlayIndividualDuplicate
 import com.github.thebridsk.bridge.client.pages.individual.router.IndividualDuplicateRouter.{ SummaryView => ISummaryView }
+import com.github.thebridsk.bridge.data.SystemTime
 
 /**
   * The home page for the bridge application.

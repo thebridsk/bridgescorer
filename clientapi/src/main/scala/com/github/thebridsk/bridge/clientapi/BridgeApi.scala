@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge
 
 import com.github.thebridsk.bridge.clientapi.routes.AppRouter
-import com.github.thebridsk.bridge.data.js.SystemTimeJs
+import com.github.thebridsk.utilities.time.js.SystemTimeJs
 import com.github.thebridsk.utilities.logging.Logger
 import com.github.thebridsk.bridge.clientcommon.logger.Alerter
 import scala.scalajs.js.annotation.JSExportTopLevel

@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.data
 
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import SystemTime.Timestamp
 import com.github.thebridsk.bridge.data.bridge.DuplicateBridge.DuplicateScore
 
 import io.swagger.v3.oas.annotations.media.ArraySchema

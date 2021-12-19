@@ -11,7 +11,7 @@ import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.DuplicateHand
 import com.github.thebridsk.bridge.data.MatchRubber
 import com.github.thebridsk.bridge.data.RubberHand
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import com.github.thebridsk.utilities.time.SystemTime.Timestamp
 import com.github.thebridsk.bridge.server.backend.BridgeServiceFileStoreConverters
 import com.github.thebridsk.bridge.server.backend.MatchChicagoCacheStoreSupport
 import com.github.thebridsk.bridge.server.backend.MatchRubberCacheStoreSupport

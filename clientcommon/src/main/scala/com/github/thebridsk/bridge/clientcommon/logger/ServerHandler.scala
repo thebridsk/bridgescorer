@@ -3,9 +3,9 @@ package com.github.thebridsk.bridge.clientcommon.logger
 import com.github.thebridsk.utilities.logging.TraceMsg
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import org.scalactic.source.Position
-import com.github.thebridsk.bridge.data.SystemTime
 import java.io.StringWriter
 import java.io.PrintWriter
+import com.github.thebridsk.bridge.data.SystemTime
 
 trait ServerHandler {
 

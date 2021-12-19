@@ -20,7 +20,6 @@ import com.github.thebridsk.bridge.client.controller.RubberController
 import com.github.thebridsk.bridge.data.RubberHand
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition
 import com.github.thebridsk.bridge.client.pages.rubber.RubberRouter.RubberMatchHandView
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.TextColor
@@ -28,6 +27,7 @@ import com.github.thebridsk.bridge.client.routes.BridgeRouter
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import org.scalajs.dom.File
+import com.github.thebridsk.bridge.data.SystemTime
 
 /**
   * A skeleton component.

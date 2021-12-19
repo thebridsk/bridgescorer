@@ -508,13 +508,28 @@ object Combobox {
   ): List[Combobox] = {
     val el = PageBrowser.findAll(
       PageBrowser.xpath(
-        s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input"""
+//        s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input"""
+        s"""//input[contains(concat(' ', @class, ' '), ' MuiAutocomplete-input ')]"""
       )
     )
     el.map(e => new Combobox(e.underlying))
   }
 
-  def find(name: String)(implicit
+  def find(id: String)(implicit
+      pos: Position,
+      webdriver: WebDriver,
+      patienceConfig: PatienceConfig
+  ): Combobox = {
+    val el = PageBrowser.find(
+      PageBrowser.xpath(
+        // s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input[@id='${id}']"""
+        s"""//input[@id='${id}' and contains(concat(' ', @class, ' '), ' MuiAutocomplete-input ')]"""
+      )
+    )
+    new Combobox(el.underlying)
+  }
+
+  def findByName(name: String)(implicit
       pos: Position,
       webdriver: WebDriver,
       patienceConfig: PatienceConfig

@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.clientcommon.react
 
-import com.github.thebridsk.bridge.data.SystemTime
 import scala.scalajs.js
+import com.github.thebridsk.bridge.data.SystemTime
 
 object DateUtils {
 

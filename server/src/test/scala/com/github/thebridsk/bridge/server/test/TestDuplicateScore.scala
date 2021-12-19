@@ -4,7 +4,7 @@ import com.github.thebridsk.bridge.data.MatchDuplicate
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import org.scalatest.matchers.must.Matchers
-import com.github.thebridsk.bridge.server.util.SystemTimeJVM
+import com.github.thebridsk.utilities.time.jvm.SystemTimeJVM
 import org.scalatest.flatspec.AnyFlatSpec
 import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
 import com.github.thebridsk.bridge.data.bridge.PerspectiveDirector

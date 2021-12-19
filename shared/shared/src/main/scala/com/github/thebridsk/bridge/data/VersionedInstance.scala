@@ -1,5 +1,6 @@
 package com.github.thebridsk.bridge.data
 
+
 /**
   * @tparam CurrentVersion the current version type
   * @tparam ThisVersion the type of this instance

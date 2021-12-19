@@ -16,7 +16,7 @@ import com.github.thebridsk.bridge.server.backend.resource.JavaResourcePersisten
 import com.github.thebridsk.bridge.server.backend.resource.ZipPersistentSupport
 import com.github.thebridsk.bridge.server.backend.resource.Result
 import scala.concurrent.Future
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import com.github.thebridsk.utilities.time.SystemTime.Timestamp
 import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.data.IndividualDuplicate
 

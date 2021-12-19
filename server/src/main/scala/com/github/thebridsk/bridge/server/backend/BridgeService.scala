@@ -3,7 +3,6 @@ package com.github.thebridsk.bridge.server.backend
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.LoggerConfig
 import com.github.thebridsk.bridge.data.MatchDuplicate
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.Team
 import com.github.thebridsk.bridge.data.Board
 import com.github.thebridsk.bridge.data.sample.TestMatchDuplicate
@@ -29,7 +28,6 @@ import java.nio.charset.StandardCharsets
 import com.github.thebridsk.bridge.data.VersionedInstance
 import java.util.zip.ZipEntry
 import java.io.BufferedOutputStream
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 import scala.reflect.io.Directory
 import scala.reflect.io.Path
 import scala.concurrent.ExecutionContext
@@ -46,6 +44,8 @@ import java.io.InputStream
 import com.github.thebridsk.bridge.data.IndividualMovement
 import com.github.thebridsk.bridge.data.IndividualDuplicate
 import com.github.thebridsk.bridge.data.bridge.individual.{ DuplicateSummary => IDuplicateSummary }
+import com.github.thebridsk.bridge.data.SystemTime
+import com.github.thebridsk.bridge.data.SystemTime.Timestamp
 
 /**
   * The backend trait for our service.

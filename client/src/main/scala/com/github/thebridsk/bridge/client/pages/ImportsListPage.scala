@@ -13,7 +13,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsNull
 import play.api.libs.json.JsTrue
 import com.github.thebridsk.bridge.clientcommon.react.PopupOkCancel
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import com.github.thebridsk.utilities.time.SystemTime.Timestamp
 import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsError

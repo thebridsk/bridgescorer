@@ -17,8 +17,8 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateChicagoNames
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubber
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateRubberNames
-import com.github.thebridsk.bridge.data.SystemTime
 import scala.scalajs.js
+import com.github.thebridsk.bridge.data.SystemTime
 
 object NamesStore extends ChangeListenable {
   val logger: Logger = Logger("bridge.ViewPlayers")

@@ -16,7 +16,7 @@
 //import com.github.thebridsk.bridge.pages.HomePage
 //import org.scalatest.flatspec.AnyFlatSpec
 //import org.scalatest.matchers.must.Matchers
-//import com.github.thebridsk.bridge.data.js.SystemTimeJs
+//import com.github.thebridsk.utilities.time.js.SystemTimeJs
 //
 ///**
 // * @author werewolf

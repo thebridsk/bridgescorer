@@ -1,7 +1,7 @@
 package com.github.thebridsk.bridge.server.test
 
 import org.scalatest.matchers.must.Matchers
-import com.github.thebridsk.bridge.server.util.SystemTimeJVM
+import com.github.thebridsk.utilities.time.jvm.SystemTimeJVM
 import org.scalatest.flatspec.AnyFlatSpec
 import com.github.thebridsk.bridge.data.MatchChicago
 import com.github.thebridsk.bridge.data.chicago.ChicagoScoring

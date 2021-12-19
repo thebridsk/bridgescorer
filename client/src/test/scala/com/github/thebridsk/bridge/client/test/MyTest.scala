@@ -14,7 +14,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoModule.PlayChicago2
 import com.github.thebridsk.bridge.client.pages.chicagos.ChicagoRouter.ListView
-import com.github.thebridsk.bridge.data.js.SystemTimeJs
+import com.github.thebridsk.utilities.time.js.SystemTimeJs
 import com.github.thebridsk.bridge.clientcommon.rest2.AjaxResult
 import com.github.thebridsk.bridge.client.test.utils.StartLogging
 import com.github.thebridsk.utilities.logging.Logger

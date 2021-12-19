@@ -1,9 +1,9 @@
 package com.github.thebridsk.bridge.data.bridge
 
 import com.github.thebridsk.bridge.data.Hand
+import com.github.thebridsk.bridge.data.SystemTime
 
 import scala.language.implicitConversions
-import com.github.thebridsk.bridge.data.SystemTime
 
 sealed abstract case class ContractSuit(suit: String)
 

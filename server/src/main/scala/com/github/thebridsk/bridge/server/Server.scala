@@ -2,7 +2,7 @@ package com.github.thebridsk.bridge.server
 
 import scala.concurrent.duration._
 import com.github.thebridsk.utilities.main.Main
-import com.github.thebridsk.bridge.server.util.SystemTimeJVM
+import com.github.thebridsk.utilities.time.jvm.SystemTimeJVM
 import scala.reflect.io.Path
 import java.io.File
 import org.rogach.scallop._

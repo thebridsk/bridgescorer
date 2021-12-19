@@ -1,6 +1,6 @@
 package com.github.thebridsk.bridge.data
 
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import SystemTime.Timestamp
 
 import io.swagger.v3.oas.annotations.media.Schema
 

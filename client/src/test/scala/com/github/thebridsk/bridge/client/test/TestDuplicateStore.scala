@@ -7,7 +7,7 @@ import com.github.thebridsk.bridge.client.bridge.action.ActionStartDuplicateMatc
 import com.github.thebridsk.bridge.data.Hand
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateHand
 import com.github.thebridsk.bridge.client.bridge.store.ChangeListenable
-import com.github.thebridsk.bridge.data.js.SystemTimeJs
+import com.github.thebridsk.utilities.time.js.SystemTimeJs
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.PerspectiveTable
 import com.github.thebridsk.bridge.client.bridge.action.ActionUpdateDuplicateMatch

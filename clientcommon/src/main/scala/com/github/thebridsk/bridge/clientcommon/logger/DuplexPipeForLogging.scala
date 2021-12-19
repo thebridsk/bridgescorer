@@ -4,12 +4,12 @@ import scala.collection.mutable.Queue
 
 import org.scalajs.dom.WebSocket
 
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol
 import com.github.thebridsk.bridge.data.websocket.DuplexProtocol.LogEntryV2
 import com.github.thebridsk.bridge.data.websocket.Protocol
 import com.github.thebridsk.bridge.clientcommon.websocket.Code
 import com.github.thebridsk.bridge.clientcommon.websocket.MyWebsocket
+import com.github.thebridsk.bridge.data.SystemTime
 
 import com.github.thebridsk.utilities.logging.Logger
 

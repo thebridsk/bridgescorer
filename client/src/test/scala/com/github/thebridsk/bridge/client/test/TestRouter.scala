@@ -1,6 +1,6 @@
 // package com.github.thebridsk.bridge.client.test
 
-// import com.github.thebridsk.bridge.data.js.SystemTimeJs
+// import com.github.thebridsk.utilities.time.js.SystemTimeJs
 // import org.scalatest.flatspec.AnyFlatSpec
 // import org.scalatest.matchers.must.Matchers
 // import com.github.thebridsk.bridge.client.routes.AppRouter

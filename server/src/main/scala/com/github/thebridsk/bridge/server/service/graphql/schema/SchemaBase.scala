@@ -5,7 +5,7 @@ import sangria.schema._
 import com.github.thebridsk.bridge.data.Id
 import sangria.validation.ValueCoercionViolation
 import sangria.ast
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import com.github.thebridsk.utilities.time.SystemTime.Timestamp
 import com.github.thebridsk.utilities.logging.Logger
 import sangria.ast.AstLocation
 import com.github.thebridsk.bridge.data.bridge.PlayerPosition

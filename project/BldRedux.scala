@@ -19,6 +19,7 @@ import BldVersion._
 object BldRedux {
 
   lazy val redux = project.in(file("redux")).
+    dependsOn( BldBridgeClientCommon.`bridgescorer-clientcommon`).
     configure( commonSettings ).
     enablePlugins(ScalaJSPlugin).
     enablePlugins(ScalaJSBundlerPlugin).
@@ -26,8 +27,6 @@ object BldRedux {
       libraryDependencies ++= reduxDeps.value,
 
       npmDependencies in Test ++= reduxTestNpmDeps,
-
-      scalacOptions in Test += "-P:scalajs:sjsDefinedByDefault",
 
       version in webpack := vWebPack,
       webpackCliVersion := vWebPackCli,

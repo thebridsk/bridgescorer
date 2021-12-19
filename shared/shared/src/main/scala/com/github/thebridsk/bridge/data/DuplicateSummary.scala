@@ -1,6 +1,6 @@
 package com.github.thebridsk.bridge.data
 
-import com.github.thebridsk.bridge.data.SystemTime.Timestamp
+import SystemTime.Timestamp
 import com.github.thebridsk.bridge.data.bridge.MatchDuplicateScore
 import com.github.thebridsk.bridge.data.bridge.PerspectiveComplete
 

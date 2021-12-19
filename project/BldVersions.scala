@@ -103,8 +103,8 @@ object BldVersion {
 
   lazy val vPropTypes = "15.7.2"            // https://www.npmjs.com/package/prop-types
 
-  val vRedux = "4.0.4"        // https://github.com/reduxjs/redux
-  val vReduxThunk = "2.3.0"   // https://github.com/reduxjs/redux-thunk
+  val vRedux = "4.1.2"        // https://github.com/reduxjs/redux
+  val vReduxThunk = "2.4.1"   // https://github.com/reduxjs/redux-thunk
 
   lazy val vJss = "10.9.0"                  // https://www.npmjs.com/package/jss
 

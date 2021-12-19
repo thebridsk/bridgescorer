@@ -36,7 +36,8 @@ object BldBridgeClientTest {
       BldBridgeRotation.rotationJS,
       BldBridgeClientCommon.`bridgescorer-clientcommon`,
       BldMaterialUI.materialui,
-      BldColor.colorJS
+      BldColor.colorJS,
+      BldRedux.redux
     )
     .dependsOn(`utilities-js`)
     .settings(

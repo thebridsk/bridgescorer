@@ -11,7 +11,6 @@ import com.github.thebridsk.bridge.client.controller.Controller
 import com.github.thebridsk.bridge.clientcommon.react.AppButton
 import com.github.thebridsk.bridge.client.pages.duplicate.DuplicateRouter.DuplicateResultEditView
 import com.github.thebridsk.bridge.data.DuplicateSummaryEntry
-import com.github.thebridsk.bridge.data.SystemTime
 import com.github.thebridsk.bridge.data.MatchDuplicateResult
 import com.github.thebridsk.bridge.data.BoardResults
 import com.github.thebridsk.bridge.clientcommon.rest2.RestClientDuplicateResult
@@ -32,6 +31,7 @@ import japgolly.scalajs.react.vdom.TagMod
 import com.github.thebridsk.bridge.client.pages.HomePage
 import japgolly.scalajs.react.component.builder.Lifecycle.ComponentDidUpdate
 import com.github.thebridsk.bridge.client.components.EnterName
+import com.github.thebridsk.bridge.data.SystemTime
 
 /**
   * A component page that displays and allows editing of a duplicate result.
