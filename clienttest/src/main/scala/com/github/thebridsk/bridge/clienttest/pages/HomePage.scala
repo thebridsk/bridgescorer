@@ -19,22 +19,10 @@ import com.github.thebridsk.bridge.clientcommon.logger.Info
 import org.scalajs.dom.Node
 import org.scalajs.dom.Element
 import com.github.thebridsk.bridge.clienttest.routes.AppRouter
-import com.github.thebridsk.materialui.MuiAppBar
-import com.github.thebridsk.materialui.Position
-import com.github.thebridsk.materialui.MuiToolbar
-import com.github.thebridsk.materialui.icons.Menu
-import com.github.thebridsk.materialui.MuiIconButton
-import com.github.thebridsk.materialui.ItemSize
-import com.github.thebridsk.materialui.ItemEdge
-import com.github.thebridsk.materialui.ColorVariant
-import com.github.thebridsk.materialui.TextVariant
 import com.github.thebridsk.materialui.MuiTypography
-import com.github.thebridsk.materialui.MuiButton
 import com.github.thebridsk.bridge.clientcommon.javascript.ObjectToString
 import com.github.thebridsk.materialui.MuiBox
 import com.github.thebridsk.materialui.styles.Theme
-import com.github.thebridsk.materialui.styles.ReactStyles
-import com.github.thebridsk.materialui.styles.Styles
 import com.github.thebridsk.bridge.clienttest.routes.Navigator
 
 /**

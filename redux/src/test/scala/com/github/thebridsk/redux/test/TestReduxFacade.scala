@@ -2,7 +2,6 @@ package com.github.thebridsk.redux.test
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
-import com.github.thebridsk.redux._
 import scala.scalajs.js
 import scala.scalajs.js.JSON
 
