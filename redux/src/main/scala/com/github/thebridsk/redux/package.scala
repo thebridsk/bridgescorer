@@ -8,9 +8,9 @@ import scala.scalajs.js.|
  */
 package object redux {
 
-  type State = js.Any
+  type State = js.Object
 
-  type Reducer[S <: State] = js.Function2[js.UndefOr[S], NativeAction[Action], S]
+  type Reducer[S] = js.Function2[js.UndefOr[S], NativeAction[Action], S]
 
   type Unsubscribe = js.Function0[Unit]
   type Listener = js.Function0[Unit]
