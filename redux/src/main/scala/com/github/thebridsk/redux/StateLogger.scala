@@ -19,14 +19,14 @@ object StateLogger {
   ): js.Any = {
     js.typeOf(action) match {
       case "object" =>
-        log.info(s"dispatching ${ObjectToString.objToString(action.asInstanceOf[js.Object])}")
+        log.info(s"dispatching ${ObjectToString.objToString(action.asInstanceOf[js.Object], "  ")}")
       case "function" =>
         log.info(s"dispatching thunk ${action}")
       case _ =>
         log.info(s"dispatching js.Any ${action}")
     }
     val ret = next(action.asInstanceOf[NativeAction[Action]])
-    log.info(s"state after dispatch: ${ObjectToString.objToString(middlewareAPI.getState().asInstanceOf[js.Object])}")
+    log.info(s"state after dispatch: ${ObjectToString.objToString(middlewareAPI.getState(), "  ")}")
     // log.info(s"state after dispatch: ${JSON.stringify(middlewareAPI.getState())}")
     ret
   }

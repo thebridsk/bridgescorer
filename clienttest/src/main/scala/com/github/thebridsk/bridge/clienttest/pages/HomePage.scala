@@ -23,7 +23,7 @@ import com.github.thebridsk.materialui.MuiTypography
 import com.github.thebridsk.bridge.clientcommon.javascript.ObjectToString
 import com.github.thebridsk.materialui.MuiBox
 import com.github.thebridsk.materialui.styles.Theme
-import com.github.thebridsk.bridge.clienttest.routes.Navigator
+import com.github.thebridsk.bridge.clienttest.store.AppRoot
 
 /**
   * @author werewolf
@@ -193,7 +193,7 @@ object HomePage {
         val doingWork = state.working.getOrElse("")
         val isWorking = state.working.isDefined
 
-        Navigator.ThemeContext.consume { theme =>
+        AppRoot.ThemeContext.consume { theme =>
 
           MuiBox()(
             MuiTypography(

@@ -9,8 +9,8 @@ object ObjectToString {
   }
 
   def dynToString(obj: js.Dynamic, indent: String = "", depth: Int = 3): String = {
-    if (depth == 0) {
-      ""
+    if (depth <= 0) {
+      "<too deep>"
     } else if (js.isUndefined(obj)) {
       "<undefined>"
     } else if (obj == null) {
@@ -22,17 +22,41 @@ object ObjectToString {
       else {
         keys.map { key =>
           val v = obj.selectDynamic(key)
-          val sv = if (js.isUndefined(v) || v == null) {
-            "<undefined>"
+          val sv = anyToString(v, indent+"  ", depth-1)
+          s"  ${key}: ${sv}"
+        }.mkString(s"[${i}",s"${i},",s"${i}]")
+      }
+    }
+  }
+
+  def arrayToString[T <: js.Any](array: js.Array[T], indent: String = "", depth: Int = 3): String = {
+    if (depth <= 0) {
+      "<too deep>"
+    } else {
+      val i = s"\n${indent}"
+      array.map { e =>
+        anyToString(e, indent+"  ", depth-1)
+      }.mkString(s"[${i}",s"${i},",s"${i}]")
+    }
+  }
+
+  def anyToString(any: js.Any, indent: String = "", depth: Int = 3): String = {
+    if (js.isUndefined(any)) {
+      "<undefined>"
+    } else if (any == null) {
+      "<null>"
+    } else {
+      js.typeOf(any) match {
+        case "object"   =>
+          if (js.Array.isArray(any)) {
+            s"array ${arrayToString(any.asInstanceOf[js.Array[js.Any]], indent+"  ", depth-1)}"
           } else {
-            js.typeOf(v) match {
-              case "object"   => s"object${dynToString(v, indent+"  ", depth-1)}"
-              case "function" => "<function>"
-              case _          => v.toString()
-            }
+            s"object ${dynToString(any.asInstanceOf[js.Dynamic], indent+"  ", depth-1)}"
           }
-          s"${key}: ${sv}"
-        }.mkString(i, i, "")
+        case "function" =>
+          s"<function> ${any}"
+        case _          =>
+          any.toString()
       }
     }
   }

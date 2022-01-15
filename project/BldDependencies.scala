@@ -238,6 +238,9 @@ object BldDependencies {
       "@emotion/styled" -> vEmotionStyled,
       "prop-types" -> vPropTypes,
       "jss" -> vJss,
+      "redux" -> vRedux,
+      "redux-thunk" -> vReduxThunk,
+      "react-redux" -> vReduxReact
   )
 
     // this is for SBT 1.0
@@ -298,7 +301,8 @@ object BldDependencies {
   )
 
   val reduxTestNpmDeps = Seq(
-    "redux" -> vRedux,
-    "redux-thunk" -> vReduxThunk,
+      "redux" -> vRedux,
+      "redux-thunk" -> vReduxThunk,
+      "react-redux" -> vReduxReact
   )
 }

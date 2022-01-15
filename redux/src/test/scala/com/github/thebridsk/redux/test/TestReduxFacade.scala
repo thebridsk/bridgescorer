@@ -22,7 +22,8 @@ case class TestAddState( val value: Int = 0 ) {
 }
 
 object TestAddState {
-  val reducer: Reducer[TestAddState] = (state: js.UndefOr[TestAddState], action: NativeAction[Action]) => {
+
+  def reducer(state: js.UndefOr[TestAddState], action: NativeAction[Action]): TestAddState = {
     val s = state.getOrElse(TestAddState(0))
     log.info( s"addOne reducer: state=${s}, action=${JSON.stringify(action)}")
     val ad = action.asInstanceOf[js.Dynamic]
@@ -61,24 +62,23 @@ case class TestActionIncN(val n: Int, actiontype: String = "incN") extends Actio
 case class TestActionDecN(val n: Int, actiontype: String = "decN") extends Action
 
 object DelayedActions {
-  def delayInc: com.github.thebridsk.redux.thunk.Function[TestState] = {
 
-    log.info("Setting up delayInc")
-
-    ( dispatch, getState, extraArgs) => {
-      val wa = TestActionInc
-      log.info(s"extraArgs is ${ObjectToString.objToString(extraArgs, "  ")}")
-      log.info(s"In delayInc, dispatching ${wa}")
-      val r = dispatch( wa )
-      log.info("In delayInc, done")
-
-    }
+  def delayInc(
+    dispatch: DispatchBasic,
+    getState: js.Function0[TestState],
+    extraArgs: js.Object
+  ) = {
+    val wa = TestActionInc
+    log.info(s"extraArgs is ${ObjectToString.objToString(extraArgs, "  ")}")
+    log.info(s"In delayInc, dispatching ${wa}")
+    val r = dispatch( wa )
+    log.info("In delayInc, done")
   }
 
 }
 
 object TestReducers extends js.Object {
-  val addOne = TestAddState.reducer
+  val addOne: Reducer[TestAddState] = TestAddState.reducer _
 }
 
 @js.native
@@ -98,7 +98,7 @@ class TestReduxFacade extends AnyFlatSpec with Matchers {
   val actionInc = NativeAction(TestActionInc)
   val actionDec = NativeAction(TestActionDec)
 
-  log.info("I'm here 0")
+  log.info(s"I'm here 0, TestReducers=${ObjectToString.objToString(TestReducers)}")
 
   behavior of "The Redux facade"
 
@@ -183,7 +183,7 @@ class TestReduxFacade extends AnyFlatSpec with Matchers {
 
       store.getState().addOne.value mustBe 0
 
-      store.dispatch( DelayedActions.delayInc )
+      store.dispatch( DelayedActions.delayInc _ )
       withClue(s"After Inc, state is ${stateJson}") {
         store.getState().addOne.value mustBe 1
       }
@@ -211,7 +211,7 @@ class TestReduxFacade extends AnyFlatSpec with Matchers {
 
         store.getState().addOne.value mustBe 0
 
-        store.dispatch( DelayedActions.delayInc )
+        store.dispatch( DelayedActions.delayInc _ )
         withClue(s"After Inc, state is ${stateJson}") {
           store.getState().addOne.value mustBe 1
         }

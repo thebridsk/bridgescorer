@@ -26,6 +26,13 @@ object NativeAction {
     p.asInstanceOf[NativeAction[A]]
   }
 
+  def simple(actiontype: String): NativeAction[Nothing] = {
+    val p = js.Dynamic.literal(
+      "type" -> actiontype,
+    )
+    p.asInstanceOf[NativeAction[Nothing]]
+  }
+
   implicit def actionToNative[A <: Action](action: A): NativeAction[A] = apply(action)
 
   implicit class wrapNativeAction[A <: Action](val a: NativeAction[A]) extends AnyVal {

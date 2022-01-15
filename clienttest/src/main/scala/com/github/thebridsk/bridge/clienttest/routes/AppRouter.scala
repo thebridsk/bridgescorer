@@ -20,7 +20,11 @@ object AppRouter {
 
   val logger: Logger = Logger("bridge.Router")
 
-  trait AppPage
+  trait AppPage {
+    def mainMenu = {
+
+    }
+  }
 
   case object Home extends AppPage
   case object About extends AppPage

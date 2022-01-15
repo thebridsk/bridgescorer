@@ -105,6 +105,7 @@ object BldVersion {
 
   val vRedux = "4.1.2"        // https://github.com/reduxjs/redux
   val vReduxThunk = "2.4.1"   // https://github.com/reduxjs/redux-thunk
+  val vReduxReact = "7.2.6"   // https://github.com/reduxjs/react-redux
 
   lazy val vJss = "10.9.0"                  // https://www.npmjs.com/package/jss
 

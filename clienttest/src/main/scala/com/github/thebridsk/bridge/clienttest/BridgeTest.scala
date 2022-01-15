@@ -67,6 +67,7 @@ object BridgeApi { // need to figure out how to use new way to call main
         val div = Info.getElement()
         val sdiv = div.nodeName
         logger.info("Bridge Testing, rendering into " + sdiv)
+
         AppRouter().router().renderIntoDOM(div)
       } catch {
         case t: Throwable =>
