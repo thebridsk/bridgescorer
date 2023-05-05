@@ -24,7 +24,7 @@ object BldVersion {
 
 
   lazy val vAkka = "2.6.17"            // https://github.com/akka/akka
-  lazy val vAkkaHttp = "10.2.7"        // https://github.com/akka/akka-http
+  lazy val vAkkaHttp = "10.2.7"        // https://github.com/akka/akka-http    // no scala 3 support https://github.com/akka/akka-http/issues/3891
 
   lazy val vAkkaHttpPlayJson="1.38.2"  // https://github.com/hseeberger/akka-http-json
 
@@ -56,7 +56,7 @@ object BldVersion {
   lazy val vScalatestSelenium = "3.2.10.0"  // https://github.com/scalatest/scalatestplus-selenium
   lazy val vJunit = "4.13.2"         // https://github.com/junit-team/junit4
 
-  lazy val vSelenium = "4.1.0"         // https://github.com/SeleniumHQ/selenium
+  lazy val vSelenium = "4.9.0"         // https://github.com/SeleniumHQ/selenium
 
   lazy val vScallop = "4.1.0"          // https://github.com/scallop/scallop
   lazy val vSlf4j = "1.7.32"           // https://github.com/qos-ch/slf4j

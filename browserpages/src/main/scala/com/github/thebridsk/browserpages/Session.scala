@@ -109,7 +109,8 @@ class Session(name: String = "default") extends WebDriver {
 
 //      options.addArguments( "-new-instance")
 
-    options.setHeadless(headless)
+    // options.setHeadless(headless)
+    if (headless) options.addArguments("-headless")
 
     options.setLogLevel(
       if (debug) FirefoxDriverLogLevel.TRACE
@@ -138,7 +139,7 @@ class Session(name: String = "default") extends WebDriver {
         options.addArguments("window-size=1920,1080")
       }
       options.addArguments("disable-extensions")
-      options.setExperimentalOption("w3c", false)
+      // options.setExperimentalOption("w3c", false)
       options
   }
 

@@ -39,7 +39,7 @@ val vSbtRevolver = "0.8.0"         // https://github.com/spray/sbt-revolver
 val vSbtUniDoc = "0.3.3"           // https://github.com/sbt/sbt-unidoc
 val vSbtDigest = "1.1.1"           // https://github.com/sbt/sbt-digest
 val vSbtScalaFmt="2.4.5"           // https://github.com/scalameta/sbt-scalafmt
-val vBloop = "1.4.11"              // https://github.com/scalacenter/bloop
+val vBloop = "1.5.6"               // https://github.com/scalacenter/bloop
 val vSbtScalaFix="0.9.33"          // https://github.com/scalacenter/sbt-scalafix
 
 // The following is needed to get rid of the message
