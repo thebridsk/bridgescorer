@@ -294,6 +294,24 @@ trait PageBrowser {
     }
   }
 
+  def saveDomFromElement(element: WebElement, tofile: String, stdout: Boolean = false)(implicit
+      webDriver: WebDriver
+  ): Unit = {
+    try {
+      val dom = element.getAttribute("innerHTML")
+      reflect.io.File(tofile)(Codec.UTF8).writeAll(dom)
+      if (stdout) {
+        println(
+          s"Dom to file: ${tofile}:\n${dom}\n******** end of Dom ********"
+        )
+      }
+    } catch {
+      case e: Exception =>
+        PageBrowser.log
+          .warning("Exception trying to execute a script in browser", e)
+    }
+  }
+
   def go(implicit webDriver: WebDriver, pos: Position) = new GoTo
 
   def id(s: String)(implicit

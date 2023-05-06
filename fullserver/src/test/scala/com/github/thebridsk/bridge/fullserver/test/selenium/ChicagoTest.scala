@@ -171,18 +171,14 @@ class ChicagoTest
     eventually {
       try {
         val east = enp.getPlayerCombobox(East)
+        east.clickCaret
         val sug = east.suggestions
         withClue(
           "Must have one suggestion in visible div, found " + sug
             .map(_.text)
             .mkString(",") + ": "
         ) {
-          sug.length mustBe 1
-        }
-        withClue(
-          "One suggestion line must show no names, found " + sug(0).text + ": "
-        ) {
-          sug(0).text mustBe """No suggested names"""
+          sug.length mustBe 0
         }
       } catch {
         case x: Exception =>
@@ -734,21 +730,23 @@ class ChicagoTest
 
     val enp = EnterNamesPage.current
 
-    withClueAndScreenShot(screenshotDir, "SuggestName", "") {
+    withClueAndScreenShot(screenshotDir, "SuggestName", "", true) {
       eventually {
         enp.isResetEnabled mustBe true
         enp.isOKEnabled mustBe false
       }
 
-      enp.enterPlayer(North, "n")
+      val combobox = enp.getPlayerCombobox(North)
+      combobox.clickCaret
+
+      enp.enterPlayer(North, "e")
       val first = eventually {
-        val combobox = enp.getPlayerCombobox(North)
         val listitems = combobox.suggestions
         assert(
           !listitems.isEmpty,
           "list of candidate entries must not be empty"
         )
-        listitems.foreach(li => li.text must startWith regex ("(?i)n"))
+        listitems.foreach(li => li.text must include regex ("(?i)e"))
         listitems(0)
       }
       val text = first.text
@@ -758,25 +756,28 @@ class ChicagoTest
         enp.getPlayer(North) mustBe text
       }
 
+      val scombo = enp.getPlayerCombobox(South)
+      scombo.click
       enp.enterPlayer(South, "s")
 
       eventually {
-        val listitems = enp.getPlayerCombobox(South).suggestions
+        val listitems = scombo.suggestions
         assert(
           !listitems.isEmpty,
           "list of candidate entries must not be empty"
         )
-        listitems.foreach(li => li.text must startWith regex ("(?i)s"))
+        listitems.foreach(li => li.text must include regex ("(?i)s"))
       }
 
+      val ecombo = enp.getPlayerCombobox(South)
+      ecombo.click
       enp.enterPlayer(East, "asfdfs")
       eventually {
-        val listitems = enp.getPlayerCombobox(East).suggestions
+        val listitems = ecombo.suggestions
         assert(
-          !listitems.isEmpty,
-          "list of candidate entries must not be empty"
+          listitems.isEmpty,
+          "list of candidate entries must be empty"
         )
-        listitems.foreach(li => li.text must startWith("No names matched"))
       }
 
       enp.esc

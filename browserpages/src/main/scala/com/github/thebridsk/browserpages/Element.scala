@@ -475,23 +475,28 @@ class Combobox(
   ) = this(el.underlying)(pos1, webdriver1, patienceConfig1)
 
   def suggestions: List[Element] = {
-    underlying
-      .findElements(
-        By.xpath("""./parent::div/following-sibling::div/div/div/ul/li""")
-      )
-      .asScala
-      .map(e => new Element(e))
-      .toList
+    try {
+      val presentation = underlying.findElement(By.xpath("""./parent::div/parent::div/parent::div/following-sibling::div"""))
+      // PageBrowser.saveDomFromElement(presentation, "Combobox.suggestions.html", true)
+      presentation
+        .findElements(
+          By.xpath("""./div/ul/li""")
+        )
+        .asScala
+        .map(e => new Element(e))
+        .toList
+    } catch {
+      case x: SelNoSuchElementException =>
+        List()
+    }
   }
 
   def isSuggestionVisible: Boolean = {
-    underlying
-      .findElement(By.xpath("""./parent::div/following-sibling::div/div"""))
-      .isDisplayed()
+    Option(underlying.findElement(By.xpath("""./following-sibling::div"""))).isDefined
   }
 
   def clickCaret: Unit = {
-    underlying.findElement(By.xpath("./following-sibling::span/button")).click()
+    underlying /* .findElement(By.xpath("./following-sibling::span/button")) */ .click()
   }
 
   def esc: Unit = {
@@ -508,7 +513,7 @@ object Combobox {
   ): List[Combobox] = {
     val el = PageBrowser.findAll(
       PageBrowser.xpath(
-        s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input"""
+        s"""//div/div/div[contains(concat(' ', @class, ' '), ' MuiAutocomplete-inputRoot ')]/input"""
       )
     )
     el.map(e => new Combobox(e.underlying))
@@ -521,7 +526,7 @@ object Combobox {
   ): Combobox = {
     val el = PageBrowser.find(
       PageBrowser.xpath(
-        s"""//div[contains(concat(' ', @class, ' '), ' rw-combobox ')]/div/input[@name='${name}']"""
+        s"""//div/div/div[contains(concat(' ', @class, ' '), ' MuiAutocomplete-inputRoot ')]/input[@id='${name}']"""
       )
     )
     new Combobox(el.underlying)
