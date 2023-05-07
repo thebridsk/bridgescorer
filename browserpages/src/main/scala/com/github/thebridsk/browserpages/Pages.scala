@@ -389,6 +389,18 @@ abstract class Page[+T <: Page[T]]()(implicit
     * Find all input field
     * @param itype the value of the <code>type</code> attribute of the input
     * @param pos the filename and line number of where it is called from.
+    * @return the <code>Element</code> selected by this query
+    * @throws TestFailedException if any of the input fields were not found
+    */
+  def findAllTextInputsById()(implicit pos: Position): Map[String, TextField] = {
+    val x = findAllInputsById(Some("text")).map(e => e._1 -> new TextField(e._2))
+    x
+  }
+
+  /**
+    * Find all input field
+    * @param itype the value of the <code>type</code> attribute of the input
+    * @param pos the filename and line number of where it is called from.
     * @return the <code>Element</code> selected by this query, key in map is name
     * @throws TestFailedException if any of the input fields were not found
     */

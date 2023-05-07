@@ -65,6 +65,10 @@ object BldBridge {
         |  test:serverhttps2  run server with HTTPS and HTTP 2
         |  test:test          run selenium tests
         |
+        |Env Variables for fullserver:
+        |  MatchToTest        identifies matches to test in DuplicateTestFromTestDirectory and DuplicateTestFromTestDirectory2.
+        |                     only identify with Id number, example for M1 just specify 1
+        |
         |Tasks on bridgescorer-client and bridgescorer-clientapi
         |  fastOptJS::webpack   build the bundle
         |  fullOptJS::webpack   build the bundle

@@ -110,7 +110,7 @@ class TableEnterOrSelectNamesPage(
 
     getButton("OK")
 
-    val inputs = findAllTextInputs()
+    val inputs = findAllTextInputsById()
     if (inputs.contains("Scorekeeper")) {
       enterNamesAndClickOk(north, south, east, west, scorekeeper)
     } else if (inputs.contains("I_N")) {
@@ -173,7 +173,7 @@ class TableEnterOrSelectNamesPage(
     clickButton("OK")
 
     val inputs1 = eventually({
-      val map = findAllInputs(None)
+      val map = findAllInputsById(None)
       val List(a, b, c) = (North :: South :: East :: West :: Nil)
         .filter(p => p != scorekeeper)
         .map(p => s"I_${p.pos}")
