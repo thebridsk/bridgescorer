@@ -68,13 +68,13 @@ object GenerateSSLKeys {
             val name = c.getSubjectX500Principal().getName()
             logger.info(
               s"""Certificate[$i]
-                 |  subject DN = ${c.getSubjectDN().getName()}
+                 |  subject DN = ${c.getSubjectX500Principal().getName()}
                  |  not after = ${c.getNotAfter()}
                  |  not before = ${c.getNotBefore()}
                  |  SAN = ${Option(c.getSubjectAlternativeNames())
                 .map(_.asScala.mkString)
                 .getOrElse("")}
-                 |  issuer DN = ${c.getIssuerDN()}
+                 |  issuer DN = ${c.getIssuerX500Principal().getName()}
               """.stripMargin
             )
           case c =>

@@ -237,7 +237,7 @@ Options:""")
           .flatMap { list =>
             list.head match {
               case c: X509Certificate =>
-                Option(c.getSubjectDN().getName())
+                Option(c.getSubjectX500Principal().getName())
               case _ =>
                 None
             }
@@ -273,7 +273,7 @@ Options:""")
             .flatMap { list =>
               list.head match {
                 case c: X509Certificate =>
-                  Option(c.getSubjectDN().getName())
+                  Option(c.getSubjectX500Principal().getName())
                 case _ =>
                   None
               }
