@@ -45,6 +45,7 @@ import com.github.thebridsk.bridge.server.test.util.TestServer
 import com.github.thebridsk.bridge.fullserver.test.pages.bridge.PageWithErrorMsg
 import com.github.thebridsk.browserpages.Element
 import scala.util.matching.Regex
+import com.github.thebridsk.browserpages.Combobox
 
 /**
   * @author werewolf
@@ -231,32 +232,13 @@ class RubberTest
       eventually(find(id("ResetNames")) mustBe Symbol("Enabled"))
       find(id("Ok")) must not be Symbol("Enabled")
 
-      textField("North").value = "Nancy"
-      textField("South").value = "Sam"
-      textField("East").value = "asfdfs"
-      eventually {
-        val visibleDivs = findAll(
-          xpath(
-            """//input[@name='East']/parent::div/following-sibling::div/div"""
-          )
-        )
-        withClue("Must have one visible div") { visibleDivs.size mustBe 1 }
-        val listitems = findAll(
-          xpath(
-            """//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""
-          )
-        )
-        withClue(
-          "Must have one li in visible div, found " + listitems.mkString(
-            ","
-          ) + ": "
-        ) { listitems.size mustBe 1 }
-        withClue(
-          "One li in visible div must show no names, found " + listitems.head.text + ": "
-        ) {
-          listitems.head.text must fullyMatch regex ("""No suggested names|No names matched""")
-        }
-      }
+      textFieldById("North").value = "Nancy"
+      textFieldById("South").value = "Sam"
+      textFieldById("East").value = "asfdfs"
+      val ecombo = Combobox.find("East")
+      ecombo.clickCaret
+      ecombo.sendKeys("asfdfs")
+      ecombo.assertSuggestionsEmpty()
     }
 
   }
@@ -274,7 +256,7 @@ class RubberTest
       findButtonAndClick("ResetNames")
 
       val fields =
-        eventuallyFindAllInput("text", "North", "South", "East", "West")
+        eventuallyFindAllInputsById("text", "North", "South", "East", "West")
       fields("North").value mustBe ""
       fields("South").value mustBe ""
       fields("East").value mustBe ""
@@ -287,17 +269,17 @@ class RubberTest
 
     find(id("Ok")) must not be Symbol("Enabled")
 
-    textField("North").value = "Nancy"
-    textField("South").value = "Sam"
-    textField("East").value = "Ellen"
-    textField("West").value = "Ellen"
+    textFieldById("North").value = "Nancy"
+    textFieldById("South").value = "Sam"
+    textFieldById("East").value = "Ellen"
+    textFieldById("West").value = "Ellen"
     tcpSleep(1)
     pressKeys(Keys.ESCAPE)
     tcpSleep(1)
 
     (new PageWithErrorMsg).checkErrorMsg("Please fix duplicate player names")
 
-    textField("West").value = "Wayne"
+    textFieldById("West").value = "Wayne"
     tcpSleep(1)
     pressKeys(Keys.ESCAPE)
     tcpSleep(1)
@@ -755,10 +737,10 @@ class RubberTest
 
     eventually(findButton("Ok").isEnabled mustBe false)
 
-    textField("North").value = " Nancy"
-    textField("South").value = "Sam "
-    textField("East").value = " Ellen "
-    textField("West").value = "Wayne"
+    textFieldById("North").value = " Nancy"
+    textFieldById("South").value = "Sam "
+    textFieldById("East").value = " Ellen "
+    textFieldById("West").value = "Wayne"
     tcpSleep(1)
     pressKeys(Keys.ESCAPE)
     tcpSleep(1)
@@ -887,50 +869,32 @@ class RubberTest
     eventually(find(id("ResetNames")) mustBe Symbol("Enabled"))
     find(id("Ok")) must not be Symbol("Enabled")
 
-    textField("North").value = "n"
+    val ncombo = Combobox.find("North")
+    ncombo.clickCaret
+    ncombo.sendKeys("n")
+    val first = ncombo.assertSuggestionsMatch(".*(?i)n.*", "(?i)n.*")
     tcpSleep(2)
-    val first = eventually {
-      val listitems = findAll(
-        xpath(
-          """//input[@name='North']/parent::div/following-sibling::div/div/div/ul/li"""
-        )
-      )
-      assert(!listitems.isEmpty, "list of candidate entries must not be empty")
-      listitems.foreach(li => li.text must startWith regex ("(?i)n"))
-      listitems.head
-    }
     val text = first.text
     Thread.sleep(500)
     first.click
-    eventually(textField("North").value mustBe text)
-
-    textField("South").value = "s"
-    tcpSleep(2)
     eventually {
-      val listitems = findAll(
-        xpath(
-          """//input[@name='South']/parent::div/following-sibling::div/div/div/ul/li"""
-        )
-      )
-      assert(!listitems.isEmpty, "list of candidate entries must not be empty")
-      listitems.foreach(li => li.text must startWith regex ("(?i)s"))
+      textFieldById("North").value mustBe "Nancy"
     }
 
-    textField("East").value = "asfdfs"
-    eventually {
-      val listitems = findAll(
-        xpath(
-          """//input[@name='East']/parent::div/following-sibling::div/div/div/ul/li"""
-        )
-      )
-      assert(!listitems.isEmpty, "list of candidate entries must not be empty")
-      listitems.foreach(li => li.text must startWith("No names matched"))
-    }
+    val scombo = Combobox.find("South")
+    scombo.clickCaret
+    scombo.sendKeys("s")
+    scombo.assertSuggestionsMatch(".*(?i)s.*")
 
-    eventually(textField("North").value mustBe "Nancy")
-    textField("South").value mustBe "s"
-    textField("East").value mustBe "asfdfs"
-    textField("West").value mustBe ""
+    val ecombo = Combobox.find("East")
+    ecombo.clickCaret
+    ecombo.sendKeys("asfdfs")
+    ecombo.assertSuggestionsEmpty()
+
+    eventually(textFieldById("North").value mustBe "Nancy")
+    textFieldById("South").value mustBe "s"
+    textFieldById("East").value mustBe "asfdfs"
+    textFieldById("West").value mustBe ""
 
   }
 

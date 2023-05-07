@@ -443,6 +443,16 @@ trait PageBrowser {
     // new TextField( find(name(tid)) )
     findElem[TextField](name(tid))
 
+  def textFieldById(
+      tid: String
+  )(implicit
+      webDriver: WebDriver,
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): TextField =
+    // new TextField( find(name(tid)) )
+    findElem[TextField](id(tid))
+
   def findElem[T <: Element](
       by: QueryBy
   )(implicit

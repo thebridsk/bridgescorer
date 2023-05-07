@@ -352,12 +352,7 @@ class DuplicateTestPages2
       page.isOKEnabled mustBe false
 
       page.enterPlayer(North, prefixThatMatchesNoOne)
-      eventually {
-        page.isPlayerSuggestionsVisible(North) mustBe true
-        val sugN = page.getPlayerSuggestions(North)
-        sugN.size mustBe 1
-        sugN.head.text mustBe "No names matched"
-      }
+      page.assertPlayerSuggestionsIsEmpty(North)
 
       page.enterPlayer(North, team3.one)
 

@@ -239,15 +239,7 @@ class ChicagoTestPages
       "Error getting suggestions"
     ) {
       eventually {
-        val sug = p.getPlayerSuggestions(East)
-        withClue(
-          "Must have one li in visible div, found " + sug.mkString(",") + ": "
-        ) { sug.size mustBe 1 }
-        withClue(
-          "One li in visible div must show no names, found " + sug.head.text + ": "
-        ) {
-          sug.head.text must fullyMatch regex ("""No suggested names|No names matched""")
-        }
+        p.assertPlayerSuggestionsIsEmpty(East)
       }
     }
 

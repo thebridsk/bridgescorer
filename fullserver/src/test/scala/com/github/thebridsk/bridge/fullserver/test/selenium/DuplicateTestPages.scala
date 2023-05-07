@@ -2884,11 +2884,7 @@ class DuplicateTestPages
 
       en.enterPlayer(North, prefixThatMatchesNoOne)
       en.isPlayerSuggestionsVisible(North) mustBe true
-      val sugN = en.getPlayerSuggestions(North)
-      eventually {
-        sugN.size mustBe 1
-        sugN.head.text mustBe "No names matched"
-      }
+      en.assertPlayerSuggestionsIsEmpty(North)
 
       en.clickCancel.validate.clickCompletedScoreboard.validate
     }

@@ -334,6 +334,48 @@ trait SeleniumUtils {
   }
 
   /**
+    * Find all input field
+    * @param iname the value of the <code>id</code> attribute of the button
+    * @param itype the value of the <code>type</code> attribute of the input
+    * @param webDriver the <code>WebDriver</code> with which to drive the browser
+    * @param pos the filename and line number of where it is called from.
+    * @return the <code>Element</code> selected by this query
+    * @throws TestFailedException if any of the input fields were not found
+    */
+  def findAllInputsById(itype: String, iname: String*)(implicit
+      webDriver: WebDriver,
+      pos: Position
+  ): Map[String, TextField] = {
+    try {
+      val input = webDriver
+        .findElements(new ByTagName("input"))
+        .asScala
+        .filter { we =>
+          we.getAttribute("type") == itype && iname.contains(
+            we.getAttribute("id")
+          )
+        }
+        .map { we => (we.getAttribute("id"), new TextField(we)(pos)) }
+        .toMap
+      withClue(
+        s"""${pos.fileName}:${pos.lineNumber} findAllInput(${itype},${iname.toList})"""
+      ) {
+        input.size mustBe iname.size
+      }
+      input
+    } catch {
+      case x: Throwable =>
+        testlog.fine(
+          s"${pos.fileName}:${pos.lineNumber} findAllInput: exception " + x
+            .toString(),
+          x
+        )
+//        x.printStackTrace(System.out)
+        throw x
+    }
+  }
+
+  /**
     * eventually find all input field
     * @param iname the value of the <code>name</code> attribute of the button
     * @param itype the value of the <code>type</code> attribute of the input
@@ -350,6 +392,25 @@ trait SeleniumUtils {
       pos: Position
   ): Map[String, TextField] = {
     eventually(findAllInput(itype, iname: _*)(webDriver, pos))
+  }
+
+  /**
+    * eventually find all input field
+    * @param iname the value of the <code>id</code> attribute of the button
+    * @param itype the value of the <code>type</code> attribute of the input
+    * @param webDriver the <code>WebDriver</code> with which to drive the browser
+    * @param config the <code>PatienceConfig</code> object containing the <code>timeout</code> and
+    *          <code>interval</code> parameters
+    * @param pos the filename and line number of where it is called from.
+    * @return the <code>Element</code> selected by this query
+    * @throws TestFailedException if any of the input fields were not found
+    */
+  def eventuallyFindAllInputsById(itype: String, iname: String*)(implicit
+      webDriver: WebDriver,
+      config: PatienceConfig,
+      pos: Position
+  ): Map[String, TextField] = {
+    eventually(findAllInputsById(itype, iname: _*)(webDriver, pos))
   }
 
   /**

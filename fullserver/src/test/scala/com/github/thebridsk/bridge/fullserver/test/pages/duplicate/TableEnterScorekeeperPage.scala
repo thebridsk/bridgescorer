@@ -131,7 +131,7 @@ class TableEnterScorekeeperPage(
       pos: Position
   ): TableEnterScorekeeperPage = {
     val text = eventually {
-      getTextInput("Scorekeeper")
+      getTextInputById("Scorekeeper")
     }
     text.value = name
     this
@@ -142,7 +142,7 @@ class TableEnterScorekeeperPage(
       pos: Position
   ): String = {
     eventually {
-      getTextInput("Scorekeeper").value
+      getTextInputById("Scorekeeper").value
     }
   }
 

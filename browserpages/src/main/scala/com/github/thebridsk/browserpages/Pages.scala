@@ -257,6 +257,19 @@ abstract class Page[+T <: Page[T]]()(implicit
 
   /**
     * Find an input field
+    * @param iname the value of the <code>id</code> attribute of the button
+    * @param pos the filename and line number of where it is called from.
+    * @return the <code>TextField</code> selected by this query
+    * @throws TestFailedException if the input was not found or if the specified <code>itype</code> don't match or if the element tag is not <code>input</code>
+    */
+  def findTextInputById(
+      iname: String
+  )(implicit pos: Position, patienceConfig: PatienceConfig): TextField = {
+    new TextField(findElemById(iname))(pos, webDriver, patienceConfig)
+  }
+
+  /**
+    * Find an input field
     * @param iname the value of the <code>name</code> attribute of the button
     * @param pos the filename and line number of where it is called from.
     * @return the <code>TextField</code> selected by this query
@@ -316,6 +329,21 @@ abstract class Page[+T <: Page[T]]()(implicit
 
   /**
     * Find an input field
+    * @param iname the value of the <code>id</code> attribute of the button
+    * @param itype the value of the <code>type</code> attribute of the input
+    * @param patienceConfig configuration for eventually to get the button
+    * @param pos the filename and line number of where it is called from.
+    * @return the <code>Element</code> selected by this query
+    * @throws TestFailedException if the input was not found or if the specified <code>itype</code> don't match or if the element tag is not <code>input</code>
+    */
+  def getTextInputById(
+      iname: String
+  )(implicit patienceConfig: PatienceConfig, pos: Position): TextField = {
+    eventually { findTextInputById(iname) }
+  }
+
+  /**
+    * Find an input field
     * @param iname the value of the <code>name</code> attribute of the button
     * @param itype the value of the <code>type</code> attribute of the input
     * @param patienceConfig configuration for eventually to get the button
@@ -361,7 +389,7 @@ abstract class Page[+T <: Page[T]]()(implicit
     * Find all input field
     * @param itype the value of the <code>type</code> attribute of the input
     * @param pos the filename and line number of where it is called from.
-    * @return the <code>Element</code> selected by this query
+    * @return the <code>Element</code> selected by this query, key in map is name
     * @throws TestFailedException if any of the input fields were not found
     */
   def findAllInputs(
@@ -372,6 +400,51 @@ abstract class Page[+T <: Page[T]]()(implicit
 
       def getEntry(tf: Element) = {
         tf.attribute("name") match {
+          case Some(n) => (n, tf) :: Nil
+          case None    => Nil
+        }
+      }
+
+      val input = findElemsByXPath(s"//input${search}").flatMap { tf =>
+        itype match {
+          case Some(st) =>
+            if (tf.attribute("type").getOrElse("") == st) {
+              getEntry(tf)
+            } else {
+              Nil
+            }
+          case None =>
+            getEntry(tf)
+        }
+      }.toMap
+      input
+    } catch {
+      case x: Throwable =>
+        testlog.fine(
+          s"${pos.line} findAllInput(${itype}): exception ${x
+            .toString()}, page created ${pageCreated.line}",
+          x
+        )
+//        x.printStackTrace(System.out)
+        throw x
+    }
+  }
+
+  /**
+    * Find all input field
+    * @param itype the value of the <code>type</code> attribute of the input
+    * @param pos the filename and line number of where it is called from.
+    * @return the <code>Element</code> selected by this query, key in map is id
+    * @throws TestFailedException if any of the input fields were not found
+    */
+  def findAllInputsById(
+      itype: Option[String] = None
+  )(implicit pos: Position): Map[String, Element] = {
+    try {
+      val search = itype.map(t => s"""[@type='${t}']""").getOrElse("")
+
+      def getEntry(tf: Element) = {
+        tf.attribute("id") match {
           case Some(n) => (n, tf) :: Nil
           case None    => Nil
         }
@@ -423,6 +496,18 @@ abstract class Page[+T <: Page[T]]()(implicit
   ): Map[String, Element] =
     eventually {
       val bs = findAllInputs(itype)
+      bs
+    }
+
+  /**
+    * Get all the input fields of the specified type
+    */
+  def getAllInputsById(itype: Option[String] = None)(implicit
+      patienceConfig: PatienceConfig,
+      pos: Position
+  ): Map[String, Element] =
+    eventually {
+      val bs = findAllInputsById(itype)
       bs
     }
 

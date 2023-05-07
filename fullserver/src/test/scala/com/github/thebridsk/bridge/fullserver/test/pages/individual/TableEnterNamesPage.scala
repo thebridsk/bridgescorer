@@ -162,7 +162,7 @@ class TableEnterNamesPage(
       pos: Position
   ): TableEnterNamesPage = {
     val text = eventually {
-      getTextInput(loc.name)
+      getTextInputById(loc.name)
     }
     text.value = name
     this
@@ -175,7 +175,7 @@ class TableEnterNamesPage(
       loc: PlayerPosition
   )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
-      getTextInput(loc.name).value
+      getTextInputById(loc.name).value
     }
   }
 

@@ -169,7 +169,7 @@ class DuplicateResultEditPage(
   def getName(ws: Int, teamid: Int, player: Int)(implicit
       pos: Position
   ): String = {
-    getTextInput(getInputName(ws, teamid, player.toString())).value
+    getTextInputById(getInputName(ws, teamid, player.toString())).value
   }
 
   /**
@@ -181,7 +181,7 @@ class DuplicateResultEditPage(
   def setName(ws: Int, teamid: Int, player: Int, name: String)(implicit
       pos: Position
   ): DuplicateResultEditPage = {
-    getTextInput(getInputName(ws, teamid, player.toString())).value = name
+    getTextInputById(getInputName(ws, teamid, player.toString())).value = name
     this
   }
 

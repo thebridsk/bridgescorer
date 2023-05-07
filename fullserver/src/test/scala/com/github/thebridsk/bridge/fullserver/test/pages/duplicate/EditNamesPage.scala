@@ -134,7 +134,7 @@ class EditNamesPage(
       pos: Position
   ): List[List[String]] = {
     getElemsByXPath(
-      """//div[contains(concat(' ', @class, ' '), ' dupDivNamesPage ')]/table/tbody/tr/td/div/div/div/input"""
+      """//div[contains(concat(' ', @class, ' '), ' dupDivNamesPage ')]/table/tbody/tr/td/div/div/div/div/input"""
     ).map { e =>
       e.attribute("value").getOrElse("")
     }.grouped(2)
@@ -176,7 +176,7 @@ class EditNamesPage(
       pos: Position
   ): EditNamesPage = {
     val text = eventually {
-      getTextInput(s"I_T${teamId}_${player}")
+      getTextInputById(s"I_T${teamId}_${player}")
     }
     text.value = name
     this

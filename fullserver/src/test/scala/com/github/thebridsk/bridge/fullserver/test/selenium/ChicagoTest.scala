@@ -172,14 +172,7 @@ class ChicagoTest
       try {
         val east = enp.getPlayerCombobox(East)
         east.clickCaret
-        val sug = east.suggestions
-        withClue(
-          "Must have one suggestion in visible div, found " + sug
-            .map(_.text)
-            .mkString(",") + ": "
-        ) {
-          sug.length mustBe 0
-        }
+        east.assertSuggestionsEmpty()
       } catch {
         case x: Exception =>
           saveDom(s"${screenshotDir}/debugDomSuggestion.html")
@@ -738,16 +731,9 @@ class ChicagoTest
 
       val combobox = enp.getPlayerCombobox(North)
       combobox.clickCaret
-
-      enp.enterPlayer(North, "e")
+      combobox.sendKeys("n")
       val first = eventually {
-        val listitems = combobox.suggestions
-        assert(
-          !listitems.isEmpty,
-          "list of candidate entries must not be empty"
-        )
-        listitems.foreach(li => li.text must include regex ("(?i)e"))
-        listitems(0)
+        combobox.assertSuggestionsMatch(""".*?(?i)n.*""", "Nancy")
       }
       val text = first.text
       Thread.sleep(500)
@@ -758,32 +744,23 @@ class ChicagoTest
 
       val scombo = enp.getPlayerCombobox(South)
       scombo.click
-      enp.enterPlayer(South, "s")
+      scombo.sendKeys("s")
 
       eventually {
-        val listitems = scombo.suggestions
-        assert(
-          !listitems.isEmpty,
-          "list of candidate entries must not be empty"
-        )
-        listitems.foreach(li => li.text must include regex ("(?i)s"))
+        scombo.assertSuggestionsMatch(""".*?(?i)s.*""")
       }
 
-      val ecombo = enp.getPlayerCombobox(South)
-      ecombo.click
-      enp.enterPlayer(East, "asfdfs")
+      val ecombo = enp.getPlayerCombobox(East)
+      ecombo.clickCaret
+      ecombo.sendKeys("asfdfs")
       eventually {
-        val listitems = ecombo.suggestions
-        assert(
-          listitems.isEmpty,
-          "list of candidate entries must be empty"
-        )
+        ecombo.assertSuggestionsEmpty()
       }
 
       enp.esc
 
       eventually {
-        enp.getPlayer(North) mustBe text
+        enp.getPlayer(North) mustBe "Nancy"
         enp.getPlayer(South) mustBe "s"
         enp.getPlayer(East) mustBe "asfdfs"
         enp.getPlayer(West) mustBe ""

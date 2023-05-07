@@ -99,7 +99,7 @@ class TableEnterNamesPage(
       pos: Position
   ): TableEnterNamesPage = {
     val text = eventually {
-      getTextInput(toInputName(loc))
+      getTextInputById(toInputName(loc))
     }
     text.value = name
     this
@@ -110,9 +110,9 @@ class TableEnterNamesPage(
       pos: Position
   ): TableEnterNamesPage = {
     eventually {
-      val p = getTextInput(toInputName(scorekeeper.partner))
-      val l = getTextInput(toInputName(scorekeeper.left))
-      val r = getTextInput(toInputName(scorekeeper.right))
+      val p = getTextInputById(toInputName(scorekeeper.partner))
+      val l = getTextInputById(toInputName(scorekeeper.left))
+      val r = getTextInputById(toInputName(scorekeeper.right))
 
       p.value = partner
       l.value = left
@@ -128,7 +128,7 @@ class TableEnterNamesPage(
       loc: PlayerPosition
   )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
-      getTextInput(toInputName(loc)).value
+      getTextInputById(toInputName(loc)).value
     }
   }
 
@@ -141,6 +141,13 @@ class TableEnterNamesPage(
     eventually {
       getCombobox(toInputName(loc)).suggestions
     }
+  }
+
+  def assertPlayerSuggestionsIsEmpty(
+      loc: PlayerPosition
+  )(implicit patienceConfig: PatienceConfig, pos: Position): Unit = {
+    val sug = getPlayerSuggestions(loc)
+    assert(sug.isEmpty, s"Player $loc suggestion must be empty")
   }
 
   /**

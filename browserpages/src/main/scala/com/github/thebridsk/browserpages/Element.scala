@@ -13,6 +13,7 @@ import com.github.thebridsk.source.SourcePosition
 import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.{NoSuchElementException => SelNoSuchElementException}
+import org.scalatest.matchers.must.Matchers._
 
 class Element(
     val underlying: WebElement
@@ -492,7 +493,47 @@ class Combobox(
   }
 
   def isSuggestionVisible: Boolean = {
-    Option(underlying.findElement(By.xpath("""./following-sibling::div"""))).isDefined
+    try {
+      Option(underlying.findElement(By.xpath("""./parent::div/parent::div/parent::div/following-sibling::div"""))).isDefined
+    } catch {
+      case x: SelNoSuchElementException =>
+        false
+    }
+  }
+
+  def assertSuggestionsEmpty(): Unit = {
+    val listitems = suggestions
+    assert(
+      listitems.isEmpty,
+      "list of candidate entries must be empty"
+    )
+  }
+
+  /**
+    * checks all entries in suggestions for a match with regx.
+    * suggestions must not be empty.
+    * throws exception if empty or an entry does not match regx
+    * @param regx
+    * @param ret return the entry that matches this, if null or no match then the first entry is returned
+    * @return the matching entry
+    */
+  def assertSuggestionsMatch( regx: String, ret: String = null ): Element = {
+    val listitems = suggestions
+    assert(
+      !listitems.isEmpty,
+      s"list of candidate entries is empty, should have at least one entry matching \"$regx\""
+    )
+    val rx = Option(ret).map(r => s"$r".r)
+    val r = listitems.flatMap { li =>
+      li.text must fullyMatch regex (regx)
+      rx.flatMap { r =>
+        li.text match {
+          case r() => Option(li)
+          case _ => None
+        }
+      }
+    }
+    return r.headOption.getOrElse(listitems(0))
   }
 
   def clickCaret: Unit = {

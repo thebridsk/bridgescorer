@@ -171,6 +171,7 @@ class EnterNamesPage(val chiid: String, val roundid: Int)(implicit
     val text = eventually {
       getCombobox(toInputName(loc))
     }
+    text.clickCaret
     text.value = name
     if (hitEscapeAfter) text.esc
     this
@@ -223,6 +224,12 @@ class EnterNamesPage(val chiid: String, val roundid: Int)(implicit
     eventually {
       getCombobox(toInputName(loc)).suggestions
     }
+  }
+
+  def assertPlayerSuggestionsIsEmpty(
+    loc: PlayerPosition
+  ): Unit = {
+    getCombobox(toInputName(loc)).assertSuggestionsEmpty()
   }
 
   /**

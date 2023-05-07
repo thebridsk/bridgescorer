@@ -96,7 +96,7 @@ class TableEnterMissingNamesPage(
       pos: Position
   ): List[PlayerPosition] =
     logMethod(s"${pos.line} ${getClass.getSimpleName}.getInputFieldNames") {
-      val inputs = getAllInputs(Some("text"))
+      val inputs = getAllInputsById(Some("text"))
       log.fine(
         s"${pos.line} ${getClass.getSimpleName}.getInputFieldNames: found keys ${inputs.keySet}"
       )
@@ -126,7 +126,7 @@ class TableEnterMissingNamesPage(
       pos: Position
   ): TableEnterMissingNamesPage = {
     val text = eventually {
-      getTextInput(toInputName(loc))
+      getTextInputById(toInputName(loc))
     }
     text.value = name
     this
@@ -139,7 +139,7 @@ class TableEnterMissingNamesPage(
       loc: PlayerPosition
   )(implicit patienceConfig: PatienceConfig, pos: Position): String = {
     eventually {
-      getTextInput(toInputName(loc)).value
+      getTextInputById(toInputName(loc)).value
     }
   }
 
@@ -152,6 +152,18 @@ class TableEnterMissingNamesPage(
     eventually {
       getCombobox(toInputName(loc)).suggestions
     }
+  }
+
+  /**
+    * @param loc the location on the screen.  The scorekeeper's location is not valid.
+    */
+  def assertPlayerSuggestionsIsEmpty(
+      loc: PlayerPosition
+  )(implicit patienceConfig: PatienceConfig, pos: Position): Unit = {
+    val sug = eventually {
+      getCombobox(toInputName(loc)).suggestions
+    }
+    assert(sug.isEmpty, s"Suggestions for player $loc must be empty")
   }
 
   /**
